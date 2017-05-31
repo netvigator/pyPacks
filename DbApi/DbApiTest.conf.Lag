@@ -1,0 +1,60 @@
+[main]
+LogFile     = LagMirror.log
+HistoryFile = LagMirror.history
+lLags       = 3,9,30
+MasterDir   = Master
+#
+MirrorDir   = /srv
+#
+# Note! the user running LagMirror should be the owner of MirrorDir!
+#
+HomeDir     = /home/Common/LagMirror
+TempDir     = /tmp
+lWantArchs  = i386,x86_64
+FreezeRepo  = 0
+#
+SystemSQL   = postgresql
+# SQLite
+#
+# in this application, SQLite takes much longer than postgresql,
+# maybe longer by a factor of 10
+#
+DataBase    = LagMirror
+Host        = None
+User        = None
+Password    = None
+
+lAllArchs   = i386,x86_64,ppc,ia64,s390,s390x,alpha,all
+
+# BackUpDir	=	
+# default is no backup, uncomment and fill in for backups
+
+
+DelObsoleteAfter    = 1
+# delete obsolete rpm's and hdr's after one full lag period
+
+RsyncOptions    = arqzLH
+# ExcludeFileLoc  = # blank or None means current (LagMirror user) directory
+
+# list your distributions below
+
+[CentOS]
+lDirPool        = os,updates,extras
+lWantArchs      = i386
+lWantVersion    = 4
+ExcludeFile     = CentOS.exclude
+lRsyncTimes     = 21:30, 22:00, 4:00
+lRsyncFiles     = mirrorsLocalCentOS, mirrorsAsiaCentOS, mirrorsEuroCentOS
+
+# [Fedora]
+# lWantVersion    = 4
+# ExcludeFile     = Fedora.exclude
+# lRsyncTimes     = 21:31, 22:01, 4:01
+# lRsyncFiles     = mirrorsLocalFedora, mirrorsAsiaFedora, mirrorsEuroFedora
+
+[KDE]
+lWantVersion    = 4
+ExcludeFile     = KDE.exclude
+lRsyncTimes     = 21:32, 4:02
+lRsyncFiles     = mirrorsLocalKDE, mirrorsKDE
+

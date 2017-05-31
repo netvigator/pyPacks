@@ -1,0 +1,13 @@
+[main]
+
+#OutgoingMailServer = mail.trueinternet.co.th
+OutgoingMailServer  = mail.truemail.co.th
+IncomingMailServer  = pop.truemail.co.th
+
+pause               = 115
+
+# mxauth.truemail.co.th
+# OutgoingRequiresAuthentication = yes
+
+# UserName = netvigat@truehisp
+# Password = netvigat

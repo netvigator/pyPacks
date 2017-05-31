@@ -1,0 +1,8 @@
+[main]
+
+sSystemSQL  = postgresql
+sDataBase   = TempSelfTest
+sHost       =
+sUser       =
+sPassword   =
+

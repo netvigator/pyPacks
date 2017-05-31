@@ -1,0 +1,10 @@
+need internet connection to test
+
+FTP.py tests by uploading a file (also needs working FTP server)
+Get2n3.py, Get.py & GetRaw.py test by getting pages off web
+Output.py grabs a page off the web
+Socket.py connects to test sockets
+Scraper.py scrapes web pages
+WebCat.py dumps content
+
+Zip.py lost its working UnZipThis

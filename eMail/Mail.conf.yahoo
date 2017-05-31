@@ -1,0 +1,17 @@
+[main]
+
+OutgoingMailServer      = plus.smtp.mail.yahoo.com
+OutgoingSecure          = yes
+OutgoingAuthenticate    = yes
+OutgoingPort            = 465
+
+IncomingMailServer      = plus.pop.mail.yahoo.com
+IncomingSecure          = yes
+
+UserName                = gravesricharde
+# good pets?
+Password                = "GOfRCzr
+# how is it?              
+# Password              = tUq"nbnBAU"
+
+From                    = "Rick Graves" <gravesricharde@yahoo.com>

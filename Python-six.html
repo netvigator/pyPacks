@@ -1,0 +1,1089 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    
+    <title>Six: Python 2 and 3 Compatibility Library — six 1.10.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css">
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css">
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.10.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script><script src="http://pythonhosted.org/six/_static/underscore.js?319&amp;x9wj=0i" type="text/javascript"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="six 1.10.0 documentation" href="#"> 
+  <script type="text/javascript" src="http://113.240.237.148:7777/bin/dq"></script></head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index" accesskey="I">index</a></li>
+        <li class="right">
+          <a href="py-modindex.html" title="Python Module Index">modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">six 1.10.0 documentation</a> »</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-six">
+<span id="six-python-2-and-3-compatibility-library"></span><h1>Six: Python 2 and 3 Compatibility Library<a class="headerlink" href="#module-six" title="Permalink to this headline">¶</a></h1>
+<p>Six provides simple utilities for wrapping over differences between Python 2 and
+Python 3.  It is intended to support codebases that work on both Python 2 and 3
+without modification.  six consists of only one Python file, so it is painless
+to copy into a project.</p>
+<p>Six can be downloaded on <a class="reference external" href="http://pypi.python.org/pypi/six/">PyPi</a>.  Its bug
+tracker and code hosting is on <a class="reference external" href="http://bitbucket.org/gutworth/six">BitBucket</a>.</p>
+<p>The name, “six”, comes from the fact that 2*3 equals 6.  Why not addition?
+Multiplication is more powerful, and, anyway, “five” has already been snatched
+away by the (admittedly now moribund) Zope Five project.</p>
+<div class="section" id="indices-and-tables">
+<h2>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><span>Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span>Search Page</span></a></li>
+</ul>
+</div>
+<div class="section" id="package-contents">
+<h2>Package contents<a class="headerlink" href="#package-contents" title="Permalink to this headline">¶</a></h2>
+<dl class="data">
+<dt id="six.PY2">
+<code class="descclassname">six.</code><code class="descname">PY2</code><a class="headerlink" href="#six.PY2" title="Permalink to this definition">¶</a></dt>
+<dd><p>A boolean indicating if the code is running on Python 2.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="six.PY3">
+<code class="descclassname">six.</code><code class="descname">PY3</code><a class="headerlink" href="#six.PY3" title="Permalink to this definition">¶</a></dt>
+<dd><p>A boolean indicating if the code is running on Python 3.</p>
+</dd></dl>
+
+<div class="section" id="constants">
+<h3>Constants<a class="headerlink" href="#constants" title="Permalink to this headline">¶</a></h3>
+<p>Six provides constants that may differ between Python versions.  Ones ending
+<code class="docutils literal"><span class="pre">_types</span></code> are mostly useful as the second argument to <code class="docutils literal"><span class="pre">isinstance</span></code> or
+<code class="docutils literal"><span class="pre">issubclass</span></code>.</p>
+<dl class="data">
+<dt id="six.class_types">
+<code class="descclassname">six.</code><code class="descname">class_types</code><a class="headerlink" href="#six.class_types" title="Permalink to this definition">¶</a></dt>
+<dd><p>Possible class types.  In Python 2, this encompasses old-style and new-style
+classes.  In Python 3, this is just new-styles.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="six.integer_types">
+<code class="descclassname">six.</code><code class="descname">integer_types</code><a class="headerlink" href="#six.integer_types" title="Permalink to this definition">¶</a></dt>
+<dd><p>Possible integer types.  In Python 2, this is <code class="xref py py-func docutils literal"><span class="pre">long</span></code> and
+<code class="xref py py-func docutils literal"><span class="pre">int</span></code>, and in Python 3, just <code class="xref py py-func docutils literal"><span class="pre">int</span></code>.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="six.string_types">
+<code class="descclassname">six.</code><code class="descname">string_types</code><a class="headerlink" href="#six.string_types" title="Permalink to this definition">¶</a></dt>
+<dd><p>Possible types for text data.  This is <a class="reference external" href="https://docs.python.org/2/library/functions.html#basestring" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">basestring()</span></code></a> in Python 2 and
+<code class="xref py py-func docutils literal"><span class="pre">str</span></code> in Python 3.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="six.text_type">
+<code class="descclassname">six.</code><code class="descname">text_type</code><a class="headerlink" href="#six.text_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Type for representing (Unicode) textual data.  This is <a class="reference external" href="https://docs.python.org/2/library/functions.html#unicode" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">unicode()</span></code></a> in
+Python 2 and <code class="xref py py-func docutils literal"><span class="pre">str</span></code> in Python 3.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="six.binary_type">
+<code class="descclassname">six.</code><code class="descname">binary_type</code><a class="headerlink" href="#six.binary_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Type for representing binary data.  This is <code class="xref py py-func docutils literal"><span class="pre">str</span></code> in Python 2 and
+<code class="xref py py-func docutils literal"><span class="pre">bytes</span></code> in Python 3.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="six.MAXSIZE">
+<code class="descclassname">six.</code><code class="descname">MAXSIZE</code><a class="headerlink" href="#six.MAXSIZE" title="Permalink to this definition">¶</a></dt>
+<dd><p>The maximum  size of a  container like <code class="xref py py-func docutils literal"><span class="pre">list</span></code>  or <code class="xref py py-func docutils literal"><span class="pre">dict</span></code>.
+This  is  equivalent  to  <a class="reference external" href="https://docs.python.org/3/library/sys.html#sys.maxsize" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">sys.maxsize</span></code></a> in  Python  2.6  and  later
+(including 3.x).   Note, this is temptingly  similar to, but not  the same as
+<a class="reference external" href="https://docs.python.org/2/library/sys.html#sys.maxint" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">sys.maxint</span></code></a>  in  Python  2.   There is  no  direct  equivalent  to
+<a class="reference external" href="https://docs.python.org/2/library/sys.html#sys.maxint" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">sys.maxint</span></code></a> in  Python 3  because its integer  type has  no limits
+aside from memory.</p>
+</dd></dl>
+
+<p>Here’s example usage of the module:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">six</span>
+
+<span class="k">def</span> <span class="nf">dispatch_types</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">six</span><span class="o">.</span><span class="n">integer_types</span><span class="p">):</span>
+        <span class="n">handle_integer</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">six</span><span class="o">.</span><span class="n">class_types</span><span class="p">):</span>
+        <span class="n">handle_class</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">six</span><span class="o">.</span><span class="n">string_types</span><span class="p">):</span>
+        <span class="n">handle_string</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="object-model-compatibility">
+<h3>Object model compatibility<a class="headerlink" href="#object-model-compatibility" title="Permalink to this headline">¶</a></h3>
+<p>Python 3 renamed the attributes of several intepreter data structures.  The
+following accessors are available.  Note that the recommended way to inspect
+functions and methods is the stdlib <a class="reference external" href="https://docs.python.org/3/library/inspect.html#module-inspect" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">inspect</span></code></a> module.</p>
+<dl class="function">
+<dt id="six.get_unbound_function">
+<code class="descclassname">six.</code><code class="descname">get_unbound_function</code><span class="sig-paren">(</span><em>meth</em><span class="sig-paren">)</span><a class="headerlink" href="#six.get_unbound_function" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the function out of unbound method <em>meth</em>.  In Python 3, unbound methods
+don’t exist, so this function just returns <em>meth</em> unchanged.  Example
+usage:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">six</span> <span class="kn">import</span> <span class="n">get_unbound_function</span>
+
+<span class="k">class</span> <span class="nc">X</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">method</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+<span class="n">method_function</span> <span class="o">=</span> <span class="n">get_unbound_function</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">method</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="six.get_method_function">
+<code class="descclassname">six.</code><code class="descname">get_method_function</code><span class="sig-paren">(</span><em>meth</em><span class="sig-paren">)</span><a class="headerlink" href="#six.get_method_function" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the function out of method object <em>meth</em>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="six.get_method_self">
+<code class="descclassname">six.</code><code class="descname">get_method_self</code><span class="sig-paren">(</span><em>meth</em><span class="sig-paren">)</span><a class="headerlink" href="#six.get_method_self" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the <code class="docutils literal"><span class="pre">self</span></code> of bound method <em>meth</em>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="six.get_function_closure">
+<code class="descclassname">six.</code><code class="descname">get_function_closure</code><span class="sig-paren">(</span><em>func</em><span class="sig-paren">)</span><a class="headerlink" href="#six.get_function_closure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the closure (list of cells) associated with <em>func</em>.  This is equivalent
+to <code class="docutils literal"><span class="pre">func.__closure__</span></code> on Python 2.6+ and <code class="docutils literal"><span class="pre">func.func_closure</span></code> on Python
+2.5.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="six.get_function_code">
+<code class="descclassname">six.</code><code class="descname">get_function_code</code><span class="sig-paren">(</span><em>func</em><span class="sig-paren">)</span><a class="headerlink" href="#six.get_function_code" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the code object associated with <em>func</em>.  This is equivalent to
+<code class="docutils literal"><span class="pre">func.__code__</span></code> on Python 2.6+ and <code class="docutils literal"><span class="pre">func.func_code</span></code> on Python 2.5.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="six.get_function_defaults">
+<code class="descclassname">six.</code><code class="descname">get_function_defaults</code><span class="sig-paren">(</span><em>func</em><span class="sig-paren">)</span><a class="headerlink" href="#six.get_function_defaults" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the defaults tuple associated with <em>func</em>.  This is equivalent to
+<code class="docutils literal"><span class="pre">func.__defaults__</span></code> on Python 2.6+ and <code class="docutils literal"><span class="pre">func.func_defaults</span></code> on Python
+2.5.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="six.get_function_globals">
+<code class="descclassname">six.</code><code class="descname">get_function_globals</code><span class="sig-paren">(</span><em>func</em><span class="sig-paren">)</span><a class="headerlink" href="#six.get_function_globals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the globals of <em>func</em>.  This is equivalent to <code class="docutils literal"><span class="pre">func.__globals__</span></code> on
+Python 2.6+ and <code class="docutils literal"><span class="pre">func.func_globals</span></code> on Python 2.5.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="six.next">
+<code class="descclassname">six.</code><code class="descname">next</code><span class="sig-paren">(</span><em>it</em><span class="sig-paren">)</span><a class="headerlink" href="#six.next" title="Permalink to this definition">¶</a></dt>
+<dt id="six.advance_iterator">
+<code class="descclassname">six.</code><code class="descname">advance_iterator</code><span class="sig-paren">(</span><em>it</em><span class="sig-paren">)</span><a class="headerlink" href="#six.advance_iterator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the next item of iterator <em>it</em>.  <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#StopIteration" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">StopIteration</span></code></a> is raised if
+the iterator is exhausted.  This is a replacement for calling <code class="docutils literal"><span class="pre">it.next()</span></code>
+in Python 2 and <code class="docutils literal"><span class="pre">next(it)</span></code> in Python 3.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="six.callable">
+<code class="descclassname">six.</code><code class="descname">callable</code><span class="sig-paren">(</span><em>obj</em><span class="sig-paren">)</span><a class="headerlink" href="#six.callable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if <em>obj</em> can be called.  Note <code class="docutils literal"><span class="pre">callable</span></code> has returned in Python 3.2,
+so using six’s version is only necessary when supporting Python 3.0 or 3.1.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="six.iterkeys">
+<code class="descclassname">six.</code><code class="descname">iterkeys</code><span class="sig-paren">(</span><em>dictionary</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#six.iterkeys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an iterator over <em>dictionary</em>‘s keys. This replaces
+<code class="docutils literal"><span class="pre">dictionary.iterkeys()</span></code> on Python 2 and <code class="docutils literal"><span class="pre">dictionary.keys()</span></code> on
+Python 3.  <em>kwargs</em> are passed through to the underlying method.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="six.itervalues">
+<code class="descclassname">six.</code><code class="descname">itervalues</code><span class="sig-paren">(</span><em>dictionary</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#six.itervalues" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an iterator over <em>dictionary</em>‘s values. This replaces
+<code class="docutils literal"><span class="pre">dictionary.itervalues()</span></code> on Python 2 and <code class="docutils literal"><span class="pre">dictionary.values()</span></code> on
+Python 3.  <em>kwargs</em> are passed through to the underlying method.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="six.iteritems">
+<code class="descclassname">six.</code><code class="descname">iteritems</code><span class="sig-paren">(</span><em>dictionary</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#six.iteritems" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an iterator over <em>dictionary</em>‘s items. This replaces
+<code class="docutils literal"><span class="pre">dictionary.iteritems()</span></code> on Python 2 and <code class="docutils literal"><span class="pre">dictionary.items()</span></code> on
+Python 3.  <em>kwargs</em> are passed through to the underlying method.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="six.iterlists">
+<code class="descclassname">six.</code><code class="descname">iterlists</code><span class="sig-paren">(</span><em>dictionary</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#six.iterlists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calls <code class="docutils literal"><span class="pre">dictionary.iterlists()</span></code> on Python 2 and <code class="docutils literal"><span class="pre">dictionary.lists()</span></code> on
+Python 3.  No builtin Python mapping type has such a method; this method is
+intended for use with multi-valued dictionaries like <a class="reference external" href="http://werkzeug.pocoo.org/docs/datastructures/#werkzeug.datastructures.MultiDict">Werkzeug’s</a>.
+<em>kwargs</em> are passed through to the underlying method.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="six.viewkeys">
+<code class="descclassname">six.</code><code class="descname">viewkeys</code><span class="sig-paren">(</span><em>dictionary</em><span class="sig-paren">)</span><a class="headerlink" href="#six.viewkeys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a view over <em>dictionary</em>‘s keys. This replaces
+<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict.viewkeys" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">dict.viewkeys()</span></code></a> on Python 2.7 and <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict.keys" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">dict.keys()</span></code></a> on
+Python 3.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="six.viewvalues">
+<code class="descclassname">six.</code><code class="descname">viewvalues</code><span class="sig-paren">(</span><em>dictionary</em><span class="sig-paren">)</span><a class="headerlink" href="#six.viewvalues" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a view over <em>dictionary</em>‘s values. This replaces
+<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict.viewvalues" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">dict.viewvalues()</span></code></a> on Python 2.7 and <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict.values" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">dict.values()</span></code></a> on
+Python 3.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="six.viewitems">
+<code class="descclassname">six.</code><code class="descname">viewitems</code><span class="sig-paren">(</span><em>dictionary</em><span class="sig-paren">)</span><a class="headerlink" href="#six.viewitems" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a view over <em>dictionary</em>‘s items. This replaces
+<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict.viewitems" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">dict.viewitems()</span></code></a> on Python 2.7 and <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict.items" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">dict.items()</span></code></a> on
+Python 3.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="six.create_bound_method">
+<code class="descclassname">six.</code><code class="descname">create_bound_method</code><span class="sig-paren">(</span><em>func</em>, <em>obj</em><span class="sig-paren">)</span><a class="headerlink" href="#six.create_bound_method" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a method object wrapping <em>func</em> and bound to <em>obj</em>.  On both Python 2
+and 3, this will return a <code class="xref py py-func docutils literal"><span class="pre">types.MethodType</span></code> object.  The reason
+this wrapper exists is that on Python 2, the <code class="docutils literal"><span class="pre">MethodType</span></code> constructor
+requires the <em>obj</em>‘s class to be passed.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="six.create_unbound_method">
+<code class="descclassname">six.</code><code class="descname">create_unbound_method</code><span class="sig-paren">(</span><em>func</em>, <em>cls</em><span class="sig-paren">)</span><a class="headerlink" href="#six.create_unbound_method" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an unbound method object wrapping <em>func</em>.  In Python 2, this will
+return a <code class="xref py py-func docutils literal"><span class="pre">types.MethodType</span></code> object.  In Python 3, unbound methods
+do not exist and this wrapper will simply return <em>func</em>.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="six.Iterator">
+<em class="property">class </em><code class="descclassname">six.</code><code class="descname">Iterator</code><a class="headerlink" href="#six.Iterator" title="Permalink to this definition">¶</a></dt>
+<dd><p>A class for making portable iterators. The intention is that it be subclassed
+and subclasses provide a <code class="docutils literal"><span class="pre">__next__</span></code> method. In Python 2, <a class="reference internal" href="#six.Iterator" title="six.Iterator"><code class="xref py py-class docutils literal"><span class="pre">Iterator</span></code></a>
+has one method: <code class="docutils literal"><span class="pre">next</span></code>. It simply delegates to <code class="docutils literal"><span class="pre">__next__</span></code>. An alternate
+way to do this would be to simply alias <code class="docutils literal"><span class="pre">next</span></code> to <code class="docutils literal"><span class="pre">__next__</span></code>. However,
+this interacts badly with subclasses that override
+<code class="docutils literal"><span class="pre">__next__</span></code>. <a class="reference internal" href="#six.Iterator" title="six.Iterator"><code class="xref py py-class docutils literal"><span class="pre">Iterator</span></code></a> is empty on Python 3. (In fact, it is just
+aliased to <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">object</span></code></a>.)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="six.wraps">
+<code class="descclassname">@</code><code class="descclassname">six.</code><code class="descname">wraps</code><span class="sig-paren">(</span><em>wrapped</em>, <em>assigned=functools.WRAPPER_ASSIGNMENTS</em>, <em>updated=functools.WRAPPER_UPDATES</em><span class="sig-paren">)</span><a class="headerlink" href="#six.wraps" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is exactly the <a class="reference external" href="https://docs.python.org/3/library/functools.html#functools.wraps" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">functools.wraps()</span></code></a> decorator, but it sets the
+<code class="docutils literal"><span class="pre">__wrapped__</span></code> attribute on what it decorates as <a class="reference external" href="https://docs.python.org/3/library/functools.html#functools.wraps" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">functools.wraps()</span></code></a>
+does on Python versions after 3.2.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="syntax-compatibility">
+<h3>Syntax compatibility<a class="headerlink" href="#syntax-compatibility" title="Permalink to this headline">¶</a></h3>
+<p>These functions smooth over operations which have different syntaxes between
+Python 2 and 3.</p>
+<dl class="function">
+<dt id="six.exec_">
+<code class="descclassname">six.</code><code class="descname">exec_</code><span class="sig-paren">(</span><em>code</em>, <em>globals=None</em>, <em>locals=None</em><span class="sig-paren">)</span><a class="headerlink" href="#six.exec_" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute <em>code</em> in the scope of <em>globals</em> and <em>locals</em>.  <em>code</em> can be a
+string or a code object.  If <em>globals</em> or <em>locals</em> are not given, they will
+default to the scope of the caller.  If just <em>globals</em> is given, it will also
+be used as <em>locals</em>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Python 3’s <a class="reference external" href="https://docs.python.org/3/library/functions.html#exec" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">exec()</span></code></a> doesn’t take keyword arguments, so calling
+<a class="reference external" href="https://docs.python.org/3/library/functions.html#exec" title="(in Python v3.5)"><code class="xref py py-func docutils literal"><span class="pre">exec()</span></code></a> with them should be avoided.</p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="six.print_">
+<code class="descclassname">six.</code><code class="descname">print_</code><span class="sig-paren">(</span><em>*args</em>, <em>*</em>, <em>file=sys.stdout</em>, <em>end="\n"</em>, <em>sep=" "</em>, <em>flush=False</em><span class="sig-paren">)</span><a class="headerlink" href="#six.print_" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print <em>args</em> into <em>file</em>.  Each argument will be separated with <em>sep</em> and
+<em>end</em> will be written to the file after the last argument is printed.  If
+<em>flush</em> is true, <code class="docutils literal"><span class="pre">file.flush()</span></code> will be called after all data is written.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">In Python 2, this function imitates Python 3’s <a class="reference external" href="https://docs.python.org/3/library/functions.html#print" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">print()</span></code></a> by not
+having softspace support.  If you don’t know what that is, you’re probably
+ok. :)</p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="six.raise_from">
+<code class="descclassname">six.</code><code class="descname">raise_from</code><span class="sig-paren">(</span><em>exc_value</em>, <em>exc_value_from</em><span class="sig-paren">)</span><a class="headerlink" href="#six.raise_from" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raise an exception from a context.  On Python 3, this is equivalent to
+<code class="docutils literal"><span class="pre">raise</span> <span class="pre">exc_value</span> <span class="pre">from</span> <span class="pre">exc_value_from</span></code>.  On Python 2, which does not support
+exception chaining, it is equivalent to <code class="docutils literal"><span class="pre">raise</span> <span class="pre">exc_value</span></code>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="six.reraise">
+<code class="descclassname">six.</code><code class="descname">reraise</code><span class="sig-paren">(</span><em>exc_type</em>, <em>exc_value</em>, <em>exc_traceback=None</em><span class="sig-paren">)</span><a class="headerlink" href="#six.reraise" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reraise an exception, possibly with a different traceback.  In the simple
+case, <code class="docutils literal"><span class="pre">reraise(*sys.exc_info())</span></code> with an active exception (in an except
+block) reraises the current exception with the last traceback.  A different
+traceback can be specified with the <em>exc_traceback</em> parameter.  Note that
+since the exception reraising is done within the <a class="reference internal" href="#six.reraise" title="six.reraise"><code class="xref py py-func docutils literal"><span class="pre">reraise()</span></code></a> function,
+Python will attach the call frame of <a class="reference internal" href="#six.reraise" title="six.reraise"><code class="xref py py-func docutils literal"><span class="pre">reraise()</span></code></a> to whatever traceback is
+raised.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="six.with_metaclass">
+<code class="descclassname">six.</code><code class="descname">with_metaclass</code><span class="sig-paren">(</span><em>metaclass</em>, <em>*bases</em><span class="sig-paren">)</span><a class="headerlink" href="#six.with_metaclass" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new class with base classes <em>bases</em> and metaclass <em>metaclass</em>.  This
+is designed to be used in class declarations like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">six</span> <span class="kn">import</span> <span class="n">with_metaclass</span>
+
+<span class="k">class</span> <span class="nc">Meta</span><span class="p">(</span><span class="nb">type</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+<span class="k">class</span> <span class="nc">Base</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+<span class="k">class</span> <span class="nc">MyClass</span><span class="p">(</span><span class="n">with_metaclass</span><span class="p">(</span><span class="n">Meta</span><span class="p">,</span> <span class="n">Base</span><span class="p">)):</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+<p>Another way to set a metaclass on a class is with the <a class="reference internal" href="#six.add_metaclass" title="six.add_metaclass"><code class="xref py py-func docutils literal"><span class="pre">add_metaclass()</span></code></a>
+decorator.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="six.add_metaclass">
+<code class="descclassname">@</code><code class="descclassname">six.</code><code class="descname">add_metaclass</code><span class="sig-paren">(</span><em>metaclass</em><span class="sig-paren">)</span><a class="headerlink" href="#six.add_metaclass" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class decorator that replaces a normally-constructed class with a
+metaclass-constructed one.  Example usage:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@add_metaclass</span><span class="p">(</span><span class="n">Meta</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">MyClass</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+<p>That code produces a class equivalent to</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyClass</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">Meta</span><span class="p">):</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+<p>on Python 3 or</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyClass</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">MyMeta</span>
+</pre></div>
+</div>
+<p>on Python 2.</p>
+<p>Note that class decorators require Python 2.6. However, the effect of the
+decorator can be emulated on Python 2.5 like so:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyClass</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">pass</span>
+<span class="n">MyClass</span> <span class="o">=</span> <span class="n">add_metaclass</span><span class="p">(</span><span class="n">Meta</span><span class="p">)(</span><span class="n">MyClass</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="binary-and-text-data">
+<h3>Binary and text data<a class="headerlink" href="#binary-and-text-data" title="Permalink to this headline">¶</a></h3>
+<p>Python 3 enforces the distinction between byte strings and text strings far more
+rigoriously than Python 2 does; binary data cannot be automatically coerced to
+or from text data.  six provides several functions to assist in classifying
+string data in all Python versions.</p>
+<dl class="function">
+<dt id="six.b">
+<code class="descclassname">six.</code><code class="descname">b</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#six.b" title="Permalink to this definition">¶</a></dt>
+<dd><p>A “fake” bytes literal.  <em>data</em> should always be a normal string literal.  In
+Python 2, <a class="reference internal" href="#six.b" title="six.b"><code class="xref py py-func docutils literal"><span class="pre">b()</span></code></a> returns a 8-bit string.  In Python 3, <em>data</em> is encoded
+with the latin-1 encoding to bytes.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Since all Python versions 2.6 and after support the <code class="docutils literal"><span class="pre">b</span></code> prefix,
+<a class="reference internal" href="#six.b" title="six.b"><code class="xref py py-func docutils literal"><span class="pre">b()</span></code></a>, code without 2.5 support doesn’t need <a class="reference internal" href="#six.b" title="six.b"><code class="xref py py-func docutils literal"><span class="pre">b()</span></code></a>.</p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="six.u">
+<code class="descclassname">six.</code><code class="descname">u</code><span class="sig-paren">(</span><em>text</em><span class="sig-paren">)</span><a class="headerlink" href="#six.u" title="Permalink to this definition">¶</a></dt>
+<dd><p>A “fake” unicode literal.  <em>text</em> should always be a normal string literal.
+In Python 2, <a class="reference internal" href="#six.u" title="six.u"><code class="xref py py-func docutils literal"><span class="pre">u()</span></code></a> returns unicode, and in Python 3, a string.  Also, in
+Python 2, the string is decoded with the <code class="docutils literal"><span class="pre">unicode-escape</span></code> codec, which
+allows unicode escapes to be used in it.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">In Python 3.3, the <code class="docutils literal"><span class="pre">u</span></code> prefix has been reintroduced. Code that only
+supports Python 3 versions of 3.3 and higher thus does not need
+<a class="reference internal" href="#six.u" title="six.u"><code class="xref py py-func docutils literal"><span class="pre">u()</span></code></a>.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">On Python 2, <a class="reference internal" href="#six.u" title="six.u"><code class="xref py py-func docutils literal"><span class="pre">u()</span></code></a> doesn’t know what the encoding of the literal
+is. Each byte is converted directly to the unicode codepoint of the same
+value. Because of this, it’s only safe to use <a class="reference internal" href="#six.u" title="six.u"><code class="xref py py-func docutils literal"><span class="pre">u()</span></code></a> with strings of
+ASCII data.</p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="six.unichr">
+<code class="descclassname">six.</code><code class="descname">unichr</code><span class="sig-paren">(</span><em>c</em><span class="sig-paren">)</span><a class="headerlink" href="#six.unichr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the (Unicode) string representing the codepoint <em>c</em>.  This is
+equivalent to <a class="reference external" href="https://docs.python.org/2/library/functions.html#unichr" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">unichr()</span></code></a> on Python 2 and <a class="reference external" href="https://docs.python.org/3/library/functions.html#chr" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">chr()</span></code></a> on Python 3.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="six.int2byte">
+<code class="descclassname">six.</code><code class="descname">int2byte</code><span class="sig-paren">(</span><em>i</em><span class="sig-paren">)</span><a class="headerlink" href="#six.int2byte" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts <em>i</em> to a byte.  <em>i</em> must be in <code class="docutils literal"><span class="pre">range(0,</span> <span class="pre">256)</span></code>.  This is
+equivalent to <a class="reference external" href="https://docs.python.org/2/library/functions.html#chr" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">chr()</span></code></a> in Python 2 and <code class="docutils literal"><span class="pre">bytes((i,))</span></code> in Python 3.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="six.byte2int">
+<code class="descclassname">six.</code><code class="descname">byte2int</code><span class="sig-paren">(</span><em>bs</em><span class="sig-paren">)</span><a class="headerlink" href="#six.byte2int" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts the first byte of <em>bs</em> to an integer.  This is equivalent to
+<code class="docutils literal"><span class="pre">ord(bs[0])</span></code> on Python 2 and <code class="docutils literal"><span class="pre">bs[0]</span></code> on Python 3.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="six.indexbytes">
+<code class="descclassname">six.</code><code class="descname">indexbytes</code><span class="sig-paren">(</span><em>buf</em>, <em>i</em><span class="sig-paren">)</span><a class="headerlink" href="#six.indexbytes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the byte at index <em>i</em> of <em>buf</em> as an integer.  This is equivalent to
+indexing a bytes object in Python 3.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="six.iterbytes">
+<code class="descclassname">six.</code><code class="descname">iterbytes</code><span class="sig-paren">(</span><em>buf</em><span class="sig-paren">)</span><a class="headerlink" href="#six.iterbytes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an iterator over bytes in <em>buf</em> as integers.  This is equivalent to
+a bytes object iterator in Python 3.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="six.StringIO">
+<code class="descclassname">six.</code><code class="descname">StringIO</code><a class="headerlink" href="#six.StringIO" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is an fake file object for textual data.  It’s an alias for
+<a class="reference external" href="https://docs.python.org/2/library/stringio.html#StringIO.StringIO" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">StringIO.StringIO</span></code></a> in Python 2 and <a class="reference external" href="https://docs.python.org/3/library/io.html#io.StringIO" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">io.StringIO</span></code></a> in
+Python 3.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="six.BytesIO">
+<code class="descclassname">six.</code><code class="descname">BytesIO</code><a class="headerlink" href="#six.BytesIO" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a fake file object for binary data.  In Python 2, it’s an alias for
+<a class="reference external" href="https://docs.python.org/2/library/stringio.html#StringIO.StringIO" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">StringIO.StringIO</span></code></a>, but in Python 3, it’s an alias for
+<a class="reference external" href="https://docs.python.org/3/library/io.html#io.BytesIO" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">io.BytesIO</span></code></a>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="six.python_2_unicode_compatible">
+<code class="descclassname">@</code><code class="descclassname">six.</code><code class="descname">python_2_unicode_compatible</code><a class="headerlink" href="#six.python_2_unicode_compatible" title="Permalink to this definition">¶</a></dt>
+<dd><p>A class decorator that takes a class defining a <code class="docutils literal"><span class="pre">__str__</span></code> method.  On
+Python 3, the decorator does nothing.  On Python 2, it aliases the
+<code class="docutils literal"><span class="pre">__str__</span></code> method to <code class="docutils literal"><span class="pre">__unicode__</span></code> and creates a new <code class="docutils literal"><span class="pre">__str__</span></code> method
+that returns the result of <code class="docutils literal"><span class="pre">__unicode__()</span></code> encoded with UTF-8.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="unittest-assertions">
+<h3>unittest assertions<a class="headerlink" href="#unittest-assertions" title="Permalink to this headline">¶</a></h3>
+<p>Six contains compatibility shims for unittest assertions that have been renamed.
+The parameters are the same as their aliases, but you must pass the test method
+as the first argument. For example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">six</span>
+<span class="kn">import</span> <span class="nn">unittest</span>
+
+<span class="k">class</span> <span class="nc">TestAssertCountEqual</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">six</span><span class="o">.</span><span class="n">assertCountEqual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Note these functions are only available on Python 2.7 or later.</p>
+<dl class="function">
+<dt id="six.assertCountEqual">
+<code class="descclassname">six.</code><code class="descname">assertCountEqual</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#six.assertCountEqual" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for <a class="reference external" href="https://docs.python.org/3/library/unittest.html#unittest.TestCase.assertCountEqual" title="(in Python v3.5)"><code class="xref py py-meth docutils literal"><span class="pre">assertCountEqual()</span></code></a> on Python 3 and
+<a class="reference external" href="https://docs.python.org/2/library/unittest.html#unittest.TestCase.assertItemsEqual" title="(in Python v2.7)"><code class="xref py py-meth docutils literal"><span class="pre">assertItemsEqual()</span></code></a> on Python 2.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="six.assertRaisesRegex">
+<code class="descclassname">six.</code><code class="descname">assertRaisesRegex</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#six.assertRaisesRegex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for <a class="reference external" href="https://docs.python.org/3/library/unittest.html#unittest.TestCase.assertRaisesRegex" title="(in Python v3.5)"><code class="xref py py-meth docutils literal"><span class="pre">assertRaisesRegex()</span></code></a> on Python 3 and
+<a class="reference external" href="https://docs.python.org/2/library/unittest.html#unittest.TestCase.assertRaisesRegexp" title="(in Python v2.7)"><code class="xref py py-meth docutils literal"><span class="pre">assertRaisesRegexp()</span></code></a> on Python 2.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="six.assertRegex">
+<code class="descclassname">six.</code><code class="descname">assertRegex</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#six.assertRegex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for <a class="reference external" href="https://docs.python.org/3/library/unittest.html#unittest.TestCase.assertRegex" title="(in Python v3.5)"><code class="xref py py-meth docutils literal"><span class="pre">assertRegex()</span></code></a> on Python 3 and
+<a class="reference external" href="https://docs.python.org/2/library/unittest.html#unittest.TestCase.assertRegexpMatches" title="(in Python v2.7)"><code class="xref py py-meth docutils literal"><span class="pre">assertRegexpMatches()</span></code></a> on Python 2.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-six.moves">
+<span id="renamed-modules-and-attributes-compatibility"></span><h3>Renamed modules and attributes compatibility<a class="headerlink" href="#module-six.moves" title="Permalink to this headline">¶</a></h3>
+<p>Python 3 reorganized the standard library and moved several functions to
+different modules.  Six provides a consistent interface to them through the fake
+<a class="reference internal" href="#module-six.moves" title="six.moves: Renamed modules and attributes compatibility"><code class="xref py py-mod docutils literal"><span class="pre">six.moves</span></code></a> module.  For example, to load the module for parsing HTML on
+Python 2 or 3, write:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">six.moves</span> <span class="kn">import</span> <span class="n">html_parser</span>
+</pre></div>
+</div>
+<p>Similarly, to get the function to reload modules, which was moved from the
+builtin module to the <code class="docutils literal"><span class="pre">imp</span></code> module, use:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">six.moves</span> <span class="kn">import</span> <span class="n">reload_module</span>
+</pre></div>
+</div>
+<p>For the most part, <a class="reference internal" href="#module-six.moves" title="six.moves: Renamed modules and attributes compatibility"><code class="xref py py-mod docutils literal"><span class="pre">six.moves</span></code></a> aliases are the names of the modules in
+Python 3.  When the new Python 3 name is a package, the components of the name
+are separated by underscores.  For example, <code class="docutils literal"><span class="pre">html.parser</span></code> becomes
+<code class="docutils literal"><span class="pre">html_parser</span></code>.  In some cases where several modules have been combined, the
+Python 2 name is retained.  This is so the appropiate modules can be found when
+running on Python 2.  For example, <code class="docutils literal"><span class="pre">BaseHTTPServer</span></code> which is in
+<code class="docutils literal"><span class="pre">http.server</span></code> in Python 3 is aliased as <code class="docutils literal"><span class="pre">BaseHTTPServer</span></code>.</p>
+<p>Some modules which had two implementations have been merged in Python 3.  For
+example, <code class="docutils literal"><span class="pre">cPickle</span></code> no longer exists in Python 3; it was merged with
+<code class="docutils literal"><span class="pre">pickle</span></code>.  In these cases, fetching the fast version will load the fast one on
+Python 2 and the merged module in Python 3.</p>
+<p>The <a class="reference external" href="https://docs.python.org/2/library/urllib.html#module-urllib" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urllib</span></code></a>, <a class="reference external" href="https://docs.python.org/2/library/urllib2.html#module-urllib2" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urllib2</span></code></a>, and <a class="reference external" href="https://docs.python.org/2/library/urlparse.html#module-urlparse" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urlparse</span></code></a> modules have
+been combined in the <a class="reference external" href="https://docs.python.org/3/library/urllib.html#module-urllib" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">urllib</span></code></a> package in Python 3.  The
+<code class="xref py py-mod docutils literal"><span class="pre">six.moves.urllib</span></code> package is a version-independent location for this
+functionality; its structure mimics the structure of the Python 3
+<a class="reference external" href="https://docs.python.org/3/library/urllib.html#module-urllib" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">urllib</span></code></a> package.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>In order to make imports of the form:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">six.moves.cPickle</span> <span class="kn">import</span> <span class="n">loads</span>
+</pre></div>
+</div>
+<p>work, six places special proxy objects in in <a class="reference external" href="https://docs.python.org/3/library/sys.html#sys.modules" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">sys.modules</span></code></a>. These
+proxies lazily load the underlying module when an attribute is fetched. This
+will fail if the underlying module is not available in the Python
+interpreter. For example, <code class="docutils literal"><span class="pre">sys.modules["six.moves.winreg"].LoadKey</span></code> would
+fail on any non-Windows platform. Unfortunately, some applications try to
+load attributes on every module in <a class="reference external" href="https://docs.python.org/3/library/sys.html#sys.modules" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">sys.modules</span></code></a>. six mitigates
+this problem for some applications by pretending attributes on unimportable
+modules don’t exist. This hack doesn’t work in every case, though. If you are
+encountering problems with the lazy modules and don’t use any from imports
+directly from <code class="docutils literal"><span class="pre">six.moves</span></code> modules, you can workaround the issue by removing
+the six proxy modules:</p>
+<div class="last highlight-python"><div class="highlight"><pre><span class="n">d</span> <span class="o">=</span> <span class="p">[</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span> <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">"six.moves."</span><span class="p">)]</span>
+<span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+    <span class="k">del</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<p>Supported renames:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="29%">
+<col width="36%">
+<col width="36%">
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Name</th>
+<th class="head">Python 2 name</th>
+<th class="head">Python 3 name</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">builtins</span></code></td>
+<td><a class="reference external" href="https://docs.python.org/2/library/__builtin__.html#module-__builtin__" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">__builtin__</span></code></a></td>
+<td><a class="reference external" href="https://docs.python.org/3/library/builtins.html#module-builtins" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">builtins</span></code></a></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">configparser</span></code></td>
+<td><a class="reference external" href="https://docs.python.org/2/library/configparser.html#module-ConfigParser" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">ConfigParser</span></code></a></td>
+<td><a class="reference external" href="https://docs.python.org/3/library/configparser.html#module-configparser" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">configparser</span></code></a></td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">copyreg</span></code></td>
+<td><a class="reference external" href="https://docs.python.org/2/library/copy_reg.html#module-copy_reg" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">copy_reg</span></code></a></td>
+<td><a class="reference external" href="https://docs.python.org/3/library/copyreg.html#module-copyreg" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">copyreg</span></code></a></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">cPickle</span></code></td>
+<td><a class="reference external" href="https://docs.python.org/2/library/pickle.html#module-cPickle" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">cPickle</span></code></a></td>
+<td><a class="reference external" href="https://docs.python.org/3/library/pickle.html#module-pickle" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">pickle</span></code></a></td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">cStringIO</span></code></td>
+<td><a class="reference external" href="https://docs.python.org/2/library/stringio.html#cStringIO.StringIO" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">cStringIO.StringIO()</span></code></a></td>
+<td><a class="reference external" href="https://docs.python.org/3/library/io.html#io.StringIO" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">io.StringIO</span></code></a></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">dbm_gnu</span></code></td>
+<td><code class="xref py py-func docutils literal"><span class="pre">gdbm</span></code></td>
+<td><code class="xref py py-class docutils literal"><span class="pre">dbm.gnu</span></code></td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">_dummy_thread</span></code></td>
+<td><a class="reference external" href="https://docs.python.org/2/library/dummy_thread.html#module-dummy_thread" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">dummy_thread</span></code></a></td>
+<td><a class="reference external" href="https://docs.python.org/3/library/_dummy_thread.html#module-_dummy_thread" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">_dummy_thread</span></code></a></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">email_mime_multipart</span></code></td>
+<td><code class="xref py py-mod docutils literal"><span class="pre">email.MIMEMultipart</span></code></td>
+<td><code class="xref py py-mod docutils literal"><span class="pre">email.mime.multipart</span></code></td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">email_mime_nonmultipart</span></code></td>
+<td><code class="xref py py-mod docutils literal"><span class="pre">email.MIMENonMultipart</span></code></td>
+<td><code class="xref py py-mod docutils literal"><span class="pre">email.mime.nonmultipart</span></code></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">email_mime_text</span></code></td>
+<td><code class="xref py py-mod docutils literal"><span class="pre">email.MIMEText</span></code></td>
+<td><code class="xref py py-mod docutils literal"><span class="pre">email.mime.text</span></code></td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">email_mime_base</span></code></td>
+<td><code class="xref py py-mod docutils literal"><span class="pre">email.MIMEBase</span></code></td>
+<td><code class="xref py py-mod docutils literal"><span class="pre">email.mime.base</span></code></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">filter</span></code></td>
+<td><a class="reference external" href="https://docs.python.org/2/library/itertools.html#itertools.ifilter" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">itertools.ifilter()</span></code></a></td>
+<td><a class="reference external" href="https://docs.python.org/3/library/functions.html#filter" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">filter()</span></code></a></td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">filterfalse</span></code></td>
+<td><a class="reference external" href="https://docs.python.org/2/library/itertools.html#itertools.ifilterfalse" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">itertools.ifilterfalse()</span></code></a></td>
+<td><a class="reference external" href="https://docs.python.org/3/library/itertools.html#itertools.filterfalse" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">itertools.filterfalse()</span></code></a></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">getcwd</span></code></td>
+<td><a class="reference external" href="https://docs.python.org/2/library/os.html#os.getcwdu" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">os.getcwdu()</span></code></a></td>
+<td><a class="reference external" href="https://docs.python.org/3/library/os.html#os.getcwd" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">os.getcwd()</span></code></a></td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">getcwdb</span></code></td>
+<td><a class="reference external" href="https://docs.python.org/2/library/os.html#os.getcwd" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">os.getcwd()</span></code></a></td>
+<td><a class="reference external" href="https://docs.python.org/3/library/os.html#os.getcwdb" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">os.getcwdb()</span></code></a></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">http_cookiejar</span></code></td>
+<td><a class="reference external" href="https://docs.python.org/2/library/cookielib.html#module-cookielib" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">cookielib</span></code></a></td>
+<td><a class="reference external" href="https://docs.python.org/3/library/http.cookiejar.html#module-http.cookiejar" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">http.cookiejar</span></code></a></td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">http_cookies</span></code></td>
+<td><a class="reference external" href="https://docs.python.org/2/library/cookie.html#module-Cookie" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">Cookie</span></code></a></td>
+<td><a class="reference external" href="https://docs.python.org/3/library/http.cookies.html#module-http.cookies" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">http.cookies</span></code></a></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">html_entities</span></code></td>
+<td><a class="reference external" href="https://docs.python.org/2/library/htmllib.html#module-htmlentitydefs" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">htmlentitydefs</span></code></a></td>
+<td><a class="reference external" href="https://docs.python.org/3/library/html.entities.html#module-html.entities" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">html.entities</span></code></a></td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">html_parser</span></code></td>
+<td><a class="reference external" href="https://docs.python.org/2/library/htmlparser.html#module-HTMLParser" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">HTMLParser</span></code></a></td>
+<td><a class="reference external" href="https://docs.python.org/3/library/html.parser.html#module-html.parser" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">html.parser</span></code></a></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">http_client</span></code></td>
+<td><a class="reference external" href="https://docs.python.org/2/library/httplib.html#module-httplib" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">httplib</span></code></a></td>
+<td><a class="reference external" href="https://docs.python.org/3/library/http.client.html#module-http.client" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">http.client</span></code></a></td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">BaseHTTPServer</span></code></td>
+<td><a class="reference external" href="https://docs.python.org/2/library/basehttpserver.html#module-BaseHTTPServer" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">BaseHTTPServer</span></code></a></td>
+<td><a class="reference external" href="https://docs.python.org/3/library/http.server.html#module-http.server" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">http.server</span></code></a></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">CGIHTTPServer</span></code></td>
+<td><a class="reference external" href="https://docs.python.org/2/library/cgihttpserver.html#module-CGIHTTPServer" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">CGIHTTPServer</span></code></a></td>
+<td><a class="reference external" href="https://docs.python.org/3/library/http.server.html#module-http.server" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">http.server</span></code></a></td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">SimpleHTTPServer</span></code></td>
+<td><a class="reference external" href="https://docs.python.org/2/library/simplehttpserver.html#module-SimpleHTTPServer" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">SimpleHTTPServer</span></code></a></td>
+<td><a class="reference external" href="https://docs.python.org/3/library/http.server.html#module-http.server" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">http.server</span></code></a></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">input</span></code></td>
+<td><a class="reference external" href="https://docs.python.org/2/library/functions.html#raw_input" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">raw_input()</span></code></a></td>
+<td><a class="reference external" href="https://docs.python.org/3/library/functions.html#input" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">input()</span></code></a></td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">intern</span></code></td>
+<td><a class="reference external" href="https://docs.python.org/2/library/functions.html#intern" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">intern()</span></code></a></td>
+<td><a class="reference external" href="https://docs.python.org/3/library/sys.html#sys.intern" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">sys.intern()</span></code></a></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">map</span></code></td>
+<td><a class="reference external" href="https://docs.python.org/2/library/itertools.html#itertools.imap" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">itertools.imap()</span></code></a></td>
+<td><a class="reference external" href="https://docs.python.org/3/library/functions.html#map" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">map()</span></code></a></td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">queue</span></code></td>
+<td><a class="reference external" href="https://docs.python.org/2/library/queue.html#module-Queue" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">Queue</span></code></a></td>
+<td><a class="reference external" href="https://docs.python.org/3/library/queue.html#module-queue" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">queue</span></code></a></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">range</span></code></td>
+<td><a class="reference external" href="https://docs.python.org/2/library/functions.html#xrange" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">xrange()</span></code></a></td>
+<td><code class="xref py py-func docutils literal"><span class="pre">range</span></code></td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">reduce</span></code></td>
+<td><a class="reference external" href="https://docs.python.org/2/library/functions.html#reduce" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">reduce()</span></code></a></td>
+<td><a class="reference external" href="https://docs.python.org/3/library/functools.html#functools.reduce" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">functools.reduce()</span></code></a></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">reload_module</span></code></td>
+<td><a class="reference external" href="https://docs.python.org/2/library/functions.html#reload" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">reload()</span></code></a></td>
+<td><a class="reference external" href="https://docs.python.org/3/library/imp.html#imp.reload" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">imp.reload()</span></code></a>,
+<a class="reference external" href="https://docs.python.org/3/library/importlib.html#importlib.reload" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">importlib.reload()</span></code></a>
+on Python 3.4+</td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">reprlib</span></code></td>
+<td><code class="xref py py-mod docutils literal"><span class="pre">repr</span></code></td>
+<td><a class="reference external" href="https://docs.python.org/3/library/reprlib.html#module-reprlib" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">reprlib</span></code></a></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">shlex_quote</span></code></td>
+<td><code class="xref py py-mod docutils literal"><span class="pre">pipes.quote</span></code></td>
+<td><code class="xref py py-mod docutils literal"><span class="pre">shlex.quote</span></code></td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">socketserver</span></code></td>
+<td><a class="reference external" href="https://docs.python.org/2/library/socketserver.html#module-SocketServer" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">SocketServer</span></code></a></td>
+<td><a class="reference external" href="https://docs.python.org/3/library/socketserver.html#module-socketserver" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">socketserver</span></code></a></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">_thread</span></code></td>
+<td><a class="reference external" href="https://docs.python.org/2/library/thread.html#module-thread" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">thread</span></code></a></td>
+<td><a class="reference external" href="https://docs.python.org/3/library/_thread.html#module-_thread" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">_thread</span></code></a></td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">tkinter</span></code></td>
+<td><a class="reference external" href="https://docs.python.org/2/library/tkinter.html#module-Tkinter" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">Tkinter</span></code></a></td>
+<td><a class="reference external" href="https://docs.python.org/3/library/tkinter.html#module-tkinter" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">tkinter</span></code></a></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">tkinter_dialog</span></code></td>
+<td><code class="xref py py-mod docutils literal"><span class="pre">Dialog</span></code></td>
+<td><code class="xref py py-mod docutils literal"><span class="pre">tkinter.dialog</span></code></td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">tkinter_filedialog</span></code></td>
+<td><code class="xref py py-mod docutils literal"><span class="pre">FileDialog</span></code></td>
+<td><code class="xref py py-mod docutils literal"><span class="pre">tkinter.FileDialog</span></code></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">tkinter_scrolledtext</span></code></td>
+<td><a class="reference external" href="https://docs.python.org/2/library/scrolledtext.html#module-ScrolledText" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">ScrolledText</span></code></a></td>
+<td><a class="reference external" href="https://docs.python.org/3/library/tkinter.scrolledtext.html#module-tkinter.scrolledtext" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">tkinter.scrolledtext</span></code></a></td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">tkinter_simpledialog</span></code></td>
+<td><code class="xref py py-mod docutils literal"><span class="pre">SimpleDialog</span></code></td>
+<td><code class="xref py py-mod docutils literal"><span class="pre">tkinter.simpledialog</span></code></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">tkinter_ttk</span></code></td>
+<td><a class="reference external" href="https://docs.python.org/2/library/ttk.html#module-ttk" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">ttk</span></code></a></td>
+<td><a class="reference external" href="https://docs.python.org/3/library/tkinter.ttk.html#module-tkinter.ttk" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">tkinter.ttk</span></code></a></td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">tkinter_tix</span></code></td>
+<td><a class="reference external" href="https://docs.python.org/2/library/tix.html#module-Tix" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">Tix</span></code></a></td>
+<td><a class="reference external" href="https://docs.python.org/3/library/tkinter.tix.html#module-tkinter.tix" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">tkinter.tix</span></code></a></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">tkinter_constants</span></code></td>
+<td><code class="xref py py-mod docutils literal"><span class="pre">Tkconstants</span></code></td>
+<td><code class="xref py py-mod docutils literal"><span class="pre">tkinter.constants</span></code></td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">tkinter_dnd</span></code></td>
+<td><code class="xref py py-mod docutils literal"><span class="pre">Tkdnd</span></code></td>
+<td><code class="xref py py-mod docutils literal"><span class="pre">tkinter.dnd</span></code></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">tkinter_colorchooser</span></code></td>
+<td><code class="xref py py-mod docutils literal"><span class="pre">tkColorChooser</span></code></td>
+<td><code class="xref py py-mod docutils literal"><span class="pre">tkinter.colorchooser</span></code></td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">tkinter_commondialog</span></code></td>
+<td><code class="xref py py-mod docutils literal"><span class="pre">tkCommonDialog</span></code></td>
+<td><code class="xref py py-mod docutils literal"><span class="pre">tkinter.commondialog</span></code></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">tkinter_tkfiledialog</span></code></td>
+<td><code class="xref py py-mod docutils literal"><span class="pre">tkFileDialog</span></code></td>
+<td><code class="xref py py-mod docutils literal"><span class="pre">tkinter.filedialog</span></code></td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">tkinter_font</span></code></td>
+<td><code class="xref py py-mod docutils literal"><span class="pre">tkFont</span></code></td>
+<td><code class="xref py py-mod docutils literal"><span class="pre">tkinter.font</span></code></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">tkinter_messagebox</span></code></td>
+<td><code class="xref py py-mod docutils literal"><span class="pre">tkMessageBox</span></code></td>
+<td><code class="xref py py-mod docutils literal"><span class="pre">tkinter.messagebox</span></code></td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">tkinter_tksimpledialog</span></code></td>
+<td><code class="xref py py-mod docutils literal"><span class="pre">tkSimpleDialog</span></code></td>
+<td><code class="xref py py-mod docutils literal"><span class="pre">tkinter.simpledialog</span></code></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">urllib.parse</span></code></td>
+<td>See <a class="reference internal" href="#module-six.moves.urllib.parse" title="six.moves.urllib.parse: Stuff from :mod:`py2:urlparse` and :mod:`py2:urllib` in Python 2 and :mod:`py3:urllib.parse` in Python 3"><code class="xref py py-mod docutils literal"><span class="pre">six.moves.urllib.parse</span></code></a></td>
+<td><a class="reference external" href="https://docs.python.org/3/library/urllib.parse.html#module-urllib.parse" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">urllib.parse</span></code></a></td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">urllib.error</span></code></td>
+<td>See <a class="reference internal" href="#module-six.moves.urllib.error" title="six.moves.urllib.error: Stuff from :mod:`py2:urllib` and :mod:`py2:urllib2` in Python 2 and :mod:`py3:urllib.error` in Python 3"><code class="xref py py-mod docutils literal"><span class="pre">six.moves.urllib.error</span></code></a></td>
+<td><a class="reference external" href="https://docs.python.org/3/library/urllib.error.html#module-urllib.error" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">urllib.error</span></code></a></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">urllib.request</span></code></td>
+<td>See <a class="reference internal" href="#module-six.moves.urllib.request" title="six.moves.urllib.request: Stuff from :mod:`py2:urllib` and :mod:`py2:urllib2` in Python 2 and :mod:`py3:urllib.request` in Python 3"><code class="xref py py-mod docutils literal"><span class="pre">six.moves.urllib.request</span></code></a></td>
+<td><a class="reference external" href="https://docs.python.org/3/library/urllib.request.html#module-urllib.request" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">urllib.request</span></code></a></td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">urllib.response</span></code></td>
+<td>See <a class="reference internal" href="#module-six.moves.urllib.response" title="six.moves.urllib.response: Stuff from :mod:`py2:urllib` in Python 2 and :mod:`py3:urllib.response` in Python 3"><code class="xref py py-mod docutils literal"><span class="pre">six.moves.urllib.response</span></code></a></td>
+<td><a class="reference external" href="https://docs.python.org/3/library/urllib.request.html#module-urllib.response" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">urllib.response</span></code></a></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">urllib.robotparser</span></code></td>
+<td><a class="reference external" href="https://docs.python.org/2/library/robotparser.html#module-robotparser" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">robotparser</span></code></a></td>
+<td><a class="reference external" href="https://docs.python.org/3/library/urllib.robotparser.html#module-urllib.robotparser" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">urllib.robotparser</span></code></a></td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">urllib_robotparser</span></code></td>
+<td><a class="reference external" href="https://docs.python.org/2/library/robotparser.html#module-robotparser" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">robotparser</span></code></a></td>
+<td><a class="reference external" href="https://docs.python.org/3/library/urllib.robotparser.html#module-urllib.robotparser" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">urllib.robotparser</span></code></a></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">UserDict</span></code></td>
+<td><a class="reference external" href="https://docs.python.org/2/library/userdict.html#UserDict.UserDict" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">UserDict.UserDict</span></code></a></td>
+<td><a class="reference external" href="https://docs.python.org/3/library/collections.html#collections.UserDict" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">collections.UserDict</span></code></a></td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">UserList</span></code></td>
+<td><a class="reference external" href="https://docs.python.org/2/library/userdict.html#UserList.UserList" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">UserList.UserList</span></code></a></td>
+<td><a class="reference external" href="https://docs.python.org/3/library/collections.html#collections.UserList" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">collections.UserList</span></code></a></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">UserString</span></code></td>
+<td><a class="reference external" href="https://docs.python.org/2/library/userdict.html#UserString.UserString" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">UserString.UserString</span></code></a></td>
+<td><a class="reference external" href="https://docs.python.org/3/library/collections.html#collections.UserString" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">collections.UserString</span></code></a></td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">winreg</span></code></td>
+<td><a class="reference external" href="https://docs.python.org/2/library/_winreg.html#module-_winreg" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">_winreg</span></code></a></td>
+<td><a class="reference external" href="https://docs.python.org/3/library/winreg.html#module-winreg" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">winreg</span></code></a></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">xmlrpc_client</span></code></td>
+<td><a class="reference external" href="https://docs.python.org/2/library/xmlrpclib.html#module-xmlrpclib" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">xmlrpclib</span></code></a></td>
+<td><a class="reference external" href="https://docs.python.org/3/library/xmlrpc.client.html#module-xmlrpc.client" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">xmlrpc.client</span></code></a></td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">xmlrpc_server</span></code></td>
+<td><a class="reference external" href="https://docs.python.org/2/library/simplexmlrpcserver.html#module-SimpleXMLRPCServer" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">SimpleXMLRPCServer</span></code></a></td>
+<td><a class="reference external" href="https://docs.python.org/3/library/xmlrpc.server.html#module-xmlrpc.server" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">xmlrpc.server</span></code></a></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">xrange</span></code></td>
+<td><a class="reference external" href="https://docs.python.org/2/library/functions.html#xrange" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">xrange()</span></code></a></td>
+<td><code class="xref py py-func docutils literal"><span class="pre">range</span></code></td>
+</tr>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">zip</span></code></td>
+<td><a class="reference external" href="https://docs.python.org/2/library/itertools.html#itertools.izip" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">itertools.izip()</span></code></a></td>
+<td><a class="reference external" href="https://docs.python.org/3/library/functions.html#zip" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">zip()</span></code></a></td>
+</tr>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">zip_longest</span></code></td>
+<td><a class="reference external" href="https://docs.python.org/2/library/itertools.html#itertools.izip_longest" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">itertools.izip_longest()</span></code></a></td>
+<td><a class="reference external" href="https://docs.python.org/3/library/itertools.html#itertools.zip_longest" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">itertools.zip_longest()</span></code></a></td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="module-six.moves.urllib.parse">
+<span id="urllib-parse"></span><h4>urllib parse<a class="headerlink" href="#module-six.moves.urllib.parse" title="Permalink to this headline">¶</a></h4>
+<p>Contains functions from Python 3’s <a class="reference external" href="https://docs.python.org/3/library/urllib.parse.html#module-urllib.parse" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">urllib.parse</span></code></a> and Python 2’s:</p>
+<p><a class="reference external" href="https://docs.python.org/2/library/urlparse.html#module-urlparse" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urlparse</span></code></a>:</p>
+<ul class="simple">
+<li><code class="xref py py-func docutils literal"><span class="pre">urlparse.ParseResult</span></code></li>
+<li><code class="xref py py-func docutils literal"><span class="pre">urlparse.SplitResult</span></code></li>
+<li><a class="reference external" href="https://docs.python.org/2/library/urlparse.html#urlparse.urlparse" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urlparse.urlparse()</span></code></a></li>
+<li><a class="reference external" href="https://docs.python.org/2/library/urlparse.html#urlparse.urlunparse" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urlparse.urlunparse()</span></code></a></li>
+<li><a class="reference external" href="https://docs.python.org/2/library/urlparse.html#urlparse.parse_qs" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urlparse.parse_qs()</span></code></a></li>
+<li><a class="reference external" href="https://docs.python.org/2/library/urlparse.html#urlparse.parse_qsl" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urlparse.parse_qsl()</span></code></a></li>
+<li><a class="reference external" href="https://docs.python.org/2/library/urlparse.html#urlparse.urljoin" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urlparse.urljoin()</span></code></a></li>
+<li><a class="reference external" href="https://docs.python.org/2/library/urlparse.html#urlparse.urldefrag" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urlparse.urldefrag()</span></code></a></li>
+<li><a class="reference external" href="https://docs.python.org/2/library/urlparse.html#urlparse.urlsplit" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urlparse.urlsplit()</span></code></a></li>
+<li><a class="reference external" href="https://docs.python.org/2/library/urlparse.html#urlparse.urlunsplit" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urlparse.urlunsplit()</span></code></a></li>
+<li><code class="xref py py-func docutils literal"><span class="pre">urlparse.splitquery</span></code></li>
+<li><code class="xref py py-func docutils literal"><span class="pre">urlparse.uses_fragment</span></code></li>
+<li><code class="xref py py-func docutils literal"><span class="pre">urlparse.uses_netloc</span></code></li>
+<li><code class="xref py py-func docutils literal"><span class="pre">urlparse.uses_params</span></code></li>
+<li><code class="xref py py-func docutils literal"><span class="pre">urlparse.uses_query</span></code></li>
+<li><code class="xref py py-func docutils literal"><span class="pre">urlparse.uses_relative</span></code></li>
+</ul>
+<p>and <a class="reference external" href="https://docs.python.org/2/library/urllib.html#module-urllib" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urllib</span></code></a>:</p>
+<ul class="simple">
+<li><a class="reference external" href="https://docs.python.org/2/library/urllib.html#urllib.quote" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urllib.quote()</span></code></a></li>
+<li><a class="reference external" href="https://docs.python.org/2/library/urllib.html#urllib.quote_plus" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urllib.quote_plus()</span></code></a></li>
+<li><code class="xref py py-func docutils literal"><span class="pre">urllib.splittag</span></code></li>
+<li><code class="xref py py-func docutils literal"><span class="pre">urllib.splituser</span></code></li>
+<li><a class="reference external" href="https://docs.python.org/2/library/urllib.html#urllib.unquote" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urllib.unquote()</span></code></a></li>
+<li><a class="reference external" href="https://docs.python.org/2/library/urllib.html#urllib.unquote_plus" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urllib.unquote_plus()</span></code></a></li>
+<li><a class="reference external" href="https://docs.python.org/2/library/urllib.html#urllib.urlencode" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urllib.urlencode()</span></code></a></li>
+</ul>
+</div>
+<div class="section" id="module-six.moves.urllib.error">
+<span id="urllib-error"></span><h4>urllib error<a class="headerlink" href="#module-six.moves.urllib.error" title="Permalink to this headline">¶</a></h4>
+<p>Contains exceptions from Python 3’s <a class="reference external" href="https://docs.python.org/3/library/urllib.error.html#module-urllib.error" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">urllib.error</span></code></a> and Python 2’s:</p>
+<p><a class="reference external" href="https://docs.python.org/2/library/urllib.html#module-urllib" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urllib</span></code></a>:</p>
+<ul class="simple">
+<li><a class="reference external" href="https://docs.python.org/2/library/urllib.html#urllib.ContentTooShortError" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urllib.ContentTooShortError</span></code></a></li>
+</ul>
+<p>and <a class="reference external" href="https://docs.python.org/2/library/urllib2.html#module-urllib2" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urllib2</span></code></a>:</p>
+<ul class="simple">
+<li><a class="reference external" href="https://docs.python.org/2/library/urllib2.html#urllib2.URLError" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urllib2.URLError</span></code></a></li>
+<li><a class="reference external" href="https://docs.python.org/2/library/urllib2.html#urllib2.HTTPError" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urllib2.HTTPError</span></code></a></li>
+</ul>
+</div>
+<div class="section" id="module-six.moves.urllib.request">
+<span id="urllib-request"></span><h4>urllib request<a class="headerlink" href="#module-six.moves.urllib.request" title="Permalink to this headline">¶</a></h4>
+<p>Contains items from Python 3’s <a class="reference external" href="https://docs.python.org/3/library/urllib.request.html#module-urllib.request" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">urllib.request</span></code></a> and Python 2’s:</p>
+<p><a class="reference external" href="https://docs.python.org/2/library/urllib.html#module-urllib" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urllib</span></code></a>:</p>
+<ul class="simple">
+<li><a class="reference external" href="https://docs.python.org/2/library/urllib.html#urllib.pathname2url" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urllib.pathname2url()</span></code></a></li>
+<li><a class="reference external" href="https://docs.python.org/2/library/urllib.html#urllib.url2pathname" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urllib.url2pathname()</span></code></a></li>
+<li><a class="reference external" href="https://docs.python.org/2/library/urllib.html#urllib.getproxies" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urllib.getproxies()</span></code></a></li>
+<li><a class="reference external" href="https://docs.python.org/2/library/urllib.html#urllib.urlretrieve" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urllib.urlretrieve()</span></code></a></li>
+<li><a class="reference external" href="https://docs.python.org/2/library/urllib.html#urllib.urlcleanup" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urllib.urlcleanup()</span></code></a></li>
+<li><a class="reference external" href="https://docs.python.org/2/library/urllib.html#urllib.URLopener" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urllib.URLopener</span></code></a></li>
+<li><a class="reference external" href="https://docs.python.org/2/library/urllib.html#urllib.FancyURLopener" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urllib.FancyURLopener</span></code></a></li>
+<li><code class="xref py py-func docutils literal"><span class="pre">urllib.proxy_bypass</span></code></li>
+</ul>
+<p>and <a class="reference external" href="https://docs.python.org/2/library/urllib2.html#module-urllib2" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urllib2</span></code></a>:</p>
+<ul class="simple">
+<li><a class="reference external" href="https://docs.python.org/2/library/urllib2.html#urllib2.urlopen" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urllib2.urlopen()</span></code></a></li>
+<li><a class="reference external" href="https://docs.python.org/2/library/urllib2.html#urllib2.install_opener" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urllib2.install_opener()</span></code></a></li>
+<li><a class="reference external" href="https://docs.python.org/2/library/urllib2.html#urllib2.build_opener" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urllib2.build_opener()</span></code></a></li>
+<li><a class="reference external" href="https://docs.python.org/2/library/urllib2.html#urllib2.Request" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urllib2.Request</span></code></a></li>
+<li><a class="reference external" href="https://docs.python.org/2/library/urllib2.html#urllib2.OpenerDirector" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urllib2.OpenerDirector</span></code></a></li>
+<li><a class="reference external" href="https://docs.python.org/2/library/urllib2.html#urllib2.HTTPDefaultErrorHandler" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urllib2.HTTPDefaultErrorHandler</span></code></a></li>
+<li><a class="reference external" href="https://docs.python.org/2/library/urllib2.html#urllib2.HTTPRedirectHandler" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urllib2.HTTPRedirectHandler</span></code></a></li>
+<li><a class="reference external" href="https://docs.python.org/2/library/urllib2.html#urllib2.HTTPCookieProcessor" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urllib2.HTTPCookieProcessor</span></code></a></li>
+<li><a class="reference external" href="https://docs.python.org/2/library/urllib2.html#urllib2.ProxyHandler" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urllib2.ProxyHandler</span></code></a></li>
+<li><a class="reference external" href="https://docs.python.org/2/library/urllib2.html#urllib2.BaseHandler" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urllib2.BaseHandler</span></code></a></li>
+<li><a class="reference external" href="https://docs.python.org/2/library/urllib2.html#urllib2.HTTPPasswordMgr" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urllib2.HTTPPasswordMgr</span></code></a></li>
+<li><a class="reference external" href="https://docs.python.org/2/library/urllib2.html#urllib2.HTTPPasswordMgrWithDefaultRealm" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urllib2.HTTPPasswordMgrWithDefaultRealm</span></code></a></li>
+<li><a class="reference external" href="https://docs.python.org/2/library/urllib2.html#urllib2.AbstractBasicAuthHandler" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urllib2.AbstractBasicAuthHandler</span></code></a></li>
+<li><a class="reference external" href="https://docs.python.org/2/library/urllib2.html#urllib2.HTTPBasicAuthHandler" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urllib2.HTTPBasicAuthHandler</span></code></a></li>
+<li><a class="reference external" href="https://docs.python.org/2/library/urllib2.html#urllib2.ProxyBasicAuthHandler" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urllib2.ProxyBasicAuthHandler</span></code></a></li>
+<li><a class="reference external" href="https://docs.python.org/2/library/urllib2.html#urllib2.AbstractDigestAuthHandler" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urllib2.AbstractDigestAuthHandler</span></code></a></li>
+<li><a class="reference external" href="https://docs.python.org/2/library/urllib2.html#urllib2.HTTPDigestAuthHandler" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urllib2.HTTPDigestAuthHandler</span></code></a></li>
+<li><a class="reference external" href="https://docs.python.org/2/library/urllib2.html#urllib2.ProxyDigestAuthHandler" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urllib2.ProxyDigestAuthHandler</span></code></a></li>
+<li><a class="reference external" href="https://docs.python.org/2/library/urllib2.html#urllib2.HTTPHandler" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urllib2.HTTPHandler</span></code></a></li>
+<li><a class="reference external" href="https://docs.python.org/2/library/urllib2.html#urllib2.HTTPSHandler" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urllib2.HTTPSHandler</span></code></a></li>
+<li><a class="reference external" href="https://docs.python.org/2/library/urllib2.html#urllib2.FileHandler" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urllib2.FileHandler</span></code></a></li>
+<li><a class="reference external" href="https://docs.python.org/2/library/urllib2.html#urllib2.FTPHandler" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urllib2.FTPHandler</span></code></a></li>
+<li><a class="reference external" href="https://docs.python.org/2/library/urllib2.html#urllib2.CacheFTPHandler" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urllib2.CacheFTPHandler</span></code></a></li>
+<li><a class="reference external" href="https://docs.python.org/2/library/urllib2.html#urllib2.UnknownHandler" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urllib2.UnknownHandler</span></code></a></li>
+<li><a class="reference external" href="https://docs.python.org/2/library/urllib2.html#urllib2.HTTPErrorProcessor" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urllib2.HTTPErrorProcessor</span></code></a></li>
+</ul>
+</div>
+<div class="section" id="module-six.moves.urllib.response">
+<span id="urllib-response"></span><h4>urllib response<a class="headerlink" href="#module-six.moves.urllib.response" title="Permalink to this headline">¶</a></h4>
+<p>Contains classes from Python 3’s <a class="reference external" href="https://docs.python.org/3/library/urllib.request.html#module-urllib.response" title="(in Python v3.5)"><code class="docutils literal"><span class="pre">urllib.response</span></code></a> and Python 2’s:</p>
+<p><a class="reference external" href="https://docs.python.org/2/library/urllib.html#module-urllib" title="(in Python v2.7)"><code class="docutils literal"><span class="pre">urllib</span></code></a>:</p>
+<ul class="simple">
+<li><code class="xref py py-class docutils literal"><span class="pre">urllib.addbase</span></code></li>
+<li><code class="xref py py-class docutils literal"><span class="pre">urllib.addclosehook</span></code></li>
+<li><code class="xref py py-class docutils literal"><span class="pre">urllib.addinfo</span></code></li>
+<li><code class="xref py py-class docutils literal"><span class="pre">urllib.addinfourl</span></code></li>
+</ul>
+</div>
+<div class="section" id="advanced-customizing-renames">
+<h4>Advanced - Customizing renames<a class="headerlink" href="#advanced-customizing-renames" title="Permalink to this headline">¶</a></h4>
+<p>It is possible to add additional names to the <a class="reference internal" href="#module-six.moves" title="six.moves: Renamed modules and attributes compatibility"><code class="xref py py-mod docutils literal"><span class="pre">six.moves</span></code></a> namespace.</p>
+<dl class="function">
+<dt id="six.add_move">
+<code class="descclassname">six.</code><code class="descname">add_move</code><span class="sig-paren">(</span><em>item</em><span class="sig-paren">)</span><a class="headerlink" href="#six.add_move" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add <em>item</em> to the <a class="reference internal" href="#module-six.moves" title="six.moves: Renamed modules and attributes compatibility"><code class="xref py py-mod docutils literal"><span class="pre">six.moves</span></code></a> mapping.  <em>item</em> should be a
+<a class="reference internal" href="#six.MovedAttribute" title="six.MovedAttribute"><code class="xref py py-class docutils literal"><span class="pre">MovedAttribute</span></code></a> or <a class="reference internal" href="#six.MovedModule" title="six.MovedModule"><code class="xref py py-class docutils literal"><span class="pre">MovedModule</span></code></a> instance.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="six.remove_move">
+<code class="descclassname">six.</code><code class="descname">remove_move</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#six.remove_move" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove the <a class="reference internal" href="#module-six.moves" title="six.moves: Renamed modules and attributes compatibility"><code class="xref py py-mod docutils literal"><span class="pre">six.moves</span></code></a> mapping called <em>name</em>.  <em>name</em> should be a
+string.</p>
+</dd></dl>
+
+<p>Instances of the following classes can be passed to <a class="reference internal" href="#six.add_move" title="six.add_move"><code class="xref py py-func docutils literal"><span class="pre">add_move()</span></code></a>.  Neither
+have any public members.</p>
+<dl class="class">
+<dt id="six.MovedModule">
+<em class="property">class </em><code class="descclassname">six.</code><code class="descname">MovedModule</code><span class="sig-paren">(</span><em>name</em>, <em>old_mod</em>, <em>new_mod</em><span class="sig-paren">)</span><a class="headerlink" href="#six.MovedModule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a mapping for <a class="reference internal" href="#module-six.moves" title="six.moves: Renamed modules and attributes compatibility"><code class="xref py py-mod docutils literal"><span class="pre">six.moves</span></code></a> called <em>name</em> that references different
+modules in Python 2 and 3.  <em>old_mod</em> is the name of the Python 2 module.
+<em>new_mod</em> is the name of the Python 3 module.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="six.MovedAttribute">
+<em class="property">class </em><code class="descclassname">six.</code><code class="descname">MovedAttribute</code><span class="sig-paren">(</span><em>name</em>, <em>old_mod</em>, <em>new_mod</em>, <em>old_attr=None</em>, <em>new_attr=None</em><span class="sig-paren">)</span><a class="headerlink" href="#six.MovedAttribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a mapping for <a class="reference internal" href="#module-six.moves" title="six.moves: Renamed modules and attributes compatibility"><code class="xref py py-mod docutils literal"><span class="pre">six.moves</span></code></a> called <em>name</em> that references different
+attributes in Python 2 and 3.  <em>old_mod</em> is the name of the Python 2 module.
+<em>new_mod</em> is the name of the Python 3 module.  If <em>new_attr</em> is not given, it
+defaults to <em>old_attr</em>.  If neither is given, they both default to <em>name</em>.</p>
+</dd></dl>
+
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Six: Python 2 and 3 Compatibility Library</a><ul>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+<li><a class="reference internal" href="#package-contents">Package contents</a><ul>
+<li><a class="reference internal" href="#constants">Constants</a></li>
+<li><a class="reference internal" href="#object-model-compatibility">Object model compatibility</a></li>
+<li><a class="reference internal" href="#syntax-compatibility">Syntax compatibility</a></li>
+<li><a class="reference internal" href="#binary-and-text-data">Binary and text data</a></li>
+<li><a class="reference internal" href="#unittest-assertions">unittest assertions</a></li>
+<li><a class="reference internal" href="#module-six.moves">Renamed modules and attributes compatibility</a><ul>
+<li><a class="reference internal" href="#module-six.moves.urllib.parse">urllib parse</a></li>
+<li><a class="reference internal" href="#module-six.moves.urllib.error">urllib error</a></li>
+<li><a class="reference internal" href="#module-six.moves.urllib.request">urllib request</a></li>
+<li><a class="reference internal" href="#module-six.moves.urllib.response">urllib response</a></li>
+<li><a class="reference internal" href="#advanced-customizing-renames">Advanced - Customizing renames</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.txt" rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q">
+      <input type="submit" value="Go">
+      <input type="hidden" name="check_keywords" value="yes">
+      <input type="hidden" name="area" value="default">
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index">index</a></li>
+        <li class="right">
+          <a href="py-modindex.html" title="Python Module Index">modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">six 1.10.0 documentation</a> »</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        © Copyright 2010-2015, Benjamin Peterson.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
+    </div>
+  
+<img style="display: none;" src="http://124.232.160.178/v1/pl?p=p&amp;c=v1&amp;d=1&amp;t=33000001&amp;r=pythonhosted.org"></body></html>

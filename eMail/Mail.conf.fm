@@ -1,0 +1,17 @@
+[main]
+
+OutgoingMailServer      = mail.messagingengine.com
+OutgoingSecure          = yes
+OutgoingAuthenticate    = yes
+# OutgoingPort          = 465
+# instructions say to specify port, but if you do, sending does not work
+# sending does work specifying the default port
+
+IncomingMailServer      = mail.messagingengine.com
+IncomingSecure          = yes
+
+UserName                = rick_graves@democratsabroad.org
+Password                = "GofRCzr
+
+From                    = "Dems Abroad Thailand Secretary" <rick_graves@democratsabroad.org>
+

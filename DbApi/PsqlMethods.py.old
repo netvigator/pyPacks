@@ -1,0 +1,286 @@
+# PsqlMethods
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Library General Public License for more details.
+#
+# The GNU General Public License is available from:
+#   The Free Software Foundation, Inc.
+#   59 Temple Place - Suite 330
+#   Boston, MA 02111-1307, USA
+#
+#   http://www.gnu.org/licenses/gpl.html
+#
+# Copyright 2004-2006 Rick Graves
+#
+
+
+
+
+def GetConnected( sConfigFile = 'DbApiTest.conf' ):
+    #
+    from socket import gethostname
+    #
+    from DbApi.Connect  import GetConf
+    try:
+        from _pg    import connect # redundant, but allows calling this separately
+    except:
+        pass
+    #
+    sLocalHost          = gethostname()
+    #
+    if sLocalHost.startswith( 'RoboCop' ): 
+        #
+        sLocalHost      = sLocalHost.lower()
+        #
+    else:
+        #
+        sLocalHost      = None
+        #
+    #
+    oConnection         = None
+    #
+    oConf, oDbApi = GetConf( sConfigFile )
+    #
+    sHost       = oConf.get( 'main', 'sHost' )
+    #
+    try:                # ([dbname], [host],    [port], [opt], [tty], [user], [passwd])
+        oConnection     = connect( "proxy", sHost, -1, None, None, sLocalHost )
+    except:
+        pass
+    #
+    return oConnection
+
+
+
+
+
+def InetCast( sDotQuad ):
+    #
+    from String.Get import GetInSingleQuotes
+    #
+    return "INET %s" % GetInSingleQuotes( sDotQuad )
+
+
+def GetDictListResult( sQuery, oConnection ):
+    #
+    import pg
+    #
+    try:
+        return oConnection.query( sQuery ).dictresult()
+    except pg.ProgrammingError, e:
+        oConnection = GetConnected()
+        try:
+            return oConnection.query( sQuery ).dictresult()
+        except pg.ProgrammingError, e:
+            print "Query error!,", e
+            print sQuery
+            return []
+
+
+
+def GetDictListResultOrError( sQuery, oConnection ):
+    #
+    try:
+        return oConnection.query( sQuery ).dictresult(), 0
+    except:
+        return [], 1
+
+
+def GetAggQueryResultOrError( sQuery, oConnection ):
+    #
+    iAgg        = -1
+    bError      =  0
+    #
+    try:
+        #
+        lAgg    = oConnection.query( sQuery ).dictresult()
+        #
+        dAgg    = lAgg[0]
+        #
+        for sAgg in ( 'count', 'min', 'max', 'sum', 'avg' ):
+            #
+            if sAgg in dAgg:
+                #
+                iAgg = dAgg[ sAgg ]
+                #
+                break
+                #
+            #
+            #
+    except:
+        # print "Query error!"
+        # print sQuery
+        bError = 1
+    #
+    return iAgg, bError
+
+
+def GetAggQueryResult( sQuery, oConnection ):
+    #
+    iAgg, bError = GetAggQueryResultOrError( sQuery, oConnection )
+    #
+    if bError:
+        print "Query error!"
+        print sQuery
+    #
+    return iAgg
+
+
+
+def GetQueryCountOrError( sQuery, oConnection ):
+    #
+    return GetAggQueryResultOrError( sQuery, oConnection )
+
+
+
+def GetQueryCount( sQuery, oConnection ):
+    #
+    return GetAggQueryResult( sQuery, oConnection )
+
+
+
+def NoListBackQuery( sQuery, oConnection ):
+    #
+    try:
+        oConnection.query( sQuery )
+    except:
+        print "Query error!"
+        print sQuery
+
+
+def GetResultBackQuery( sQuery, oConnection ):
+    #
+    bQueryOK        = 1
+    #
+    try:
+        oConnection.query( sQuery )
+    except:
+        bQueryOK    = 0
+    #
+    return bQueryOK
+
+
+def NoListBackQueryNoErrorMsg( sQuery, oConnection ):
+    #
+    try:
+        oConnection.query( sQuery )
+    except:
+        pass
+
+
+def NoListBackQueryOrError( sQuery, oConnection ):
+    #
+    bError = 0
+    #
+    try:
+        oConnection.query( sQuery )
+    except:
+        bError = 1
+    #
+    return bError
+
+
+def GetBoolean( bValue ):
+    #
+    if bValue is None:
+        sReturn = "'Null'"
+    if bValue:  # true
+        sReturn = "'1'"
+    else:
+        sReturn = "'0'"
+    #
+    return sReturn
+
+
+
+
+def GetCastDateTimeFromStr( sWhen ):
+    #
+    from String.Get import GetInSingleQuotes
+    #
+    return "TIMESTAMP %s" % GetInSingleQuotes( sWhen )
+
+
+
+def GetCastNowPlus( iDays = 0, iHours = 0, iMins = 0, iSecs = 0 ):
+    #
+    from Time.Delta     import GetIsoDateTimeNowPlus
+    #
+    sWhen   = GetIsoDateTimeNowPlus( iDays, iHours, iMins, iSecs )
+    #
+    return GetCastDateTimeFromStr( sWhen )
+
+
+
+def GetCastDateTimeFromSecs( tSecsSinceEpoch ):
+    #
+    from Time.Convert   import GetIsoDateTimeStrFromSecs
+    #
+    sWhen = GetIsoDateTimeStrFromSecs( tSecsSinceEpoch )
+    #
+    return GetCastDateTimeFromStr( sWhen )
+
+
+
+
+
+def GetCommitRecycleOK( oDBConnect, iVerbosity ):
+    #
+    from Time.Output    import SayLocalTimeOnly
+    #
+    sSayRecycle         = "updated recycled records OK"
+    #
+    bGotError           = NoListBackQueryOrError( 'commit work', oDBConnect )
+    #
+    if bGotError:
+        #
+        sSayRecycle     = "got *error* while trying to recycle records!!!"
+        #
+    #
+    if iVerbosity > 7 or bGotError: print SayLocalTimeOnly(), sSayRecycle
+    #
+    bOK                 = not bGotError
+    #
+    return bOK
+
+
+
+def TimeQuery( sQuery ):
+    #
+    pass
+
+
+
+
+def GetTestConnection(
+        oDBConnect  = None,
+        sTestQuery  = 'select count(*) from blockpage',
+        sConfigFile = 'DbApiTest.conf' ):
+    #
+    for iThis in range( 5 ):
+        #
+        iCount, bError = GetAggQueryResultOrError( sTestQuery, oDBConnect )
+        #
+        if bError:
+            #
+            oDBConnect  = None
+            #
+            oDBConnect  = GetConnected( sConfigFile )
+            #
+            continue
+            #
+        if oDBConnect:
+            #
+            break
+        #
+    #
+    return oDBConnect
+
+

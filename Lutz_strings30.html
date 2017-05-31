@@ -1,0 +1,1496 @@
+<HTML><BODY>
+
+<HR>
+<H1>Strings in 3.0: Unicode and Binary Data</H1>
+
+
+<p>
+One of the most noticeable changes in 3.0 is the mutation of string
+object types.  In a nutshell, 2.X's <B>str</B> + <B>unicode</B> types 
+morph into 3.0's <B>str</B> + <B>bytes</B> types, along with a new 
+<B>bytearray</B> type.  Especially if you process data that is either
+Unicode or binary in nature, this can have substantial impacts
+on your code.  In fact, as a general rule of thumb, how much you need
+to care about this topic depends in large part upon which of the 
+following categories you fall into:
+
+<OL>
+<LI>
+If you deal with non-ASCII Unicode data -- for instance, in the context 
+of internationalized applications and some XML parsers -- you will find 
+support for text encodings to be different in 3.0, but also probably
+more direct, accessible, and seamless than in 2.6.<br><br>
+
+<LI>
+If you deal with binary data -- for example, in the form of image or 
+audio files, or packed data processed with the struct module -- you will
+need to understand 3.0's new bytes object, and its different and sharper 
+distinction between text and binary data and files.<br><br>
+
+<LI>
+If you fall into neither of the prior two categories, you can generally 
+use strings in 3.0 much as you would in 2.6: with the general str string type,
+text files, and all the familiar string operations.  Your strings will be 
+encoded and decoded using your platform's default encoding (e.g., 'ascii', 
+or 'uft-8' on Windows in the US -- sys.getdefaultencoding() gives your default), 
+but you probably won't notice.
+</OL>
+
+<p>
+In other words, if your text is always ASCII, you can get by with normal
+string objects and text files, and can avoid most of the following 
+story.  As we'll see in a moment, ASCII is a simple kind of Unicode and a 
+subset of other encodings, so string operations and files "just work" if
+your programs process ASCII text.  Even if you fall into the last category 
+above, though, a basic understanding of 3.0's string model can help, both 
+to demystify some of the underlying details now, and to help you master 
+Unicode or binary data issues if they impact you in the future.
+
+
+
+
+
+<H2>The Basics</H2>
+<p>
+Before looking at code, let's begin with a general overview of the 3.0 
+string model.  To understand why 3.0 went the way it did, we have to start
+with a brief look at how characters are actually represented in computers.
+
+
+
+
+<H3>Character encoding schemes</H3>
+
+<p>
+Most programmers think of strings as a series of characters used to represent 
+textual data.  The way characters are stored in a computer's memory can vary,
+though, depending on what sort of character set must be recorded.  For many
+programmers in the US, the ASCII standard defines their notion of strings.
+ASCII is a standard created in the US, which defines character codes 0..127, 
+and thus allows each character to be stored in one 8-bit byte.  For example, 
+the ASCII standard maps character 'a' to the integer value 97 (61 in hex), 
+which is stored in a single byte in memory and on files.  If you wish to 
+check, Python's ord() gives the binary value for a character, and chr() 
+returns the character for a given integer code value:
+
+<pre>
+>>> ord('a')
+97
+>>> hex(97)
+'0x61'
+>>> chr(97)
+'a'
+</pre>
+
+<P>
+Sometimes this isn't enough, though.  Various symbols and accented characters
+do not fit into the range of possible characters in ASCII.  To allow for some
+special characters, some standards allow all possible values in an 8-bit byte,
+0..255, to represent characters, and assign values 128..255 to special characters.
+One such standard is known as "Latin-1", and is widely used in Western Europe.
+In latin-1, character codes above 127 are assigned to accented, and otherwise
+special characters.  The character assigned to byte calue 196, for example, 
+is a specially-marked and non-ASCII character:
+
+<pre>
+>>> 0xC4
+196
+>>> chr(196)
+'Ä'
+</pre>
+
+Still, some alphabets define so many characters that it is impossible to represent 
+them as one byte per character at all.
+Unicode text allows more flexibility.  It is commonly referred to as "wide-character"
+strings, because each character may be represented with multiple bytes.  Unicode is 
+typically used in internationalized programs, to represent European and Asian 
+character sets that have more characters than 8-bit bytes can represent.  We say 
+that characters are translated to and from raw bytes using an <i><B>encoding</B></i> -- 
+the rules for translating a Unicode string into a sequence of bytes, and extracting
+the string from a sequence of bytes.  More procedurally, this translation back and 
+forth between bytes and strings is defined by two terms:
+
+<UL>
+<LI><i>Encoding</i> is the process of translating a string of characters into 
+its raw bytes form, according to a desired encoding name.<br><br>
+
+<LI><i>Decoding</i> is the process of translating a raw string of bytes into
+is character string form, according to its encoding name.
+</UL>
+
+<p>
+For some enodings, the translation process is trivial -- ASCII and latin-1, for
+instance, map each character to a single byte, so no work is required.  For other
+encodings, the mapping can be more complex, and yield multiple bytes per character.
+
+<p>
+The widely used "UTF-8" encoding, for example, allows more characters to be 
+represented by employing a variable number of bytes scheme.  Character codes < 128
+are represented as a single byte; codes between 128 and 0x7ff (2047) are turned 
+into two bytes, where each byte has a value between 128 and 255; and codes above 
+0x7ff are turned into three- or four-byte sequences having values between 128 and 255.
+This keeps simple ASCII strings compact, sidesteps byte ordering issues, and avoids
+null (zero) bytes that can cause problems for C libraries and networking.
+
+<p>
+Because encodings' character maps assign characters to the same codes for compatibility, 
+ASCII is a subset of both Latin-1 and UTF-8; that is, a valid ASCII character string is 
+also a valid Latin-1 and UTF-8 encoded string.  This is also true when the data is 
+stored in files: every ASCII file is a valid UTF-8 file, because ASCII is a 7-bit subset
+of UTF-8.  Conversely, the UTF-8 encoding is binary compatible with ASCII for all
+character codes less than 128.  Latin-1 and UTF-8 simply allow for additional characters: 
+Latin-1 for characters mapped to values 128..255 within a byte, and UTF-8 for characters 
+that may be represented with multiple bytes.  Other encodings allow wider character 
+sets in similar ways, but all of these -- ASCII, Latin-1, UTF-8, and many others -- are 
+considered to be Unicode.
+
+<p>
+To Python programmers, encodings are specified as strings containing the encoding’s 
+name.  Python comes with roughly 100 different encodings; see the Python Library 
+Reference for a list.  Importing module "encodings" and asking for "help(encodings)"
+show you many as well; some are implemented in Python, and some in C.  Some encodings
+have multiple names too; for example, ‘latin-1’, ‘iso_8859_1’ and ‘8859’ are all 
+synonyms for the same encoding, Latin-1.  We'll revisit encodings later in this section, 
+when we study Unicode coding techniques.
+
+<p>
+For much more on the Unicode story, see the Python standard manual set.  It includes
+a "Unicode HOWTO" in its "Python HOWTOs" section which provides additional background
+which we will skip here in the interest of space.
+
+
+
+
+
+<h3>Python's string types</h3>
+
+<p>
+At a more concrete level, the Python language provides string data types represent
+character text in your script.  Python 2.X has a general string type for representing
+both normal 8-bit character text like ASCII and binary data, along with a specific 
+type for representing multi-byte Unicode text:
+
+<UL>
+<LI><B>str</B> -- for representing 8-bit text, and binary data
+<LI><B>unicode</B> -- for representing wide-character Unicode text
+</UL>
+
+Python 2.X's two string types are different (unicode allows for the extra size of 
+characters, and has extra support for encoding and decoding), but their operation 
+sets largely overlap.  The str string type in 2.X represents both text that can be
+represented with 8-bit bytes, as well as binary data.
+
+<p>
+By contrast, Python 3.0 comes with 3 string object types:
+
+<UL>
+<LI><B>str</B> -- for representing Unicode text (both 8-bit and wide)
+<LI><B>bytes</B> -- for representing binary data
+<LI><B>bytearray</B> -- a mutable flavor of the bytes type
+</UL>
+
+All 3 types support similar operation sets, but have different roles.
+The main goal behind this change was to merge the normal and Unicode 
+string types of 2.X into a single string type that supports both normal
+and Unicode text.  Developers wanted to removing the 2.X string dichotomy, 
+and make Unicode processing more natural.  
+
+<p>
+To achieve this, the 3.0 <i>str</i> type is defined as an immutable 
+sequence of characters (not necessarily bytes), which may be either normal 
+text such as ASCII with one byte per character, or richer character
+set text such as Unicode that may include multi-byte characters.  
+Strings are encoded per the platform default, but explicit encoding names
+may be provided to translate <i>str</i> objects to/from different schemes,
+both in memory, and when transferring to and from files.
+
+<p>
+While 3.0's new str types does achieve str/unicode merging, many programs 
+still need to process raw binary data that is not encoded per any 
+text format.  Image files, and packed data you might process with 
+Python's struct module fall into this category.  To support this, 
+a new type, <i>bytes</i>, also was introduced to support processing 
+of truly binary data.  
+
+<p>
+In 2.X, the general <i>str</i> type filled this binary data role, because strings
+were just sequences of bytes (the separate unicode type handle wide-character strings).
+In 3.0, the <i>bytes</i> type is defined as a immutable sequence of 8-bit integers 
+representing byte values.  and supports almost all the same operations that the 
+<i>str</i> type does; this includes string methods, sequence operations, and even 
+<B>re</B> module pattern matching, but not formatting.  
+
+<P>
+A bytes object really is a sequence of small integers, each of which is in the 
+range 0..255; indexing a bytes returns an int, slicing one returns another bytes,
+and running list() on one returns a list of integers, not characters.  When 
+processed with operations that assume characters, though, the contents of bytes 
+objects are assumed to be ASCII-encoded bytes (e.g., the isalpha() method).
+Further, bytes are printed as character strings instead of integers for convenience.
+
+<p>
+While they were at it, Python developers also added <i>bytearray</i> in 3.0,
+a variant of <i>bytes</i>, which is mutable, and so supports in-place changes.
+The <i>bytearray</i> type supports the usual string operations that <i>str</i>
+and <i>bytes</i> do, but also has many of the same in-place change operations 
+as lists (e.g., append() and extend(),and assignment to indexes).  Assuming 
+your strings can be treated as raw bytes, <i>bytearray</i> finally adds 
+direct in-place mutability for string data -- something not possible in 2.X, 
+or with 3.0's <i>str</i> or <i>bytes</i>.
+</p>
+
+
+
+
+<H3>Text and binary files</H3>
+
+<p>
+File I/O has also been revamped in 3.0 to reflect the str/bytes distinction.
+Python now makes a sharp platform-independent distinction between text 
+files and binary files:
+
+<UL>
+<LI>
+When a file is opened in <i>text mode</i>, reading its data automatically decodes
+its content (per a platform default or a provided encoding), and returns it
+as a <i>str</i>; writing takes a <i>str</i>, and automatically encodes it before 
+transferring to the file.  Text mode files also support universal end-of-line 
+translation, and encoding specification arguments.
+<br><br>
+
+<LI>
+When a file is opened in <i>binary mode</i> by adding a "b" to the mode string 
+argument in the open() call, reading its data does not decode it in any way, and simply 
+returns its content raw and unchanged, as a <i>bytes</i> object; writing takes a <i>bytes</i> 
+object and transfers it to the file unchanged.  Binary-mode files also accept
+a <i>bytearray</i> object for the content to be written to the file.
+</UL>
+
+<p>
+Because str and bytes are sharply differentiated by the 
+language, the net effect is that you must decide whether your data is text
+or binary in nature, and use str or bytes objects to 
+represent its content in your script, respectively.  Ultimately, the mode 
+in which you open a file will dictate which type of object your script will 
+use to represent its content.  
+
+<UL>
+<LI>If you are processing image files, packed data created by other programs
+whose content you must extract, and some device data streams, chances are 
+good that you will want to deal with it using <i>bytes</i> and binary mode 
+files.  You might also opt for <i>bytearray</i> to update the data without
+making copies of it in memory.<br><br>
+
+<LI>If instead you are processing something that is textual in nature such 
+as program output, HTML, internationalized text, and CVS or XML files, you 
+probably want to use <i>str</i> and text mode files.
+</UL>
+
+<p>
+Notice that the mode string argument to <i>open()</i> (it's second argument) becomes
+fairly crucial in Python 3.0 -- its content not only specifies a file processing 
+mode, but also implies a Python object type.  By adding a "b" (lower-case only) to 
+the mode string, you specify binary mode files, and will receive, or must provide, 
+a <i>bytes</i> object to represent its content when reading or writing.  Without 
+the "b", your file is processed in text mode, and you'll use <i>str</i> objects to 
+represent its content.  For example, modes "rb", "wb", and "rb+", imply bytes;
+"r", "w+", and "rt" (the default) imply str.
+
+
+
+
+
+
+
+<H2>Python 3.0 Strings in Action</H2>
+
+<P>
+Let's step through a few examples that demonstrate how the 3.0 string types are used.
+Note that the following was run with and applies to 3.0 only.  Although there is no 
+bytes type in Python 2.6 (it has just the general str), some cross-version compatibility
+is still possible: in 2.6, the call bytes(X) is present as a synonym for str(X), and the 
+new literal form b'...' is taken to be the same as the normal string literal '...'.  
+You may still run into version skew in some cases, though; the 2.6 bytes() call, 
+for instance, does not allow the second argument (encoding name) required by 3.0's bytes().
+
+
+
+
+<h3>Literals and basic properties</h3>
+
+<p>
+Python 3.0 string objects originate when you call a function such as str() and bytes();
+process a file created by calling open() (described in the next section); or code 
+literal syntax in your script.  For the latter, a new literal form, b'xxx' 
+(and equivalently, B'xxx') is used to created bytes objects in 3.0, and bytearray objects 
+may be created by calling the bytearray() function, with a variety of possible arguments.
+
+<p>
+More formally, in 3.0 all the current string literal forms -- 'xxx', "xxx", and triple-quoted 
+blocks -- generate a str; adding a "b" or "B" just before them creates a bytes instead.  
+This new b'...' bytes literal is similar in spirit to the r'...' raw string, which suppresses
+backslash escapes.  Consider the following (all examples in this section are run in 3.0,
+unless otherwise stated):
+
+<pre>
+C:\misc>c:\python30\python
+
+>>> B = b'spam'                # make a bytes object (8-bit bytes)
+>>> S = 'eggs'                 # make a str object (unicode characters, 8-bit or wider)
+
+>>> type(B), type(S)
+(&lt;class 'bytes'>, &lt;class 'str'>)
+
+>>> B                          # prints as a character string, really a sequence of ints
+b'spam'
+>>> S
+'eggs'
+
+>>> B[0], S[0]                 # indexing returns an int for bytes, str for str
+(115, 'e')
+
+>>> B[1:], S[1:]               # slicing makes another bytes or str
+(b'pam', 'ggs')
+
+>>> list(B), list(S)
+([115, 112, 97, 109], ['e', 'g', 'g', 's'])     # bytes is really ints
+
+>>> B[0] = 'x'                                  # both are immutable
+TypeError: 'bytes' object does not support item assignment
+
+>>> S[0] = 'x'
+TypeError: 'str' object does not support item assignment
+
+>>> B = B"""                  # bytes prefix works on single, double, triple quotes
+... xxxx
+... yyyy
+... """
+>>> B
+b'\nxxxx\nyyyy\n'
+</pre>
+
+<p>
+For compatibility, in Python 2.6 the b'xxx' literal is present but is the same as 'xxx' and makes a str,
+and bytes() is just a synonym for str(); as shown above, in 3.0, both these address the distinct bytes
+type.  Also Note that the u'xxx' and U'xxx' unicode string literal forms in 2.6 are gone on 3.0; 
+use 'xxx' instead, since all strings are Unicode, even if they contain all ASCII characters.  
+</p>
+
+
+
+<h3>Conversions</h3>
+
+<p>
+Although Python 2.X allowed str and unicode type object to be freely (if the str
+contained only 7-bit ASCII text), 3.0 draws a much sharper distinction -- str and 
+bytes never mix automatically in expressions, and never are convert to one another
+automatically when passed to functions.  A function that expects an argument to 
+be a str object won't generally accept a bytes, and vice versa.  
+
+<p>
+Because of this, Python 3.0 basically requires that you commit to one type or 
+the other, or perform manual, explicit conversions: 
+
+<UL>
+<LI>str.encode() as well as bytes(S, encoding) create a bytes from a str
+<LI>bytes.decode() as well as str(B, encoding) create a str from a bytes
+</UL>
+
+The encode() and decode() methods (as well as file objects, described in the
+next section) use a default encoding for your platform, or an explicitly 
+passed-in encoding name.  For example, in 3.0:
+
+<pre>
+>>> S = 'eggs
+>>> S.encode()                     # str to bytes: encode text into raw bytes
+b'eggs'
+
+>>> bytes(S, encoding='ascii')     # str to bytes, alternative
+b'eggs'
+
+>>> B = b'spam'
+>>> B.decode()                     # bytes to str: decode raw bytes into text
+'spam'
+
+>>> str(B, encoding='ascii')       # bytes to str, alternative
+'spam'
+</pre>
+
+<p>
+Two cautions here.  First of all, your platform's default encoding is 
+available in the <i>sys</i> module, but the encoding argument to bytes() 
+is not optional, even though it is in str.decode() (and bytes.decode()).  
+Second, although str() does not require the encoding argument like 
+bytes() does, leaving it off in str() calls does not mean it 
+defaults -- instead, a str() without an encoding returns the bytes 
+object's print string, not its str converted form (this is usually not
+what you'll want!).  Assuming B and S are still as in the prior listing:
+
+<pre>
+>>> import sys
+>>> sys.platform                         # underlying platform
+'win32'
+>>> sys.getdefaultencoding()             # default encoding for str here
+'utf-8'
+
+>>> bytes(S)
+TypeError: string argument without an encoding
+
+>>> str(B)                               # str without encoding
+"b'spam'"                                # print string, not conversion!
+>>> len(str(B))
+7
+
+>>> len(str(B, encoding='ascii'))        # use encoding to convert to str
+4
+</pre>
+</p>
+
+
+
+
+
+<h3>Coding Unicode strings in Python 3.0</h3>
+
+<p>
+Encoding and decoding get more meaningful when you start dealing with 
+actual non-ASCII Unicode text.  To code Unicode characters in your strings that 
+cannot be typed on your keyboard, Python string literals support both "\xNN" hex byte
+value escapes, as well as "\uNNNN" and "\UNNNNNNNN" unicode escapes in string 
+literals; the first gives 4 hex digits to encode a 2-byte (16-bit) character 
+code, and the second gives 8 hex digits for a 4-byte (32-bit) code.  For example,
+normal 7-bit ASCII text is represented one character per byte under each of the
+encoding schemes described near the start of this section:
+
+<pre>
+>>> ord('X')                # 'X' has binary value 88 in the default encoding 
+88
+>>> chr(88)                 # 88 stands for character 'X'
+'X'
+
+>>> S = 'XYZ'
+>>> S
+'XYZ'
+>>> len(S)                  # 3 characters long
+3
+
+>>> S.encode('ascii')       # values 0..127 in 1 byte each
+b'XYZ'
+>>> S.encode('latin-1')     # values 0..255 in 1 byte each
+b'XYZ'
+>>> S.encode('utf-8')       # values 0..127 in 1 byte, 128..2047 in 2, others in 3 or 4
+b'XYZ'
+</pre>
+
+<P>
+To code non-ASCII characters, use unicode escapes in your strings; values 
+0xCD and oxE8, for instance, are codes for two special characters outside 
+the 7-bit range of ASCII, but we can embed them in str objects, because 
+str supports Unicode today:
+
+<pre>
+>>> chr(0xc4)               # 0xC4 and 0xE8 are accented characters outside ASCII's range
+'Ä'
+>>> chr(0xe8)
+'è'
+
+>>> S = '\u00c4\u00e8'      # 16-bit Unicode escapes
+>>> S
+'Äè'
+>>> len(S)                  # 2 characters long (not number of bytes!)
+2
+</pre>
+
+<P>
+Now, if we try to encode a non-ASCII string in raw bytes using as ASCII, 
+we'll get an error.  Encoding as latin-1 works, though, and allocates one 
+byte per character; encoding as UTF-8 allocates 2 bytes per character instead.
+If you write this string to a file, the raw bytes shown is what is actually
+stored on the file for the encoding types given:
+
+<pre>
+>>> S = '\u00c4\u00e8' 
+>>> S.encode('ascii')
+UnicodeEncodeError: 'ascii' codec can't encode characters in position 0-1: ordinal not in range(128)
+
+>>> S.encode('latin-1')              # one byte per character
+b'\xc4\xe8'
+
+>>> S.encode('utf-8')                # two bytes per character
+b'\xc3\x84\xc3\xa8'
+
+>>> len(S.encode('latin-1'))         # 2 bytes in latin-1, 4 in utf-8
+2
+>>> len(S.encode('utf-8'))
+4
+</pre>
+
+<p>
+Note that you can also go the other way -- from raw bytes back to a Unicode
+string.  You could read raw bytes from a file and decode manually this way,
+but the encoding mode you give to the open() call causes this decoding to be 
+done for you automatically (and avoids issues that may arise from reading 
+partial character sequences when reading by blocks of bytes):
+
+<pre>
+>>> B = b'\xc4\xe8'
+>>> B
+b'\xc4\xe8'
+>>> len(B)                             # 2 raw bytes, 2 characters
+2
+>>> B.decode('latin-1')                # decode to latin-1 text
+'Äè'
+
+>>> B = b'\xc3\x84\xc3\xa8'
+>>> len(B)                             # 4 raw bytes
+4
+>>> B.decode('utf-8')
+'Äè'
+>>> len(B.decode('utf-8'))             # 2 unicode characters
+2
+</pre>
+
+<p>
+When needed, you can specify both 16- and 32-bit Unicode values for
+characters in your strings; "\u..." with 4 hex digits for the former, 
+and "\U...." with 8 hex digits for the latter.  As the last example
+in the following shows, you can also build such strings up piecemeal 
+too using chr(), but it might become tedious for large strings:
+
+<pre>
+>>> S = 'A\u00c4B\U000000e8C'
+>>> S                                  # A, B, C, and 2 non-ASCII characters
+'AÄBèC'
+>>> len(S)                             # 5 characters long
+5
+
+>>> S.encode('latin-1')
+b'A\xc4B\xe8C'
+>>> len(S.encode('latin-1'))           # 5 bytes in latin-1
+5
+
+>>> S.encode('utf-8')
+b'A\xc3\x84B\xc3\xa8C'
+>>> len(S.encode('utf-8'))             # 7 bytes in utf-8
+7
+
+>>> S.encode('cp500')                  # two other western european encodings
+b'\xc1c\xc2T\xc3'
+>>> S.encode('cp850')                  # 5 bytes each
+b'A\x8eB\x8aC'
+
+>>> S = 'spam'                         # ascii text is the same in most
+>>> S.encode('latin-1')
+b'spam'
+>>> S.encode('utf-8')
+b'spam'
+>>> S.encode('cp500')                  # cp500 is IBM EBCDIC
+b'\xa2\x97\x81\x94'
+>>> S.encode('cp850')
+b'spam'
+
+>>> S = 'A' + chr(0xC4) + 'B' + chr(0xE8) + 'C'
+>>> S
+'AÄBèC'
+</pre>
+
+<p>
+Note the Python 3.0 allows special characters to be coded 
+with both hex and unicode escapes in str strings, but 
+only hex escapes in byte (unicode escape sequences are taken 
+verbatim, and not as escapes).  Moreover, bytes must be decocoded
+to strings to print their non-ASCII characters properly:
+
+<pre>
+>>> S = 'A\xC4B\xE8C'            # str recognizes hex and unicode escapes
+>>> S
+'AÄBèC'
+
+>>> S = 'A\u00C4B\U000000E8C'
+>>> S
+'AÄBèC'
+
+>>> B = b'A\xC4B\xE8C'           # bytes recognizes hex but not unicode
+>>> B
+b'A\xc4B\xe8C'
+
+>>> B = b'A\u00C4B\U000000E8C'   # escape sequences taken literally!
+>>> B
+b'A\\u00C4B\\U000000E8C'
+
+>>> B = b'A\xC4B\xE8C'           # use hex escapes for bytes
+>>> B                            # prints non-ASCII as hex 
+b'A\xc4B\xe8C'
+>>> print(B)
+b'A\xc4B\xe8C'
+>>> B.decode('latin-1')          # decode as latin-1 to interpret as text 
+'AÄBèC'
+</pre>
+
+<p>
+Finally, notice that bytes literals require characters to be 
+either ASCII characters, or escaped if their values are > 127; 
+str stings allow literals containing any character in the source
+chracter set (which defaults to UTF-8, unless encoding delcarations 
+are given -- discussed ahead):
+
+<pre>
+>>> S = 'AÄBèC'                  # chars from UTF-8 if no encoding declaration 
+>>> S
+'AÄBèC'
+
+>>> B = b'AÄBèC'
+SyntaxError: bytes can only contain ASCII literal characters.
+
+>>> B = b'A\xC4B\xE8C'           # chars must be ASCII, or escapes
+>>> B
+b'A\xc4B\xe8C'
+>>> B.decode('latin-1')
+'AÄBèC'
+
+>>> S.encode()                   # source code encoded per UTF-8 by default 
+b'A\xc3\x84B\xc3\xa8C'           # uses system default to encode, unless passed
+>>> S.encode('utf-8')
+b'A\xc3\x84B\xc3\xa8C'
+>>> B.decode()                   # raw bytes do not correspond to utf-8
+UnicodeDecodeError: 'utf8' codec can't decode bytes in position 1-2: ...
+
+>>> S = 'AÄBèC'
+>>> S
+'AÄBèC'
+>>> S.encode()                     # default utf-8 encoding
+b'A\xc3\x84B\xc3\xa8C'
+>>>
+>>> T = S.encode('cp500')          # convert to EBCDIC
+>>> T
+b'\xc1c\xc2T\xc3'
+>>>
+>>> U = T.decode('cp500')          # convert back to unicode
+>>> U
+'AÄBèC'
+>>>
+>>> U.encode()
+b'A\xc3\x84B\xc3\xa8C'
+</pre>
+
+
+
+
+
+<h3>Coding Unicode strings in Python 2.6</h3>
+
+<p>
+Now that I've shown you the basics of Unicode strings in 3.0, 
+I need to explain that you can do much the same in 2.6, though the 
+tools differ.  Unicode is already available in Python 2.6, but it is 
+a disctinct data type from str, and it allows free mixing of 
+normal and unicode strings when compatible.  In fact, you can 
+essentially pretend 2.6's str is 3.0's bytes when it comes to 
+decoding into a unicode string, as long as it's in proper form.
+Here's 2.6 in action (all other sections in this topic are run 
+under 3.0):
+
+<pre>
+>>> import sys
+>>> sys.version
+'2.6 (r26:66721, Oct  2 2008, 11:35:03) [MSC v.1500 32 bit (Intel)]'
+
+>>> S = 'A\xC4B\xE8C'          # string of 8-bit bytes
+>>> print S                    # some are non-ascii
+AÄBèC
+
+>>> S.decode('latin-1')        # decode byte to latin-1 unicode
+u'A\xc4B\xe8C'
+
+>>> S.decode('utf-8')          # not formatted as utf-8
+UnicodeDecodeError: 'utf8' codec can't decode bytes in position 1-2: invalid data
+
+>>> S.decode('ascii')          # outside ascii range
+UnicodeDecodeError: 'ascii' codec can't decode byte 0xc4 in position 1: ordinal not in range(128)
+</pre>
+
+<p>
+To store arbirarily encoded Unicode text, make a Unicode
+object with the u'xxx' literal form; this is no longer 
+available in 3.0, since all strings support Unicode there:
+
+<pre>
+>>> U = u'A\xC4B\xE8C'         # make unicode string, hex escapes
+>>> U
+u'A\xc4B\xe8C'
+>>> print U
+AÄBèC
+</pre>
+
+<p>
+Once created, you convert Unicode text to different encodings;
+this is similar to encoding str objects ino bytes objects in 3.0:
+
+<pre>
+>>> U.encode('latin-1')        # encode per latin-1: 8-bit bytes
+'A\xc4B\xe8C'
+>>> U.encode('utf-8')          # encode per utf-8: multi-byte
+'A\xc3\x84B\xc3\xa8C'
+</pre>
+
+<p>
+Non-ASCII characters can be coded with hex or unicode escapes 
+in string literals just as in 3.0, but just as for bytes in 3.0,
+the "\u...' and "\U..." escapes are only recognized for unicode 
+strings in 2.6, not 8-bit str strings:
+
+<pre>
+>>> U = u'A\xC4B\xE8C'           # hex escapes for non-ascii
+>>> U
+u'A\xc4B\xe8C'
+>>> print U
+AÄBèC
+
+>>> U = u'A\u00C4B\U000000E8C'   # unicode escapes for non-ASCII
+>>> U                            # u'' = 16 bits, U''= 32 bits
+u'A\xc4B\xe8C'
+>>> print U
+AÄBèC
+
+>>> S = 'A\xC4B\xE8C'            # hex escapes work
+>>> S
+'A\xc4B\xe8C'
+>>> print S                      # but some print oddly, unless decoded
+A-BFC
+>>> print S.decode('latin-1')
+AÄBèC
+
+>>> S = 'A\u00C4B\U000000E8C'    # not unicode escapes: taken literally!
+>>> S
+'A\\u00C4B\\U000000E8C'
+>>> print S
+A\u00C4B\U000000E8C
+>>> len(S)
+19
+</pre>
+
+<p> 
+Like 3.0's str and bytes, 2.6's unicode and str share nearly identical 
+operation sets, so you can often treat unicode as though it were str
+unless you need to convert to other encodings.  One of the primary 
+difference between 2.6 and 3.0 is that unicode and non-unicode objects
+can be freely mixes in expressions, and are automatically converted as
+long as the string is compatible with the unicode's encoding (in 3.0, 
+str and bytes never mix automatically, and require manual conversions):
+
+<pre>
+>>> u'ab' + 'cd'                # can mix if compatible
+u'abcd'
+
+>>> S = 'A\xC4B\xE8C'           # can't mix if incompatible
+>>> U = u'A\xC4B\xE8C'
+>>> S + U
+UnicodeDecodeError: 'ascii' codec can't decode byte 0xc4 in position 1: ordinal not in range(128)
+
+>>> S.decode('latin-1') + U     # manual conversion still required 
+u'A\xc4B\xe8CA\xc4B\xe8C'
+
+>>> print S.decode('latin-1') + U
+AÄBèCAÄBèC
+</pre>
+
+<p>
+Finally, note that 2.6's open() call supports only files of 
+8-bit bytes, and returns their content as str strings; it's up 
+to you to interpret that content as text or binary data.  To 
+read and write Unicode files and encode or decode their content,
+see 2.6's library manual for information on the <B>codecs.open()</B> 
+call.  This call provides much the same functionalithy as 3.0's 
+open(), and uses 2.6 unicode objects to represent file 
+content -- reading a file translates encoded bytes into decoded 
+Unicode characters, and writing translates strings to the desired 
+encoding specified when opened.
+</p>
+
+
+
+
+
+
+<h3>Source file character set encoding declarations</h3>
+
+<p>
+Unicode escape codes are fine for the occasional unicode character in 
+string literals, but can become tedious if you need to embed non-ASCII in 
+your strings frequently.  For strings you code within your script files, 
+Python uses the UTF-8 encoding by default, but allows you to change this  
+to support arbitrary character sets, by including a comment that names 
+your desired encoding.  The comment must be of this form, and appear 
+as either the first or second line in your script:
+
+<pre>
+# -*- coding: latin-1 -*-
+</pre>
+
+
+<p>
+When present, Python will recognize strings represented natively in the
+given encoding.  That way, you can edit your script file in a text editor
+that accepts and displays accented and other non-ASCII characters correctly, 
+and Python will decode them in your string literals correctly.  For example,
+notice how the comment at the top of the following file, "text.py", allows 
+latin-1 characters to be embedded in strings:
+
+<pre>
+# -*- coding: latin-1 -*-
+
+# any of the following string literal forms work in latin-1;
+# changing the encoding above to either ascii or utf-8 fails,
+# because the 0xc4 and 0xe8 in myStr1 are not valid in either
+
+myStr1 = 'aÄBèC'
+
+myStr2 = 'A\u00c4B\U000000e8C'
+
+myStr3 = 'A' + chr(0xC4) + 'B' + chr(0xE8) + 'C'
+
+import sys
+print('Default encoding:', sys.getdefaultencoding())
+
+for aStr in myStr1, myStr2, myStr3:
+    print('{0}, strlen={1}, '.format(aStr, len(aStr)), end='')
+
+    bytes1 = aStr.encode()                     # per default utf-8: 2 bytes for non-ASCII
+    bytes2 = aStr.encode('latin-1')            # one byte per char 
+   #bytes3 = aStr.encode('ascii')              # ascii fails: outs 0..127 range
+
+    print('byteslen1={0}, byteslen2={1}'.format(len(bytes1), len(bytes2)))
+
+
+C:\misc>c:\python30\python text.py
+Default encoding: utf-8
+aÄBèC, strlen=5, byteslen1=7, byteslen2=5
+AÄBèC, strlen=5, byteslen1=7, byteslen2=5
+AÄBèC, strlen=5, byteslen1=7, byteslen2=5
+</pre>
+
+<p>
+Since most programmers are likely to fall back on the standard UTF-8 encoding,
+I'll defer to Python's standard manual set for more details on this option,
+as well as more advanced Unicode support such as properties and character 
+name escapes in string that we'll skip here.
+</p> 
+
+
+
+
+
+
+<H2>Processing 3.0 Bytes Objects</H2>
+
+
+<P>
+Let's dig a bit deeper into the operation sets provided by the new bytes type in 3.0.
+As mentioned, the 3.0 bytes type supports sequence operations and most of the same 
+methods available on str (and present in 2.X's str type).  However, bytes does not
+support the format() method or the '%' formatting expression.  Moreover, you cannot
+mix and match bytes and str without explicit conversions -- you generally will use 
+all str type objects and text files for text data, and all bytes type and binary 
+files for binary data.
+</p>
+
+
+
+<h3>Method calls</h3>
+
+<p>
+If you really want to see what attributes str has that bytes doesn't, you can 
+always check their dir() results; this can also tell you something about the expression 
+operators they support (e.g., __mod__ and __rmod__ implement the '%' operator):
+
+<pre>
+C:\misc>c:\python30\python
+Python 3.0 (r30:67507, Dec  3 2008, 20:14:27) [MSC v.1500 32 bit (Intel)] on win32
+Type "help", "copyright", "credits" or "license" for more information.
+
+
+# attributes unique to str
+
+>>> set(dir('abc')) - set(dir(b'abc'))
+{'isprintable', 'format', '__mod__', 'encode', 'isidentifier', '_formatter_field_name_split', 
+'isnumeric', '__rmod__', 'isdecimal', '_formatter_parser', 'maketrans'}
+
+
+# attributes unique to bytes
+
+>>> set(dir(b'abc')) - set(dir('abc'))
+{'decode', 'fromhex'}
+</pre>
+
+<P>
+As you can see, str and bytes have almost identical functionality; their unique 
+attributes are generally methods that don't apply to the other.  For instance, 
+decode() translates a raw bytes into its str representation, and encode() translates 
+a string into its raw bytes representation).  Most methods are shared between str and
+bytes, though.  Moreover, bytes are immutable just like str in both 2.6 and 3.0
+(error messages here have been shortened for brevity):
+
+<pre>
+>>> B = b'spam'                    # b'...' bytes literal
+>>> B.find(b'pa')
+1
+
+>>> B.replace(b'pa', b'XY')
+b'sXYm'
+
+>>> B
+b'spam'
+
+>>> B[0] = 'x'
+TypeError: 'bytes' object does not support item assignment
+</pre>
+
+
+<p>
+One notable exception to this rule: string formatting only works on str in 3.0, 
+not on bytes (see <A href="#NX7">earlier on this</A> page for more on 3.0 string formatting):
+
+<pre>
+>>> b'%s' % 99
+TypeError: unsupported operand type(s) for %: 'bytes' and 'int'
+
+>>> '%s' % 99
+'99'
+
+>>> b'{0}'.format(99)
+AttributeError: 'bytes' object has no attribute 'format'
+
+>>> '{0}'.format(99)
+'99'
+</pre>
+
+
+
+
+<h3>Sequence operations</h3>
+<p>
+Besides method calls, all the usual generic sequence operations you know (and 
+possibly love) from Python 2.X strings and list work as expected on both str
+and bytes in 3.0; this includes indexing, slicing, concatenation, and so on.
+Notice in the following that indexing bytes returns an integer giving the 
+byte's binary value; bytes really is a sequence of 8-bit integers, but it 
+prints as a string of ASCII-coded characters when displayed as a whole.
+To check a given byte, use chr() to convert it back to its character:
+
+<Pre>
+>>> B = b'spam'
+>>> B
+b'spam'
+
+>>> B[0]
+115
+>>> B[-1]
+109
+
+>>> chr(B[0])
+'s'
+
+>>> B[1:], B[:-1]
+(b'pam', b'spa')
+ 
+>>> len(B)
+4
+
+>>> B + b'lmn'
+b'spamlmn'
+>>> B * 4
+b'spamspamspamspam'
+</pre>
+
+
+
+
+<h3>Other ways to make bytes</h3>
+<p>
+So far, we've been making bytes objects with the b'...' literal syntax;
+they can also be created by calling the bytes() constructor with a str and
+an encoding name, calling bytes with an iterable of integers representing 
+byte values, or encoding a str object per the default (or passed-in) encoding.
+Encoding takes a str and returns the raw binary byte value of the string 
+according to its encoding specification; decoding takes a raw bytes sequence
+and encodes it to its string representation -- a series of possibly-wide
+characters:
+
+<pre>
+>>> B = b'abc'
+>>> B
+b'abc'
+
+>>> B = bytes('abc', 'ascii')
+>>> B
+b'abc'
+
+>>> ord('a')
+97
+>>> B = bytes([97, 98, 99])
+>>> B
+b'abc'
+
+>>> B = 'spam'.encode()       # or bytes()
+>>> B
+b'spam'
+>>>
+>>> S = B.decode()            # or str()
+>>> S
+'spam'
+</pre>
+
+<p>
+From a larger perspective, the last two of these operations are really
+tools for converting between str and bytes, introduced earlier and expanded
+upon in the next section.
+</p>
+
+
+
+<h3>Mixing string types</h3>
+<p>
+Notice in the replace() call of the method calls section how we have to pass in two 
+bytes objects -- str types won't work there.  Although Python 2.X automatically coverts
+str to and from unicode when possible (when the str was 7-bit ASCII text), Python 
+requires specific string types in some contexts, and expects manual conversions if needed:
+
+<pre>
+<B># must pass expected types to function and method calls</B>
+
+>>> B = b'spam'
+
+>>> B.replace('pa', 'XY')
+TypeError: expected an object with the buffer interface
+
+>>> B.replace(b'pa', b'XY')
+b'sXYm'
+
+>>> B = B'spam'
+>>> B.replace(bytes('pa'), bytes('xy'))
+TypeError: string argument without an encoding
+
+>>> B.replace(bytes('pa', 'ascii'), bytes('xy', 'utf-8'))
+b'sxym'
+
+
+<B># must convert manually in mixed-type expressions</B>
+
+>>> b'ab' + 'cd'
+TypeError: can't concat bytes to str
+
+>>> b'ab'.decode() + 'cd'                   # bytes to str
+'abcd'
+
+>>> b'ab' + 'cd'.encode()                   # str to bytes
+b'abcd'
+
+>>> b'ab' + bytes('cd', 'ascii')            # str to bytes
+b'abcd'
+</pre>
+
+<P>
+Although you can create bytes objects yourself to represent packed binary data, 
+they can also be made automatically by reading files opened in binary 
+mode, as the next section demonstrates.
+</p>
+
+
+
+
+<h3>Using 3.0 bytearray objects</h3>
+
+<p>
+So far, we've focused on str and bytes, since they subsume 2.6's unicode and str.
+Python 3.0 has a third string type, though -- bytearray is essentially a mutable
+variant of bytes -- a mutable sequence of integers in the range 0..255.  As such, 
+it supports the same string methods and sequence operations as bytes, as well as 
+the mutable in-place-change operations found on lists:
+
+
+<pre>
+<B># creation: a mutable sequence of small (0..255) ints</B>
+
+>>> B = 'spam'
+>>> C = bytearray(B)
+>>> C
+bytearray(b'spam')
+
+
+<B># mutable, but must assign ints, not strings</B>
+
+>>> C[0] = 'x'
+TypeError: an integer is required
+
+>>> C[0] = b'x'
+TypeError: an integer is required
+
+>>> C[0] = ord('x')
+>>> C
+bytearray(b'xpam')
+
+>>> C[1] = b'Y'[0]
+>>> C
+bytearray(b'xYam')
+
+
+<B># methods overlap with both str and bytes, but also has list's mutable methods</B>
+
+>>> set(dir(b'abc')) - set(dir(bytearray(b'abc')))
+{'__getnewargs__'}
+
+>>> set(dir(bytearray(b'abc'))) - set(dir(b'abc'))
+{'insert', '__alloc__', 'reverse', 'extend', '__delitem__', 'pop', '__setitem__'
+, '__iadd__', 'remove', 'append', '__imul__'}
+
+
+<B># mutable method calls</B>
+
+>>> C
+bytearray(b'xYam')
+
+>>> C.append(b'LMN')
+TypeError: an integer is required
+
+>>> C.append(ord('L'))
+>>> C
+bytearray(b'xYamL')
+
+>>> C.extend(b'MNO')
+>>> C
+bytearray(b'xYamLMNO')
+
+
+<B># sequence operations and string methods</B>
+
+>>> C + b'!#'
+bytearray(b'xYamLMNO!#')
+
+>>> C[0]
+120
+
+>>> C[1:]
+bytearray(b'YamLMNO')
+
+>>> len(C)
+8
+
+>>> C
+bytearray(b'xYamLMNO')
+
+>>> C.replace('xY', 'sp')
+TypeError: Type str doesn't support the buffer API
+
+>>> C.replace(b'xY', b'sp')
+bytearray(b'spamLMNO')
+
+>>> C
+bytearray(b'xYamLMNO')
+
+>>> C * 4
+bytearray(b'xYamLMNOxYamLMNOxYamLMNOxYamLMNO')
+</pre>
+
+<p>
+
+<P>
+Finally, by way of summary, the following examples demonstrate how bytes 
+and bytearray are sequences of ints, and str is a sequence of characters;
+although all three can contain character values and support many of the same 
+operations, you should use str for textual data, bytes for binary data, 
+and bytearray for binary data you wish to change in place.
+
+<pre>
+>>> B
+b'spam'
+>>> list(B)
+[115, 112, 97, 109]
+
+>>> C
+bytearray(b'xYamLMNO')
+>>> list(C)
+[120, 89, 97, 109, 76, 77, 78, 79]
+
+>>> S = 'spam'
+>>> list(S)
+['s', 'p', 'a', 'm']
+</pre>
+</p>
+
+
+
+
+
+
+<H2>3.0 File Modes and String Types in Action</H2>
+
+<p>
+As also mentioned above, the mode in which you open a file is crucial -- it 
+determines which object type you will use to represent the file's content 
+in your script.  Text mode implies str objects, and binary mode implies bytes:
+
+<UL>
+<LI>
+<B>Text mode files</B> interpret file contents according to an encoding -- either the 
+default for your platform, or one whose name you pass in.  By passing in an 
+encoding name to open(), you can force conversions for various types of Unicode 
+files.  Text mode files may also perform universal line-end translations for you or
+not; by default, all line-end forms map to the '\n' character in your script,
+regardless of which platform you are on.<BR><BR>
+
+<LI>
+<B>Binary mode files</B> instead return file content to you raw, as a sequence of 
+integers representing byte values, with no encoding or decoding, and no line-end
+translations.  
+</UL>
+
+<p>
+In terms of code, the second argument to open() determines whether you want text 
+or binary processing and types, just as it does in 2.X Python -- adding a "b" to 
+the string implies binary mode.  The default mode is "rt" which is the same as "r", 
+which means text input, just as in 2.X.  In 3.0, though, this mode argument to open() 
+also implies an object type for file content representation regardless of the 
+underlying platform -- text files return a str for reads and expect one for writes,
+but binary files return a bytes for reads and expect bytes (or bytearray) for writes.
+
+
+
+<h3>Text file basics</h3>
+
+<P>
+To demonstrate, let's begin with basic file I/O; as long as you're processing 
+basic text files (e.g., ASCII) and don't care about circumventing the platform-default
+encoding of strings, files look and feel much as they do in 2.X (for that matter, so 
+do strings in general).  The following, for instance, writes one line of text to a 
+file and reads it back in 3.0, exactly as it would in 2.6 (note that "file" is no 
+longer a built-in name in 3.0, so it's perfectly okay to use it as a variable here):
+
+<pre>
+C:\misc>c:\python30\python
+
+# basic text files (and strings) work the same as in 2.X
+
+>>> file = open('temp', 'w')
+>>> size = file.write('abc\n')       # returns number bytes written
+>>> file.close()                     # manual close to flush output buffer
+
+>>> file = open('temp')              # default mode is "r" (== "rt"), whch means text input
+>>> text = file.read()
+>>> text
+'abc\n'
+</pre>
+
+
+
+<H3>Using text and binary modes</h3>
+
+<P>
+Next we'll write a text file and read it back in both modes in 3.0; notice 
+that we are required to provide a str for writing, but reading gives us a str 
+or bytes depending on the open mode (I've strung operations together here into
+one-liners just for brevity):
+
+<pre>
+# write and read a text file
+
+>>> open('temp', 'w').write('abc\n')       # text mode output, provide a str
+4
+
+>>> open('temp', 'r').read()               # text mode input, returns a str
+'abc\n'
+
+>>> open('temp', 'rb').read()              # binary mode input, returns a bytes
+b'abc\r\n'
+</pre>
+
+<p>
+Now, let's do the same, but with a binary file; we must provide a bytes to
+write, and still get back a str or bytes depending on the input mode:
+
+<pre>
+# write and read a binary file
+
+>>> open('temp', 'wb').write(b'abc\n')     # binary mode output, provide a bytes
+4
+
+>>> open('temp', 'r').read()               # text mode input, returns a str
+'abc\n'
+
+>>> open('temp', 'rb').read()              # binary mode input, returns a bytes
+b'abc\n'
+</pre>
+
+<p>
+Notice that the same holds even if the data we're writing to the binary file is 
+truly binary in nature; in the following, the "\x00' is a binary zero byte, and
+not a printable character:
+
+<pre>
+# write and read binary data
+
+>>> open('temp', 'wb').write(b'a\x00c')
+3
+
+>>> open('temp', 'r').read()
+'a\x00c'
+
+>>> open('temp', 'rb').read()
+b'a\x00c'
+</pre>
+
+<p>
+Binary mode files always return contents as a bytes object, but accept either
+a bytes or bytearray object for writing; this naturaly follows, given that 
+bytearray is mostly just a mutable variant of bytes.  In fact, most APIs in 
+Python 3.0 that accept a bytes also allow a bytearray:
+
+<pre>
+# bytearrays work too
+
+>>> BA = bytearray(b'\x01\x02\x03')
+>>>
+>>> open('temp', 'wb').write(BA)
+3
+
+>>> open('temp', 'r').read()
+'\x01\x02\x03'
+
+>>> open('temp', 'rb').read()
+b'\x01\x02\x03'
+</pre>
+
+<p>
+Finally, notice that you can't get away with violating Python's str/bytes
+distinction when it comes to files; in the following we get errors (shortened
+here) if we try to write a bytes to a text file, or a str to a binary file.
+Although it is often possible to convert between the types (as described earlier
+in this section), you will usually want to stick to str for text data and bytes
+for binary data.  Because str and bytes operation set largely intersect, the
+choice won't be much of a dilemma for most programs (e.g., see the binary file
+example using the struct module in the next section):
+
+<pre>
+# types are not flexible for file content
+
+>>> open('temp', 'w').write('abc\n')
+4
+>>> open('temp', 'w').write(b'abc\n')
+TypeError: can't write bytes to text stream
+
+>>> open('temp', 'wb').write(b'abc\n')
+4
+>>> open('temp', 'wb').write('abc\n')
+TypeError: can't write str to binary stream
+</pre>
+
+
+
+
+
+
+<h2>Other String Tool Changes in 3.0</h2>
+
+<p>
+Finally, some of Python's other popular string-processing tools in 
+ite standard library have been revamped for the new str/bytes 
+type dichotomy too.  We won't cover any of these application-focused
+tools in much detail in this core language book, but here's a quick 
+look at two of the major tools impacted.
+
+
+<h3>The re patten matching module</h3>
+
+<p>
+Python's re pattern matching module has been generalized to 
+work on any objects of any string type in 3.0 -- str, bytes, and 
+bytearray.  Note that you can't mix str and bytes types in its
+calls' arguments, though:
+
+<pre>
+>>> import re
+>>> S = 'Bugger all down here on earth!'
+>>> B = b'Bugger all down here on earth!'
+>>>
+>>> re.match('(.*) down (.*) on (.*)', S).groups()
+('Bugger all', 'here', 'earth!')
+>>>
+>>> re.match(b'(.*) down (.*) on (.*)', B).groups()
+(b'Bugger all', b'here', b'earth!')
+
+
+>>> re.match('(.*) down (.*) on (.*)', B).groups()
+...
+TypeError: can't use a string pattern on a bytes-like object
+>>>
+>>> re.match(b'(.*) down (.*) on (.*)', S).groups()
+...
+TypeError: can't use a bytes pattern on a string-like object
+
+
+>>> re.match(b'(.*) down (.*) on (.*)', bytearray(B)).groups()
+(bytearray(b'Bugger all'), bytearray(b'here'), bytearray(b'earth!'))
+>>>
+>>> re.match('(.*) down (.*) on (.*)', bytearray(B)).groups()
+...
+TypeError: can't use a string pattern on a bytes-like object
+</pre>
+
+
+
+<h3>The struct binary data module</h3>
+
+<p>
+Along similar lines, the Python struct module, used to create and extract
+packed binary data from strings, works in 3.0as it does in 2.X, but only
+operates on bytes and bytearray only, not str (which makes sense, given that 
+it's intended for processing binary data, not text):
+
+<pre>
+>>> import struct
+>>> B = struct.pack('>i4sh', 7, 'spam', 8)
+>>> B
+b'\x00\x00\x00\x07spam\x00\x08'
+>>>
+>>> vals = struct.unpack('>i4sh', B)
+>>> vals
+(7, b'spam', 8)
+>>>
+>>> vals = struct.unpack('>i4sh', B.decode())
+TypeError: 'str' does not have the buffer interface
+</pre>
+
+<p>
+Apart from the new syntax for bytes, creating and reading binary files
+works almost the same in 3.0 as it does in 2.X (and as described briefly
+on page 181 of the book):
+
+<pre>
+C:\misc>c:\python30\python.exe
+>>> F = open('data.bin', 'wb')                  # open binary output file
+>>> import struct
+>>> data = struct.pack('>i4sh', 7, 'spam', 8)   # create packed binary data
+>>> data                                        # bytes in 3.0, not str
+b'\x00\x00\x00\x07spam\x00\x08'
+>>> F.write(data)                               # write to the file
+10
+>>> F.close()
+
+>>> F = open('data.bin', 'rb')                  # open binary input file
+>>> data = F.read()                             # read bytes
+>>> data
+b'\x00\x00\x00\x07spam\x00\x08'
+>>> values = struct.unpack('>i4sh', data)       # extract packed binary data
+>>> values                                      # back to Python objects
+(7, b'spam', 8)
+</pre>
+
+<p>
+For more on the re and struct modules, consult the Python Library Manual,
+or application-focused followup books such as <I>Programming Python</I>.
+</p>
+
+
+
+<HR>
+<p>Back to the book's <A HREF="lp3e-updates-notes-python.html">Python 2.6 and 3.0 notes page</A>
+</BODY></HTML>

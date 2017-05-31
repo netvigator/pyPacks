@@ -1,0 +1,44 @@
+
+pGrab.Get
+Not working:
+  GetGoogleQueryLinkDicts()
+  GetGoogleQueryLinks()
+
+
+Utils
+ Output
+./Output.py
+Traceback (most recent call last):
+  File "./Output.py", line 129, in <module>
+    sDirOut = GetTextOutputFromExternalCommand( sDirCmd )[ 0 ]
+  File "./Output.py", line 43, in GetTextOutputFromExternalCommand
+    fIn, fOut, fErr     = pOpen( sCommand )
+  File "/usr/lib/python2.6/subprocess.py", line 633, in __init__
+    errread, errwrite)
+  File "/usr/lib/python2.6/subprocess.py", line 1139, in _execute_child
+    raise child_exception
+OSError: [Errno 2] No such file or directory
+
+
+
+Web.WebCat
+Traceback (most recent call last):
+  File "./WebCat.py", line 5, in <module>
+    from twisted.internet   import reactor
+ImportError: No module named twisted.internet
+
+
+
+Web
+Zip.py
+Traceback (most recent call last):
+  File "./Zip.py", line 328, in <module>
+    sZipped         = ZipThis( sText )
+  File "./Zip.py", line 170, in ZipThis
+    oCompress   = GzipFile( fileobj = oWriteable, mode = 'wb' )
+  File "/usr/lib/python3.1/gzip.py", line 134, in __init__
+    self._write_gzip_header()
+  File "/usr/lib/python3.1/gzip.py", line 156, in _write_gzip_header
+    self.fileobj.write(b'\037\213')             # magic header
+TypeError: string argument expected, got 'bytes'
+Exception TypeError: "string argument expected, got 'bytes'" in <bound method GzipFile.__del__ of <gzip _io.StringIO object at 0xb737fbac 0xb72b604c>> ignored

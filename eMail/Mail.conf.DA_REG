@@ -1,0 +1,14 @@
+[main]
+
+OutgoingMailServer      = members.democratsabroad.org
+OutgoingSecure          = no
+OutgoingAuthenticate    = yes
+
+IncomingMailServer      = members.democratsabroad.org
+IncomingSecure          = yes
+
+UserName                = rick_graves@democratsabroad.org
+Password                = "GofRCzr
+
+From                    = "Dems Abroad Thailand Secretary" <rick_graves@democratsabroad.org>
+

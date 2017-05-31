@@ -1,0 +1,15 @@
+[main]
+
+OutgoingMailServer      = smtpo.hkbn.net
+OutgoingSecure          = no
+OutgoingAuthenticate    = no
+
+Pause                   = 5
+
+# UserName              = richardgraves@threebb.com.hk
+# good pets?
+# Password              = "GOfRCzr
+# how is it?              
+# Password              = tUq"nbnBAU"
+
+From                    = "Rick Graves" <rick_graves@democratsabroad.org>

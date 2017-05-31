@@ -1,0 +1,11 @@
+[main]
+
+OutgoingMailServer      = smtp.mega-sail.com
+OutgoingSecure          = yes
+OutgoingAuthenticate    = yes
+
+IncomingMailServer      = mail.mega-sail.com
+IncomingSecure          = yes
+
+UserName                = rick
+Password                = j((9O*z*

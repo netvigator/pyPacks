@@ -1,0 +1,16 @@
+[main]
+
+Pause                   = 10
+
+OutgoingMailServer      = smtp.comcast.net
+OutgoingSecure          = yes
+OutgoingSecurityType    = TLS
+OutgoingAuthenticate    = yes
+OutgoingMailPort        = 587
+
+IncomingMailServer      = imap.comcast.net
+IncomingSecure          = yes
+IncomingMailPort        = 993
+
+UserName                = jimandbettyp
+Password                = geNcgnKv"

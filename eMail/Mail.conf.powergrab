@@ -1,0 +1,15 @@
+[main]
+
+OutgoingMailServer      = mail.powergrab.org
+OutgoingSecure          = no
+OutgoingAuthenticate    = yes
+OutgoingPort            = 26
+
+IncomingMailServer      = mail.powergrab.org
+IncomingSecure          = yes
+
+UserName                = service@powergrab.org
+Password                = Rz"OCrGf9
+
+From                    = "Dems Abroad Thailand Secretary" <rick_graves@democratsabroad.org>
+

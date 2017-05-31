@@ -1,0 +1,14 @@
+[main]
+
+OutgoingMailServer      = members.democratsabroad.org
+OutgoingSecure          = no
+OutgoingAuthenticate    = yes
+
+IncomingMailServer      = members.democratsabroad.org
+IncomingSecure          = yes
+
+UserName                = membership_da@democratsabroad.org
+Password                = IeEEurQvnNFtP
+
+From                    = "Dems Abroad Membership Team" <membership_da@democratsabroad.org>
+

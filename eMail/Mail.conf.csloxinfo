@@ -1,0 +1,19 @@
+[main]
+
+
+OutgoingMailServer      = smtp.csloxinfo.com
+OutgoingSecure          = no
+# OutgoingAuthenticate    = yes
+OutgoingAuthenticate    = no
+# must Authenticate if outside Thailand
+
+IncomingMail = lox1.loxinfo.co.th
+
+
+
+# UserName                = gravesricharde63@csloxinfo.com
+UserName                = gravesricharde36@csloxinfo.com
+Password                = 34<7<8aB4=
+LiteEncryption          = no
+# not Lite! Lite causes an error!
+

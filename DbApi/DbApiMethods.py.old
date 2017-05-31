@@ -1,0 +1,1530 @@
+#!/usr/bin/python
+#
+# DB API methods
+#
+#
+#
+"""
+pgdb - DB-SIG compliant module for PygreSQL.
+
+(c) 1999, Pascal Andre <andre@via.ecp.fr>.
+See package documentation for further information on copyright.
+
+Inline documentation is sparse.  See DB-SIG 2.0 specification for
+usage information.
+
+    basic usage:
+
+    pgdb.connect(connect_string) -> connection
+            connect_string = 'host:database:user:password'
+            All parts are optional. You may also pass host through
+            password as keyword arguments. To pass a port, pass it in
+            the host keyword parameter:
+                    pgdb.connect(host='localhost:5432')
+
+    connection.cursor() -> cursor
+
+    connection.commit()
+
+    connection.close()
+
+    connection.rollback()
+
+    cursor.execute(query[, params])
+            execute a query, binding params (a dictionary) if it is
+            passed. The binding syntax is the same as the % operator
+            for dictionaries, and no quoting is done.
+
+    cursor.executemany(query, list of params)
+            execute a query many times, binding each param dictionary
+            from the list.
+
+    cursor.fetchone() -> [value, value, ...]
+
+    cursor.fetchall() -> [[value, value, ...], ...]
+
+    cursor.fetchmany([size]) -> [[value, value, ...], ...]
+            returns size or cursor.arraysize number of rows from result
+            set. Default cursor.arraysize is 1.
+
+    cursor.description -> [(column_name, type_name, display_size,
+            internal_size, precision, scale, null_ok), ...]
+
+            Note that precision, scale and null_ok are not implemented.
+
+    cursor.rowcount
+            number of rows available in the result set. Available after
+            a call to execute.
+
+    cursor.close()
+"""
+#
+from __future__         import generators # allows yield statement in ver. 2.2
+#
+from String.Test        import isInQuotesSingle
+from String.Transform   import GetSwapper
+from String.Get         import GetInSingleQuotes
+from Collect.Query      import GetFirstThatMeets
+from Collect.Test       import isListOrTuple
+from Collect.Get        import GetKeyListOffItemList
+from Collect.Set        import GetSetFrozen
+from Time.Delta         import GetDeltaDaysFromStrings
+from Time.Test          import isISOdatetime
+from Dict.Get           import GetDictGotKeys
+from Iter.Test          import isIterator
+from Iter.Get           import getOneOffIterable
+#
+dGetFetch           = {}
+setMinMax           = GetSetFrozen( ( 'min', 'max' ) )
+#
+InternalError = DatabaseError = None
+#
+
+class DbApiClass( object ):
+    #
+    def __init__( self, sSystemSQL, GetTableDict ):
+        #
+        self.sSystemSQL = sSystemSQL.lower()
+        #
+        if self.sSystemSQL   == 'postgresql':
+            from pgdb   import connect
+            from pg     import DatabaseError, InternalError
+        elif self.sSystemSQL   == 'sqlite':
+            from sqlite import connect, DatabaseError, InternalError
+        #
+        self.connect    = connect
+        #
+        self.InternalError  = InternalError
+        self.DatabaseError  = DatabaseError
+        #
+        self.dColTypes   = \
+            GetDictGotKeys( (
+                'char',
+                'integer',
+                'serial',
+                'timestamp',
+                'varchar', ) )
+        #
+        if self.sSystemSQL == 'sqlite':
+            #
+            dSqLiteTypes = {
+                'char'      : ( 'text',     None            ),
+                'serial'    : ( 'integer',  'AUTOINCREMENT' ),
+                'timestamp' : ( 'text',     None            ),
+                'varchar'   : ( 'text',     None            ) }
+            #
+            self.dColTypes.update( dSqLiteTypes )
+            #
+        #
+        self.dTables, self.lIndexes = GetTableDict()
+        #
+    #
+    #
+    def GetCreateTableStatements( self, oDbApi, oDBConnect, oCursor ):
+        #
+        self.lTables    = [ GetCreateTableString( sTable, oTable, self.dColTypes )
+                            for sTable, oTable in self.dTables.items()
+                            if not hasTable( sTable, oDbApi, oDBConnect, oCursor ) ]
+        #
+        return self.lTables, self.lIndexes
+
+
+class ValueFormatterClass( object ):
+    #
+    def __init__( self, sSystemSQL = 'sqlite' ):
+        #
+        from Dict.Get import GetDictGotKeys
+        #
+        self.dQuotedTypes = GetDictGotKeys(
+            (   'bool',
+                'char',
+                'date',
+                'text',
+                'time',
+                'timestamp',
+                'varchar' ) )
+        #
+        if sSystemSQL != 'sqlite':
+            #
+            dUpdates    = GetQuotedTypesDictUpdates( sSystemSQL )
+            #
+            self.GetUpdateQuotedTypesDict( dUpdates )
+
+
+    def GetUpdateQuotedTypesDict( self, dUpdates ):
+        #
+        self.dQuotedTypes.update( dUpdates )
+
+
+    def GetAllNewQuotedTypesDict( self, dUpdates ):
+        #
+        self.dQuotedTypes   = dUpdates
+
+
+    def GetFormattedValue( self, sType, uValue ):
+        #
+        """Potentially a slight problem here, as one cannot put "null" or "None"
+        into a character or text field, as they are interpreted as null/None.
+        """
+        #
+        if uValue is None or uValue == 'None':
+            #
+            uValue          = 'null'
+            #
+        elif uValue == 'null' or uValue == 'not null':
+            #
+            pass
+            #
+        elif uValue == 'not None':
+            #
+            uValue          = 'not null'
+            #
+        elif sType in self.dQuotedTypes:
+            #
+            if isIterable( uValue ):
+                #
+                uValue      = [ self.GetFormattedValue( sType, uMember ) for uMember in uValue ]
+                #
+            elif not isInQuotesSingle( uValue ):
+                #
+                uValue  = GetInSingleQuotes( uValue )
+                #
+            #
+            if self.dQuotedTypes[ sType ]:
+                #
+                if not isListOrTuple( uValue ):
+                    #
+                    uValue  = '%s %s' % ( self.dQuotedTypes[ sType ], uValue )
+                    #
+                else:
+                    #
+                    uValue  = [ '%s %s' % ( self.dQuotedTypes[ sType ], uMember ) for uMember in uValue ]
+                    #
+            #
+            if isListOrTuple( uValue ):
+                #
+                uValue  = '( %s )' % ', '.join( uValue )
+                #
+        #
+        return uValue
+
+
+
+
+
+def GetConnected( connect, database = None, host = None, user = None, password = None ):
+    #
+    oDBConnect  = connect( database = database, host = host, user = user, password = password )
+    #
+    oCursor     = oDBConnect.cursor()
+    #
+    return oDBConnect, oCursor
+
+
+
+def hasDataBase( oDbApi, database, host = None, user = None, password = None ):
+    #
+    bhasDataBase    = 0
+    #
+    try:
+        #
+        oDBConnect, oCursor = GetConnected(
+                                oDbApi.connect,
+                                database    = database,
+                                host        = host,
+                                user        = user,
+                                password    = password )
+        #
+        bhasDataBase    = 1
+        #
+        oCursor.close()
+        #
+    except oDbApi.InternalError:
+        #
+        pass
+        #
+    #
+    #
+    return bhasDataBase
+
+
+
+oWhereSyntaxSwapper = GetSwapper(
+    {   " = 'null'"     : ' is null',
+        " = null"       : ' is null',
+        " = 'not null'" : ' is not null',
+        " = not null"   : ' is not null',
+        " != null"      : ' is not null',
+        " = ("          : ' in (',
+        " = ["          : ' in (',
+        "]"             : ')'           } )
+
+
+
+
+def CommaSeparated( *Items ):
+    #
+    from Utility.ImIf import ImIf
+    #
+    if      len( Items    ) == 1 and \
+            len( Items[0] ) >= 1 and \
+            isListOrTuple( Items[0] ):
+        #
+        Items = Items[0]
+        #
+    #
+    Items   = [ ImIf( sItem == '', 'null', sItem ) for sItem in map( str, Items ) ]
+    #
+    sItems  = ', '.join( Items )
+    #
+    return sItems
+
+
+
+def GetQuotedTypesDictUpdates( sSystemSQL = None ):
+    #
+    from Dict.Get       import GetDictOffKwargs
+    #
+    dUpdates            = {}
+    #
+    if sSystemSQL == 'postgresql':
+        #
+        dUpdates        = GetDictOffKwargs(
+                            bool        = 'bool',
+                            date        = 'date',
+                            time        = 'time',
+                            timestamp   = 'timestamp' )
+    #
+    #
+    return dUpdates
+
+
+
+def GetFormatter( oValFormatter ):
+    #
+    if oValFormatter is None:
+        #
+        def GetFormattedValue( sType, uValue ): return uValue
+        #
+    else:
+        #
+        GetFormattedValue   = oValFormatter.GetFormattedValue
+        #
+    #
+    return GetFormattedValue
+
+
+
+def GetColsEqualsValues( tColumns, tValues, tCompOperators = None ):
+    #
+    lValues             = map( str, tValues )
+    #
+    if not tCompOperators:
+        #
+        tCompOperators  = [ '=' ] * len( tColumns )
+        #
+    #
+    lColsValues         = [ '%s %s %s' % ( sColumn, sCompOperator, sValue )
+                            for sColumn, sCompOperator, sValue
+                            in zip( tColumns, tCompOperators, tValues ) ]
+    #
+    return lColsValues
+
+
+
+def GetSetColsEqualsValues( tColumns, tValues ):
+    #
+    lColsValues = GetColsEqualsValues( tColumns, tValues )
+    #
+    return ', '.join( lColsValues )
+
+
+
+def GetMeetsConditions( tColumns, tValues, tCompOperators = None ):
+    #
+    lValues         = map( str, tValues )
+    #
+    lConditions     = GetColsEqualsValues( tColumns, lValues, tCompOperators )
+    #
+    return oWhereSyntaxSwapper( ' and '.join( lConditions ) )
+
+
+
+def GetSequence( uGot ):
+    #
+    if isListOrTuple( uGot ):
+        #
+        tGot        = uGot
+        #
+    elif isIterable( uGot ):
+        #
+        tGot        = list( uGot )
+        #
+    else:
+        #
+        tGot    = ( uGot, )
+        #
+    #
+    return tGot
+
+
+
+def GetCols4Statement( uWantCols, sGetWhich ):
+    #
+    if      uWantCols and isIterable( uWantCols ):
+        #
+        if len( uWantCols ) > 1:
+            #
+            sWantCols   = CommaSeparated( uWantCols )
+            #
+        else:
+            #
+            sWantCols   = uWantCols[0]
+            #
+    else:
+        #
+        sWantCols       = uWantCols
+        #
+    #
+    if sGetWhich in setMinMax:
+        #
+        sWantCols       = '%s( %s )' % ( sGetWhich, sWantCols )
+        #
+    #
+    return sWantCols
+
+
+
+def GetTableKey( sTable ):
+    #
+    sTableKey   = sTable
+    #
+    if sTable.startswith( 'temp' ):
+        #
+        sTableKey   = sTable[ 4 : ]
+        #
+    #
+    return sTableKey
+
+
+
+def GetUpdateStatement(
+        sTable,
+        tColsSet,       tValsSet,
+        tColsWhere,     tValsWhere,
+        tWhereOper      = None,
+        oDbApi          = None,
+        oValFormatter   = None, ):
+    #
+    GetFormattedValue   = GetFormatter( oValFormatter )
+    #
+    sTableKey           = GetTableKey( sTable )
+    #
+    if oDbApi:
+        #
+        dColsTypes      = oDbApi.dTables[ sTableKey ].dColsTypes
+        #
+        tColsWhere      = GetSequence( tColsWhere )
+        #
+        tValsWhere      = GetSequence( tValsWhere )
+        #
+        lColsValues     = zip( tColsWhere, tValsWhere )
+        #
+        lTypesValues    = [ ( dColsTypes[ sCol ], uValue ) for sCol, uValue in lColsValues ]
+        #
+        tValsWhere      = [ GetFormattedValue( sType, uValue ) for sType, uValue in lTypesValues ]
+        #
+        tColsSet        = GetSequence( tColsSet )
+        #
+        tValsSet        = GetSequence( tValsSet )
+        #
+        lColsValues     = zip( tColsSet, tValsSet )
+        #
+        lTypesValues    = [ ( dColsTypes[ sCol ], uValue ) for sCol, uValue in lColsValues ]
+        #
+        tValsSet        = [ GetFormattedValue( sType, uValue ) for sType, uValue in lTypesValues ]
+        #
+    #
+    sWheres             = GetMeetsConditions( tColsWhere, tValsWhere, tWhereOper )
+    #
+    #
+    sSets               = GetSetColsEqualsValues( tColsSet, tValsSet )
+    #
+    #
+    sUpdate             = "update %s set %s where %s" % ( sTable, sSets, sWheres )
+    #
+    return sUpdate
+
+
+
+def doUpdate(
+        oCursor,
+        oDbApi,
+        sTable,
+        tColsSet,
+        tValsSet,
+        tColsWhere,
+        tValsWhere,
+        tWhereOper      = None,
+        oValFormatter   = None ):
+    #
+    sUpdateStatement    = GetUpdateStatement(
+                            sTable,
+                            tColsSet,       tValsSet,
+                            tColsWhere,     tValsWhere,
+                            tWhereOper      = tWhereOper,
+                            oDbApi          = oDbApi,
+                            oValFormatter   = oValFormatter, )
+    #
+    # print sUpdateStatement
+    #
+    try:
+        oCursor.execute( sUpdateStatement )
+    except:
+        print sUpdateStatement
+        raise
+    #
+    return sUpdateStatement
+
+
+
+
+def GetInsertStatement(
+        sTable, tColumns, tValues,
+        oDbApi          = None,
+        oValFormatter   = None ):
+    #
+    #! fix tValues  to lValues?
+    #
+    GetFormattedValue   = GetFormatter( oValFormatter )
+    #
+    tColumns            = GetSequence( tColumns )
+    tValues             = GetSequence( tValues  )
+    #
+    sTableKey           = GetTableKey( sTable )
+    #
+    if oDbApi:
+        #
+        dColsTypes      = oDbApi.dTables[ sTableKey ].dColsTypes
+        #
+        lColsValues     = zip( tColumns, tValues )
+        #
+        lTypesValues    = [ ( dColsTypes[ sCol ], uValue ) for sCol, uValue in lColsValues ]
+        #
+        tValues         = [ GetFormattedValue( sType, uValue ) for sType, uValue in lTypesValues ]
+        #
+    #
+    #
+    sColList            = CommaSeparated( tColumns )
+    sValueList          = CommaSeparated( tValues  )
+    #
+    sInsert = "insert into %s( %s ) values( %s )" % ( sTable, sColList, sValueList )
+    #
+    return sInsert
+
+
+
+
+def doInsert(
+        oCursor,
+        oDbApi,
+        sTable,
+        tColsSet,
+        tValsSet,
+        tColsWhere      = None,
+        tValsWhere      = None,
+        tWhereOper      = None,
+        oValFormatter   = None ):
+    #
+    sInsertStatement    = GetInsertStatement(
+                            sTable, tColsSet, tValsSet, oDbApi, oValFormatter )
+    #
+    bDoPrintRaise       = 0
+    #
+    # print sInsertStatement
+    try:
+        #
+        oCursor.execute( sInsertStatement )
+        #
+    except oDbApi.DatabaseError:
+        #
+        bDoPrintRaise = 1
+        #
+    except:
+        #
+        bDoPrintRaise   = 1
+        #
+    #
+    if bDoPrintRaise:
+        #
+        print sInsertStatement
+        raise
+        #
+    #
+    return sInsertStatement
+
+
+def FixOneItemTuple( uItem ):
+    #
+    if isListOrTuple( uItem ) and len( uItem ) == 1:
+        #
+        uItem       = uItem[0]
+        #
+    #
+    return uItem
+
+
+def GetWhereClause(
+        sTable,
+        tWhereCols,
+        tWhereVals,
+        tWhereOper          = None,
+        oDbApi              = None,
+        GetFormattedValue   = None ):
+    #
+    tWhereCols      = GetSequence( tWhereCols )
+    #
+    tWhereVals      = GetSequence( tWhereVals )
+    #
+    if oDbApi:
+        #
+        sTableKey       = GetTableKey( sTable )
+        #
+        dColsTypes      = oDbApi.dTables[ sTableKey ].dColsTypes
+        #
+        lColsValues     = zip( tWhereCols, tWhereVals )
+        #
+        try:
+            lTypesValues    = [ ( dColsTypes[ sCol ], FixOneItemTuple( uValue ) )
+                                for sCol, uValue in lColsValues ]
+        except:
+            print sCol
+            raise
+        #
+        lWhereValues    = [ GetFormattedValue( sType, uValue ) for sType, uValue in lTypesValues ]
+        #
+    #
+    #
+    sWhere              = ' where %s' % GetMeetsConditions(
+                                        tWhereCols, lWhereValues, tWhereOper )
+    #
+    return sWhere
+
+
+
+def GetSelectStatement(
+        sTable,
+        uWantCols       = ('*',),
+        tWhereCols      = (),
+        tWhereVals      = [],
+        tWhereOper      = None,
+        oDbApi          = None,
+        oValFormatter   = None,
+        tOrderByCols    = (), bOrderByDesc = 0,
+        uDistinctCols   = None,
+        sManualWhere    = None,
+        sGetWhich       = '' ):
+    #
+    # oValFormatter would normally be an instance of ValueFormatterClass
+    #
+    sWantCols           = GetCols4Statement( uWantCols, sGetWhich )
+    #
+    sWhere              = ''
+    #
+    GetFormattedValue   = GetFormatter( oValFormatter )
+    #
+    sTableKey           = GetTableKey( sTable )
+    #
+    if sManualWhere:
+        #
+        sWhere          = sManualWhere
+        #
+    elif tWhereCols:
+        #
+        sWhere          = GetWhereClause(
+                            sTable,
+                            tWhereCols,
+                            tWhereVals,
+                            tWhereOper,
+                            oDbApi,
+                            GetFormattedValue )
+    #
+    bSelectDistinct         = 0
+    #
+    if uWantCols == uDistinctCols:
+        #
+        bSelectDistinct     = 1
+        #
+    elif uDistinctCols is None:
+        #
+        uDistinctCols       = ''
+        #
+    elif isIterable( uDistinctCols ):
+        #
+        uDistinctCols       = CommaSeparated( uDistinctCols )
+        #
+    else:
+        #
+        uDistinctCols       = uDistinctCols
+        #
+    #
+    sSelectDistinct         = ''
+    #
+    bGetDistinctOn          = 0
+    #
+    if bSelectDistinct:
+        #
+        sSelectDistinct     = 'DISTINCT '
+        #
+    elif uDistinctCols:
+        #
+        if oDbApi.sSystemSQL == 'postgresql':
+            #
+            sSelectDistinct = 'DISTINCT ON ( %s ) ' % uDistinctCols
+            #
+        else:
+            #
+            bGetDistinctOn  = 1
+            #
+    #
+    sOrderBy                = ''
+    #
+    if tOrderByCols:
+        #
+        sOrderByCols        = GetCols4Statement( tOrderByCols, sGetWhich )
+        #
+        sOrderByDesc        = ''
+        #
+        if bOrderByDesc:
+            #
+            sOrderByDesc    = ' desc'
+        #
+        sOrderBy            = ' order by %s%s' % ( sOrderByCols, sOrderByDesc )
+        #
+    #
+    sSelect                 = 'select %s%s from %s %s %s;' % (
+                                sSelectDistinct, sWantCols, sTable, sWhere, sOrderBy )
+    #
+    return sSelect, bGetDistinctOn
+
+
+
+
+def doDelete(
+        oCursor,
+        oDbApi,
+        sTable,
+        tWhereCols      = None,
+        tWhereVals      = None,
+        tWhereOper      = None,
+        oValFormatter   = None ):
+    #
+    sWhere              = ''
+    #
+    GetFormattedValue   = GetFormatter( oValFormatter )
+    #
+    if tWhereCols:
+        #
+        sWhere          = GetWhereClause(
+                            sTable,
+                            tWhereCols,
+                            tWhereVals,
+                            tWhereOper,
+                            oDbApi,
+                            GetFormattedValue )
+    #
+    sDeleteStatement    = 'delete from %s %s;' % ( sTable, sWhere )
+    #
+    try:
+        oCursor.execute( sDeleteStatement )
+    except:
+        print sDeleteStatement
+        raise
+    #
+    return sDeleteStatement
+
+
+
+
+def GetBigFetchCount( oCursor, iFetchLimit = 1000 ):
+    #
+    """Generator simplifying use of fetchmany, from fetchsome in Python Cookbook."""
+    #
+    iCount          = 0
+    #
+    while True:
+        #
+        lResults    = oCursor.fetchmany( iFetchLimit )
+        #
+        if lResults is None: break
+        #
+        iMore       = len( lResults )
+        #
+        if iMore == 0: break
+        #
+        iCount      += iMore
+        #
+    #
+    return iCount
+
+
+
+def GetBigFetch( oCursor, iFetchLimit = 1000 ):
+    #
+    """Generator simplifying use of fetchmany, adapted from fetchsome in Python Cookbook."""
+    #
+    while True:
+        #
+        lResults    = oCursor.fetchmany( iFetchLimit )
+        #
+        if lResults is None:     break
+        #
+        if len( lResults ) == 0: break
+        #
+        for tResult in lResults:
+            #
+            yield tResult
+            #
+        #
+    #
+
+
+def GetAllFetch( oCursor ):
+    #
+    return oCursor.fetchall()
+
+
+def GetOneFetch( oCursor ):
+    #
+    return oCursor.fetchone()
+
+
+
+def GetTupleElementsExtracted( lList ):
+    #
+    """When selecting one column only, you get a list of one-element tuples.
+    This give you a list of the strings or numbers inside."""
+    #
+    return [ t[0] for t in lList ]
+
+
+
+def GetSingleColumnList( oCursor ):
+    #
+    lContents       = GetTupleElementsExtracted( oCursor.fetchall() )
+    #
+    return lContents
+
+
+
+
+def GetStripped( bStrip, uCell ):
+    #
+    if bStrip:
+        #
+        uCell   = uCell.strip()
+        #
+    #
+    return uCell
+
+
+
+def GetCharsStripped( tRow, lStrips ):
+    #
+    try:
+        lStripRow   = zip( lStrips, tRow )
+    except:
+        print lStrips
+        print tRow
+        raise
+    lRow        = [ GetStripped( bStrip, uCell ) for bStrip, uCell in lStripRow ]
+    #
+    return tuple( lRow )
+
+
+
+def GetStripIterator( oIterator, lStrips ):
+    #
+    for tRow in oIterator:
+        #
+        yield GetCharsStripped( tRow, lStrips )
+
+
+dGetFetch = {
+    'all'             : GetAllFetch,
+    'all-big'         : GetBigFetch,
+    'onecolumnlist'   : GetSingleColumnList,
+    'one'             : GetOneFetch,
+    'count'           : GetBigFetchCount,
+    'max'             : GetOneFetch,
+    'min'             : GetOneFetch }
+
+
+setSingleValue = GetSetFrozen( ( 'one', 'count', 'max', 'min' ) )
+
+
+def GetSelection(
+        oCursor,
+        oDbApi,
+        sGetWhich,
+        sTable,
+        uWantCols       = '*',
+        tWhereCols      = (),
+        tWhereVals      = [],
+        tWhereOper      = None,
+        oValFormatter   = None,
+        tOrderByCols    = (), bOrderByDesc = 0,
+        uDistinctCols   = None,
+        bPrintSQL       = 0,
+        sManualWhere    = None,
+        bPrintQuery     = 1 ):
+    #
+    sSelect, bGetDistinctOn = \
+        GetSelectStatement(
+                sTable,
+                uWantCols       = uWantCols,
+                tWhereCols      = tWhereCols,
+                tWhereVals      = tWhereVals,
+                tWhereOper      = tWhereOper,
+                oDbApi          = oDbApi,
+                oValFormatter   = oValFormatter,
+                tOrderByCols    = tOrderByCols,
+                bOrderByDesc    = bOrderByDesc,
+                uDistinctCols   = uDistinctCols,
+                sManualWhere    = sManualWhere,
+                sGetWhich       = sGetWhich )
+    #
+    try:
+        oCursor.execute( sSelect )
+    except:
+        if bPrintQuery:
+            print sSelect
+        raise
+    #
+    if bPrintSQL:
+        #
+        print sSelect
+    #
+    GetFetch        = dGetFetch[ sGetWhich ]
+    #
+    uReturn         = GetFetch( oCursor )
+    #
+    sTableKey       = GetTableKey( sTable )
+    #
+    if sGetWhich != 'count':
+        #
+        if uWantCols == '*':
+            #
+            lCols   = oDbApi.dTables[ sTableKey ].lCols
+            #
+            lTypes  = [ d['type'] for d in lCols ]
+            #
+        else:
+            #
+            dColsTypes  = oDbApi.dTables[ sTableKey ].dColsTypes
+            #
+            uWantCols   = GetSequence( uWantCols )
+            #
+            try:
+                lTypes      = [ dColsTypes[ sCol ] for sCol in uWantCols ]
+            except:
+                print sCol
+                print uWantCols
+                print dColsTypes
+                raise
+        #
+        lStrips         = [ sType == 'char' for sType in lTypes ]
+        #
+        if 1 in lStrips and uReturn:
+            #
+            if sGetWhich == 'one':
+                #
+                uReturn     = ( uReturn, )
+                #
+            elif sGetWhich == 'all-big':
+                #
+                uReturn = GetStripIterator( uReturn, lStrips )
+                #
+            else:
+                #
+                uReturn = [ GetCharsStripped( tRow, lStrips ) for tRow in uReturn ]
+                #
+            #
+        #
+    #
+    if bGetDistinctOn:
+        #
+        pass
+        #
+    #
+    if uReturn and sGetWhich in setSingleValue:
+        #
+        uReturn     = uReturn[0]
+        #
+    #
+    return uReturn
+
+
+def GetCountQuery(
+        sTable,
+        tWhereCols      = (),
+        tWhereVals      = (),
+        tWhereOper      = None,
+        oDbApi          = None,
+        oValFormatter   = None,
+        uDistinctCols   = None, ):
+    #
+    if uDistinctCols is None:
+        #
+        uWantCols       = 'count(*)'
+        #
+    else:
+        #
+        uWantCols       = 'count( distinct %s )' % uDistinctCols
+        #
+    #
+    sSelect, bGetDistinctOn = \
+        GetSelectStatement(
+            sTable,
+            uWantCols       = uWantCols,
+            tWhereCols      = tWhereCols,
+            tWhereVals      = tWhereVals,
+            tWhereOper      = tWhereOper,
+            oDbApi          = oDbApi,
+            oValFormatter   = oValFormatter )
+    #
+    return sSelect
+
+
+
+
+def GetCount(
+        oCursor,
+        oDbApi,
+        sTable,
+        tWhereCols      = (),
+        tWhereVals      = (),
+        tWhereOper      = None,
+        oValFormatter   = None,
+        uDistinctCols   = None,
+        bPrintQuery     = 1 ):
+    #
+    sCountQuery         = GetCountQuery(
+        sTable, tWhereCols, tWhereVals, tWhereOper, oDbApi, oValFormatter, uDistinctCols )
+    #
+    try:
+        oCursor.execute( sCountQuery )
+    except:
+        if bPrintQuery:
+            print sCountQuery
+        #
+        raise
+    #
+    iCount              = oCursor.fetchone()[0]
+    #
+    return iCount
+
+
+
+
+def hasTable( sTable, oDbApi, oDBConnect, oCursor ):
+    #
+    bHasTable       = 0
+    #
+    try:
+        #
+        bHasTable   = GetCount( oCursor, oDbApi, sTable, bPrintQuery = 0 ) >= 0
+        #
+    except oDbApi.DatabaseError:
+        #
+        pass
+        #
+    #
+    if not bHasTable:
+                #
+        try:
+            #
+            oDBConnect.rollback()
+            #
+        except:
+            #
+            pass
+            #
+    #
+    #
+    return bHasTable
+
+
+
+def hasColumn( sTable, sColumn, oDbApi, oDBConnect, oCursor ):
+    #
+    bHasColumn      = 0
+    #
+    try:
+        #
+        sSelect = 'select %s from %s limit 1;' % ( sColumn, sTable )
+        #
+        oCursor.execute( sSelect )
+        #
+        bHasColumn  = 1
+        #
+    except oDbApi.DatabaseError:
+        #
+        pass
+        #
+    #
+    if not bHasColumn:
+        #
+        try:
+            #
+            oDBConnect.rollback()
+            #
+        except:
+            #
+            pass
+            #
+    #
+    #
+    return bHasColumn
+
+
+
+def TableMustHaveAllCols( sTable, oDbApi, oDBConnect, oCursor ):
+    #
+    sTableKey           = GetTableKey( sTable )
+    #
+    dColsTypes          = oDbApi.dTables[ sTableKey ].dColsTypes
+    #
+    bAddedCol           = 0
+    #
+    for sColumn in dColsTypes.keys():
+        #
+        if not hasColumn( sTable, sColumn, oDbApi, oDBConnect, oCursor ):
+            #
+            sType       = GetTranslatedType( dColsTypes[ sColumn ], oDbApi.dColTypes )
+            #
+            sAddCol     = 'alter table %s add column %s %s;' % ( sTable, sColumn, sType )
+            #
+            oCursor.execute( sAddCol )
+            #
+            bAddedCol   = 1
+        #
+    #
+    if bAddedCol:
+        #
+        oDBConnect.commit()
+        #
+    #
+    return bAddedCol
+
+
+
+def TablesMustHaveAllCols( oDbApi, oDBConnect, oCursor, lNoNeed2CheckTables = () ):
+    #
+    for sTable in oDbApi.dTables.keys():
+        #
+        if sTable not in lNoNeed2CheckTables:
+            #
+            TableMustHaveAllCols( sTable, oDbApi, oDBConnect, oCursor )
+
+
+
+
+def FetchGenerator( oCursor, iFetchLimit = 1000 ):
+    #
+    """Generator simplifying use of fetchmany, from fetchsome in Python Cookbook."""
+    #
+    while True:
+        #
+        lResults    = oCursor.fetchmany( iFetchLimit )
+        #
+        if len( lResults ) == 0: break
+        #
+        for lResult in lResults:
+            #
+            yield lResult
+
+
+
+def GetTranslatedType( sType, dColTypes ):
+    #
+    sType       = dColTypes.get( sType )
+    #
+    if sType:
+        #
+        sType   = sType[ 0 ]
+        #
+    #
+    return sType
+
+
+
+def GetTranslateConstraint( sConstraint, sType, dColTypes ):
+    #
+    sNewConstraint      = dColTypes.get( sType )
+    #
+    if sNewConstraint:
+        #
+        sNewConstraint  = sNewConstraint[ 1 ]
+        #
+        if sNewConstraint:
+            #
+            sConstraint = '%s %s' % ( sConstraint, sNewConstraint )
+            #
+        #
+    #
+    return sConstraint.strip()
+
+
+
+def GetColumnCreate( dColumn, dColTypes ):
+    #
+    sName           = dColumn['name']
+    sType           = dColumn['type']
+    iLen            = dColumn['length']
+    #
+    sOrigType       = sType
+    #
+    sType           = GetTranslatedType( sType, dColTypes )
+    #
+    if iLen:
+        #
+        sType       = '%s(%d)' % ( sType, iLen )
+        #
+    #
+    sConstraint     = ''
+    #
+    if 'constraint' in dColumn:
+        #
+        sConstraint = dColumn['constraint']
+        #
+    #
+    sConstraint     = GetTranslateConstraint( sConstraint, sOrigType, dColTypes )
+    #
+    return ' '.join( ( sName, sType, sConstraint ) ).strip()
+
+
+
+def GetColumnStrings( lCols, dColTypes ):
+    #
+    lColStrings = [ GetColumnCreate( dColumn, dColTypes ) for dColumn in lCols ]
+    #
+    return ',\n'.join( lColStrings )
+
+
+
+def GetCreateTableString( sTable, oTable, dColTypes, bTemp = 0 ):
+    #
+    lCols       = oTable.lCols
+    sConstr     = oTable.sConstr
+    #
+    if sConstr: sConstr = ',\n' + sConstr
+    #
+    sColumns = GetColumnStrings( lCols, dColTypes )
+    #
+    sTemp       = ''
+    #
+    if bTemp:
+        #
+        sTemp   = ' temp'
+        #
+    #
+    return 'create%s table %s(\n%s%s\n);' % ( sTemp, sTable, sColumns, sConstr )
+
+
+
+def Append2TableDict( dTables, sTable, lCols, sConstr ):
+    #
+    """
+    Used for created tables from table definitions.
+    Append2TableDict updates dTables as a "byproduct",
+    so there is no need to pass dTables back as a return value
+    """
+    #
+    from Object.Get         import ValueContainer
+    #
+    dColsTypes  = dict( [ ( d['name'], d['type'] ) for d in lCols ] )
+    #
+    sTableKey               = GetTableKey( sTable )
+    #
+    dTables[ sTableKey ]    = ValueContainer( lCols = lCols, sConstr = sConstr, dColsTypes = dColsTypes )
+    #
+    # updates dTables as a "byproduct",
+    # so there is no need to pass dTables back as a return value
+
+
+
+def GetCountDistinct(
+            sSystemSQL,
+            oCursor,
+            sTable,
+            uDistinctCols   = None,
+            tWhereCols      = (),
+            tWhereVals      = (),
+            tWhereOper      = None,
+            oDbApi          = None,
+            oValFormatter   = None ):
+    #
+    if      sSystemSQL == 'sqlite' or \
+            ( ( isListOrTuple( uDistinctCols ) or isIterator( uDistinctCols ) ) and
+                len( uDistinctCols ) > 1 ):
+        #
+        iCount  = \
+            GetSelection(
+                oCursor         = oCursor,
+                oDbApi          = oDbApi,
+                sGetWhich       = 'count',
+                sTable          = sTable,
+                uWantCols       = uDistinctCols,
+                tWhereCols      = tWhereCols,
+                tWhereVals      = tWhereVals,
+                tWhereOper      = tWhereOper,
+                oValFormatter   = oValFormatter,
+                uDistinctCols   = uDistinctCols )
+        #
+    else:
+        #
+        iCount              = GetCount(
+                                oCursor         = oCursor,
+                                sTable          = sTable,
+                                tWhereCols      = tWhereCols,
+                                tWhereVals      = tWhereVals,
+                                oDbApi          = oDbApi,
+                                oValFormatter   = oValFormatter,
+                                uDistinctCols   = uDistinctCols )
+        #
+    #
+    return iCount
+
+
+
+
+def GetTempTable( sTable, oDbApi, oDBConnect, oCursor ):
+    #
+    # GetCreateTableString( sTable, oTable, self.dColTypes ) for sTable, oTable in self.dTables.items()
+    #
+    sTempTable      = 'temp%s' % sTable
+    #
+    if hasTable( sTempTable, oDbApi, oDBConnect, oCursor ):
+        #
+        oCursor.execute( 'drop table %s;' % sTempTable )
+        #
+    #
+    sCreateTemp     = GetCreateTableString( sTempTable, oDbApi.dTables[ sTable ], oDbApi.dColTypes, 1 )
+    #
+    oCursor.execute( sCreateTemp )
+    #
+    oDBConnect.commit()
+
+
+
+
+
+def GetTempTableFromTable(
+        sTable,
+        uWantCols       = ('*',),
+        tWhereCols      = (),
+        tWhereVals      = [],
+        tWhereOper      = None,
+        bOrderByDesc    = 0,
+        uDistinctCols   = None,
+        oDbApi          = None,
+        oDBConnect      = None,
+        oCursor         = None,
+        oValFormatter   = None ):
+    #
+    # GetCreateTableString( sTable, oTable, self.dColTypes ) for sTable, oTable in self.dTables.items()
+    #
+    sTempTable      = 'temp%s' % sTable
+    #
+    if hasTable( sTempTable, oDbApi, oDBConnect, oCursor ):
+        #
+        oCursor.execute( 'drop table %s;' % sTempTable )
+        #
+    #
+    sSelect, bGetDistinctOn = \
+        GetSelectStatement(
+            sTable,
+            uWantCols       = uWantCols,
+            tWhereCols      = tWhereCols,
+            tWhereVals      = tWhereVals,
+            tWhereOper      = tWhereOper,
+            oDbApi          = oDbApi,
+            oValFormatter   = oValFormatter,
+            bOrderByDesc    = bOrderByDesc,
+            uDistinctCols   = uDistinctCols )
+    #
+    sCreateTemp     = 'create temp table %s as %s' % ( sTempTable, sSelect )
+    #
+    try:
+        oCursor.execute( sCreateTemp )
+    except:
+        print sCreateTemp
+        raise
+    #
+    oDBConnect.commit()
+
+
+
+def DropTable( sTable, oDbApi, oDBConnect, oCursor ):
+    #
+    if hasTable( sTable, oDbApi, oDBConnect, oCursor ):
+        #
+        oCursor.execute( 'drop table %s;' % sTable )
+        #
+        oDBConnect.commit()
+        #
+
+
+
+def _GetColsGetDefs( sTable, oDbApi, sType ):
+    #
+    dColsTypes      = oDbApi.dTables[ sTable ].dColsTypes
+    #
+    def isItemOfType( tItem ):
+        #
+        sCol, sColType = tItem
+        #
+        return sColType == sType
+    #
+    return isItemOfType, dColsTypes
+
+
+def GetColsGotType( sTable, oDbApi, sType ):
+    #
+    isItemOfType, dColsTypes = _GetColsGetDefs( sTable, oDbApi, sType )
+    #
+    lItemsOfType    = filter( isItemOfType, dColsTypes.items() )
+    #
+    return GetKeyListOffItemList( lItemsOfType )
+
+
+def GetOneColGotType( sTable, oDbApi, sType ):
+    #
+    isItemOfType, dColsTypes = _GetColsGetDefs( sTable, oDbApi, sType )
+    #
+    sWantCol, sType = GetFirstThatMeets( dColsTypes.items(), isItemOfType )
+    #
+    return sWantCol
+
+
+def GetSerialKeyCol( sTable, oDbApi ):
+    #
+    sSerialCol      = GetOneColGotType( sTable, oDbApi, 'serial' )
+    #
+    return sSerialCol
+
+
+
+def GetRecycleOldRow(
+        sTable,
+        cTimeStampCol,
+        iDaysOld        = None,
+        tWhereCols      = (),
+        tWhereVals      = [],
+        tWhereOper      = None,
+        oCursor         = None,
+        oDbApi          = None,
+        oValFormatter   = None ):
+    #
+    tOldRecord = \
+        GetSelection(
+            oCursor,
+            oDbApi,
+            'min',
+            sTable          = sTable,
+            uWantCols       = cTimeStampCol,
+            tWhereCols      = tWhereCols,
+            tWhereVals      = tWhereVals,
+            tWhereOper      = tWhereOper,
+            oValFormatter   = oValFormatter )
+    #
+    sSerialCol      = GetSerialKeyCol( sTable, oDbApi )
+    #
+    iOldRecord      = None
+    #
+    if iDaysOld is None: iDaysOld = 0
+    #
+    if      tOldRecord                  and \
+            isISOdatetime( tOldRecord ) and \
+            GetDeltaDaysFromStrings( tOldRecord ) >= iDaysOld:
+        #
+        iOldRecord = \
+            GetSelection(
+                oCursor,
+                oDbApi,
+                'one',
+                sTable          = sTable,
+                uWantCols       = sSerialCol,
+                tWhereCols      = cTimeStampCol,
+                tWhereVals      = tOldRecord,
+                oValFormatter   = oValFormatter )
+            #
+        #
+    #
+    return iOldRecord, sSerialCol
+
+
+
+def doInsertOrUpdate(
+        sTable,
+        cTimeStampCol,
+        iDaysOld        = None,
+        tWhereCols      = (),
+        tWhereVals      = [],
+        tWhereOper      = None,
+        tColsSet        = (),
+        tValsSet        = (),
+        oCursor         = None,
+        oDbApi          = None,
+        oValFormatter   = None,
+        oDBConnect      = None ):
+    #
+    """Sending oDBConnect is optional: send it, and the script will commit().
+    """
+    #
+    iOldRecord, sSerialCol = \
+        GetRecycleOldRow(
+            sTable,
+            cTimeStampCol,
+            iDaysOld        = iDaysOld,
+            tWhereCols      = tWhereCols,
+            tWhereVals      = tWhereVals,
+            tWhereOper      = tWhereOper,
+            oCursor         = oCursor,
+            oDbApi          = oDbApi,
+            oValFormatter   = oValFormatter )
+    #
+    if iOldRecord is None:
+        #
+        sSQL = \
+            doInsert(
+                oCursor,
+                oDbApi,
+                sTable,
+                tColsSet        = tColsSet,
+                tValsSet        = tValsSet,
+                oValFormatter   = oValFormatter )
+        #
+        #
+    else:
+        #
+        sSQL = \
+            doUpdate(
+                oCursor,
+                oDbApi,
+                sTable,
+                tColsSet        = tColsSet,
+                tValsSet        = tValsSet,
+                tColsWhere      = sSerialCol,
+                tValsWhere      = iOldRecord,
+                oValFormatter   = oValFormatter ) # were tuples
+        #
+    #
+    if oDBConnect:
+        #
+        oDBConnect.commit()
+        #
+    #
+    return sSQL
+
