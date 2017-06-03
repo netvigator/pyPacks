@@ -28,7 +28,7 @@ you need this in ConfExample.conf:
 [main]
 foo     = bar
 spam    = eggs
-[other]
+[Other]
 spam    = toast
 
 config parsers have these methods (among others):
@@ -47,8 +47,7 @@ class MissingHostnameSectionHeaderError( Exception ): pass
 
 try:
     #
-    import SafeConfigParser as ConfigParser
-    # from SafeConfigParser import NoSectionError, NoOptionError
+    import configparser as ConfigParser # python 3
     #
 except ImportError:
     #
@@ -59,7 +58,7 @@ except ImportError:
         #
     except ImportError:
         #
-        import configparser as ConfigParser
+        import SafeConfigParser as ConfigParser
 #
 
 
@@ -482,7 +481,7 @@ def getConfMainIsDefaultHostnameVaries(
     One config file shared by multiple development computers
     config info for all development computers in one config file
     default config settings are in main
-    variations for this development computer are in a section
+    variations for host development computer are in a section
     heading for section is the hostname
     see bash shell prompt, hostname is right there
     you must get the hostname exactly right!
@@ -498,11 +497,11 @@ def getConfMainIsDefaultHostnameVaries(
     #
     if sFakeHostName4Testing is None:
         #
-        sHostNameLower = gethostname().lower()
+        sHostNameLower = gethostname()
         #
     else:
         #
-        sHostNameLower = sFakeHostName4Testing.lower()
+        sHostNameLower = sFakeHostName4Testing
         #
     #
     if sHostNameLower in dConfig:
@@ -530,48 +529,51 @@ def getConfMainIsDefaultHostnameVaries(
 
 if __name__ == "__main__":
     #
+    from Dict.Get       import getKeyIter
     from Utils.Result   import sayTestResult
     #
     lProblems = []
     #
     oOptions    = getConfigOptions(
-                    dDefaults = { 'other': [ ( 'bacon', 'eggs' ) ] } )
+                    dDefaults = { 'Other': [ ( 'bacon', 'eggs' ) ] } )
     #
     if oOptions.get( 'main',  'foo'  ) != 'bar':
         #
         lProblems.append( 'getConfigOptions() get from file -- file there?' )
         #
-    if oOptions.get( 'other', 'bacon') != 'eggs':
+    if oOptions.get( 'Other', 'bacon') != 'eggs':
         #
         lProblems.append( 'getConfigOptions() access defaults with file' )
         #
     #
     oOptions    = getConfigOptions(
                     sConfigFile = 'ConfNoExample.conf',
-                    dDefaults   = { 'other': { 'bacon': 'eggs' } },
+                    dDefaults   = { 'Other': { 'bacon': 'eggs' } },
                     bNoConfigOK = True )
     #
-    if oOptions.get( 'other', 'bacon') != 'eggs':
+    if oOptions.get( 'Other', 'bacon') != 'eggs':
         #
         lProblems.append( 'getConfigOptions() access defaults no file' )
         #
     #
     oOptions    = getConfigOptions(
                     sConfigFile = 'ConfExample.conf',
-                    dDefaults   = { 'other': { 'bacon': 'eggs' } },
+                    dDefaults   = { 'Other': { 'bacon': 'eggs' } },
                     bNoConfigOK = False )
     #
-    if oOptions.get( 'other', 'spam') != 'toast':
+    if oOptions.get( 'Other', 'spam') != 'toast':
         #
         lProblems.append( 'getConfigOptions() access file' )
         #
     #
     d = {   'main' : { 'foo':   'bar',
                        'spam':  'eggs'},
-            'other': { 'bacon': 'eggs',
+            'Other': { 'bacon': 'eggs',
                        'spam':  'toast'} }
     #
-    if getDict( oOptions ) != d:
+    dGot = getDict( oOptions )
+    #
+    if dGot != d:
         #
         lProblems.append( 'getDict()' )
         #
@@ -581,14 +583,14 @@ if __name__ == "__main__":
                     dDefaults = { 'Foo' : 'candy bar' } )
     #
     if      oLiteOpts.get( 'main', 'foo' ) != 'bar' or \
-            oLiteOpts.get( 'other', 'spam') != 'toast':
+            oLiteOpts.get( 'Other', 'spam') != 'toast':
         #
         lProblems.append( 'getConfLite() regular values' )
         #
     #
     d = {   'main' : { 'foo':   'bar',
                        'spam':  'eggs'},
-            'other': { 'spam':  'toast'} }
+            'Other': { 'spam':  'toast'} }
     #
     if getConfDict() != d:
         #
@@ -794,6 +796,7 @@ if __name__ == "__main__":
     #
     dRetuned = getConfMainIsDefaultHostnameVaries(
                 sFakeHostName4Testing = 'Other' )
+    # None 
     #
     dWant = dict( foo = 'bar', spam = 'toast' )
     #
@@ -807,7 +810,8 @@ if __name__ == "__main__":
     try:
         #
         dRetuned = getConfMainIsDefaultHostnameVaries(
-                sFakeHostName4Testing = 'NotInThere' )
+                sFakeHostName4Testing = 'NotInThere' ) 
+        # 
         #
     except MissingHostnameSectionHeaderError:
         #
