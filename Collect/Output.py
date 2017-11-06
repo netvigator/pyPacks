@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2011 Rick Graves
+# Copyright 2004-2017 Rick Graves
 #
 
 
@@ -63,52 +63,21 @@ def getTextSequence( lSeq, sSep = ', ', sAnd = 'and' ):
     return sSeq.replace( '!@#$', sUseAnd )
 
 
-_tYesOrNo  = ( 'No', 'Yes' )
-_tBlankYes = ( '',   'Y'   )
-_tYorN     = ( 'N',  'Y'   )
-
-def getSayColYesOrNo( bInt, _tYesOrNo = _tYesOrNo ):
-    #
-    return _tYesOrNo[ bInt ]
-
-
-def getSayColYesOrNoLooser( u, _tYesOrNo = _tYesOrNo ):
-    #
-    from Numb.Get import getBooleanInt
-    #
-    return _tYesOrNo[ getBooleanInt( u ) ]
-
-
-def getSayColYesOrBlank( bInt ):
-    #
-    return getSayColYesOrNo( bInt, _tYesOrNo = _tBlankYes )
-
-
-def getSayColYorN( bInt ):
-    #
-    return getSayColYesOrNo( bInt, _tYesOrNo = _tYorN )
-
-
-def getSayColYesOrBlankLooser( u ):
-    #
-    from Numb.Get import getBooleanInt
-    #
-    return getSayColYesOrNoLooser( u, _tYesOrNo = _tBlankYes )
-
 
 def getColsUpdateTotals( *args, **kwargs ):
     #
     '''order of params must match tColHeads order!!!
     '''
     from Iter.AllVers   import lMap, tMap, iZip
-    from Dict.Numbs import getValuesAdded
-    from Numb.Get   import getBooleanInt
+    from Dict.Numbs     import getValuesAdded
+    from Numb.Get       import getBooleanInt
+    from Utils.Output   import getSayYesOrBlank
     #
     tVals       = tMap( getBooleanInt, args )
     #
     tColHeads   = kwargs.get( 'tColHeads' )
     dTotals     = kwargs.get( 'dTotals' )
-    getSayCol   = kwargs.get( 'getSayCol', getSayColYesOrBlank )
+    getSayCol   = kwargs.get( 'getSayCol', getSayYesOrBlank )
     #
     dVals       = dict( iZip( tColHeads, tVals ) )
     #
@@ -159,31 +128,6 @@ if __name__ == "__main__":
         print3( ''    )
         print3( sWant )
         lProblems.append( 'getTextSequence()' )
-        #
-    #
-    if getSayColYesOrNo( 0 ) != 'No' or getSayColYesOrNo( 1 ) != 'Yes':
-        #
-        lProblems.append( 'getSayColYesOrNo()' )
-        #
-    #
-    if getSayColYesOrNoLooser( '' ) != 'No' or getSayColYesOrNoLooser( 'a' ) != 'Yes':
-        #
-        lProblems.append( 'getSayColYesOrNoLooser()' )
-        #
-    #
-    if getSayColYesOrBlank( 0 ) != '' or getSayColYesOrBlank( 1 ) != 'Y':
-        #
-        lProblems.append( 'getSayColYesOrBlank()' )
-        #
-    #
-    if getSayColYorN( 0 ) != 'N' or getSayColYorN( 1 ) != 'Y':
-        #
-        lProblems.append( 'getSayColYorN()' )
-        #
-    #
-    if getSayColYesOrBlankLooser( '' ) != '' or getSayColYesOrBlankLooser( 'a' ) != 'Y':
-        #
-        lProblems.append( 'getSayColYesOrBlankLooser()' )
         #
     #
     tColHeads = ( 'spam', 'toast', 'eggs' )

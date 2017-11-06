@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2016 Rick Graves
+# Copyright 2004-2017 Rick Graves
 #
 #
 
@@ -49,7 +49,7 @@ def getTextOutputFromExternalCommand( sCommand ):
 
 
 
-def doSomethingSupressOutput( doSomething ):
+def doSomethingSupressOutput( doSomething, *args, **kwargs ):
     #
     from Object.Get import StreamNull
     from sys        import stdout, stderr
@@ -60,7 +60,7 @@ def doSomethingSupressOutput( doSomething ):
     stdout      = StreamNull()
     stderr      = StreamNull()
     #
-    doSomething()
+    doSomething( *args, **kwargs )
     #
     stdout      = OrigStdOut
     stderr      = OrigStdErr
@@ -100,6 +100,46 @@ def PrintMaybe( uSomething, bPrintAnyway = False ):
 def OutLocals(): print3( locals() )
 
 
+_tYesOrNo  = ( 'No', 'Yes' )
+_tBlankYes = ( '',   'Y'   )
+_tYorN     = ( 'N',  'Y'   )
+
+def getSayYesOrNo( bValue, _tYesOrNo = _tYesOrNo ):
+    #
+    # formerly getSayColYesOrNo() when in Collect.Output
+    # def sayColYesOrNo() support text search for similar name
+    # def sayYesOrNo() support text search for similar name
+    #
+    return _tYesOrNo[ int( bValue) ]
+
+
+def getSayYesOrNoLooser( u, _tYesOrNo = _tYesOrNo ):
+    #
+    # formerly getSayColYesOrNoLooser() when in Collect.Output
+    #
+    return _tYesOrNo[ int( bool( u ) ) ]
+
+
+def getSayYesOrBlank( bValue ):
+    #
+    # formerly getSayColYesOrBlank() when in Collect.Output
+    #
+    return getSayYesOrNo( bValue, _tYesOrNo = _tBlankYes )
+
+
+def getSayColYorN( bValue ):
+    #
+    # formerly getSayColYorN() when in Collect.Output
+    #
+    return getSayYesOrNo( bValue, _tYesOrNo = _tYorN )
+
+
+def getSayYesOrBlankLooser( u ):
+    #
+    # formerly getSayColYesOrBlankLooser() when in Collect.Output
+    #
+    return getSayYesOrNoLooser( u, _tYesOrNo = _tBlankYes )
+
 
 
 if __name__ == "__main__":
@@ -128,6 +168,31 @@ if __name__ == "__main__":
     if PrintMaybe( 'This is a test!' ):
         #
         lProblems.append( 'PrintMaybe()' )
+        #
+    #
+    if getSayYesOrNo( False ) != 'No' or getSayYesOrNo( True ) != 'Yes':
+        #
+        lProblems.append( 'getSayYesOrNo()' )
+        #
+    #
+    if getSayYesOrNoLooser( '' ) != 'No' or getSayYesOrNoLooser( 'a' ) != 'Yes':
+        #
+        lProblems.append( 'getSayYesOrNoLooser()' )
+        #
+    #
+    if getSayYesOrBlank( False ) != '' or getSayYesOrBlank( True ) != 'Y':
+        #
+        lProblems.append( 'getSayYesOrBlank()' )
+        #
+    #
+    if getSayColYorN( False ) != 'N' or getSayColYorN( True ) != 'Y':
+        #
+        lProblems.append( 'getSayColYorN()' )
+        #
+    #
+    if getSayYesOrBlankLooser( '' ) != '' or getSayYesOrBlankLooser( 'a' ) != 'Y':
+        #
+        lProblems.append( 'getSayYesOrBlankLooser()' )
         #
     #
     sayTestResult( lProblems )
