@@ -1312,14 +1312,15 @@ if __name__ == "__main__":
         #
     #
     sShort = 'abc def'
-    sLong  = (  'aaaa bbbb cccc ddddd eee fffffff ggggggg hhhhhh '
-                'iiiii jjjjj kkk llllll mmmm nnnn oooo pppp qqqqq '
-                'rrrr sss ttttt uuuu vvvv www xxxxx yyy zzzzz' )
-    
+    #
     if getUpToLenSplitOnWhite( sShort, 76 ) != sShort:
         #
         lProblems.append( 'getUpToLenSplitOnWhite( sShort, 76 )' )
         #
+    #
+    sLong  = (  'aaaa bbbb cccc ddddd eee fffffff ggggggg hhhhhh '
+                'iiiii jjjjj kkk llllll mmmm nnnn oooo pppp qqqqq '
+                'rrrr sss ttttt uuuu vvvv www xxxxx yyy zzzzz' )
     #
     sExpect = ( 'aaaa bbbb cccc ddddd eee fffffff ggggggg hhhhhh '
                 'iiiii jjjjj kkk llllll mmmm' )
