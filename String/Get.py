@@ -913,7 +913,28 @@ def getPatternNumbers( sOrig, lPattern = [] ):
 
 
 
-
+def getUpToLenSplitOnWhite( s, iMaxLen ):
+    #
+    sReturn = s
+    #
+    if len( s ) > iMaxLen:
+        
+        l = s.split()
+        
+        if len( l[0] ) > iMaxLen:
+            sReturn = s[:iMaxLen]
+        else:
+            iLen = -1
+            lParts = []
+            for sPart in l:
+                iLen += 1 + len( sPart )
+                lParts.append( sPart )
+                if iLen > iMaxLen: break
+            #
+            sReturn = ' '.join( lParts[ : -1 ] )
+            #
+        #
+    return sReturn
 
 
 
@@ -1288,6 +1309,24 @@ if __name__ == "__main__":
     if getPatternNumbers( sPhone, [ 1, 3, 3, 4 ] ) != lWant:
         #
         lProblems.append( 'getPatternNumber() string and list' )
+        #
+    #
+    sShort = 'abc def'
+    sLong  = (  'aaaa bbbb cccc ddddd eee fffffff ggggggg hhhhhh '
+                'iiiii jjjjj kkk llllll mmmm nnnn oooo pppp qqqqq '
+                'rrrr sss ttttt uuuu vvvv www xxxxx yyy zzzzz' )
+    
+    if getUpToLenSplitOnWhite( sShort, 76 ) != sShort:
+        #
+        lProblems.append( 'getUpToLenSplitOnWhite( sShort, 76 )' )
+        #
+    #
+    sExpect = ( 'aaaa bbbb cccc ddddd eee fffffff ggggggg hhhhhh '
+                'iiiii jjjjj kkk llllll mmmm' )
+    #
+    if getUpToLenSplitOnWhite( sLong, 76 ) != sExpect:
+        #
+        lProblems.append( 'getUpToLenSplitOnWhite( sLong, 76 )' )
         #
     #
     #print3( m@p( getWhatIs, '4045CumerladAve#88' ) )
