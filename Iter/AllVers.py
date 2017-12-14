@@ -483,6 +483,17 @@ except ImportError:
     product = _product
 
 
+'''
+
+This comment is so I can find it!
+
+def getNext( o ):
+    #
+    from six import next
+    #
+    return next( o )
+
+'''
 
 
 if __name__ == "__main__":
