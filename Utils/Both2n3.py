@@ -65,6 +65,17 @@ def print3_n_2( *args, **kwargs ):
     file.write( '%s%s%s' % ( beg, sep.join( map( str, args ) ), end ) )
 
 
+'''
+
+This comment is so I can find it!
+
+def getNext( o ):
+    #
+    from six import next
+    #
+    return next( o )
+
+'''
 
 from six import PY2 as PYTHON2
 from six import PY3 as PYTHON3
