@@ -81,9 +81,6 @@ from six import PY2 as PYTHON2
 from six import PY3 as PYTHON3
 
 
-
-
-
 if PYTHON3:
     #
     translate = str.translate
@@ -188,6 +185,19 @@ else:
     '''
 
 
+# http://python-future.org/compatible_idioms.html
+# urllib module
+# urllib is the hardest module to use from Python 2/3 compatible code.
+
+# Python 2 and 3: alternative 4 (modified)
+if PYTHON3:
+    from urllib.parse import urlparse, urlencode
+    from urllib.request import urlopen, Request
+    from urllib.error import HTTPError
+else:
+    from urlparse import urlparse
+    from urllib import urlencode
+    from urllib2 import urlopen, Request, HTTPError
 
 
 

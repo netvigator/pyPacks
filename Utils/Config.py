@@ -474,7 +474,8 @@ def getConfName4Host( cBaseName, bVerbose = True ):
 
 
 def getConfMainIsDefaultHostnameVaries(
-        sConfigFile  = 'ConfExample.conf',
+        sConfigFile     = 'ConfExample.conf',
+        tWantSections   = None,
         sFakeHostName4Testing = None ):
     #
     '''
@@ -521,6 +522,16 @@ def getConfMainIsDefaultHostnameVaries(
         raise MissingHostnameSectionHeaderError( sMsg )
         #
     #
+    if tWantSections is not None:
+        #
+        for sSection in tWantSections:
+            #
+            if sSection in dConfig:
+                #
+                dReturn[ sSection ] = dConfig[ sSection ]
+                #
+            #
+        #
     #
     return dReturn
 
@@ -821,6 +832,20 @@ if __name__ == "__main__":
         #
         lProblems.append( "getConfMainIsDefaultHostnameVaries() "
             "hostname not in there" )
+        #
+    #
+    dRetuned = getConfMainIsDefaultHostnameVaries(
+                tWantSections = ( 'Other', ),
+                sFakeHostName4Testing = 'Other' )
+    #
+    dWant = {'foo': 'bar', 'Other': {'spam': 'toast'}, 'spam': 'toast'}
+    #
+    if dRetuned != dWant:
+        #
+        print3( dRetuned )
+        #
+        lProblems.append( "getConfMainIsDefaultHostnameVaries( "
+                          "tWantSections = ( 'Other', ) )" )
         #
     #
     # getBoolOffYesNoTrueFalse( 'xyz' )

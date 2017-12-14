@@ -488,6 +488,9 @@ except ImportError:
 if __name__ == "__main__":
     #
     from six            import print_ as print3
+    # from six          import next
+    # reminder six has a generic replacement
+    # u = next( iterator )
     #
     from Iter.AllVers   import lMap
     from Utils.Result   import sayTestResult
