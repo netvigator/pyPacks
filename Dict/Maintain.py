@@ -51,10 +51,31 @@ def purgeNegativeValueMembers( d ):
 purgeNegativeValueMembers = removeBlankValues
 
 
+
+
+def getDictValuesFromSingleElementLists( d ):
+    #
+    '''some dicts come to you with single element lists for every value
+    this gets the values out of the lists'''
+    #
+    for k in d:
+        #
+        if isinstance( d[k], list ) and len( d[k] ) == 1:
+            #
+            d[k] = d[k][0]
+            #
+        if isinstance( d[k], dict ):
+            #
+            # recursive call coming up!
+            #
+            getDictValuesFromSingleElementLists( d[k] )
+    #
+
+
 def _doTimeTrial():
     #
-    from Numb.Test       import isOdd
-    from Utils.TimeTrial import TimeTrial
+    from Numb.Test          import isOdd
+    from Utils.TimeTrial    import TimeTrial
     #
     dTest = {}
     #
@@ -76,7 +97,9 @@ if __name__ == "__main__":
     #
     lProblems = []
     #
-    from copy           import copy
+    from copy           import copy, deepcopy
+    from pprint         import pprint
+    #
     from Utils.Result   import sayTestResult
     #
     dTest0 = dict( a=10, b=11, c=12, d=13, e=14, f=15, g=16, h=17, i=18, j=19 )
@@ -107,4 +130,22 @@ if __name__ == "__main__":
         lProblems.append( 'purgeNegativeValueMembers()' )
         #
     #
+    dLevel3 = dict( aaa=[110], bbb=[111], ccc=[112], ddd=[113], eee=[114] )
+    dLevel2 = dict( aa =[ 10], bb =[ 11], cc =[ 12], dd =[ 13], ee = [dLevel3])
+    dLevel1 = dict( a  =[  0], b  =[  1], c  =[  2], d  =[  3], e  =  dLevel2 )
+    #
+    dNestedWithSingleElementListValues = deepcopy( dLevel1 )
+    #
+    dLevel3 = dict( aaa= 110,  bbb= 111,  ccc= 112,  ddd= 113,  eee= 114  )
+    dLevel2 = dict( aa =  10,  bb =  11,  cc =  12,  dd =  13,  ee = dLevel3 )
+    dLevel1 = dict( a  =   0,  b  =   1,  c  =   2,  d  =   3,  e  = dLevel2 )
+    #
+    getDictValuesFromSingleElementLists( dNestedWithSingleElementListValues )
+    #
+    if dNestedWithSingleElementListValues != dLevel1:
+        #
+        lProblems.append( 'getDictValuesFromSingleElementLists()' )
+        #
+    #
+    
     sayTestResult( lProblems )
