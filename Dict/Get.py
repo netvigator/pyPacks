@@ -297,6 +297,19 @@ def getDictSubset( dOrig, *args ):
     return dNew
 
 
+def getAnyKey( d ):
+    #
+    '''maybe most useful where you have a dict, you know it only had one key 
+    but you do not know exactly what that key is.'''
+    #
+    anyKey = None
+    #
+    l = list( d.keys() )
+    #
+    if l: anyKey = l[0]
+    #
+    return anyKey
+
 
 
 if __name__ == "__main__":
@@ -408,8 +421,10 @@ if __name__ == "__main__":
         lProblems.append( 'getDictOfListsOffItems()' )
         #
     #
-    if getDictOffPairOfLists( tTest0, tTestA ) != \
-            {0: 'a', 1: 'b', 2: 'c', 3: 'd', 4: 'e', 5: 'f', 6: 'g', 7: 'h', 8: 'i', 9: 'j'}:
+    dIntegerKeys = { 0: 'a', 1: 'b', 2: 'c', 3: 'd', 4: 'e',
+                     5: 'f', 6: 'g', 7: 'h', 8: 'i', 9: 'j'}
+    #
+    if getDictOffPairOfLists( tTest0, tTestA ) != dIntegerKeys:
         #
         lProblems.append( 'getDictOffPairOfLists()' )
         #
@@ -492,6 +507,21 @@ if __name__ == "__main__":
     if getDictSubset( dOrig, 'a', 'b', 'c' ) != dWant:
         #
         lProblems.append( 'getDictSubset()' )
+        #
+    #
+    if getAnyKey( dOrig ) not in dOrig:
+        #
+        lProblems.append( 'getAnyKey() key should be in there' )
+        #
+    #
+    if getAnyKey( {} ) in dOrig:
+        #
+        lProblems.append( 'getAnyKey() no key not in there' )
+        #
+    #
+    if getAnyKey( dOrig ) in dIntegerKeys:
+        #
+        lProblems.append( 'getAnyKey() key definitely not in there' )
         #
     #
     #
