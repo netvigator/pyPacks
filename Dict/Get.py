@@ -299,7 +299,7 @@ def getDictSubset( dOrig, *args ):
 
 def getAnyKey( d ):
     #
-    '''maybe most useful where you have a dict, you know it only had one key 
+    '''maybe most useful where you have a dict, you know it only has one key 
     but you do not know exactly what that key is.'''
     #
     anyKey = None
@@ -309,6 +309,21 @@ def getAnyKey( d ):
     if l: anyKey = l[0]
     #
     return anyKey
+
+
+
+def getAnyValue( d ):
+    #
+    '''maybe most useful where you have a dict, you know it only has one item,
+    and you want the value not the key.'''
+    #
+    anyValue = None
+    #
+    l = list( d.values() )
+    #
+    if l: anyValue = l[0]
+    #
+    return anyValue
 
 
 
@@ -522,6 +537,25 @@ if __name__ == "__main__":
     if getAnyKey( dOrig ) in dIntegerKeys:
         #
         lProblems.append( 'getAnyKey() key definitely not in there' )
+        #
+    #
+    setOrigValues = frozenset( dOrig.values() )
+    #
+    if getAnyValue( dOrig ) not in setOrigValues:
+        #
+        lProblems.append( 'getAnyValues() value should be in there' )
+        #
+    #
+    if getAnyValue( {} ) in setOrigValues:
+        #
+        lProblems.append( 'getAnyValue() no value not in there' )
+        #
+    #
+    setIntegerKeyValues = frozenset( dIntegerKeys.values() )
+    #
+    if getAnyValue( dOrig ) in setIntegerKeyValues:
+        #
+        lProblems.append( 'getAnyValue() value definitely not in there' )
         #
     #
     #
