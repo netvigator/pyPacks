@@ -20,9 +20,54 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2016 Rick Graves
+# Copyright 2004-2018 Rick Graves
 #
 
+def getRegExSpecialsEscapedNoShortcut( sString ):
+    #
+    from Iter.AllVers import getEnumerator
+    #
+    lString = list( sString )
+    #
+    for cSpecial in '*?\[]{}$^+|()':
+        #
+        for i, c in getEnumerator( lString ):
+            #
+            if c == cSpecial:
+                #
+                lString[ i ] = '\\' + c
+        #
+    #
+    return ''.join( lString )
+
+
+def getRegExSpecialsEscapedWithShortcut( sString ):
+    #
+    from Iter.AllVers import getEnumerator
+    #
+    lGotChars = [ c for c in '*?\[]{}$^+|()' if c in sString ]
+    #
+    if lGotChars:
+        #
+        lString = list( sString )
+        #
+        for cSpecial in lGotChars:
+            #
+            for i, c in getEnumerator( lString ):
+                #
+                if c == cSpecial:
+                    #
+                    lString[ i ] = '\\' + c
+            #
+        return ''.join( lString )
+        #
+    else:
+        #
+        return sString
+        #
+
+
+getRegExSpecialsEscaped = getRegExSpecialsEscapedWithShortcut
 
 
 def getFinder( sPattern,
@@ -132,6 +177,219 @@ def getTextInQuotes( sText ):
     return sQuoted
 
 
+def _doTimeTrial():
+    #
+    from Utils.TimeTrial import TimeTrial
+    from six             import print_ as print3
+    #
+    tTestStrings = (
+        "ACRO",
+        "Addison",
+        "Allied",
+        "Altec-Lansing",
+        "Amperex",
+        "Ampex",
+        "Astronic",
+        "Audio",
+        "Audio Concepts",
+        "Audio Engineering",
+        "Audio Research",
+        "Audiocraft",
+        "B&K",
+        "Bell",
+        "Audio Note",
+        "Briggs, G.A.",
+        "Brook",
+        "Radio Craftsmen",
+        "Crosby",
+        "Crowhurst, Norman H",
+        "Dynaco",
+        "EICO",
+        "Fada",
+        "Fairchild",
+        "Fisher",
+        "GE",
+        "Grommes",
+        "Harman-Kardon",
+        "Western Electric",
+        "Hewlett-Packard",
+        "Hickok",
+        "High Fidelity",
+        "JBL",
+        "Jensen",
+        "Karg",
+        "Klipsch",
+        "Knight",
+        "Lafayette",
+        "McIntosh",
+        "Newark",
+        "PACO",
+        "Peerless",
+        "Pilot",
+        "Kepco",
+        "RCA",
+        "Sherwood",
+        "Stancor",
+        "Stephens",
+        "Stromberg-Carlson",
+        "Sylvania Electric",
+        "Tandberg",
+        "Tektronix",
+        "Tung-Sol",
+        "UTC",
+        "University",
+        "Thordarson",
+        "Radio Engineering Laboratories",
+        "Triad",
+        "Hallicrafters",
+        "Chigaco Standard Transformer Corp.",
+        "Langevin",
+        "Tech-Master",
+        "Regency",
+        "Sargent-Rayment",
+        "Interelectronics",
+        "KenRad",
+        "National Union",
+        "Arcturus",
+        "Cunningham",
+        "Luxman",
+        "PYE",
+        "Marantz",
+        "Bartolucci",
+        "GEC",
+        "Leak",
+        "Wharfedale",
+        "Thorens",
+        "Telefunken",
+        "Tannoy",
+        "Mullard",
+        "Philips",
+        "Quad",
+        "Scott, H.H.",
+        "CBS",
+        "Raytheon",
+        "Philco",
+        "Westinghouse",
+        "Bendix",
+        "United Electronics",
+        "Hytron",
+        "Dumont",
+        "Chatham",
+        "Union Tube Co",
+        "Silvertone",
+        "Simpson",
+        "IPC",
+        "Spartan",
+        "Lansing",
+        "SpeakerLab",
+        "Mastering Lab",
+        "MFA",
+        "Janszen",
+        "KLH",
+        "Emerson",
+        "Fake",
+        "Koss",
+        "Sentinel",
+        "Garod",
+        "Fluke",
+        "Acoustat",
+        "Kadette",
+        "Coronado",
+        "Globe",
+        "Packard-Bell",
+        "Visseaux",
+        "Motorola",
+        "Hyvac",
+        "GE 5 Star",
+        "Zenith",
+        "Brociner",
+        "DeWald",
+        "Arvin",
+        "Meyer",
+        "Cetron",
+        "Empire",
+        "Acoustic Research",
+        "National",
+        "DuKane",
+        "EMI",
+        "Chartwell",
+        "CIFTE",
+        "Decca",
+        "Funke",
+        "Kelley",
+        "Spendor",
+        "Radford",
+        "Neuberger",
+        "Nems Clarke",
+        "Toshiba",
+        "AER",
+        "AVO",
+        "Barzillay",
+        "Crosley",
+        "Goodmans",
+        "Marconi",
+        "Vitavox",
+        "Wizard",
+        "Valvo",
+        "Tungsram",
+        "Tango",
+        "Tamura",
+        "Siemens",
+        "Rogers",
+        "Mazda",
+        "Mullard IEC/10M",
+        "Motiograph",
+        "MO Valve",
+        "Matsushita",
+        "Osram",
+        "Partridge",
+        "Sharp",
+        "McGohan",
+        "Westrex",
+        "ERPI",
+        "Unholtz-Dickie Corp.",
+        "Lambda",
+        "Bogen",
+        "Audiomaster",
+        "Klangfilm",
+        "Brimar",
+        "Lowther",
+        "Williamson",
+        "SME",
+        "Electro-Voice",
+        "Ballantyne",
+        "Heathkit",
+        "Sprague",
+        "{blank}",
+        "Heintz & Kaufman" )
+    #
+    def doNamesWithShortcut():
+        #
+        for sName in tTestStrings:
+            #
+            getRegExSpecialsEscapedWithShortcut( sName )
+
+    def doNamesNoShortcut():
+        #
+        for sName in tTestStrings:
+            #
+            getRegExSpecialsEscapedNoShortcut( sName )
+
+    #
+    print3( '\ndoing doNamesWithShortcut() ...\n' )
+    #
+    TimeTrial( doNamesWithShortcut )
+    #
+    # microseconds per call (with 100 calls per repetition)
+    # 350.29 361.01 361.93 365.09 365.64 368.20 368.34 369.03 371.67 546.59
+    #
+    print3( '\ndoing doNamesNoShortcut() ...\n' )
+    #
+    TimeTrial( doNamesNoShortcut )
+    #
+    # milliseconds per call (with 50 calls per repetition)
+    # 1.97  1.98  2.00  2.00  2.03  2.04  2.06  2.06  2.09  2.21
+
 
 
 if __name__ == "__main__":
@@ -198,4 +456,46 @@ if __name__ == "__main__":
         #
     #
     #
+    sOrig = "{blank}"
+    sWant = "\\{blank\\}"
+    #
+    sGot = getRegExSpecialsEscapedNoShortcut( sOrig )
+    #
+    if sGot != sWant:
+        #
+        print3( sGot )
+        #
+        lProblems.append( 'getRegExSpecialsEscapedNoShortcut("{blank}")' )
+        #
+    #
+    sGot = getRegExSpecialsEscapedWithShortcut( sOrig )
+    #
+    if sGot != sWant:
+        #
+        print3( sGot )
+        #
+        lProblems.append( 'getRegExSpecialsEscapedNoShortcut("{blank}")' )
+        #
+    #
+    sOrig = sWant = "Peerless"
+    #
+    sGot = getRegExSpecialsEscapedNoShortcut( sOrig )
+    #
+    if sGot != sWant:
+        #
+        print3( sGot )
+        #
+        lProblems.append( 'getRegExSpecialsEscapedNoShortcut("Peerless")' )
+        #
+    #
+    sGot = getRegExSpecialsEscapedWithShortcut( sOrig )
+    #
+    if sGot != sWant:
+        #
+        print3( sGot )
+        #
+        lProblems.append( 'getRegExSpecialsEscapedNoShortcut("Peerless")' )
+        #
+    #
+    #    
     sayTestResult( lProblems )
