@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2016 Rick Graves
+# Copyright 2004-2018 Rick Graves
 #
 #
 from six import print_ as print3
@@ -111,10 +111,10 @@ def _definedTrial( getNow, iCallsPerSet, iSets, TimeThis, args, kwargs ):
     print3( sIncrements, end = ' ' )
     #
     if iCallsPerSet > 1:
-        print3( 'per call (with', \
-            ReadableNo( iCallsPerSet ), 'calls per repetition)' )
+        print3( 'per set (with', \
+            ReadableNo( iCallsPerSet ), 'calls per set)' )
     else:
-        print3( 'per call (only one call per repetition)' )
+        print3( 'per set (only one call per set)' )
     #
     for nTime in lTimeList:
         #
