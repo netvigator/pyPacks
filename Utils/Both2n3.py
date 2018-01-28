@@ -199,6 +199,10 @@ else:
     from urllib import urlencode
     from urllib2 import urlopen, Request, HTTPError
 
+try:
+    from collections import OrderedDict
+except ImportError:
+    from Dict.Get import OrderedDictBackport as OrderedDict
 
 
 if __name__ == "__main__":
