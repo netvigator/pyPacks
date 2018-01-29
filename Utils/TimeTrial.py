@@ -171,69 +171,74 @@ def TimeTrial( TimeThis, *args, **kwargs ):
     #
     iWantObjs           = 0
     #
-    try:
-        #
-        TimeThis( *args, **kwargs )
-        #
-    except TypeError:
-        #
-        print3( "%s cannot unpack the params!" % TimeThis.__name__ )
-        #
-        return
-        #
-    #
-    print3( 'working ...' )
-    #
-    # time the function using both clock and time
-    #
-    getNow              = _setClock( False ) # use time
-    #
-    tBeg                = getNow()
-    #
-    TimeThis( *args, **kwargs )
-    #
-    tEnd                = getNow()
-    #
-    nDuration           = tEnd - tBeg # "time" duration
-    #
-    getNow              = _setClock( True ) # use clock
-    #
-    tBeg                = getNow()
-    #
-    TimeThis( *args, **kwargs )
-    #
-    tEnd                = getNow()
+    iCallsPerSet        = kwargs.pop( 'iCallsPerSet', None )
+    iSets               = kwargs.pop( 'iSets',        None )
     #
     bClock1st           = False # use time as first timer
     #
-    if tEnd - tBeg > nDuration: # if "clock" gave a longer duration than "time"
+    getNow              = _setClock( False ) # use time
+    #
+    if iCallsPerSet is None or iSets is None:
         #
-        nDuration       = tEnd - tBeg
-        #
-        bClock1st       = True # use "clock" as first timer
-        #
-    #
-    getNow              = _setClock( bClock1st )
-    #
-    nTargetSecs         =   1.0 # shoot for completing the sets in one sec
-    #
-    iSets               =   10
-    #
-    nSecsPerRepetition  =   nTargetSecs  / iSets
-    #
-    iCallsPerSet        =   nSecsPerRepetition // nDuration
-    #
-    for iPower in iRange( 8, -1, -1 ): # 8 to 0
-        #
-        if iCallsPerSet >= 10**iPower:
+        try:
             #
-            iCallsPerSet = \
-                _getGoodInt( iCallsPerSet // 10**iPower ) * 10**iPower
+            TimeThis( *args, **kwargs )
             #
-            break
+        except TypeError:
+            #
+            print3( "%s cannot unpack the params!" % TimeThis.__name__ )
+            #
+            return
+            #
         #
-    #
-    if iCallsPerSet < 1: iCallsPerSet = 1
+        print3( 'working ...' )
+        #
+        # time the function using both clock and time
+        #
+        tBeg                = getNow()
+        #
+        TimeThis( *args, **kwargs )
+        #
+        tEnd                = getNow()
+        #
+        nDuration           = tEnd - tBeg # "time" duration
+        #
+        getNow              = _setClock( True ) # use clock
+        #
+        tBeg                = getNow()
+        #
+        TimeThis( *args, **kwargs )
+        #
+        tEnd                = getNow()
+        #
+        if tEnd - tBeg > nDuration: # if "clock" gave a longer duration than "time"
+            #
+            nDuration       = tEnd - tBeg
+            #
+            bClock1st       = True # use "clock" as first timer
+            #
+        #
+        getNow              = _setClock( bClock1st )
+        #
+        nTargetSecs         =   1.0 # shoot for completing the sets in one sec
+        #
+        iSets               =   10
+        #
+        nSecsPerRepetition  =   nTargetSecs  / iSets
+        #
+        iCallsPerSet        =   nSecsPerRepetition // nDuration
+        #
+        for iPower in iRange( 8, -1, -1 ): # 8 to 0
+            #
+            if iCallsPerSet >= 10**iPower:
+                #
+                iCallsPerSet = \
+                    _getGoodInt( iCallsPerSet // 10**iPower ) * 10**iPower
+                #
+                break
+            #
+        #
+        if iCallsPerSet < 1: iCallsPerSet = 1
     #
     print3( "using", _sayClock( bClock1st ), "for a timer:" )
     _definedTrial( getNow, iCallsPerSet, iSets, TimeThis, args, kwargs )
@@ -242,6 +247,8 @@ def TimeTrial( TimeThis, *args, **kwargs ):
     getNow = _setClock( not bClock1st )
     _definedTrial( getNow, iCallsPerSet, iSets, TimeThis, args, kwargs )
     print3( '\npython docs say clock is better for time trials (!?)' )
+    #
+    return iCallsPerSet, iSets
 
 
 
@@ -258,10 +265,11 @@ if __name__ == "__main__":
     #
     print3( '\nusing Collect.Get.getSequencePairsThisWithNext ...' )
     #
-    TimeTrial( getSequencePairsThisWithNext, tNumbs )
+    iCallsPerSet, iSets = TimeTrial( getSequencePairsThisWithNext, tNumbs )
     #
     from Iter.Get import getSequencePairsThisWithNext
     #
     print3( '\nusing Iter.Get.getSequencePairsThisWithNext ...' )
     #
-    TimeTrial( getSequencePairsThisWithNext, tNumbs )
+    TimeTrial( getSequencePairsThisWithNext, tNumbs,
+              iCallsPerSet=iCallsPerSet, iSets=iSets)
