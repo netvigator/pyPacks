@@ -961,11 +961,12 @@ def _doTimeTrial():
     #
     print3( '\ndoing str_to_raw() ...\n' )
     #
-    TimeTrial( str_to_raw, sOrig )
+    iCallsPerSet, iSets = TimeTrial( str_to_raw, sOrig )
     #
     print3( '\ndoing getRawGotStr() ...\n' )
     #
-    TimeTrial( getRawGotStr, sOrig )
+    TimeTrial( getRawGotStr, sOrig,
+                        iCallsPerSet = iCallsPerSet, iSets = iSets )
     #
 
 
