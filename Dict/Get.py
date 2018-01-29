@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2017 Rick Graves
+# Copyright 2004-2018 Rick Graves
 #
 
 from Utils.Version  import PYTHON3
