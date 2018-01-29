@@ -22,6 +22,7 @@
 #
 # Copyright 2004-2018 Rick Graves
 #
+from collections import OrderedDict
 
 def getRegExSpecialsEscapedNoShortcut( sString ):
     #
@@ -123,69 +124,46 @@ def getSeqWordBounds( seq ):
 
 
 
+dSub1st = OrderedDict( (
+    ( '&',      ' (&|and) ' ),  # ampersand also matches and
+    ( ' and ',  ' (&|and) ' ),  # and also matches ampersand
+    ( '/',      '(/ )+'     ),  # slash matches ONE  or more spaces or slashes
+    ( ' +- +',  '-'         ),  # remove spaces about hypens
+    ( '"',      '"*'        ),  # double quotes optional
+    ( "'" ,     "'*"        ))) # single quotes optional
+
+# normalize white space between 1st & 2nd
+
+dSub2nd = OrderedDict( (
+    ( ' ',      ' *'        ),  # space    matches ZERO or more spaces
+    ( '-',      '[- ]*'     ),  # hyphen   matches ZERO or more hypens or spaces
+    ( ',',      '[, ]*'     ),  # comma    matches ZERO or more commas or spaces
+    ( '.',      '[. ]*'     ))) # dot      matches ZERO or more dots or spaces
 
 
-'''
-example brand names
-Fairchild
-Harman-Kardon
-Western Electric
-Chigaco Standard Transformer Corp.
-Unholtz-Dickie Corp.
-B&K
-Heintz & Kaufman
-Briggs, G.A.
-
-example categories
-Crossover (Passive)
-Tuner-Preamplifier
-Components (misc)
-Box / Carton / Packing
-Crossover (Electronic)
-Capacitor Checker
-Tuner/Multiplex Combo
-
-'''
-
-dSub1st = {
-    '&'    :  ' (&|and) ',  # ampersand also matches and
-    ' and ':  ' (&|and) ',  # and also matches ampersand
-    '/'    :  ' +',         # slash matches ONE  or more spaces
-    ' +- +':  '-' }         # remove spaces about hypens
-
-uSub2nd = (
-    ( ' ',      ' *' ), )    # space    matches ZERO or more spaces
-
-dSub3rd = {
-    '-'    : '[- ]*',       # hyphen   matches ZERO or more hypens or spaces
-    ','    : '[, ]*',       # comma    matches ZERO or more commas or spaces
-    '.'    : '[. ]*' }      # dot      matches ZERO or more dots or spaces
-
-tSub4th = (
+tSubLast = (
     ( ' *Corporation',
+                ' *(Corporation|Company|Corp|Co)' ),
+    ( ' *Company',
                 ' *(Corporation|Company|Corp|Co)' ),
     ( ' *Corp',
                 ' *(Corporation|Company|Corp|Co)' ),
     ( ' *Co',
                 ' *(Corporation|Company|Corp|Co)' ) )
 
-
-def getRegEx4Chars( s, dSub1st = dSub1st, uSub2nd = uSub2nd, dSub3rd = dSub3rd, tSub4th = tSub4th ):
+def getRegEx4Chars( s,
+        dSub1st = dSub1st, dSub2nd = dSub2nd, tSubLast = tSubLast ):
     #
     from String.Replace import ReplaceManyOldWithManyNew
     #
     s = s.strip()
     #
-    lString = list( s )
+    while s[-1] == '.':
+        #
+        s= s[:-1].strip()
+        #
     #
-    bUpdate = False
-    #
-    while lString[-1] in '. ':
-        #
-        del lString[-1]
-        #
-        bUpdate = True
-        #
+    #print3( 'a', s )
     #
     l = s.split( '|' )
     #
@@ -193,178 +171,149 @@ def getRegEx4Chars( s, dSub1st = dSub1st, uSub2nd = uSub2nd, dSub3rd = dSub3rd, 
         #
         l = [ sPart.strip() for sPart in l ]
         #
-        l.insert( 0, '' )
-        l.append(    '' )
-        
-        s = ')|('.join( l )[ 2 : -2 ]
+        s = _getPartsParenedAndBarred( frozenset( l ) )
         #
     #
-    if bUpdate: s = ''.join( lString )
-    #
     s = ReplaceManyOldWithManyNew( s, dSub1st )
+    #
+    #print3( 'b', s )
     #
     l = s.split() # normalize white space
     #
     s = ' '.join( l )
     #
-    if isinstance( uSub2nd, tuple ):
+    s = ReplaceManyOldWithManyNew( s, dSub2nd )
+    #
+    #print3( 'c', s )
+    #
+    l = s.split( '|' )
+    #
+    lNew = []
+    #
+    for s in l:
         #
-        for t in uSub2nd:
+        for t in tSubLast:
             #
-            s = s.replace( t[0], t[1] )
+            # print3( 's, t[0]:', s, t[0] )
+            #
+            bPutBack = False
+            #
+            if s.endswith( ')' ):
+                bPutBack = True
+                s = s[:-1]
+            #
+            if s.endswith( t[0] ):
+                #
+                s = s[ : - len( t[0] ) ] + t[1]
+                #
+            #
+            if bPutBack: s = s + ')'
             #
         #
-    else:
-        #
-        s = ReplaceManyOldWithManyNew( s, uSub2nd )
+        lNew.append( s )
         #
     #
-    s = ReplaceManyOldWithManyNew( s, dSub3rd, bEscape = True )
-    #
-    for t in tSub4th:
-        #
-        # print3( 's, t[0]:', s, t[0] )
-        #
-        if s.endswith( t[0] ):
-            #
-            s = s[ : - len( t[0] ) ] + t[1]
-            #
-        #
+    s = '|'.join( lNew )
     #
     return s
 
 
-def _getEscapedThenSplit( s ):
+
+def _getPartsParenedAndBarred( u ):
+    #
+    l = list( u )
+    #
+    l.insert( 0, '' )
+    l.append(    '' )
+    #
+    return ')|('.join( l )[ 2 : -2 ]
+
+
+def _getEscapedThenSplit( s, cSplitOn ):
     #
     s = getRegExSpecialsEscaped( s )
     #
-    l = s.split( '\r' )
+    l = s.split( cSplitOn )
     #
     return l
 
 
-def getRegExpObject(
-        cTitle          = '',
-        cLookFor        = '',
-        cExcludeIf      = '',
-        cKeyWords       = '',
-        bKeyWordRequired= False,
-        bWantPair       = '',
-        bSplitDigitsOK  = False,
-        bSubModelsOK    = False,
+def gotRawRex( s ):
+    #
+    return (
+        ( s.startswith( 'r"' ) and s.endswith( '"' ) ) or
+        ( s.startswith( "r'" ) and s.endswith( "'" ) ) )
+
+
+def getRegExpFinder(
+        sOrig           = '',
         dSub1st         = dSub1st,
-        uSub2nd         = uSub2nd,
-        dSub3rd         = dSub3rd,
-        tSub4th         = tSub4th ):
+        dSub2nd         = dSub2nd,
+        tSubLast        = tSubLast,
+        fDoThisFirst    = None,
+        cSeparator      = '\r',
+        bPermutate      = False ):
     #
-    cRegEx = ''
+    from Iter.AllVers   import permutations
+    from String.Get     import getRawGotStr # not sure we need this
     #
-    bGotRawRegEx = (
-        ( cLookFor.startswith( 'r"' ) and cLookFor.endswith( '"' ) ) or
-        ( cLookFor.startswith( "r'" ) and cLookFor.endswith( "'" ) ) )
-    #
-    lLookFor        = []
-    lExcludeIf      = []
-    lKeyWords       = []
-    #
-    sExcludeIf      = ''
-    #
-    if not bGotRawRegEx:
+    if gotRawRex( sOrig ):
         #
-        if bSplitDigitsOK:
+        sInside = sOrig[ 2 : -1 ]
+        #
+        return getFinderFindAll( getRawGotStr( sOrig ) )
+        #
+    #
+    sRegEx = ''
+    #
+    if fDoThisFirst is not None:
+        #
+        sOrig       = fDoThisFirst( sOrig )
+        #
+    #
+    lOrig = _getEscapedThenSplit( sOrig, cSeparator )
+    #
+    if bPermutate:
+        #
+        lNewParts = []
+        #
+        for s in lOrig:
             #
-            pass
+            lSubParts = s.split()
             #
-        else:
+            for l in permutations( lSubParts ):
+                #
+                lNewParts.append( '.*'.join( l ) )
+                #
             #
-            pass
-            #
         #
-        cTitle = getRegExSpecialsEscaped( cTitle )
-        #
-    if bGotRawRegEx:
-        #
-        pass
-        #
-    elif cLookFor:
-        #
-        lLookFor = _getEscapedThenSplit( cLookFor )
-        #
-    if cExcludeIf:
-        #
-        lExcludeIf = _getEscapedThenSplit( cExcludeIf )
-        #
-    if cKeyWords:
-        #
-        lcKeyWords = _getEscapedThenSplit( cKeyWords )
-        #
-    if bGotRawRegEx:
-        #
-        # got raw regex, use as is
-        #
-        cRegEx = cLookFor
-        #
-    elif not ( cLookFor or cKeyWords or cExcludeIf ):
-        #
-        # got title only
-        #
-        pass
-        #
-    elif not ( cLookFor or cKeyWords ):
-        #
-        # got title & cExcludeIf 
-        #
-        pass
-        #
-    elif not ( cKeyWords or cExcludeIf ):
-        #
-        # got title & cLookFor
-        #
-        pass
-        #
-    elif not ( cLookFor or cExcludeIf ):
-        #
-        # got title & cKeyWords
-        #
-        pass
-        #
-    elif not cLookFor:
-        #
-        # got title, cKeyWords, & cExcludeIf 
-        #
-        pass
-        #
-    elif not cExcludeIf:
-        #
-        # got title, cKeyWords, & cLookFor
-        #
-        pass
-        #
-    elif not cKeyWords:
-        #
-        # got title, cLookFor & cExcludeIf 
-        #
-        pass
+        lRegEx = frozenset( lNewParts )
         #
     else:
         #
-        # got title, cKeyWords, cLookFor & cExcludeIf 
+        lRegEx = [  getRegEx4Chars( s,
+                        dSub1st=dSub1st, dSub2nd=dSub2nd, tSubLast=tSubLast )
+                    for s in lOrig ]
+    #
+    if len( lRegEx ) == 1:
         #
-        pass
+        if lRegEx[0][0] != '(':
+            #
+            sRegEx  = '(%s)' % lRegEx[0]
+            #
+        #
+    else:
+        #
+        sRegEx = _getPartsParenedAndBarred( frozenset( lRegEx ) )
         #
     #
-    print( cRegEx )
+    # print3( sRegEx )
     #
-    oRegEx  = getFinderFindAll( cRegEx )
-    #
-    oExcludeIf = None
-    #
-    if sExcludeIf:
-        #
-        oExcludeIf = getFinderFindAll( sExcludeIf )
-        #
-    #
-    return oRegEx, oExcludeIf
+    return getFinderFindAll( sRegEx )
+
+        
+
+
 
 
 
@@ -767,6 +716,21 @@ if __name__ == "__main__":
         #
         print3( sGot )
         #
+        lProblems.append(
+            'getRegEx4Chars(Chigaco Standard Transformer Corp)' )
+        #
+    #
+    sGot = getRegEx4Chars(
+            'Chigaco Standard|Chigaco Standard Transformer Corp.' )
+    #
+    if sGot not in (
+            '(Chigaco *Standard)|'
+            '(Chigaco *Standard *Transformer *(Corporation|Company|Corp|Co))',
+            '(Chigaco *Standard *Transformer *(Corporation|Company|Corp|Co))|'
+            '(Chigaco *Standard)'):
+        #
+        print3( sGot )
+        #
         lProblems.append(  'getRegEx4Chars(Chigaco Standard Transformer Corp)' )
         #
     #
@@ -814,8 +778,120 @@ if __name__ == "__main__":
         #
         lProblems.append(  'getRegEx4Chars(Briggs, G.A.)' )
         #
-        
-
-
-    #    
+    #
+    sOrig   = '50-W-2'
+    #
+    sGot    = getRegEx4Chars( sOrig )
+    #
+    if sGot != '50[- ]*W[- ]*2':
+        #
+        print3( sGot )
+        #
+        lProblems.append( 'getRegEx4Chars(%s)' % sOrig )
+        #
+    #
+    sOrig   = '15" gold'
+    #
+    sGot    = getRegEx4Chars( sOrig )
+    #
+    if sGot != '15"* *gold':
+        #
+        print3( sGot )
+        #
+        lProblems.append( 'getRegEx4Chars(%s)' % sOrig )
+        #
+    #
+    sOrig   = "TR-10 'Tri-ette'"
+    #
+    sGot    = getRegEx4Chars( sOrig )
+    #
+    if sGot != "TR[- ]*10 *'*Tri[- ]*ette'*":
+        #
+        print3( sGot )
+        #
+        lProblems.append( 'getRegEx4Chars(%s)' % sOrig )
+        #
+    #
+    sOrig   = 'TV-2/U'
+    #
+    sGot    = getRegEx4Chars( sOrig )
+    #
+    if sGot != 'TV[- ]*2(/ *)+U':
+        #
+        print3( sGot )
+        #
+        lProblems.append( 'getRegEx4Chars(%s)' % sOrig )
+        #
+    #
+    sOrig   = '50-X-C3'
+    #
+    sGot    = getRegEx4Chars( sOrig )
+    #
+    if sGot != '50[- ]*X[- ]*C3':
+        #
+        print3( sGot )
+        #
+        lProblems.append( 'getRegEx4Chars(%s)' % sOrig )
+        #
+    #
+    #
+    sOrig   = 'Heintz&Kaufman'
+    #
+    oFinder = getRegExpFinder( sOrig )
+    #
+    sTest   = '6DJ8 vacuum tube HEINTZ AND KAUFMAN "Made in England"'
+    #
+    lGot    = oFinder( sTest )
+    #
+    if not lGot:
+        #
+        print3( lGot )
+        #
+        lProblems.append(
+            'getRegExpFinder(%s) testing "%s"' % ( sOrig, sTest ) )
+        #
+    #
+    sTest   = 'abc Black and Decker efg'
+    #
+    lGot    = oFinder( sTest )
+    #
+    if lGot:
+        #
+        print3( lGot )
+        #
+        lProblems.append(
+            'getRegExpFinder(%s) testing "%s"' % ( sOrig, sTest ) )
+        #
+    #
+    sTest   = 'abc Black&Decker efg'
+    #
+    lGot    = oFinder( sTest )
+    #
+    if lGot:
+        #
+        print3( lGot )
+        #
+        lProblems.append(
+            'getRegExpFinder(%s) testing "%s"' % ( sOrig, sTest ) )
+        #
+    #
+    sTest   = 'Black&Decker'
+    #
+    sOrig = 'How now brown cow'
+    #
+    oFinder = getRegExpFinder( sOrig, bPermutate = True )
+    #
+    sTest   = 'Cow brown how now'
+    #
+    lGot    = oFinder( sTest )
+    #
+    if not lGot:
+        #
+        print3( lGot )
+        #
+        lProblems.append(
+            'getRegExpFinder(%s) testing "%s"' % ( sOrig, sTest ) )
+        #
+    #
+    #
     sayTestResult( lProblems )
