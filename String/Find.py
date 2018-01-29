@@ -198,7 +198,9 @@ def getRegEx4Chars( s,
     #
     #print3( 'c', s )
     #
-    def gotLastSomewhere( t ): return t[0] in s
+    sUpper = s.upper()
+    #
+    def gotLastSomewhere( t ): return t[0].upper() in sUpper
     #
     if get1stThatMeets( tSubLast, gotLastSomewhere ):
         #
