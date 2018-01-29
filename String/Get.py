@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2017 Rick Graves
+# Copyright 2004-2018 Rick Graves
 #
 
 from String.Dumpster import DumpYouNameItClass
@@ -937,6 +937,38 @@ def getUpToLenSplitOnWhite( s, iMaxLen ):
     return sReturn
 
 
+# https://stackoverflow.com/questions/21605526/how-to-create-raw-string-from-string-variable-in-python
+def str_to_raw(s):
+    raw_map = {8:r'\b', 7:r'\a', 12:r'\f', 10:r'\n', 13:r'\r', 9:r'\t', 11:r'\v'}
+    return r''.join(i if ord(i) > 32 else raw_map.get(ord(i), i) for i in s)
+
+
+_dRawMap = {8:r'\b', 7:r'\a', 12:r'\f', 10:r'\n', 13:r'\r', 9:r'\t', 11:r'\v'}
+
+def getRawGotStr(sOrig):
+    #
+    return r''.join( [ _dRawMap.get( ord(c), c ) for c in sOrig ] )
+
+
+
+def _doTimeTrial():
+    #
+    from Utils.TimeTrial import TimeTrial
+    from six             import print_ as print3
+    #
+    sOrig = "C:\Documents and Settings\b_zz\Desktop\fy_file"
+    #
+    #
+    print3( '\ndoing str_to_raw() ...\n' )
+    #
+    TimeTrial( str_to_raw, sOrig )
+    #
+    print3( '\ndoing getRawGotStr() ...\n' )
+    #
+    TimeTrial( getRawGotStr, sOrig )
+    #
+
+
 
 if __name__ == "__main__":
     #
@@ -1330,8 +1362,13 @@ if __name__ == "__main__":
         lProblems.append( 'getUpToLenSplitOnWhite( sLong, 76 )' )
         #
     #
-    #print3( m@p( getWhatIs, '4045CumerladAve#88' ) )
+    sOrig = "C:\Documents and Settings\b_zz\Desktop\fy_file"
+    sWant = 'C:\\Documents and Settings\\b_zz\\Desktop\\fy_file'
     #
-    # print3( 'length of lProblems: ', len( lProblems ) )
+    if getRawGotStr( sOrig ) != sWant:
+        #
+        lProblems.append( 'getRawGotStr("%s")' % sOrig )
+        #
+    #
     #
     sayTestResult( lProblems )
