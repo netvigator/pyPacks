@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2016 Rick Graves
+# Copyright 2004-2018 Rick Graves
 #
 from Collect.Test   import isScaler
 from Iter.AllVers   import iMap, iFilter, iRange, iZip
@@ -500,6 +500,11 @@ def getLongest( iterable ):
     return sLongest
 
 
+def getListNoFalsies( l ):
+    #
+    return [ u for u in l if u ]
+
+
 if __name__ == "__main__":
     #
     from string import ascii_lowercase as lowercase
@@ -719,4 +724,21 @@ if __name__ == "__main__":
         lProblems.append( 'getLongest()' )
         #
     #
+    lWant = list( t )
+    #
+    if getListNoFalsies( t ) != lWant:
+        #
+        lProblems.append( 'getListNoFalsies() full list' )
+        #
+    #
+    lOrig = lWant[:] # quick copy
+    #
+    lOrig.extend( [ '', 0, None, False, [], {} ] )
+    #
+    if getListNoFalsies( lOrig ) != lWant:
+        #
+        lProblems.append( 'getListNoFalsies() list w falsies' )
+        #
+    #
+    
     sayTestResult( lProblems )
