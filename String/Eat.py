@@ -295,7 +295,9 @@ def eatFrontOneByOne( sOrig, sEat ):
 
 def eatFromWithin( sOrig, oFinder ):
     #
-    lFound = oFinder( sOrig )
+    from Collect.Get import getListNoFalsies
+    #
+    lFound = getListNoFalsies( oFinder( sOrig ) )
     #
     sReturn = sOrig
     #
@@ -303,7 +305,7 @@ def eatFromWithin( sOrig, oFinder ):
         #
         sReturn = sReturn.replace( lFound[0], '' )
         #
-        lFound = oFinder( sReturn )
+        lFound = getListNoFalsies( oFinder( sReturn ) )
         #
     #
     return sReturn
