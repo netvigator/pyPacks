@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2009-2017 Rick Graves
+# Copyright 2009-2018 Rick Graves
 #
 # here, must use built in map -- cannot import iMap
 
