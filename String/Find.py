@@ -153,13 +153,13 @@ dSub2nd = OrderedDict( (
 
 
 tSubLast = (
-    ( ' *Corporation',
+    ( ' *corporation',
                 ' *(Corporation|Company|Corp|Co)' ),
-    ( ' *Company',
+    ( ' *company',
                 ' *(Corporation|Company|Corp|Co)' ),
-    ( ' *Corp',
+    ( ' *corp',
                 ' *(Corporation|Company|Corp|Co)' ),
-    ( ' *Co',
+    ( ' *co',
                 ' *(Corporation|Company|Corp|Co)' ) )
 
 def getRegEx4Chars( s,
