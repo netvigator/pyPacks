@@ -165,6 +165,7 @@ tSubLast = (
 def getRegEx4Chars( s,
         dSub1st = dSub1st, dSub2nd = dSub2nd, tSubLast = tSubLast ):
     #
+    from Collect.Query  import get1stThatMeets
     from String.Replace import ReplaceManyOldWithManyNew
     #
     s = s.strip()
@@ -197,34 +198,34 @@ def getRegEx4Chars( s,
     #
     #print3( 'c', s )
     #
-    l = s.split( '|' )
+    def gotLastSomewhere( t ): return t[0] in s
     #
-    lNew = []
-    #
-    for s in l:
+    if get1stThatMeets( tSubLast, gotLastSomewhere ):
         #
-        for t in tSubLast:
+        l = s.split( '|' )
+        #
+        lNew = []
+        #
+        for s in l:
             #
-            # print3( 's, t[0]:', s, t[0] )
-            #
-            bPutBack = False
-            #
-            if s.endswith( ')' ):
-                bPutBack = True
-                s = s[:-1]
-            #
-            if s.endswith( t[0] ):
+            for t in tSubLast:
                 #
-                s = s[ : - len( t[0] ) ] + t[1]
+                # print3( 's, t[0]:', s, t[0] )
+                #
+                if s.upper().endswith( t[0].upper() ):
+                    #
+                    s = s[ : - len( t[0] ) ] + t[1]
+                    #
+                elif s.upper().endswith( t[0].upper() + ')' ):
+                    #
+                    s = s[ : - ( 1 + len( t[0] ) ) ] + t[1] + ')'
+                    #
                 #
             #
-            if bPutBack: s = s + ')'
+            lNew.append( s )
             #
         #
-        lNew.append( s )
-        #
-    #
-    s = '|'.join( lNew )
+        s = '|'.join( lNew )
     #
     return s
 
