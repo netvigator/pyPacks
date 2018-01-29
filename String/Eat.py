@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2016 Rick Graves
+# Copyright 2004-2018 Rick Graves
 #
 from String.Test    import isAsciiAlpha, isAsciiDigit
 
@@ -293,6 +293,23 @@ def eatFrontOneByOne( sOrig, sEat ):
     return sRest
 
 
+def eatFromWithin( sOrig, oFinder ):
+    #
+    lFound = oFinder( sOrig )
+    #
+    sReturn = sOrig
+    #
+    while lFound:
+        #
+        sReturn = sReturn.replace( lFound[0], '' )
+        #
+        lFound = oFinder( sReturn )
+        #
+    #
+    return sReturn
+
+
+
 if __name__ == "__main__":
     #
     from string import digits, whitespace
@@ -302,6 +319,7 @@ if __name__ == "__main__":
     from six            import print_ as print3
     #
     from Iter.AllVers   import iZip, iMap, tMap
+    from String.Find    import getFinderFindAll
     from String.Get     import getStringInRange
     from Utils.Result   import sayTestResult
     #
@@ -493,7 +511,14 @@ if __name__ == "__main__":
         lProblems.append( 'eatFrontOneByOne()' )
         #
     #
+    oFinder = getFinderFindAll( ' *\(.*\)' )
     #
+    sGot = eatFromWithin( 'This is for real (but not yet)', oFinder )
+    #
+    if sGot != 'This is for real':
+        #
+        lProblems.append( 'eatFromWithin()' )
+        #
     #
     #
     sayTestResult( lProblems )
