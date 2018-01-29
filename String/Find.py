@@ -113,7 +113,18 @@ def getFinder( sPattern,
 
 def getFinderFindAll( sPattern, bCaseSensitive = False, bDotAll = False ):
     #
-    oFinder = getFinder( sPattern, bCaseSensitive, bDotAll )
+    '''
+    this function returns a ready to call finder
+    just pass in the RegEx pattern
+    the finder returns a list of finds
+    note that said list can contian empty strings, sometimes lots!
+    maybe helpful in Collect.Get:
+    getListNoFalsies() returns only items that evaluate as True
+    (this would omit all empty strings)
+    so you can wrap the finder call with getListNoFalsies()
+    '''
+    oFinder = getFinder( sPattern,
+                         bCaseSensitive = bCaseSensitive, bDotAll = bDotAll )
     #
     return oFinder.findall
 
@@ -283,7 +294,7 @@ def getRegExpFinder(
             #
             for l in permutations( lSubParts ):
                 #
-                lNewParts.append( '.*'.join( l ) )
+                lNewParts.append( r'\b.*\b'.join( l ) )
                 #
             #
         #
