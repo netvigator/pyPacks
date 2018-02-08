@@ -31,7 +31,7 @@ bTurnOnDebugPrint   = False
 
 from String.Replace import getManyOldWithManyNewSwapper
 
-from Time.Convert   import sFormatISOdateTime
+sFormatISOdateTime  = '%Y-%m-%d %H:%M:%S'
 
 _dSafeForFileName   = { ' ' : '_', ':' : '.' } # Windows chokes on colons
 
