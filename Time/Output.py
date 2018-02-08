@@ -29,13 +29,7 @@ _iSecsPerDay    = 24 * 3600
 bDebugPrint         = False
 bTurnOnDebugPrint   = False
 
-from String.Replace import getManyOldWithManyNewSwapper
-
 sFormatISOdateTime  = '%Y-%m-%d %H:%M:%S'
-
-_dSafeForFileName   = { ' ' : '_', ':' : '.' } # Windows chokes on colons
-
-_oGetSafe4FileName  = getManyOldWithManyNewSwapper( _dSafeForFileName )
 
 
 def sayGMT( tNowGMT = None, sFormat = sFormatISO, sBetween = ' ' ):
@@ -122,11 +116,12 @@ def getNowIsoDateOnly( bWantLocal = True ):
 
 
 
-def getNowIsoDateTimeFileNameSafe( bWantLocal = True ):
+
+sFormatISOdateTimeNoColon = '%Y-%m-%d_%H.%M.%S'
+
+def getNowIsoDateTimeFileNameSafe( bWantLocal = True, sFormat = sFormatISOdateTimeNoColon ):
     #
-    sNow = getNowIsoDateTimeStr( bWantLocal )
-    #
-    return _oGetSafe4FileName( sNow )
+    return getNowIsoDateTimeStr( bWantLocal, sFormat = sFormat )
 
 
 
