@@ -31,6 +31,7 @@ bTurnOnDebugPrint   = False
 
 from String.Replace import getManyOldWithManyNewSwapper
 
+from Time.Convert   import sFormatISOdateTime
 
 _dSafeForFileName   = { ' ' : '_', ':' : '.' } # Windows chokes on colons
 
@@ -100,11 +101,12 @@ def sayLocalDateNoTime( tNowGMT = None ):
 
 
 
-def getNowIsoDateTimeStr( bWantLocal = True ):
+def getNowIsoDateTimeStr( bWantLocal = True, sFormat = sFormatISOdateTime ):
     #
     from Time.Convert import getIsoDateTimeStrFromSecs
     #
-    return getIsoDateTimeStrFromSecs( bWantLocal = bWantLocal )
+    return getIsoDateTimeStrFromSecs(
+            bWantLocal = bWantLocal, sFormat = sFormat )
 
 
 
@@ -126,6 +128,14 @@ def getNowIsoDateTimeFileNameSafe( bWantLocal = True ):
     #
     return _oGetSafe4FileName( sNow )
 
+
+
+
+sFormatISOdateTimeNoSpace = '%Y-%m-%d_%H:%M:%S'
+
+def getNowIsoDateTimeNoSpaces( bWantLocal = True, sFormat = sFormatISOdateTimeNoSpace ):
+    #
+    return getNowIsoDateTimeStr( bWantLocal, sFormat = sFormat )
 
 
 def getNowIsoDateTimeNoSpacesNoSeconds( bWantLocal = True ):
@@ -403,9 +413,10 @@ if __name__ == "__main__":
         #
         lProblems.append( 'getNowIsoDateTimeStr()' )
         #
-    sSpace = getNowIsoDateTimeStr()
-    sNone  = getNowIsoDateTimeFileNameSafe()
-    sNoSec = getNowIsoDateTimeNoSpacesNoSeconds()
+    sSpace  = getNowIsoDateTimeStr()
+    sNone   = getNowIsoDateTimeFileNameSafe()
+    sNoSec  = getNowIsoDateTimeNoSpacesNoSeconds()
+    sNoSpace= getNowIsoDateTimeNoSpaces()
     #
     if sSpace.replace( ' ', '_' ).replace( ':', '.' ) != sNone:
         #
@@ -413,6 +424,14 @@ if __name__ == "__main__":
         print3( 'getNowIsoDateTimeFileNameSafe():', sNone  )
         #
         lProblems.append( 'getNowIsoDateTimeFileNameSafe()' )
+        #
+    #
+    if sSpace.replace( ' ', '_' ) != sNoSpace:
+        #
+        print3( 'getNowIsoDateTimeStr():     ', sSpace   )
+        print3( 'getNowIsoDateTimeNoSpaces():', sNoSpace )
+        #
+        lProblems.append( 'getNowIsoDateTimeNoSpaces()' )
         #
     #
     #
