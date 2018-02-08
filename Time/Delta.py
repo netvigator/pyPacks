@@ -92,7 +92,7 @@ def getSecsNowPlusDHMS(
         bWantLocal  = True ):
     #
     from time           import time
-    from Utils.ImIf   import ImIf
+    from Utils.ImIf     import ImIf
     from Time.Clock     import getSecsSinceEpoch
     #
     getTime             = ImIf( bWantLocal, time, getSecsSinceEpoch )
