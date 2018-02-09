@@ -20,16 +20,16 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2016 Rick Graves
+# Copyright 2004-2018 Rick Graves
 #
 
-from Time.Convert import sFormatISOdateTime
+from Time import sFormatISOdateTime, sFormatISOdateTimeNoColon # __init__.py
 
 
 class Finished( Exception ): pass
 
 
-def isISOdatetime( sDateTime ):
+def isISOdatetime( sDateTime, sFormat = sFormatISOdateTime ):
     #
     # '2005-07-24 11:28:34'
     #
@@ -48,7 +48,7 @@ def isISOdatetime( sDateTime ):
             raise Finished
             #
         #
-        tDate           = strptime( sDateTime, sFormatISOdateTime )
+        tDate           = strptime( sDateTime, sFormat )
         #
         bGotStringDate = \
             (   tDate[1] <= 12 and
@@ -61,6 +61,11 @@ def isISOdatetime( sDateTime ):
     #
     return bGotStringDate
 
+
+
+def isISOdatetimeFileNameSafe( sDateTime ):
+    #
+    return isISOdatetime( sDateTime, sFormat = sFormatISOdateTimeNoColon )
 
 
 def isISOdate( sDate ):
@@ -162,6 +167,7 @@ if __name__ == "__main__":
     from time import time
     #
     from Utils.Result   import sayTestResult
+    from Time.Output    import getNowIsoDateTimeFileNameSafe
     #
     lProblems = []
     #
@@ -178,6 +184,11 @@ if __name__ == "__main__":
     if isISOdatetime( time() ):
         #
         lProblems.append( 'isISOdatetime() integer time' )
+        #
+    #
+    if not isISOdatetime( getNowIsoDateTimeFileNameSafe(), sFormatISOdateTimeNoColon ):
+        #
+        lProblems.append( 'isISOdatetime() getNowIsoDateTimeFileNameSafe' )
         #
     #
     if not isISOdate( '2008-04-17' ):
