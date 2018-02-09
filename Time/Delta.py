@@ -20,10 +20,11 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2016 Rick Graves
+# Copyright 2004-2018 Rick Graves
 #
 
-iSecsPerDay     = 24 * 3600
+from Time       import iSecsPerDay, sFormatISOdateTime # in __init__.py
+
 _tMagnitudes    = ( 1e-3, 1,  60,     3600, iSecsPerDay, iSecsPerDay * 24  )
 _tMultiplyBy    = ( 1e6,  1e3, 1, 1.0 / 60,  1.0 / 3600, 1.0 / iSecsPerDay )
 _tSayIncrement  = ( 'microseconds',
