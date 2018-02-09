@@ -20,19 +20,19 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2016 Rick Graves
+# Copyright 2004-2018 Rick Graves
 #
 
-sFormatISO      = '%Y-%m-%d %H:%M:%S'
-_iSecsPerDay    = 24 * 3600
+from Time       import ( iSecsPerDay,
+                         sFormatISOdateTime,
+                         sFormatISOdateTimeNoColon,
+                         sFormatISOdateTimeNoSpace ) # in __init__.py
 
 bDebugPrint         = False
 bTurnOnDebugPrint   = False
 
-sFormatISOdateTime  = '%Y-%m-%d %H:%M:%S'
 
-
-def sayGMT( tNowGMT = None, sFormat = sFormatISO, sBetween = ' ' ):
+def sayGMT( tNowGMT = None, sFormat = sFormatISOdateTime, sBetween = ' ' ):
     #
     from time       import strftime
     from Time.Clock import getTupleGMT
@@ -73,7 +73,7 @@ def sayLocalTime( tNowGMT = None, sFormat = '%a, %d %b %Y, %H:%M:%S' ):
 
 def sayIsoDateTimeLocal( tNowGMT = None ):
     #
-    return sayLocalTime( sFormat = sFormatISO, tNowGMT = tNowGMT )
+    return sayLocalTime( sFormat = sFormatISOdateTime, tNowGMT = tNowGMT )
 
 
 
@@ -117,16 +117,12 @@ def getNowIsoDateOnly( bWantLocal = True ):
 
 
 
-sFormatISOdateTimeNoColon = '%Y-%m-%d_%H.%M.%S'
-
 def getNowIsoDateTimeFileNameSafe( bWantLocal = True, sFormat = sFormatISOdateTimeNoColon ):
     #
     return getNowIsoDateTimeStr( bWantLocal, sFormat = sFormat )
 
 
 
-
-sFormatISOdateTimeNoSpace = '%Y-%m-%d_%H:%M:%S'
 
 def getNowIsoDateTimeNoSpaces( bWantLocal = True, sFormat = sFormatISOdateTimeNoSpace ):
     #
@@ -222,7 +218,7 @@ def getSayDurationAsDaysHrsMinsSecs( nSince = 0, nNow = None ):
     #
     nDuration           = getDuration( nSince, nNow )
     #
-    tConstants          = ( _iSecsPerDay, 3600, 60, 1 )
+    tConstants          = ( iSecsPerDay, 3600, 60, 1 )
     #
     lDurationParts      = []
     #
