@@ -20,25 +20,17 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2016 Rick Graves
+# Copyright 2004-2018 Rick Graves
 #
+
+from Time import * # lots of time formats in __init__.py
 
 class FormatMismatchError( Exception ): pass
 
 class Finished( Exception ): pass
 
-sFormatISOdateTime  = '%Y-%m-%d %H:%M:%S'
-sFormatISOdate      = '%Y-%m-%d'
-sFormatIsoNoSecs    = '%Y-%m-%d %H:%M'
-sFormatDateAm       = '%m/%d/%Y'
-sFormatDateAmShort  = '%m/%d/%y'
-sFormatDateEu       = '%d/%m/%Y'
-sFormatISONoSpace   = '%Y-%m-%d_%H.%M.%S'
-sFormatNatureUSA    = '%d %m %Y'
-sFormatUSAdateTime  = '%m/%d/%Y %I:%M:%S %p'
 
 from String.Find    import getFinder
-from Time.Output    import getNowIsoDateTimeStr
 
 _oApacheDelimiters = getFinder( '[/: ]' )
 
@@ -107,19 +99,6 @@ def getNormalDateFromSecs( fSecsSinceEpoch = None, bWantLocal = True ):
     #
     return getIsoDateTimeStrFromSecs( fSecsSinceEpoch, bWantLocal, sFormat = sFormat )
 
-
-def getTimeFromISODateTime( sDateTime = getNowIsoDateTimeStr() ):
-    #
-    # not used anywhere
-    #
-    return sDateTime[ 11 :    ]
-
-
-def getHrMinFromISODateTime( sDateTime = getNowIsoDateTimeStr() ):
-    #
-    # not used anywhere
-    #
-    return sDateTime[ 11 : 16 ]
 
 
 
@@ -450,14 +429,6 @@ if __name__ == "__main__":
     if not isISOdatetime( getIsoDateTimeStrFromSecs( iNow ) ):
         #
         lProblems.append( 'getIsoDateTimeStrFromSecs()' )
-        #
-    if getTimeFromISODateTime( sNow ) != sNow[ -8 : ]:
-        #
-        lProblems.append( 'getTimeFromISODateTime()' )
-        #
-    if getHrMinFromISODateTime( sNow ) != sNow[ -8 : -3 ]:
-        #
-        lProblems.append( 'getHrMinFromISODateTime()' )
         #
     if      getSecsSinceEpochFromString( sNow ) < 1176833194 or \
             getSecsSinceEpochFromString( sNow ) > 2000000000:
