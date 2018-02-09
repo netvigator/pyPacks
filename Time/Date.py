@@ -20,11 +20,9 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2011 Rick Graves
+# Copyright 2004-2018 Rick Graves
 #
 
-
-sFormatISO          = '%Y-%m-%d %H:%M:%S'
 
 from Time.Output    import getNowIsoDateTimeStr
 
