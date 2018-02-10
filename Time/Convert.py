@@ -23,7 +23,14 @@
 # Copyright 2004-2018 Rick Graves
 #
 
-from Time import * # lots of time formats in __init__.py
+from Time import ( 
+        sFormatISOdateTime,
+        sFormatISOdate,
+        sFormatDateAm,
+        sFormatDateAmShort,
+        sFormatISONoSpace,
+        sFormatNatureUSA,
+        sFormatUSAdateTime ) # explicit imports better than implicit
 
 class FormatMismatchError( Exception ): pass
 
@@ -122,8 +129,6 @@ def getSecsSinceEpochFromString(
             sDateTime,
             sFormat     = sFormatISOdateTime,
             bAdjust2UTC = False ):
-    #
-    # sFormatDateAm
     #
     from time           import mktime, timezone
     from Utils.ImIf     import ImIf
@@ -271,7 +276,7 @@ def getIsoDateFromOther( sDate,
             #
         #
         sNewDate = ' '.join( lParts )
-                
+        #
     else:
         #
         raise NotImplementedError
