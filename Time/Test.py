@@ -154,7 +154,7 @@ def isDateTimeUSA( sDateTime ):
 
 def isDateEuro( sDate ):
     #
-    from Time.Convert import sFormatDateEu
+    from Time import sFormatDateEu
     #
     return isDateSomewhere( sDate, sFormatDateEu )
 
@@ -176,9 +176,19 @@ if __name__ == "__main__":
         lProblems.append( 'isISOdatetime() passed real thing' )
         #
     #
+    if not isISOdatetimeFileNameSafe( '2008-04-17_14.28.28' ):
+        #
+        lProblems.append( 'isISOdatetimeFileNameSafe() passed real thing' )
+        #
+    #
     if isISOdatetime( '2008-04-17x14:28:28' ):
         #
         lProblems.append( 'isISOdatetime() passed fake' )
+        #
+    #
+    if isISOdatetimeFileNameSafe( '2008-04-17x14:28:28' ):
+        #
+        lProblems.append( 'isISOdatetimeFileNameSafe() passed fake' )
         #
     #
     if isISOdatetime( time() ):
