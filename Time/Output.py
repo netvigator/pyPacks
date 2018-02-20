@@ -337,11 +337,19 @@ def getTextDowOffIntDow( iDOW ):
     return nl_langinfo( _tDaysOfWeek[ iDOW ] )
 
 
+def getIsoDateTimeFromDateTime( oDateTime, sFormat = sFormatISOdateTime ):
+    #
+    '''get a date time string off a python date time object'''
+    #
+    return oDateTime.strftime( sFormat )
+
+
 
 if __name__ == "__main__":
     #
     lProblems = []
     #
+    from datetime       import datetime
     from sys            import argv
     from time           import gmtime, time
     #
@@ -352,8 +360,9 @@ if __name__ == "__main__":
     from Time.Delta     import getDeltaDaysFromISOs
     from Time.Test      import isISOdatetime
     from Time.Clock     import getTupleGMT
-    from Time.Convert   import getIsoDateTimeStrFromSecs, getDateTimeTupleFromString, \
-                               getSecsSinceEpochFromString
+    from Time.Convert   import ( getIsoDateTimeStrFromSecs,
+            getDateTimeTupleFromString, getSecsSinceEpochFromString,
+            getDateTimeObjFromString )
     from Utils.Result   import sayTestResult
     #
     tNineZeros  = gmtime( pow(10,9) )
@@ -482,6 +491,17 @@ if __name__ == "__main__":
                 'Saturday' ):
         #
         lProblems.append( 'getTextDowOffIntDow()' )
+        #
+    #
+    sNow = getNowIsoDateTimeStr()
+    #
+    oNow = getDateTimeObjFromString( sNow )
+    #
+    sOut = getIsoDateTimeFromDateTime( oNow )
+    #
+    if sOut != sNow:
+        #
+        lProblems.append( 'getIsoDateTimeFromDateTime()' )
         #
     #
     sayTestResult( lProblems )
