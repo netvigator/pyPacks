@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2016 Rick Graves
+# Copyright 2004-2018 Rick Graves
 #
 
 #from os.path import join, isfile, getmtime, split, splitext, exists, basename, isdir
@@ -326,6 +326,28 @@ def getFileNameNoSpaces( s ):
     return s.replace( ' ', '_' )
 
 
+def getFileSpecHereOrThere( sFileName, tMaybeThere = ( '/tmp', ) ):
+    #
+    sFullSpec = None
+    #
+    if isFileThere( sFileName ):
+        #
+        sFullSpec = sFileName
+        #
+    else:
+        #
+        for sPath in tMaybeThere:
+            #
+            if isFileThere( sPath, sFileName ):
+                #
+                sFullSpec = join( sPath, sFileName )
+                #
+                break
+                #
+            #
+        #
+    #
+    return sFullSpec
 
 
 if __name__ == "__main__":
@@ -335,7 +357,9 @@ if __name__ == "__main__":
     from six            import print_ as print3
     #
     from Collect.Query  import get1stThatMeets
-    from File.Write     import PutReprInTemp
+    from File.Del       import DeleteIfExists
+    from File.Spec      import getPathNameExt
+    from File.Write     import PutReprInTemp, QuietDump
     from Time.ReadWrite import putTimeInFile
     from Time.Test      import isISOdatetime
     from Utils.Result   import sayTestResult
@@ -378,7 +402,6 @@ if __name__ == "__main__":
         lProblems.append( 'getRandomFileName()' )
         #
     #
-    '''
     lLines = getListFromFileLines( 'Get.py' )
     #
     if get1stThatMeets( lLines, isStartsWithThis ) is None:
@@ -405,9 +428,6 @@ if __name__ == "__main__":
         lProblems.append( 'getObjFromFileIter()' )
         #
     #
-
-
-
     if getFileNameNoSpaces( 'Jay  Inslee (D)' ) != 'Jay_Inslee_(D)':
         #
         lProblems.append( 'getFileNameNoSpaces()' )
@@ -415,6 +435,47 @@ if __name__ == "__main__":
     #
     LineParserObject()
     #
-    '''
+    sText = 'How now brown cow.'
+    #
+    sTemp = getTempFile()
+    #
+    QuietDump( sText, sTemp )
+    #
+    sPath, sFile, sExtn = getPathNameExt( sTemp )
+    #
+    sNameNoPath = sFile + sExtn
+    #
+    if getFileSpecHereOrThere( sNameNoPath ) == join( sPath, sNameNoPath ):
+        pass
+    else:
+        #
+        lProblems.append(
+            'getFileSpecHereOrThere() should return full spec (no ext)' )
+        #
+    #
+    DeleteIfExists( sTemp )
+    #
+    if getFileSpecHereOrThere( sNameNoPath ) is not None:
+        #
+        lProblems.append( 'getFileSpecHereOrThere() file not there' )
+        #
+    #
+    sTemp = '%s.tmp' % sTemp
+    #
+    QuietDump( sText, sTemp )
+    #
+    sPath, sFile, sExtn = getPathNameExt( sTemp )
+    #
+    sNameNoPath = sFile + sExtn
+    #
+    if getFileSpecHereOrThere( sNameNoPath ) == join( sPath, sNameNoPath ):
+        pass
+    else:
+        #
+        lProblems.append(
+            'getFileSpecHereOrThere() should return full spec (with ext)' )
+        #
+    #
+    DeleteIfExists( sTemp )
     #
     sayTestResult( lProblems )
