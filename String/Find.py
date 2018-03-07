@@ -259,7 +259,7 @@ def gotRawRex( s ):
         ( s.startswith( "r'" ) and s.endswith( "'" ) ) )
 
 
-def getRegExpFinder(
+def getRegExpObj(
         sOrig           = '',
         dSub1st         = dSub1st,
         dSub2nd         = dSub2nd,
@@ -851,60 +851,60 @@ if __name__ == "__main__":
     #
     sOrig   = 'Heintz&Kaufman'
     #
-    oFinder = getRegExpFinder( sOrig ).findall
+    oFinder = getRegExpObj( sOrig ).search
     #
     sTest   = '6DJ8 vacuum tube HEINTZ AND KAUFMAN "Made in England"'
     #
-    lGot    = oFinder( sTest )
+    oGot    = oFinder( sTest )
     #
-    if not lGot:
+    if not oGot:
         #
-        print3( lGot )
+        print3( oGot )
         #
         lProblems.append(
-            'getRegExpFinder(%s) testing "%s"' % ( sOrig, sTest ) )
+            'getRegExpObj(%s) testing "%s"' % ( sOrig, sTest ) )
         #
     #
     sTest   = 'abc Black and Decker efg'
     #
-    lGot    = oFinder( sTest )
+    oGot    = oFinder( sTest )
     #
-    if lGot:
+    if oGot:
         #
-        print3( lGot )
+        print3( oGot )
         #
         lProblems.append(
-            'getRegExpFinder(%s) testing "%s"' % ( sOrig, sTest ) )
+            'getRegExpObj(%s) testing "%s"' % ( sOrig, sTest ) )
         #
     #
     sTest   = 'abc Black&Decker efg'
     #
-    lGot    = oFinder( sTest )
+    oGot    = oFinder( sTest )
     #
-    if lGot:
+    if oGot:
         #
-        print3( lGot )
+        print3( oGot )
         #
         lProblems.append(
-            'getRegExpFinder(%s) testing "%s"' % ( sOrig, sTest ) )
+            'getRegExpObj(%s) testing "%s"' % ( sOrig, sTest ) )
         #
     #
     sTest   = 'Black&Decker'
     #
     sOrig = 'How now brown cow'
     #
-    oFinder = getRegExpFinder( sOrig, bPermutate = True ).findall
+    oFinder = getRegExpObj( sOrig, bPermutate = True ).search
     #
     sTest   = 'Cow brown how now'
     #
-    lGot    = oFinder( sTest )
+    oGot    = oFinder( sTest )
     #
-    if not lGot:
+    if not oGot:
         #
-        print3( lGot )
+        print3( oGot )
         #
         lProblems.append(
-            'getRegExpFinder(%s) testing "%s"' % ( sOrig, sTest ) )
+            'getRegExpObj(%s) testing "%s"' % ( sOrig, sTest ) )
         #
     #
     #
