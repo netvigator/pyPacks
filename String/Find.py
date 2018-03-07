@@ -275,7 +275,7 @@ def getRegExpFinder(
         #
         sInside = sOrig[ 2 : -1 ]
         #
-        return getFinderFindAll( getRawGotStr( sOrig ) )
+        return getFinder( getRawGotStr( sOrig ) )
         #
     #
     sRegEx = ''
@@ -323,7 +323,7 @@ def getRegExpFinder(
     #
     # print3( sRegEx )
     #
-    return getFinderFindAll( sRegEx )
+    return getFinder( sRegEx )
 
         
 
@@ -851,7 +851,7 @@ if __name__ == "__main__":
     #
     sOrig   = 'Heintz&Kaufman'
     #
-    oFinder = getRegExpFinder( sOrig )
+    oFinder = getRegExpFinder( sOrig ).findall
     #
     sTest   = '6DJ8 vacuum tube HEINTZ AND KAUFMAN "Made in England"'
     #
@@ -893,7 +893,7 @@ if __name__ == "__main__":
     #
     sOrig = 'How now brown cow'
     #
-    oFinder = getRegExpFinder( sOrig, bPermutate = True )
+    oFinder = getRegExpFinder( sOrig, bPermutate = True ).findall
     #
     sTest   = 'Cow brown how now'
     #
