@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2017 Rick Graves
+# Copyright 2004-2018 Rick Graves
 #
 '''
 in general, splitting is fast
@@ -30,7 +30,7 @@ getIterPartsAndBothStarts is a true iterator but takes a RE find object
 
 from six            import print_ as print3
 
-from String.Find import getFinder
+from String.Find import getRegExObj
 
 class Success( Exception ): pass
 
@@ -153,7 +153,7 @@ def getPartsIterAndBothStarts(
     return iterParts, lStartText, lStartSplit
 
 
-_oFindVariableLenPattern = getFinder( '\*|\+|\||\?|\{\d+,\d*\}' )
+_oFindVariableLenPattern = getRegExObj( '\*|\+|\||\?|\{\d+,\d*\}' )
 
 
 
@@ -162,7 +162,7 @@ def __getListsPartsAndBothStarts( s, uSplitOn ):
     #
     """
     say sOrig = 'abcdefg<table>hijklm<table>nopqrs<table>tuvwxyz'
-    getListsPartsAndBothStarts( sOrig, getFinder( '<table>' ) )
+    getListsPartsAndBothStarts( sOrig, getRegExObj( '<table>' ) )
     returns
     ['abcdefg', 'hijklm', 'nopqrs', 'tuvwxyz'],
         [0, 14, 27, 40],
@@ -256,7 +256,7 @@ def _getListsPartsAndBothStarts( s, oFinder ):
     #
     """
     say sOrig = 'abcdefg<table>hijklm<table>nopqrs<table>tuvwxyz'
-    getListsPartsAndBothStarts( sOrig, getFinder( '<table>' ) )
+    getListsPartsAndBothStarts( sOrig, getRegExObj( '<table>' ) )
     returns
     ['abcdefg', 'hijklm', 'nopqrs', 'tuvwxyz'],
         [0, 14, 27, 40],
@@ -324,7 +324,7 @@ def getIterPartsAndBothStarts( s, oFinder ):
     pass a string and a RE finder object
     returns iterator
     say sOrig = 'abcdefg<table>hijklm<table>nopqrs<table>tuvwxyz'
-    list( getIterPartsAndBothStarts( sOrig, getFinder( '<table>' ) ) )
+    list( getIterPartsAndBothStarts( sOrig, getRegExObj( '<table>' ) ) )
     returns
     [ ('abcdefg',  0,  7),
       ('hijklm',  14, 20),
@@ -1008,7 +1008,7 @@ def _PartsAndStartsTimeTrial():
         #
         return list( iterParts ), lStartText, lStartSplit
     #
-    oFinder = getFinder( '<script.' )
+    oFinder = getRegExObj( '<script.' )
     #
     def getIterLists( s, oFinder ):
         #
@@ -1061,9 +1061,9 @@ if __name__ == "__main__":
     lTextAt         = [0, 14, 27, 40]
     lSplitAt        = [7, 20, 33, 47]
     #
-    oFinderLowerC   = getFinder( lowercase )
-    oFinderDigits   = getFinder( digits    )
-    oFinderTableTag = getFinder( '<table>' )
+    oFinderLowerC   = getRegExObj( lowercase )
+    oFinderDigits   = getRegExObj( digits    )
+    oFinderTableTag = getRegExObj( '<table>' )
     #
     #
     oOut, lBegText0, lBegSplits0 = getPartsIterAndBothStarts( sTest0, lowercase )
@@ -1117,7 +1117,7 @@ if __name__ == "__main__":
         lProblems.append( 'getIterPartsAndBothStarts() identical split ons' )
         #
     #
-    oFinderLowerCorOther = getFinder( lowercase + '|8765' )
+    oFinderLowerCorOther = getRegExObj( lowercase + '|8765' )
     #
     lOut, lBegText, lBegSplits = getListsPartsAndBothStarts(
                                     sTest0, oFinderLowerCorOther )
@@ -1185,7 +1185,7 @@ if __name__ == "__main__":
         lProblems.append( "getPartsIterAndBothStarts( letters, 'a' )" )
         #
     #
-    oFinderA = getFinder( 'a' )
+    oFinderA = getRegExObj( 'a' )
     #
     lOut, lBegText, lBegSplits = getListsPartsAndBothStarts( letters, oFinderA )
     #
@@ -1562,7 +1562,7 @@ if __name__ == "__main__":
         lProblems.append( 'getListSplitEnds( sOrig2, oFinderTableTag )' )
         #
     #
-    oFinderSpaces = getFinder( r'(\s+)' )
+    oFinderSpaces = getRegExObj( r'(\s+)' )
     #
     sWantSplit = 'The Cat in the  Hat'
     #
@@ -1690,7 +1690,7 @@ if __name__ == "__main__":
         lProblems.append( 'getSplitAndStrip() default split on' )
         #
     #
-    oFinder = getFinder( ',' )
+    oFinder = getRegExObj( ',' )
     #
     if getSplitAndStrip(
             'spam, eggs, toast ', oFinder ) != ( 'spam', 'eggs', 'toast' ):

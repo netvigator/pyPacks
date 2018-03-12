@@ -20,23 +20,23 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2017 Rick Graves
+# Copyright 2004-2018 Rick Graves
 #
 
-from String.Find    import getFinder
+from String.Find    import getRegExObj
 from String.Output  import getZeroPadder
 
 #
-oFindiFrameBeg      = getFinder( '<iframe.*?>'  )
-oFindiFrameEnd      = getFinder( '</iframe>'    )
-oFindFrameBeg       = getFinder( '<frame '      )
-oFindFrameSpec      = getFinder( 'src='         )
-oFindLinkStart      = getFinder( ' href='       )
-oFindBodyBeg        = getFinder( '<body.*?>'    )
-oFindBodyEnd        = getFinder( '</body>'      )
-oSeparatorFinder    = getFinder( '''>|'|"'''    )
+oFindiFrameBeg      = getRegExObj( '<iframe.*?>'  )
+oFindiFrameEnd      = getRegExObj( '</iframe>'    )
+oFindFrameBeg       = getRegExObj( '<frame '      )
+oFindFrameSpec      = getRegExObj( 'src='         )
+oFindLinkStart      = getRegExObj( ' href='       )
+oFindBodyBeg        = getRegExObj( '<body.*?>'    )
+oFindBodyEnd        = getRegExObj( '</body>'      )
+oSeparatorFinder    = getRegExObj( '''>|'|"'''    )
 #
-oTagFinder          = getFinder( '''<(?:"[^"]*"|'[^']*'|[^'">])*>''' )
+oTagFinder          = getRegExObj( '''<(?:"[^"]*"|'[^']*'|[^'">])*>''' )
 #
 
 _padWith0s          = getZeroPadder( 3 )
@@ -896,7 +896,7 @@ def getBodyOnly( sHTML ):
     return sHTML
 
 
-_oBreakHereFinder = getFinder( '<(?!(?:u>|/|em>|wbr>|b(?:>| )))' )
+_oBreakHereFinder = getRegExObj( '<(?!(?:u>|/|em>|wbr>|b(?:>| )))' )
 
 
 def addLineBreaks( sHTML ):

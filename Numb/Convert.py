@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2016 Rick Graves
+# Copyright 2004-2018 Rick Graves
 #
 
 from six import print_ as print3
@@ -118,7 +118,7 @@ getNumberWords = _getNumberWordFinder()
 
 def _getMultiplierFinder():
     #
-    from String.Find    import getFinder
+    from String.Find    import getRegExObj
     from Dict.Get       import getKeyIter
     #
     sPattern = '|'.join(
@@ -126,7 +126,7 @@ def _getMultiplierFinder():
                 for sNumber
                 in getKeyIter( dMultipliers ) ] )
     #
-    return getFinder( sPattern )
+    return getRegExObj( sPattern )
 
 _oMultiplierFinder = _getMultiplierFinder()
 

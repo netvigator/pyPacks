@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2017 Rick Graves
+# Copyright 2004-2018 Rick Graves
 #
 from six            import print_ as print3
 from six            import next   as getNext
@@ -28,12 +28,12 @@ from six            import next   as getNext
 from Dir.Get        import sTempDir
 from File.Test      import isFileThere
 from Iter.AllVers   import iMap, tMap
-from String.Find    import getFinder
+from String.Find    import getRegExObj
 #from Utils.Both2n3 import getNext
 
 tLineEnd = ( '\n', '\r' )
 
-_oNullFinder = getFinder(
+_oNullFinder = getRegExObj(
     r'(?<=;)null(?=;)|'     # null between semicolons
      '(?<=,)null(?=,)|'     # null between comas
           '^null(?=,|;)|'   # null at beginning of line

@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2012-2017 Rick Graves
+# Copyright 2012-2018 Rick Graves
 #
 # self test needs internet connection and will access www.googleapis.com
 '''
@@ -33,7 +33,7 @@ reload( Web.getGoogle )
 import Web.getGoogle
 from File.Write import putListInTemp, MakeTemp, QuickDump, QuickDumpLines
 from File.Get import getContent
-from String.Find  import getFinder
+from String.Find  import getRegExObj
 from Web.HTML import addLineBreaks
 from String.Text4Tests import sGoogleQuerResult_Konq, sGoogleQuerResult_Chrome
 
@@ -403,38 +403,38 @@ class getGoogleSearchWeb( baseGoogle ):
 
     def _getTextFinders( self ):
         #
-        from String.Find    import getFinder, getFinderFindAll
+        from String.Find    import getRegExObj, getFinderFindAll
         from Web.HTML       import oTagFinder
         #
         dConfSection        = self.dConfSection
         #
-        self.oAboveResults  = getFinder( dConfSection['resultsafter'] )
+        self.oAboveResults  = getRegExObj( dConfSection['resultsafter'] )
         #
         sCacheSimilar       = dConfSection['cachesimilar']
         #
-        self.oCiteFinder    = getFinder( '<cite.+?</cite>',
+        self.oCiteFinder    = getRegExObj( '<cite.+?</cite>',
                                                     bDotAll = True )
         #
-        self.oCacheSimFind  = getFinder( sCacheSimilar )
+        self.oCacheSimFind  = getRegExObj( sCacheSimilar )
         #
         self.oHasNext       = getFinderFindAll( dConfSection['next'] )
         #
-        # self.oTagFinder   = getFinder( '<.*?>'  )
-        # self.oTagFinder   = getFinder( '''<("[^"]*"|'[^']*'|[^'">])*>''' )
+        # self.oTagFinder   = getRegExObj( '<.*?>'  )
+        # self.oTagFinder   = getRegExObj( '''<("[^"]*"|'[^']*'|[^'">])*>''' )
         self.oTagFinder     = oTagFinder
         #
-        # self.oEndTagFind  = getFinder( '</.+?>' )
+        # self.oEndTagFind  = getRegExObj( '</.+?>' )
         #
-        self.oAnchorBegFind = getFinder( '<a '  )
-        self.oAnchorEndFind = getFinder( '</a>' )
+        self.oAnchorBegFind = getRegExObj( '<a '  )
+        self.oAnchorEndFind = getRegExObj( '</a>' )
         #
-        self.oThruGoogleFind= getFinder( '\?q='  )
+        self.oThruGoogleFind= getRegExObj( '\?q='  )
         #
-        self.oSupressText   = getFinder( dConfSection['supresstext'] )
+        self.oSupressText   = getRegExObj( dConfSection['supresstext'] )
         #
-        self.oResultBegFind = getFinder( dConfSection['resultbeg'] )
+        self.oResultBegFind = getRegExObj( dConfSection['resultbeg'] )
         #
-        self.oResultEndFind = getFinder( dConfSection['resultend'] )
+        self.oResultEndFind = getRegExObj( dConfSection['resultend'] )
 
 
 

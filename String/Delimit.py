@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2017 Rick Graves
+# Copyright 2004-2018 Rick Graves
 #
 
 from six import print_ as print3
@@ -136,13 +136,13 @@ def _getBlankBlocks( sOrigText, oFinder ):
     #
     """
     getBlocksBlank( '012345!#spam$%*6789!#eggs$%*abcde!#toast$%*fghijk',
-        getFinder( '(\!#)(.*?)(\$%\*)' ) )
+        getRegExObj( '(\!#)(.*?)(\$%\*)' ) )
     returns         '012345         6789         abcde          fghijk'
     """
     #
     '''
     say sOrig = 'abcdefg<table>hijklm<table>nopqrs<table>tuvwxyz'
-    list( getIterPartsAndBothStarts( sOrig, getFinder( '<table>' ) ) )
+    list( getIterPartsAndBothStarts( sOrig, getRegExObj( '<table>' ) ) )
     returns
     [ ('abcdefg',  0,  7),
       ('hijklm',  14, 20),
@@ -214,11 +214,11 @@ def getBlocksFinder( tDelims, bDotAll = True ):
     example in self test code
     '''
     #
-    from String.Find import getFinder
+    from String.Find import getRegExObj
     #
     sPattern = '|'.join( tDelims )
     #
-    return getFinder( sPattern, bDotAll = bDotAll )
+    return getRegExObj( sPattern, bDotAll = bDotAll )
 
 
 
@@ -340,7 +340,7 @@ def getIterTextBetween( sOrigText, oFinder ):
 
     list( getIterTextBetween(
         '012345!#spam$%*6789!#eggs$%*abcde!#toast$%*fghijk',
-        getFinder( '(\!#)(.*?)(\$%\*)' ) ) )
+        getRegExObj( '(\!#)(.*?)(\$%\*)' ) ) )
     returns
     [ ('012345', 'spam',  2,  9),
       ('6789',   'eggs',  2,  9),
@@ -348,7 +348,7 @@ def getIterTextBetween( sOrigText, oFinder ):
       ('fghijk', '',      0,  0)]
     unZip( getIterTextBetween(
         '012345!#spam$%*6789!#eggs$%*abcde!#toast$%*fghijk',
-        getFinder( '(\!#)(.*?)(\$%\*)' ) )
+        getRegExObj( '(\!#)(.*?)(\$%\*)' ) )
     returns
     [ ['012345', '6789', 'abcde', 'fghijk'],
       [   'spam',  'eggs',  'toast', ''],
@@ -492,14 +492,14 @@ def _BlankBlocksTimeTrial():
 
 def _TextBetweenTimeTrial():
     #
-    from String.Find     import getFinder
+    from String.Find     import getRegExObj
     from Utils.TimeTrial import TimeTrial
     #
     from String.Text4Tests import sGoogleQuerResult_Chrome as sHTML
     #
     sHtmlLower = sHTML.lower()
     #
-    oFinder = getFinder( '(<script.)(.*?)(</script>)', bDotAll = True )
+    oFinder = getRegExObj( '(<script.)(.*?)(</script>)', bDotAll = True )
     #
     print3( '\ngetListsTextBetween (split the hard way) ...' )
     #
@@ -526,12 +526,12 @@ if __name__ == "__main__":
     #
     from Collect.Get    import unZip
     from File.Write     import QuickDump
-    from String.Find    import getFinder
+    from String.Find    import getRegExObj
     from Utils.Result   import sayTestResult
     #
     from String.Text4Tests import sHTML, sBlanked, tWantBlanks
     #
-    oFinder = getFinder( '(?:\!#)(?:.*?)(?:\$%\*)' )
+    oFinder = getRegExObj( '(?:\!#)(?:.*?)(?:\$%\*)' )
     #
     lProblems = []
     #
@@ -678,7 +678,7 @@ if __name__ == "__main__":
         lProblems.append( 'getListsTextBetween() C' )
         #
     #
-    oFinder = getFinder( '(\!#)(.*?)(\$%\*)' )
+    oFinder = getRegExObj( '(\!#)(.*?)(\$%\*)' )
     #
     l = unZip( getIterTextBetween(
             '012345!#spam$%*6789 eggs$%*abcde!#toast$%*fghijk', oFinder ) )

@@ -73,7 +73,7 @@ getRegExSpecialsEscaped = getRegExSpecialsEscapedWithShortcut
 
 
 
-def getFinder( sPattern,
+def getRegExObj( sPattern,
         bCaseSensitive = False, bDotAll = False, bMultiLine = False ):
     #
     '''
@@ -105,9 +105,9 @@ def getFinder( sPattern,
         iFlags      = iFlags | MULTILINE
         #
     #
-    oFinder     = REcompile( sPattern, iFlags )
+    oRegExObj       = REcompile( sPattern, iFlags )
     #
-    return oFinder
+    return oRegExObj
 
 
 
@@ -123,7 +123,7 @@ def getFinderFindAll( sPattern, bCaseSensitive = False, bDotAll = False ):
     (this would omit all empty strings)
     so you can wrap the finder call with getListNoFalsies()
     '''
-    oFinder = getFinder( sPattern,
+    oFinder = getRegExObj( sPattern,
                          bCaseSensitive = bCaseSensitive, bDotAll = bDotAll )
     #
     return oFinder.findall
@@ -275,7 +275,7 @@ def getRegExpObj(
         #
         sInside = sOrig[ 2 : -1 ]
         #
-        return getFinder( getRawGotStr( sOrig ) )
+        return getRegExObj( getRawGotStr( sOrig ) )
         #
     #
     sRegEx = ''
@@ -323,7 +323,7 @@ def getRegExpObj(
     #
     # print3( sRegEx )
     #
-    return getFinder( sRegEx )
+    return getRegExObj( sRegEx )
 
         
 
@@ -614,15 +614,15 @@ if __name__ == "__main__":
     #
     sTest = ( letters + digits ) * 5
     #
-    oFindABC_ignore = getFinder( 'abc', bCaseSensitive = False )
-    oFindABC_CaseSe = getFinder( 'abc', bCaseSensitive = True, bDotAll = True )
+    oFindABC_ignore = getRegExObj( 'abc', bCaseSensitive = False )
+    oFindABC_CaseSe = getRegExObj( 'abc', bCaseSensitive = True, bDotAll = True )
     #
     if      oFindABC_ignore.findall( sTest ) != \
                 ['abc', 'ABC', 'abc', 'ABC', 'abc', 'ABC', 'abc', 'ABC', 'abc', 'ABC'] or \
             oFindABC_CaseSe.findall( sTest ) != \
                 ['abc', 'abc', 'abc', 'abc', 'abc']:
         #
-        lProblems.append( 'getFinder()' )
+        lProblems.append( 'getRegExObj()' )
         #
     if getTextInQuotes( ' " how now brown cow\' " abc ' ) != " how now brown cow' ":
         #
@@ -630,14 +630,14 @@ if __name__ == "__main__":
         #
     #
     sFindThis = '<script.+?</script>|<style.+?</style>'
-    oFindThis = getFinder( sFindThis, bCaseSensitive = False )
+    oFindThis = getRegExObj( sFindThis, bCaseSensitive = False )
     #
     sTest = 'abc<script id=10>def</script>hij<style id = 99>klm</style>nop'
     #
     if oFindThis.findall( sTest ) != \
         ['<script id=10>def</script>', '<style id = 99>klm</style>']:
         #
-        lProblems.append( 'getFinder() compound regex expression' )
+        lProblems.append( 'getRegExObj() compound regex expression' )
         #
     #
     oFind = getFinderFindAll( 'mnop' )

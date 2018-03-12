@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2011 Rick Graves
+# Copyright 2004-2018 Rick Graves
 #
 '''
 
@@ -33,11 +33,11 @@ l =  getListFromFileLines( 'NewDump.txt' )
 
 '''
 from String.Dumpster    import DumpYouNameItClass as _dumpYouNameItClass
-from String.Find        import getFinder          as _getFinder
+from String.Find        import getRegExObj        as _getRegExObj
 
 _oPeriodCommaDumpster   = _dumpYouNameItClass( '.,' )
 _oEmailBracketDumpster  = _dumpYouNameItClass( '<>' )
-_oSpaceCommaSemiFinder  = _getFinder( '[ ,;]' )
+_oSpaceCommaSemiFinder  = _getRegExObj( '[ ,;]' )
 
 
 def getHyphen( s ): return s.replace( '_', '-' )

@@ -27,13 +27,13 @@ else:
 
 def _getFinder():
     #
-    from String.Find    import getFinder
+    from String.Find    import getRegExObj
     #
     sWantWiped = '%s|%s' % (
         '|\\'.join( tuple( punctuation ) ),
         '|'.join( tuple( digits ) ) )
     #
-    return getFinder( sWantWiped )
+    return getRegExObj( sWantWiped )
 
 _oFinder = _getFinder()
 

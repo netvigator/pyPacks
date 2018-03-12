@@ -20,12 +20,12 @@
 #
 # http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2015 Rick Graves
+# Copyright 2004-2018 Rick Graves
 #
 
-from String.Find import getFinder
+from String.Find import getRegExObj
 
-_oMultiLinesFinder = getFinder( '\n\n\n+',
+_oMultiLinesFinder = getRegExObj( '\n\n\n+',
         bCaseSensitive = True, bMultiLine = True )
 
 

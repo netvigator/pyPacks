@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2012 Rick Graves
+# Copyright 2004-2018 Rick Graves
 #
 
 
@@ -53,11 +53,11 @@ def TranslatorFactory( sOld, sNew = None ):
 
 def getRemoveMulitNewLinesFinder( iWantLines = 1 ):
     #
-    from Find import getFinder
+    from Find import getRegExObj
     #
     iFindHowMany = iWantLines + 1
     #
-    oMultiNewLineFinder = getFinder(
+    oMultiNewLineFinder = getRegExObj(
                             '\n{%s,}' % iFindHowMany,
                             bCaseSensitive = True,
                             bMultiLine = True )

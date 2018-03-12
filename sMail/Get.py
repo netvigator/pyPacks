@@ -20,9 +20,9 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2010-2016 Rick Graves
+# Copyright 2010-2018 Rick Graves
 #
-from String.Find import getFinderFindAll, getFinder
+from String.Find import getFinderFindAll, getRegExObj
 
 oZipPlus4Finder  = getFinderFindAll( r'\d{5}-?\d{4}',
                                             bCaseSensitive = True )
@@ -37,7 +37,7 @@ _oFloorFinder    = getFinderFindAll(
         r'\b(fl(?:oor)? ?\d+)|'
         r'\b((?:\d*1st|\d*2nd|\d*3rd|\d+th|ground) ?(?:fl|floor))\b' )
 
-oUnitFinder      = getFinder(
+oUnitFinder      = getRegExObj(
         r"((?:(?:#)|\b(?:unit|apt\.?|ste\.?)) *"
         r"[a-zA-Z]? *[-#]? *\d* *[-a-zA-Z]{0,2})\b" )
 

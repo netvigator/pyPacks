@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2010-2016 Rick Graves
+# Copyright 2010-2018 Rick Graves
 #
 
 #( oFinderStateName,
@@ -32,7 +32,7 @@
 
 
 from sMail.Abbrev   import dCodesProvAbbrevCA
-from String.Find    import getFinder, getFinderFindAll, getSeqWordBounds
+from String.Find    import getRegExObj, getFinderFindAll, getSeqWordBounds
 
 class Finished( Exception ): pass
 
@@ -41,7 +41,7 @@ _s1stLetterCodeCA = ''.join( dCodesProvAbbrevCA )
 oPCodeFinderCA  = getFinderFindAll( 
                   r'\b[%s][\do][a-z][ -]?\w{3}\b' % _s1stLetterCodeCA )
 
-oPOBoxFinder    = getFinder(
+oPOBoxFinder    = getRegExObj(
     r'\b(p.? *o.? *box *\d+|pob *\d+|box *\d+|pobox *\d+)' )
 
 oCareOfFinder   = getFinderFindAll( r'\bc/?o |in care of|care of' )

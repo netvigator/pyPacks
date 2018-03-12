@@ -37,9 +37,9 @@ class FormatMismatchError( Exception ): pass
 class Finished( Exception ): pass
 
 
-from String.Find    import getFinder
+from String.Find    import getRegExObj
 
-_oApacheDelimiters = getFinder( '[/: ]' )
+_oApacheDelimiters = getRegExObj( '[/: ]' )
 
 _dMonthNames = dict(
     Jan =  1,

@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2013 Rick Graves
+# Copyright 2004-2018 Rick Graves
 #
 
 from String.Split import SplitRegular as _SplitRegular
@@ -347,7 +347,7 @@ if __name__ == "__main__":
     from string import ascii_lowercase as lowercase
     from string import ascii_uppercase as uppercase
     #
-    from String.Find    import getFinder
+    from String.Find    import getRegExObj
     from Utils.Result   import sayTestResult
     #
     sTest   = digits + lowercase + digits + uppercase + digits
@@ -361,8 +361,8 @@ if __name__ == "__main__":
         lProblems.append( '_global_ReplaceC()' )
         #
     #
-    oAlphaLowerFinder  = getFinder( '[a-z]', bCaseSensitive = True  )
-    oAlphaLetterFinder = getFinder( '[a-z]', bCaseSensitive = False )
+    oAlphaLowerFinder  = getRegExObj( '[a-z]', bCaseSensitive = True  )
+    oAlphaLetterFinder = getRegExObj( '[a-z]', bCaseSensitive = False )
     #
     sTilde26 = '~' * 26
     #
@@ -439,7 +439,7 @@ if __name__ == "__main__":
         lProblems.append( 'ReverseOrder' )
         #
     #
-    oFinder = getFinder( '<(?!(u>|/|em>|b(>| )))', bCaseSensitive = False )
+    oFinder = getRegExObj( '<(?!(u>|/|em>|b(>| )))', bCaseSensitive = False )
     #
     sOneLongLine = '''<div id=gbar><nobr><em>ABC</em><b class=gb1>Search</b><u>More</u> &raquo;</a></nobr></div><div id=guser width=100%>'''
     #
