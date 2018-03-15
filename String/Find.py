@@ -865,6 +865,22 @@ if __name__ == "__main__":
             'getRegExpObj(%s) testing "%s"' % ( sOrig, sTest ) )
         #
     #
+    sOrig   = 'AX-235'
+    #
+    oFinder = getRegExpObj( sOrig ).search
+    #
+    sTest   = "Emerson \"Little Miracle\" Marbled Green White and Yellow Catalin Tube Radio AX235"
+    #
+    oGot    = oFinder( sTest )
+    #
+    if not oGot:
+        #
+        print3( oGot )
+        #
+        lProblems.append(
+            'getRegExpObj(%s) testing "%s"' % ( sOrig, sTest ) )
+        #
+    #
     sTest   = 'abc Black and Decker efg'
     #
     oGot    = oFinder( sTest )
