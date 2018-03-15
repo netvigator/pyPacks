@@ -881,6 +881,22 @@ if __name__ == "__main__":
             'getRegExpObj(%s) testing "%s"' % ( sOrig, sTest ) )
         #
     #
+    sOrig   = 'Fada'
+    #
+    oFinder = getRegExpObj( sOrig ).search
+    #
+    sTest   = 'VINTAGE BEAUTIFUL 40s FADA BULLET ART DECO CATALIN BAKELITE ANTIQUE TUBE RADIO'
+    #
+    oGot    = oFinder( sTest )
+    #
+    if not oGot:
+        #
+        print3( oGot )
+        #
+        lProblems.append(
+            'getRegExpObj(%s) testing "%s"' % ( sOrig, sTest ) )
+        #
+    #
     sTest   = 'abc Black and Decker efg'
     #
     oGot    = oFinder( sTest )
