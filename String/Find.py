@@ -24,6 +24,8 @@
 #
 from collections import OrderedDict
 
+from six         import print_ as print3
+
 def getRegExSpecialsEscapedNoShortcut( sString ):
     #
     from Iter.AllVers import getEnumerator
@@ -138,6 +140,7 @@ def getSeqWordBounds( seq ):
 dSub1st = OrderedDict( (
     ( '&',      ' (&|and) ' ),  # ampersand also matches and
     ( ' and ',  ' (&|and) ' ),  # and also matches ampersand
+    ( ' AND ',  ' (&|and) ' ),  # and also matches ampersand
     ( '/',      '(/ )+'     ),  # slash matches ONE  or more spaces or slashes
     ( ' +- +',  '-'         ),  # remove spaces about hypens
     ( '"',      '"*'        ),  # double quotes optional
@@ -260,7 +263,7 @@ def gotRawRex( s ):
 
 
 def getRegExpObj(
-        sOrig           = '',
+        sLook4          = '',
         dSub1st         = dSub1st,
         dSub2nd         = dSub2nd,
         tSubLast        = tSubLast,
@@ -271,21 +274,21 @@ def getRegExpObj(
     from Iter.AllVers   import permutations
     from String.Get     import getRawGotStr # not sure we need this
     #
-    if gotRawRex( sOrig ):
+    if gotRawRex( sLook4 ):
         #
-        sInside = sOrig[ 2 : -1 ]
+        sInside = sLook4[ 2 : -1 ]
         #
-        return getRegExObj( getRawGotStr( sOrig ) )
+        return getRegExObj( getRawGotStr( sLook4 ) )
         #
     #
     sRegEx = ''
     #
     if fDoThisFirst is not None:
         #
-        sOrig       = fDoThisFirst( sOrig )
+        sLook4       = fDoThisFirst( sLook4 )
         #
     #
-    lOrig = _getEscapedThenSplit( sOrig, cSeparator )
+    lOrig = _getEscapedThenSplit( sLook4, cSeparator )
     #
     if bPermutate:
         #
@@ -388,7 +391,6 @@ def getTextInQuotes( sText ):
 def _doTimeTrial():
     #
     from Utils.TimeTrial import TimeTrial
-    from six             import print_ as print3
     #
     tTestStrings = (
         "ACRO",
@@ -605,8 +607,6 @@ if __name__ == "__main__":
     from string         import digits
     from string         import ascii_letters as letters
     #
-    from six            import print_ as print3
-    #
     from Iter.AllVers   import iMap, iRange
     from Utils.Result   import sayTestResult
     #
@@ -616,6 +616,8 @@ if __name__ == "__main__":
     #
     oFindABC_ignore = getRegExObj( 'abc', bCaseSensitive = False )
     oFindABC_CaseSe = getRegExObj( 'abc', bCaseSensitive = True, bDotAll = True )
+    #
+    #print3( 'oFindABC_ignore:', oFindABC_ignore )
     #
     if      oFindABC_ignore.findall( sTest ) != \
                 ['abc', 'ABC', 'abc', 'ABC', 'abc', 'ABC', 'abc', 'ABC', 'abc', 'ABC'] or \
@@ -664,10 +666,10 @@ if __name__ == "__main__":
         #
     #
     #
-    sOrig = "{blank}"
+    sLook4 = "{blank}"
     sWant = "\\{blank\\}"
     #
-    sGot = getRegExSpecialsEscapedNoShortcut( sOrig )
+    sGot = getRegExSpecialsEscapedNoShortcut( sLook4 )
     #
     if sGot != sWant:
         #
@@ -676,7 +678,7 @@ if __name__ == "__main__":
         lProblems.append( 'getRegExSpecialsEscapedNoShortcut("{blank}")' )
         #
     #
-    sGot = getRegExSpecialsEscapedWithShortcut( sOrig )
+    sGot = getRegExSpecialsEscapedWithShortcut( sLook4 )
     #
     if sGot != sWant:
         #
@@ -685,9 +687,9 @@ if __name__ == "__main__":
         lProblems.append( 'getRegExSpecialsEscapedNoShortcut("{blank}")' )
         #
     #
-    sOrig = sWant = "Peerless"
+    sLook4 = sWant = "Peerless"
     #
-    sGot = getRegExSpecialsEscapedNoShortcut( sOrig )
+    sGot = getRegExSpecialsEscapedNoShortcut( sLook4 )
     #
     if sGot != sWant:
         #
@@ -696,7 +698,7 @@ if __name__ == "__main__":
         lProblems.append( 'getRegExSpecialsEscapedNoShortcut("Peerless")' )
         #
     #
-    sGot = getRegExSpecialsEscapedWithShortcut( sOrig )
+    sGot = getRegExSpecialsEscapedWithShortcut( sLook4 )
     #
     if sGot != sWant:
         #
@@ -793,65 +795,65 @@ if __name__ == "__main__":
         lProblems.append(  'getRegEx4Chars(Briggs, G.A.)' )
         #
     #
-    sOrig   = '50-W-2'
+    sLook4  = '50-W-2'
     #
-    sGot    = getRegEx4Chars( sOrig )
+    sGot    = getRegEx4Chars( sLook4 )
     #
     if sGot != '50[- ]*W[- ]*2':
         #
         print3( sGot )
         #
-        lProblems.append( 'getRegEx4Chars(%s)' % sOrig )
+        lProblems.append( 'getRegEx4Chars(%s)' % sLook4 )
         #
     #
-    sOrig   = '15" gold'
+    sLook4  = '15" gold'
     #
-    sGot    = getRegEx4Chars( sOrig )
+    sGot    = getRegEx4Chars( sLook4 )
     #
     if sGot != '15"* *gold':
         #
         print3( sGot )
         #
-        lProblems.append( 'getRegEx4Chars(%s)' % sOrig )
+        lProblems.append( 'getRegEx4Chars(%s)' % sLook4 )
         #
     #
-    sOrig   = "TR-10 'Tri-ette'"
+    sLook4  = "TR-10 'Tri-ette'"
     #
-    sGot    = getRegEx4Chars( sOrig )
+    sGot    = getRegEx4Chars( sLook4 )
     #
     if sGot != "TR[- ]*10 *'*Tri[- ]*ette'*":
         #
         print3( sGot )
         #
-        lProblems.append( 'getRegEx4Chars(%s)' % sOrig )
+        lProblems.append( 'getRegEx4Chars(%s)' % sLook4 )
         #
     #
-    sOrig   = 'TV-2/U'
+    sLook4  = 'TV-2/U'
     #
-    sGot    = getRegEx4Chars( sOrig )
+    sGot    = getRegEx4Chars( sLook4 )
     #
     if sGot != 'TV[- ]*2(/ *)+U':
         #
         print3( sGot )
         #
-        lProblems.append( 'getRegEx4Chars(%s)' % sOrig )
+        lProblems.append( 'getRegEx4Chars(%s)' % sLook4 )
         #
     #
-    sOrig   = '50-X-C3'
+    sLook4  = '50-X-C3'
     #
-    sGot    = getRegEx4Chars( sOrig )
+    sGot    = getRegEx4Chars( sLook4 )
     #
     if sGot != '50[- ]*X[- ]*C3':
         #
         print3( sGot )
         #
-        lProblems.append( 'getRegEx4Chars(%s)' % sOrig )
+        lProblems.append( 'getRegEx4Chars(%s)' % sLook4 )
         #
     #
     #
-    sOrig   = 'Heintz&Kaufman'
+    sLook4  = 'Heintz&Kaufman'
     #
-    oFinder = getRegExpObj( sOrig ).search
+    oFinder = getRegExpObj( sLook4 ).search
     #
     sTest   = '6DJ8 vacuum tube HEINTZ AND KAUFMAN "Made in England"'
     #
@@ -862,12 +864,12 @@ if __name__ == "__main__":
         print3( oGot )
         #
         lProblems.append(
-            'getRegExpObj(%s) testing "%s"' % ( sOrig, sTest ) )
+            'getRegExpObj(%s) testing "%s"' % ( sLook4, sTest ) )
         #
     #
-    sOrig   = 'AX-235'
+    sLook4  = 'AX-235'
     #
-    oFinder = getRegExpObj( sOrig ).search
+    oFinder = getRegExpObj( sLook4 ).search
     #
     sTest   = "Emerson \"Little Miracle\" Marbled Green White and Yellow Catalin Tube Radio AX235"
     #
@@ -878,12 +880,12 @@ if __name__ == "__main__":
         print3( oGot )
         #
         lProblems.append(
-            'getRegExpObj(%s) testing "%s"' % ( sOrig, sTest ) )
+            'getRegExpObj(%s) testing "%s"' % ( sLook4, sTest ) )
         #
     #
-    sOrig   = 'Fada'
+    sLook4  = 'Fada'
     #
-    oFinder = getRegExpObj( sOrig ).search
+    oFinder = getRegExpObj( sLook4 ).search
     #
     sTest   = 'VINTAGE BEAUTIFUL 40s FADA BULLET ART DECO CATALIN BAKELITE ANTIQUE TUBE RADIO'
     #
@@ -894,12 +896,12 @@ if __name__ == "__main__":
         print3( oGot )
         #
         lProblems.append(
-            'getRegExpObj(%s) testing "%s"' % ( sOrig, sTest ) )
+            'getRegExpObj(%s) testing "%s"' % ( sLook4, sTest ) )
         #
     #    
-    sOrig   = 'L-56'
+    sLook4  = 'L-56'
     #
-    oFinder = getRegExpObj( sOrig ).search
+    oFinder = getRegExpObj( sLook4 ).search
     #
     sTest   = 'Maroon Fada L-56 Catalin Radio'
     #
@@ -910,46 +912,45 @@ if __name__ == "__main__":
         print3( oGot )
         #
         lProblems.append(
-            'getRegExpObj(%s) testing "%s"' % ( sOrig, sTest ) )
+            'getRegExpObj(%s) testing "%s"' % ( sLook4, sTest ) )
         #
     #    
-    sOrig   = 'Black & Decker'
+    sLook4  = 'Black & Decker'
     #
-    oFinder = getRegExpObj( sOrig ).search
+    oFinder = getRegExpObj( sLook4 )
     #
-    sTest   = 'abc Black and Decker efg'
+    sTest   = 'abc BLACK AND DECKER efg'
     #
-    oGot    = oFinder( sTest )
+    oGot    = oFinder.search( sTest )
     #
-    if oGot:
+    if not oGot:
         #
         print3( oGot )
+        print3( 'oFinder:', oFinder )
         #
         lProblems.append(
-            'getRegExpObj(%s) testing "%s"' % ( sOrig, sTest ) )
+            'getRegExpObj(%s) testing "%s"' % ( sLook4, sTest ) )
         #
     #
-    sOrig   = 'Black and Decker'
-    #
-    oFinder = getRegExpObj( sOrig ).search
+    sLook4  = 'BLACK AND DECKER'
+    ##
+    oFinder = getRegExpObj( sLook4 ).search
     #
     sTest   = 'abc Black&Decker efg'
     #
     oGot    = oFinder( sTest )
     #
-    if oGot:
+    if not oGot:
         #
         print3( oGot )
         #
         lProblems.append(
-            'getRegExpObj(%s) testing "%s"' % ( sOrig, sTest ) )
+            'getRegExpObj(%s) testing "%s"' % ( sLook4, sTest ) )
         #
     #
-    sTest   = 'Black&Decker'
+    sLook4 = 'How now brown cow'
     #
-    sOrig = 'How now brown cow'
-    #
-    oFinder = getRegExpObj( sOrig, bPermutate = True ).search
+    oFinder = getRegExpObj( sLook4, bPermutate = True ).search
     #
     sTest   = 'Cow brown how now'
     #
@@ -960,7 +961,7 @@ if __name__ == "__main__":
         print3( oGot )
         #
         lProblems.append(
-            'getRegExpObj(%s) testing "%s"' % ( sOrig, sTest ) )
+            'getRegExpObj(%s) testing "%s"' % ( sLook4, sTest ) )
         #
     #
     #
