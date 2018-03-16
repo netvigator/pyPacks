@@ -896,6 +896,26 @@ if __name__ == "__main__":
         lProblems.append(
             'getRegExpObj(%s) testing "%s"' % ( sOrig, sTest ) )
         #
+    #    
+    sOrig   = 'L-56'
+    #
+    oFinder = getRegExpObj( sOrig ).search
+    #
+    sTest   = 'Maroon Fada L-56 Catalin Radio'
+    #
+    oGot    = oFinder( sTest )
+    #
+    if not oGot:
+        #
+        print3( oGot )
+        #
+        lProblems.append(
+            'getRegExpObj(%s) testing "%s"' % ( sOrig, sTest ) )
+        #
+    #    
+    sOrig   = 'Black & Decker'
+    #
+    oFinder = getRegExpObj( sOrig ).search
     #
     sTest   = 'abc Black and Decker efg'
     #
@@ -908,6 +928,10 @@ if __name__ == "__main__":
         lProblems.append(
             'getRegExpObj(%s) testing "%s"' % ( sOrig, sTest ) )
         #
+    #
+    sOrig   = 'Black and Decker'
+    #
+    oFinder = getRegExpObj( sOrig ).search
     #
     sTest   = 'abc Black&Decker efg'
     #
