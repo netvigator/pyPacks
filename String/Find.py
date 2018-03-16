@@ -165,6 +165,27 @@ tSubLast = (
     ( ' *co',
                 ' *(Corporation|Company|Corp|Co)' ) )
 
+
+def _getPartsParenedAndBarred( u ):
+    #
+    l = list( u )
+    #
+    l.insert( 0, '' )
+    l.append(    '' )
+    #
+    return ')|('.join( l )[ 2 : -2 ]
+
+
+
+def _getPartsBarred( u ):
+    #
+    l = list( u )
+    #
+    #
+    return '|'.join( l )
+
+
+
 def getRegEx4Chars( s,
         dSub1st = dSub1st, dSub2nd = dSub2nd, tSubLast = tSubLast ):
     #
@@ -186,7 +207,7 @@ def getRegEx4Chars( s,
         #
         l = [ sPart.strip() for sPart in l ]
         #
-        s = _getPartsParenedAndBarred( frozenset( l ) )
+        s = _getPartsBarred( frozenset( l ) )
         #
     #
     s = ReplaceManyOldWithManyNew( s, dSub1st )
@@ -236,16 +257,6 @@ def getRegEx4Chars( s,
 
 
 
-def _getPartsParenedAndBarred( u ):
-    #
-    l = list( u )
-    #
-    l.insert( 0, '' )
-    l.append(    '' )
-    #
-    return ')|('.join( l )[ 2 : -2 ]
-
-
 def _getEscapedThenSplit( s, cSplitOn ):
     #
     s = getRegExSpecialsEscaped( s )
@@ -262,7 +273,7 @@ def gotRawRex( s ):
         ( s.startswith( "r'" ) and s.endswith( "'" ) ) )
 
 
-def getRegExpObj(
+def getRegExpress(
         sLook4          = '',
         dSub1st         = dSub1st,
         dSub2nd         = dSub2nd,
@@ -278,7 +289,7 @@ def getRegExpObj(
         #
         sInside = sLook4[ 2 : -1 ]
         #
-        return getRegExObj( getRawGotStr( sLook4 ) )
+        return getRawGotStr( sLook4 )
         #
     #
     sRegEx = ''
@@ -312,7 +323,7 @@ def getRegExpObj(
                         dSub1st=dSub1st, dSub2nd=dSub2nd, tSubLast=tSubLast )
                     for s in lOrig ]
     #
-    if len( lRegEx ) == 1:
+    if False and len( lRegEx ) == 1:
         #
         if lRegEx[0][0] != '(':
             #
@@ -321,17 +332,34 @@ def getRegExpObj(
         #
     else:
         #
-        sRegEx = _getPartsParenedAndBarred( frozenset( lRegEx ) )
+        sRegEx = _getPartsBarred( frozenset( lRegEx ) )
         #
     #
-    # print3( sRegEx )
+    return sRegEx
+
+
+
+def getRegExpObj(
+        sLook4          = '',
+        dSub1st         = dSub1st,
+        dSub2nd         = dSub2nd,
+        tSubLast        = tSubLast,
+        fDoThisFirst    = None,
+        cSeparator      = '\r',
+        bPermutate      = False ):
+    #
+    sRegEx = getRegExpress(
+        sLook4          = sLook4,
+        dSub1st         = dSub1st,
+        dSub2nd         = dSub2nd,
+        tSubLast        = tSubLast,
+        fDoThisFirst    = fDoThisFirst,
+        cSeparator      = cSeparator,
+        bPermutate      = bPermutate )
     #
     return getRegExObj( sRegEx )
 
         
-
-
-
 
 
 def getRegExTips():
@@ -729,11 +757,12 @@ if __name__ == "__main__":
     #
     if sGot != (
             'Chigaco *Standard *Transformer *(Corporation|Company|Corp|Co)' ):
+        #   'Chigaco *Standard *Transformer *(Corporation|Company|Corp|Co)|Chigaco *Standard'
         #
         print3( sGot )
         #
         lProblems.append(
-            'getRegEx4Chars(Chigaco Standard Transformer Corp)' )
+            'getRegEx4Chars(Chigaco Standard Transformer Corp.)' )
         #
     #
     sGot = getRegEx4Chars(
@@ -743,11 +772,13 @@ if __name__ == "__main__":
             '(Chigaco *Standard)|'
             '(Chigaco *Standard *Transformer *(Corporation|Company|Corp|Co))',
             '(Chigaco *Standard *Transformer *(Corporation|Company|Corp|Co))|'
-            '(Chigaco *Standard)'):
+            '(Chigaco *Standard)',
+            'Chigaco *Standard|'
+            'Chigaco *Standard *Transformer *(Corporation|Company|Corp|Co)' ):
         #
         print3( sGot )
         #
-        lProblems.append(  'getRegEx4Chars(Chigaco Standard Transformer Corp)' )
+        lProblems.append( 'getRegEx4Chars(Chigaco Standard|Chigaco Standard Transformer Corp)' )
         #
     #
     sGot = getRegEx4Chars( 'Unholtz-Dickie Corp.' )
