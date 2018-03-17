@@ -281,7 +281,8 @@ def getRegExpress(
         fDoThisFirst    = None,
         cSeparator      = '\r',
         bPermutate      = False,
-        bAddDash      = False ):
+        bAddDash        = False,
+        bSubModelsOK    = False ):
     #
     from Iter.AllVers   import permutations
     from String.Get     import getRawGotStr # not sure we need this
@@ -335,7 +336,12 @@ def getRegExpress(
                         dSub1st=dSub1st, dSub2nd=dSub2nd, tSubLast=tSubLast )
                     for s in lOrig ]
     #
-    if False and len( lRegEx ) == 1:
+    if bSubModelsOK and lRegEx[0][-1].isalpha():
+        #
+        lRegEx[0] = lRegEx[0][:-1] + '[a-zA-Z]'
+        #
+    #
+    if False and len( lRegEx ) == 1: # do not add superfluous parens
         #
         if lRegEx[0][0] != '(':
             #
@@ -358,7 +364,9 @@ def getRegExpObj(
         tSubLast        = tSubLast,
         fDoThisFirst    = None,
         cSeparator      = '\r',
-        bPermutate      = False ):
+        bPermutate      = False,
+        bAddDash        = False,
+        bSubModelsOK    = False ):
     #
     sRegEx = getRegExpress(
         sLook4          = sLook4,
@@ -367,7 +375,9 @@ def getRegExpObj(
         tSubLast        = tSubLast,
         fDoThisFirst    = fDoThisFirst,
         cSeparator      = cSeparator,
-        bPermutate      = bPermutate )
+        bPermutate      = bPermutate,
+        bAddDash        = bAddDash,
+        bSubModelsOK    = bSubModelsOK )
     #
     return getRegExObj( sRegEx )
 
@@ -1015,6 +1025,64 @@ if __name__ == "__main__":
         #
         lProblems.append(
             'getRegExpress(%s) testing "%s"' % ( sLook4, 'bAddDash = True' ) )
+        #
+    #
+    sLook4 = '604C'
+    #
+    sRegExpress = getRegExpress( sLook4, bSubModelsOK = True )
+    #
+    if sRegExpress != '604[a-zA-Z]':
+        #
+        print3( sRegExpress )
+        #
+        lProblems.append(
+            'getRegExpress(%s) testing "%s"' % ( sLook4, 'bSubModelsOK = True' ) )
+        #
+    #
+    oRegExpObj = getRegExpObj( sLook4, bSubModelsOK = True )
+    #
+    if not oRegExpObj.search( '604D' ):
+        #
+        print3( sRegExpress )
+        #
+        lProblems.append(
+            'getRegExpObj(%s) testing "%s"' % ( sLook4, 'bSubModelsOK = True' ) )
+        #
+    #
+    if oRegExpObj.search( '605C' ):
+        #
+        print3( sRegExpress )
+        #
+        lProblems.append(
+            'getRegExpObj(%s) testing "%s"' % ( sLook4, 'bSubModelsOK = True' ) )
+        #
+    #
+    sRegExpress = getRegExpress( sLook4, bAddDash = True, bSubModelsOK = True )
+    #
+    if sRegExpress != '6[- ]*0[- ]*4[- ]*[a-zA-Z]':
+        #
+        print3( sRegExpress )
+        #
+        lProblems.append(
+            'getRegExpress(%s) testing "%s"' % ( sLook4, 'bAddDash & bSubModelsOK = True' ) )
+        #
+    #
+    oRegExpObj = getRegExpObj( sLook4, bAddDash = True, bSubModelsOK = True )
+    #
+    if not oRegExpObj.search( '604D' ):
+        #
+        print3( sRegExpress )
+        #
+        lProblems.append(
+            'getRegExpObj(%s) testing "%s"' % ( sLook4, 'bAddDash & bSubModelsOK = True' ) )
+        #
+    #
+    if oRegExpObj.search( '605C' ):
+        #
+        print3( sRegExpress )
+        #
+        lProblems.append(
+            'getRegExpObj(%s) testing "%s"' % ( sLook4, 'bAddDash & bSubModelsOK = True' ) )
         #
     #
     #
