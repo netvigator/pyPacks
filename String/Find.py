@@ -280,16 +280,28 @@ def getRegExpress(
         tSubLast        = tSubLast,
         fDoThisFirst    = None,
         cSeparator      = '\r',
-        bPermutate      = False ):
+        bPermutate      = False,
+        bAddDash      = False ):
     #
     from Iter.AllVers   import permutations
     from String.Get     import getRawGotStr # not sure we need this
+    from String.Test    import hasAnyAlpha, hasAnyDigits, hasPunctOrSpace
     #
     if gotRawRex( sLook4 ):
         #
         sInside = sLook4[ 2 : -1 ]
         #
         return getRawGotStr( sLook4 )
+        #
+    #
+    if (        bAddDash and
+                hasAnyAlpha(     sLook4 ) and
+                hasAnyDigits(    sLook4 ) and 
+            not hasPunctOrSpace( sLook4 ) ):
+        #
+        tChars = tuple( sLook4 )
+        #
+        sLook4 = '-'.join( tChars )
         #
     #
     sRegEx = ''
@@ -769,12 +781,10 @@ if __name__ == "__main__":
             'Chigaco Standard|Chigaco Standard Transformer Corp.' )
     #
     if sGot not in (
-            '(Chigaco *Standard)|'
-            '(Chigaco *Standard *Transformer *(Corporation|Company|Corp|Co))',
-            '(Chigaco *Standard *Transformer *(Corporation|Company|Corp|Co))|'
-            '(Chigaco *Standard)',
             'Chigaco *Standard|'
-            'Chigaco *Standard *Transformer *(Corporation|Company|Corp|Co)' ):
+            'Chigaco *Standard *Transformer *(Corporation|Company|Corp|Co)',
+            'Chigaco *Standard *Transformer *(Corporation|Company|Corp|Co)|'
+            'Chigaco *Standard'):
         #
         print3( sGot )
         #
@@ -993,6 +1003,18 @@ if __name__ == "__main__":
         #
         lProblems.append(
             'getRegExpObj(%s) testing "%s"' % ( sLook4, sTest ) )
+        #
+    #
+    sLook4 = 'BM258'
+    #
+    sRegExpress = getRegExpress( sLook4, bAddDash = True )
+    #
+    if sRegExpress != 'B[- ]*M[- ]*2[- ]*5[- ]*8':
+        #
+        print3( sRegExpress )
+        #
+        lProblems.append(
+            'getRegExpress(%s) testing "%s"' % ( sLook4, 'bAddDash = True' ) )
         #
     #
     #
