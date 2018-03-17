@@ -27,6 +27,7 @@ from string import digits, punctuation
 from string import ascii_lowercase as lowercase
 from string import ascii_uppercase as uppercase
 
+from Collect.Query      import get1stThatMeets
 from String.Transform   import TranslatorFactory
 
 class Finished( Exception ): pass
@@ -97,8 +98,6 @@ def isDigitPunctOrSpace( sChar ): return sChar in setDigitsPuncSp
 
 def hasAnyDigits( sString ):
     #
-    from Collect.Query  import get1stThatMeets
-    #
     return get1stThatMeets( sString, isDigit )
 
 
@@ -116,8 +115,6 @@ def _isNotDigitOrDot( s ):
 
 
 def hasDigitsAndDotsOnly( sFrag ):
-    #
-    from Collect.Query  import get1stThatMeets
     #
     return get1stThatMeets( sFrag, _isNotDigitOrDot ) is None
 
@@ -137,6 +134,11 @@ def isPunctOrSpace( sChar ):
     #
     return sChar in setPuncAndSpace
 
+
+def hasPunctOrSpace( sString ):
+    #
+    return get1stThatMeets( sString, isPunctOrSpace )
+    
 
 def hasNoLower(   sText ): return sText and sText == sText.upper()
 
@@ -1094,6 +1096,21 @@ if __name__ == "__main__":
     if hasAscii_128_Only( s ):
         #
         lProblems.append( 'hasAscii_128_Only() string with funny ending' )
+        #
+    #
+    if not hasPunctOrSpace( s ):
+        #
+        lProblems.append( 'hasPunctOrSpace( string with funny ending )' )
+        #
+    #
+    if hasPunctOrSpace( lowercase ):
+        #
+        lProblems.append( 'hasPunctOrSpace( lowercase )' )
+        #
+    #
+    if hasPunctOrSpace( digits ):
+        #
+        lProblems.append( 'hasPunctOrSpace( digits )' )
         #
     #
     
