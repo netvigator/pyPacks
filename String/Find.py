@@ -274,7 +274,7 @@ def _getEscapedThenSplit( s, oSplitOn ):
         l = oSplitOn.split( s )
         #
     #
-    return l
+    return [ s for s in l if s ] # remove any empties
 
 
 def gotRawRex( s ):
@@ -687,7 +687,7 @@ if __name__ == "__main__":
     #
     if l != ['abc', 'def', 'ghi']:
         #
-        lProblems.append( 'oFinderCRorLF not working!' )
+        lProblems.append( 'oFinderCRorLF not working! alternating split chars' )
         #
     #
     if      oFindABC_ignore.findall( sTest ) != \
@@ -1104,6 +1104,26 @@ if __name__ == "__main__":
         #
         lProblems.append(
             'getRegExpObj(%s) testing "%s"' % ( sLook4, 'bAddDash & bSubModelsOK = True' ) )
+        #
+    #
+    sLook4 = 'ab\rcd\nef\n\rgh'
+    #
+    l = oFinderCRorLF.split( sLook4 )
+    #
+    if l != ['ab', 'cd', 'ef', '', 'gh']:
+        #
+        lProblems.append( 'oFinderCRorLF not working! repeated split chars' )
+        #
+    #
+    sRegExpress = getRegExpress( sLook4 ) # order is not predictable
+    #
+    setExpected = frozenset( ( 'ab', 'cd', 'ef', 'gh' ) )
+    setReturned = frozenset( sRegExpress.split( '|' ) )
+    #
+    if setExpected != setReturned:
+        #
+        lProblems.append(
+            'getRegExpress(%s) testing "%s"' % ( sLook4, 'repeated split chars' ) )
         #
     #
     
