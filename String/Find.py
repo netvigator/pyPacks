@@ -257,11 +257,22 @@ def getRegEx4Chars( s,
 
 
 
-def _getEscapedThenSplit( s, cSplitOn ):
+def _getEscapedThenSplit( s, oSplitOn ):
     #
     s = getRegExSpecialsEscaped( s )
     #
-    l = s.split( cSplitOn )
+    if oSplitOn is None:
+        #
+        l = [ oSplitOn ]
+        #        
+    elif isinstance( oSplitOn, type('str') ):
+        #
+        l = s.split( oSplitOn )
+        #
+    else:
+        #
+        l = oSplitOn.split( s )
+        #
     #
     return l
 
@@ -273,13 +284,16 @@ def gotRawRex( s ):
         ( s.startswith( "r'" ) and s.endswith( "'" ) ) )
 
 
+oFinderCRorLF = getRegExObj( '\r|\n' )
+
+
 def getRegExpress(
         sLook4          = '',
         dSub1st         = dSub1st,
         dSub2nd         = dSub2nd,
         tSubLast        = tSubLast,
         fDoThisFirst    = None,
-        cSeparator      = '\r',
+        oSeparator      = oFinderCRorLF,
         bPermutate      = False,
         bAddDash        = False,
         bSubModelsOK    = False ):
@@ -312,7 +326,7 @@ def getRegExpress(
         sLook4       = fDoThisFirst( sLook4 )
         #
     #
-    lOrig = _getEscapedThenSplit( sLook4, cSeparator )
+    lOrig = _getEscapedThenSplit( sLook4, oSeparator )
     #
     if bPermutate:
         #
@@ -363,7 +377,7 @@ def getRegExpObj(
         dSub2nd         = dSub2nd,
         tSubLast        = tSubLast,
         fDoThisFirst    = None,
-        cSeparator      = '\r',
+        oSeparator      = oFinderCRorLF,
         bPermutate      = False,
         bAddDash        = False,
         bSubModelsOK    = False ):
@@ -374,14 +388,14 @@ def getRegExpObj(
         dSub2nd         = dSub2nd,
         tSubLast        = tSubLast,
         fDoThisFirst    = fDoThisFirst,
-        cSeparator      = cSeparator,
+        oSeparator      = oSeparator,
         bPermutate      = bPermutate,
         bAddDash        = bAddDash,
         bSubModelsOK    = bSubModelsOK )
     #
     return getRegExObj( sRegEx )
 
-        
+
 
 
 def getRegExTips():
@@ -668,6 +682,13 @@ if __name__ == "__main__":
     oFindABC_CaseSe = getRegExObj( 'abc', bCaseSensitive = True, bDotAll = True )
     #
     #print3( 'oFindABC_ignore:', oFindABC_ignore )
+    #
+    l = oFinderCRorLF.split( 'abc\rdef\nghi' )
+    #
+    if l != ['abc', 'def', 'ghi']:
+        #
+        lProblems.append( 'oFinderCRorLF not working!' )
+        #
     #
     if      oFindABC_ignore.findall( sTest ) != \
                 ['abc', 'ABC', 'abc', 'ABC', 'abc', 'ABC', 'abc', 'ABC', 'abc', 'ABC'] or \
@@ -1085,5 +1106,6 @@ if __name__ == "__main__":
             'getRegExpObj(%s) testing "%s"' % ( sLook4, 'bAddDash & bSubModelsOK = True' ) )
         #
     #
+    
     #
     sayTestResult( lProblems )
