@@ -55,9 +55,19 @@ def getExample( u ):
 
 
 
+def getRandomTrueOrFalse():
+    #
+    '''returns True or False at random'''
+    #
+    from random import randrange
+    #
+    return bool( randrange( 0, 1000 ) % 2 ) # randomly alternate
+
+
 if __name__ == "__main__":
     #
     from Iter.AllVers   import iRange
+    from Utils.Both2n3  import print3
     from Utils.Result   import sayTestResult
     #
     lProblems = []
@@ -74,4 +84,24 @@ if __name__ == "__main__":
         lProblems.append( 'getExample()' )
         #
     #
+    iTrue = iFalse = 0
+    #
+    for i in iRange(10000):
+        #
+        if getRandomTrueOrFalse():
+            iTrue  += 1
+        else:
+            iFalse += 1
+        #
+    #
+    if abs( iTrue - iFalse ) > 200:
+        #
+        print3( 'iTrue :', iTrue )
+        print3( 'iFalse:', iFalse)
+        print3( 'difference:', abs( iTrue - iFalse ) )
+        #
+        lProblems.append( 'getRandomTrueOrFalse()' )
+        #
+    #
+        
     sayTestResult( lProblems )
