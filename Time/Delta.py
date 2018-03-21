@@ -250,7 +250,7 @@ def getDeltaDaysFromSecs( iOlder, iNewer = None ):
 
 
 
-def getDeltaDaysFromStrings( sEarlier, sLater = None, iDigitsAfterDot=2 ):
+def getDeltaDaysFromStrings( sEarlier, sLater = None, iDigitsAfterDot = 2 ):
     #
     """
     pass earlier, later ISO date-times
@@ -275,7 +275,14 @@ def getDeltaDaysFromStrings( sEarlier, sLater = None, iDigitsAfterDot=2 ):
     #
     fDeltaDays  = getDeltaDaysFromSecs( tEarlier, tLater )
     #
-    return round( fDeltaDays, iDigitsAfterDot )
+    uReturn     = round( fDeltaDays, iDigitsAfterDot )
+    #
+    if iDigitsAfterDot == 0:
+        #
+        uReturn = int( uReturn )
+        #
+    #
+    return uReturn
 
 
 
@@ -498,16 +505,23 @@ if __name__ == "__main__":
     fNowLessOlder = getDeltaDaysFromStrings( sOlder, sNow )
     #
     #print3( 1.04 - fNowLessOlder )
-    if abs( 1.04 - fNowLessOlder ) - 0.04 < .00001:
+    if bDebugPrint and abs( 1.04 - fNowLessOlder ) - 0.04 < .00001:
         #
-        if bDebugPrint:
-            print3( 'daylight savings change? getDeltaDaysFromStrings()' )
+        print3( 'daylight savings change? getDeltaDaysFromStrings()' )
         #
     elif fNowLessOlder != 1.04:
         #
         print3( 'expecting 1.04, got %s' % fNowLessOlder )
         #
         lProblems.append( 'getDeltaDaysFromStrings()' )
+        #
+    #
+    iNowLessOlder = getDeltaDaysFromStrings(
+                            sOlder, sNow, iDigitsAfterDot = 0 )
+    #
+    if iNowLessOlder != 1:
+        #
+        lProblems.append( 'getDeltaDaysFromStrings(iDigitsAfterDot = 0)' )
         #
     #
     bDebugPrint = False
