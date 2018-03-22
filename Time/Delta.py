@@ -250,7 +250,7 @@ def getDeltaDaysFromSecs( iOlder, iNewer = None ):
 
 
 
-def getDeltaDaysFromStrings( sEarlier, sLater = None, iDigitsAfterDot = 2 ):
+def getDeltaDaysFromStrings( sEarlier, sLater = None, iDigitsAfterDot = 0 ):
     #
     """
     pass earlier, later ISO date-times
@@ -258,6 +258,8 @@ def getDeltaDaysFromStrings( sEarlier, sLater = None, iDigitsAfterDot = 2 ):
     but rounds off the answer,
     getDeltaDaysFromISOs does not.
     getDeltaDaysFromDates returns days between dates.
+    NOTE this now defaults to integer output
+    if you want a rounded float, pass iDigitsAfterDot
     """
     #
     from Time.Convert   import getSecsSinceEpochFromString
@@ -304,7 +306,7 @@ def getDeltaDaysFromDates( sEarlier, sLater = None ):
     sEarlier    += sTime
     sLater      += sTime
     #
-    iDeltaDays  = int( getDeltaDaysFromStrings( sEarlier, sLater, 0 ) )
+    iDeltaDays  = getDeltaDaysFromStrings( sEarlier, sLater, 0 )
     #
     return iDeltaDays
 
@@ -502,7 +504,7 @@ if __name__ == "__main__":
         lProblems.append( 'getDeltaDaysFromSecs() 8.5 days of seconds ago' )
         #
     #
-    fNowLessOlder = getDeltaDaysFromStrings( sOlder, sNow )
+    fNowLessOlder = getDeltaDaysFromStrings( sOlder, sNow, 2 )
     #
     #print3( 1.04 - fNowLessOlder )
     if bDebugPrint and abs( 1.04 - fNowLessOlder ) - 0.04 < .00001:
