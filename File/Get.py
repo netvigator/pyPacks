@@ -28,7 +28,8 @@
 
 # from os.path import exists, join, isfile, isdir
 
-from os.path        import join
+from os.path        import join, isfile
+from glob           import glob
 
 from Utils.Version  import PYTHON2
 from Dir.Get        import sTempDir
@@ -326,6 +327,18 @@ def getFileNameNoSpaces( s ):
     return s.replace( ' ', '_' )
 
 
+def getFilesMatchingPattern( sDir, sPattern ):
+    #
+    sFullSpec = getFullSpec( sDir, sPattern )
+    #
+    lFiles = [ sFile for sFile
+               in glob( sFullSpec )
+               if isfile( sFile ) ]
+    #
+    return lFiles
+
+    
+
 def getFileSpecHereOrThere( sFileName, tMaybeThere = ( '/tmp', ) ):
     #
     sFullSpec = None
@@ -477,5 +490,39 @@ if __name__ == "__main__":
         #
     #
     DeleteIfExists( sTemp )
+    #
+    sTemp = 'test_file_%s_.txt'
+    #
+    for i in range(9):
+        #
+        sTempFile = sTemp % str( i )
+        #
+        QuietDump( sText, sTempFile )
+        #
+    #
+    lFiles = getFilesMatchingPattern( '/tmp', 'test_file_%s_.txt' % '*' )
+    #
+    lFiles.sort()
+    #
+    lExpect = [ '/tmp/test_file_0_.txt',
+                '/tmp/test_file_1_.txt',
+                '/tmp/test_file_2_.txt',
+                '/tmp/test_file_3_.txt',
+                '/tmp/test_file_4_.txt',
+                '/tmp/test_file_5_.txt',
+                '/tmp/test_file_6_.txt',
+                '/tmp/test_file_7_.txt',
+                '/tmp/test_file_8_.txt']
+    #
+    if lFiles != lExpect:
+        #
+        lProblems.append( 'getFilesMatchingPattern()' )
+        #
+    #
+    for i in range(9):
+        #
+        DeleteIfExists( '/tmp', sTemp % str( i ) )
+        #
+    #
     #
     sayTestResult( lProblems )
