@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2017 Rick Graves
+# Copyright 2004-2018 Rick Graves
 #
 
 from six import print_ as print3
@@ -329,13 +329,33 @@ def getOneDigitOffLong( iNumb, iStart = 1, iLimit = 5 ):
     return iStart + iRemain
 
 
+def getHowManyDigitsNeeded( iNumb ):
+    #
+    '''
+    if you pass an integer under     10, returns 1
+    if you pass an integer under    100, returns 2
+    if you pass an integer under   1000, returns 3
+    if you pass an integer under 10,000, returns 4
+    '''
+    from Iter.AllVers import iRange
+    #
+    for i in iRange( 1, 20 ):
+        #
+        if iNumb < 10**i:
+            #
+            return i
+
+
+
+
+
 
 if __name__ == "__main__":
     #
     from six            import next as getNext
     #
-    from Iter.AllVers   import iRange, tMap
-   #from Utils.Both2n3  import getNext
+    from Iter.AllVers   import iRange, tMap, iRange
+    #
     from Utils.Result   import sayTestResult
     #
     lProblems = []
@@ -476,5 +496,15 @@ if __name__ == "__main__":
              % getOneDigitOffLong( 105, 1, 4 ) )
         #
     #
+    for i in iRange( 1, 19 ):
+        #
+        if getHowManyDigitsNeeded( 10**i - 1 ) != i:
+            #
+            lProblems.append(
+                    'getHowManyDigitsNeeded( %s ) returns %s not %s' %
+                    ( (10**i - 1),
+                      getHowManyDigitsNeeded( 10**i - 1 ),
+                      i ) )
+            #
     #
     sayTestResult( lProblems )
