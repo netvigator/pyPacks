@@ -185,9 +185,21 @@ def _getPartsBarred( u ):
     return '|'.join( l )
 
 
+def _getBoundCodesIfShort( s, iMinLen ):
+    #
+    '''get the string within word boundary codes'''
+    #
+    if len( s ) <= iMinLen:
+        return r'\b%s\b' % s
+    else:
+        return s
+
 
 def getRegEx4Chars( s,
-        dSub1st = dSub1st, dSub2nd = dSub2nd, tSubLast = tSubLast ):
+            dSub1st         = dSub1st,
+            dSub2nd         = dSub2nd,
+            tSubLast        = tSubLast,
+            iWordBoundChrs  = 0 ):
     #
     from Collect.Query  import get1stThatMeets
     from String.Replace import ReplaceManyOldWithManyNew
@@ -253,6 +265,15 @@ def getRegEx4Chars( s,
         #
         s = '|'.join( lNew )
     #
+    if iWordBoundChrs: # > 0
+        #
+        l = s.split( '|' )
+        #
+        l = [ _getBoundCodesIfShort( s, iWordBoundChrs ) for s in l ]
+        #
+        s = '|'.join( l )
+        #
+    #
     return s
 
 
@@ -296,7 +317,8 @@ def getRegExpress(
         oSeparator      = oFinderCRorLF,
         bPermutate      = False,
         bAddDash        = False,
-        bSubModelsOK    = False ):
+        bSubModelsOK    = False,
+        iWordBoundChrs  = 0 ):
     #
     from Iter.AllVers   import permutations
     from String.Get     import getRawGotStr # not sure we need this
@@ -347,7 +369,10 @@ def getRegExpress(
     else:
         #
         lRegEx = [  getRegEx4Chars( s,
-                        dSub1st=dSub1st, dSub2nd=dSub2nd, tSubLast=tSubLast )
+                        dSub1st        = dSub1st,
+                        dSub2nd        = dSub2nd,
+                        tSubLast       =tSubLast,
+                        iWordBoundChrs = iWordBoundChrs )
                     for s in lOrig ]
     #
     if bSubModelsOK and lRegEx[0][-1].isalpha():
@@ -922,6 +947,18 @@ if __name__ == "__main__":
         lProblems.append( 'getRegEx4Chars(%s)' % sLook4 )
         #
     #
+    sLook4  = '1'
+    #
+    sGot    = getRegEx4Chars( sLook4, iWordBoundChrs = 1 )
+    #
+    if sGot != r'\b1\b':
+        #
+        print3( sGot )
+        #
+        lProblems.append( 'getRegEx4Chars(%s)' % sLook4 )
+        #
+    #
+
     #
     sLook4  = 'Heintz&Kaufman'
     #
