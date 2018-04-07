@@ -146,8 +146,8 @@ def getConfigOptions(
     if access( sConfigFile, R_OK ) or bNoConfigOK:
         oOptions.read( sConfigFile )
     else:
-        print3( ('Error accessing config file: %s') % sConfigFile )
-        raise NoConfigFile
+        #
+        raise NoConfigFile( 'Error accessing config file: %s' % sConfigFile )
 
     # defaults
     #
