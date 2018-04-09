@@ -319,7 +319,7 @@ def getRegExpress(
         bAddDash        = False,
         bSubModelsOK    = False,
         iWordBoundChrs  = 0,
-        bCaseSensitive  = False ):
+        bCaseSensitive  = False ): # will the search object be case sensitive?
     #
     from Iter.AllVers   import permutations
     from String.Get     import getRawGotStr # not sure we need this
@@ -378,7 +378,7 @@ def getRegExpress(
     #
     if bSubModelsOK and lRegEx[0][-1].isalpha():
         #
-        if bCaseSensitive:
+        if bCaseSensitive: # will the search object be case sensitive?
             #
             lRegEx[0] = lRegEx[0][:-1] + '[a-zA-Z]'
             #
