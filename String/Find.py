@@ -318,7 +318,8 @@ def getRegExpress(
         bPermutate      = False,
         bAddDash        = False,
         bSubModelsOK    = False,
-        iWordBoundChrs  = 0 ):
+        iWordBoundChrs  = 0,
+        bCaseSensitive  = False ):
     #
     from Iter.AllVers   import permutations
     from String.Get     import getRawGotStr # not sure we need this
@@ -377,7 +378,14 @@ def getRegExpress(
     #
     if bSubModelsOK and lRegEx[0][-1].isalpha():
         #
-        lRegEx[0] = lRegEx[0][:-1] + '[a-zA-Z]'
+        if bCaseSensitive:
+            #
+            lRegEx[0] = lRegEx[0][:-1] + '[a-zA-Z]'
+            #
+        else:
+            #
+            lRegEx[0] = lRegEx[0][:-1] + '[A-Z]'
+            #
         #
     #
     if False and len( lRegEx ) == 1: # do not add superfluous parens
