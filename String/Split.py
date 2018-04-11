@@ -28,7 +28,7 @@ this module has some split utilities that can be useful
 getIterPartsAndBothStarts is a true iterator but takes a RE find object
 '''
 
-from six            import print_ as print3
+from six         import print_ as print3
 
 from String.Find import getRegExObj
 
@@ -962,6 +962,16 @@ def getWhiteCleaned( s ):
 
 
 
+def getWhiteOut( s ):
+    #
+    from Iter.AllVers import iFilter
+    #
+    iParts = iFilter( bool, s.split() )
+    #
+    return ''.join( iParts )
+
+
+
 
 def _chopViaSplit( sHaystack, sNeedle ):
     #
@@ -1741,6 +1751,18 @@ if __name__ == "__main__":
     if lPositions != lExpect:
         #
         lProblems.append( 'getCharPositions() series of characters' )
+        #
+    #
+    sLook4  = 'Black \t  &   Decker'
+    #
+    if getWhiteCleaned( sLook4 ) != 'Black & Decker':
+        #
+        lProblems.append( 'getWhiteCleaned(%s)' % sLook4 )
+        #
+    #
+    if getWhiteOut( sLook4 ) != 'Black&Decker':
+        #
+        lProblems.append( 'getWhiteOut(%s)' % sLook4 )
         #
     #
     #
