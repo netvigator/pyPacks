@@ -26,7 +26,6 @@ from collections     import OrderedDict
 
 from six             import print_ as print3
 
-from String.Dumpster import getAlphaNumClean
 
 def getRegExSpecialsEscapedNoShortcut( sString ):
     #
@@ -191,7 +190,9 @@ def _getBoundCodesIfShort( s, iMinLen ):
     #
     '''get the string within word boundary codes'''
     #
-    if len( getAlphaNumClean( s ) ) <= iMinLen:
+    from String.Dumpster import getAlphaNumCleanNoSpaces
+    #
+    if len( getAlphaNumCleanNoSpaces( s ) ) <= iMinLen:
         return r'\b%s\b' % s
     else:
         return s
@@ -310,6 +311,52 @@ def gotRawRex( s ):
 oFinderCRorLF = getRegExObj( '\r|\n' )
 
 
+def _getAlphaAndDigitsTogether( s ):
+    #
+    from Iter.Get        import iRevRange
+    from String.Dumpster import getAlphaNumCleanNoSpaces
+    #
+    lChars = list( getAlphaNumCleanNoSpaces( s ) )
+    #
+    wasDigit = lChars[ -1 ].isdigit()
+    wasAlpha = lChars[ -1 ].isalpha()
+    #
+    for i in iRevRange( len( lChars ) -1 ):
+        #
+        sThisChar = lChars[ i ]
+        #
+        if wasDigit:
+            #
+            if lChars[ i ].isdigit():
+                #
+                lChars[ i ] += lChars[ i + 1 ]
+                #
+                del lChars[ i + 1 ]
+                #
+            else: # not wasDigit:
+                #
+                wasAlpha = True
+                #
+        else: # wasAlpha
+            #
+            if lChars[ i ].isalpha():
+                #
+                lChars[ i ] += lChars[ i + 1 ]
+                #
+                del lChars[ i + 1 ]
+                #
+            else: # not wasAlpha:
+                #
+                wasDigit = True
+                #
+        #
+        wasDigit = sThisChar.isdigit()
+        wasAlpha = sThisChar.isalpha()
+        #
+    #
+    return lChars
+
+
 def getRegExpress(
         sLook4          = '',
         dSub1st         = dSub1st,
@@ -335,13 +382,12 @@ def getRegExpress(
         #
     #
     if (        bAddDash and
-                hasAnyAlpha(     sLook4 ) and
-                hasAnyDigits(    sLook4 ) and 
-            not hasPunctOrSpace( sLook4 ) ):
+                hasAnyAlpha(  sLook4 ) and
+                hasAnyDigits( sLook4 ) ):
         #
-        tChars = tuple( sLook4 )
+        lChars = _getAlphaAndDigitsTogether( sLook4 )
         #
-        sLook4 = '-'.join( tChars )
+        sLook4 = '-'.join( lChars )
         #
     #
     sRegEx = ''
@@ -1095,7 +1141,7 @@ if __name__ == "__main__":
     #
     sRegExpress = getRegExpress( sLook4, bAddDash = True )
     #
-    if sRegExpress != 'B[- ]*M[- ]*2[- ]*5[- ]*8':
+    if sRegExpress != 'BM[- ]*258':
         #
         print3( sRegExpress )
         #
@@ -1159,7 +1205,7 @@ if __name__ == "__main__":
     #
     sRegExpress = getRegExpress( sLook4, bAddDash = True, bSubModelsOK = True )
     #
-    if sRegExpress != '6[- ]*0[- ]*4[- ]*[A-Z]':
+    if sRegExpress != r'\b604[- ]*[A-Z]\b':
         #
         print3( sRegExpress )
         #
@@ -1205,6 +1251,20 @@ if __name__ == "__main__":
             'getRegExpress(%s) testing "%s"' % ( sLook4, 'repeated split chars' ) )
         #
     #
-    
+    sLook4  = 'BM258'
+    #
+    sGot    = _getAlphaAndDigitsTogether( sLook4 )
+    #
+    if sGot != ['BM', '258']:
+        #
+        print3( sGot )
+        #
+        lProblems.append(
+            '_getAlphaAndDigitsTogether(%s)' % sLook4 )
+        #
+    #
+    #
+    #
+    #
     #
     sayTestResult( lProblems )
