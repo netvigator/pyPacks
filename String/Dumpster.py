@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2014 Rick Graves
+# Copyright 2004-2018 Rick Graves
 #
 
 from string import punctuation, whitespace, ascii_letters as letters
@@ -157,6 +157,7 @@ def getAlphaOnly( s ):
 
 _oKeepAlphaDigitsOnly = KeepYouNameItClass( letters + '0123456789' )
 
+
 def getAlphaNumClean( s ):
     #
     from String.Split import getWhiteCleaned
@@ -165,6 +166,15 @@ def getAlphaNumClean( s ):
     #
     return getWhiteCleaned( sAlphaNumSpaces )
 
+
+
+def getAlphaNumCleanNoSpaces( s ):
+    #
+    from String.Split import getWhiteOut
+    #
+    sAlphaNumSpaces = _oKeepAlphaDigitsOnly.Dump( s )
+    #
+    return getWhiteOut( sAlphaNumSpaces )
 
 
 
@@ -243,6 +253,11 @@ if __name__ == "__main__":
     if getAlphaNumClean( 'P.O. Box' ) != 'P O Box':
         #
         lProblems.append( 'getAlphaNumClean()' )
+        #
+    #
+    if getAlphaNumCleanNoSpaces( 'P.O. Box' ) != 'POBox':
+        #
+        lProblems.append( 'getAlphaNumCleanNoSpaces()' )
         #
     #
     if getChoppedOff( digits * 2, '6' ) != digits + '012345':
