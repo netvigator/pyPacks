@@ -22,9 +22,11 @@
 #
 # Copyright 2004-2018 Rick Graves
 #
-from collections import OrderedDict
+from collections     import OrderedDict
 
-from six         import print_ as print3
+from six             import print_ as print3
+
+from String.Dumpster import getAlphaNumClean
 
 def getRegExSpecialsEscapedNoShortcut( sString ):
     #
@@ -189,7 +191,7 @@ def _getBoundCodesIfShort( s, iMinLen ):
     #
     '''get the string within word boundary codes'''
     #
-    if len( s ) <= iMinLen:
+    if len( getAlphaNumClean( s ) ) <= iMinLen:
         return r'\b%s\b' % s
     else:
         return s
@@ -376,16 +378,24 @@ def getRegExpress(
                         iWordBoundChrs = iWordBoundChrs )
                     for s in lOrig ]
     #
-    if bSubModelsOK and lRegEx[0][-1].isalpha():
+    if bSubModelsOK:
         #
-        if bCaseSensitive: # will the search object be case sensitive?
+        if lRegEx[0][-1].isalpha():
             #
-            lRegEx[0] = lRegEx[0][:-1] + '[a-zA-Z]'
+            if bCaseSensitive: # will the search object be case sensitive?
+                #
+                lRegEx[0] = lRegEx[0][:-1] + '[a-zA-Z]'
+                #
+            else:
+                #
+                lRegEx[0] = lRegEx[0][:-1] + '[A-Z]'
+                #
+        elif lRegEx[0][-1].isdigit():
             #
-        else:
+            lRegEx[0] = lRegEx[0][:-1] + '[0-9]'
             #
-            lRegEx[0] = lRegEx[0][:-1] + '[A-Z]'
-            #
+        #
+        lRegEx[0] = _getBoundCodesIfShort( lRegEx[0], 8 )
         #
     #
     if False and len( lRegEx ) == 1: # do not add superfluous parens
@@ -1093,11 +1103,35 @@ if __name__ == "__main__":
             'getRegExpress(%s) testing "%s"' % ( sLook4, 'bAddDash = True' ) )
         #
     #
+    sLook4 = 'LHT-1'
+    #
+    sRegExpress = getRegExpress( sLook4, bSubModelsOK = True )
+    #
+    if sRegExpress != r'\bLHT[- ]*[0-9]\b':
+        #
+        print3( sRegExpress )
+        #
+        lProblems.append(
+            'getRegExpress(%s) testing "%s"' % ( sLook4, 'bSubModelsOK = True' ) )
+        #
+    #
+    sLook4 = '26A'
+    #
+    sRegExpress = getRegExpress( sLook4, bSubModelsOK = True )
+    #
+    if sRegExpress != r'\b26[A-Z]\b':
+        #
+        print3( sRegExpress )
+        #
+        lProblems.append(
+            'getRegExpress(%s) testing "%s"' % ( sLook4, 'bSubModelsOK = True' ) )
+        #
+    #
     sLook4 = '604C'
     #
     sRegExpress = getRegExpress( sLook4, bSubModelsOK = True )
     #
-    if sRegExpress != '604[a-zA-Z]':
+    if sRegExpress != r'\b604[A-Z]\b':
         #
         print3( sRegExpress )
         #
@@ -1125,7 +1159,7 @@ if __name__ == "__main__":
     #
     sRegExpress = getRegExpress( sLook4, bAddDash = True, bSubModelsOK = True )
     #
-    if sRegExpress != '6[- ]*0[- ]*4[- ]*[a-zA-Z]':
+    if sRegExpress != '6[- ]*0[- ]*4[- ]*[A-Z]':
         #
         print3( sRegExpress )
         #
