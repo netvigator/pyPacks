@@ -192,7 +192,8 @@ def _getBoundCodesIfShort( s, iMinLen ):
     #
     from String.Dumpster import getAlphaNumCleanNoSpaces
     #
-    if len( getAlphaNumCleanNoSpaces( s ) ) <= iMinLen:
+    if (    len( getAlphaNumCleanNoSpaces( s ) ) <= iMinLen and 
+            not ( s.startswith( r'\b' ) or s.endswith( r'\b' ) ) ):
         return r'\b%s\b' % s
     else:
         return s
@@ -801,6 +802,18 @@ if __name__ == "__main__":
         #
         lProblems.append( 'getRegExObj() compound regex expression' )
         #
+    #
+    s = r'\bXP[- ]*55[- ]*B\b'
+    #
+    oRegExObj = getRegExObj( s )
+    #
+    sThis = "Vintage The Fisher XP-55B Speaker System-Pair"
+    #
+    if not oRegExObj.search( sThis ):
+        #
+        lProblems.append( 'getRegExObj() title has target' )
+        #
+    #        
     #
     oFind = getFinderFindAll( 'mnop' )
     #
