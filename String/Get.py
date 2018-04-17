@@ -70,7 +70,6 @@ def getTextAfterC( sString, sBefore, iWhichOne=1 ):
     #
     return getTextAfter( sString, sBefore, iWhichOne, SplitC )
 
-getTextAfterC = getTextAfterC
 
 
 def getTextAfterLast( sString, sBefore, fSplit = SplitRight ):
