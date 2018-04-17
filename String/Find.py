@@ -22,9 +22,11 @@
 #
 # Copyright 2004-2018 Rick Graves
 #
-from collections     import OrderedDict
+from collections    import OrderedDict
 
-from six             import print_ as print3
+from six            import print_ as print3
+
+from Iter.AllVers   import iRange
 
 
 def getRegExSpecialsEscapedNoShortcut( sString ):
@@ -281,10 +283,7 @@ def getRegEx4Chars( s,
     return s
 
 
-
-def _getEscapedThenSplit( s, oSplitOn ):
-    #
-    s = getRegExSpecialsEscaped( s )
+def _getSplit( s, oSplitOn ):
     #
     if oSplitOn is None:
         #
@@ -300,6 +299,14 @@ def _getEscapedThenSplit( s, oSplitOn ):
         #
     #
     return [ s for s in l if s ] # remove any empties
+
+
+def _getEscapedThenSplit( s, oSplitOn ):
+    #
+    s = getRegExSpecialsEscaped( s )
+    #
+    return _getSplit( s, oSplitOn )
+
 
 
 def gotRawRex( s ):
@@ -358,6 +365,7 @@ def _getAlphaAndDigitsTogether( s ):
     return lChars
 
 
+
 def getRegExpress(
         sLook4          = '',
         dSub1st         = dSub1st,
@@ -382,13 +390,19 @@ def getRegExpress(
         return getRawGotStr( sLook4 )
         #
     #
+    lOrig = _getSplit( sLook4, oSeparator )
+    #
     if (        bAddDash and
                 hasAnyAlpha(  sLook4 ) and
                 hasAnyDigits( sLook4 ) ):
         #
-        lChars = _getAlphaAndDigitsTogether( sLook4 )
+        lParts = _getSplit( sLook4, oSeparator )
         #
-        sLook4 = '-'.join( lChars )
+        lParts = [ _getAlphaAndDigitsTogether( s ) for s in lParts ]
+        #
+        lParts = [ '-'.join( lChars ) for lChars in lParts ]
+        #
+        sLook4 = '\r'.join( lParts )
         #
     #
     sRegEx = ''
@@ -398,13 +412,13 @@ def getRegExpress(
         sLook4       = fDoThisFirst( sLook4 )
         #
     #
-    lOrig = _getEscapedThenSplit( sLook4, oSeparator )
+    lDashed = _getEscapedThenSplit( sLook4, oSeparator )
     #
     if bPermutate:
         #
         lNewParts = []
         #
-        for s in lOrig:
+        for s in lDashed:
             #
             lSubParts = s.split()
             #
@@ -421,9 +435,8 @@ def getRegExpress(
         lRegEx = [  getRegEx4Chars( s,
                         dSub1st        = dSub1st,
                         dSub2nd        = dSub2nd,
-                        tSubLast       =tSubLast,
-                        iWordBoundChrs = iWordBoundChrs )
-                    for s in lOrig ]
+                        tSubLast       = tSubLast )
+                    for s in lDashed ]
     #
     if bSubModelsOK:
         #
@@ -442,20 +455,21 @@ def getRegExpress(
             lRegEx[0] = lRegEx[0][:-1] + '[0-9]'
             #
         #
-        lRegEx[0] = _getBoundCodesIfShort( lRegEx[0], 8 )
+    #
+    if iWordBoundChrs > 0:
+        #
+        lLengths = [ len( s ) for s in lOrig ]
+        #
+        for i in iRange( len( lOrig ) ):
+            #
+            if lLengths[ i ] <= iWordBoundChrs:
+                #
+                lRegEx[ i ] = r'\b%s\b' % lRegEx[ i ]
+                #
+            #
         #
     #
-    if False and len( lRegEx ) == 1: # do not add superfluous parens
-        #
-        if lRegEx[0][0] != '(':
-            #
-            sRegEx  = '(%s)' % lRegEx[0]
-            #
-        #
-    else:
-        #
-        sRegEx = _getPartsBarred( frozenset( lRegEx ) )
-        #
+    sRegEx = _getPartsBarred( frozenset( lRegEx ) )
     #
     return sRegEx
 
@@ -1166,7 +1180,7 @@ if __name__ == "__main__":
     #
     sRegExpress = getRegExpress( sLook4, bSubModelsOK = True )
     #
-    if sRegExpress != r'\bLHT[- ]*[0-9]\b':
+    if sRegExpress != 'LHT[- ]*[0-9]':
         #
         print3( sRegExpress )
         #
@@ -1178,7 +1192,7 @@ if __name__ == "__main__":
     #
     sRegExpress = getRegExpress( sLook4, bSubModelsOK = True )
     #
-    if sRegExpress != r'\b26[A-Z]\b':
+    if sRegExpress != '26[A-Z]':
         #
         print3( sRegExpress )
         #
@@ -1188,7 +1202,8 @@ if __name__ == "__main__":
     #
     sLook4 = '604C'
     #
-    sRegExpress = getRegExpress( sLook4, bSubModelsOK = True )
+    sRegExpress = getRegExpress( sLook4,
+                                 bSubModelsOK = True, iWordBoundChrs = 5 )
     #
     if sRegExpress != r'\b604[A-Z]\b':
         #
@@ -1218,7 +1233,7 @@ if __name__ == "__main__":
     #
     sRegExpress = getRegExpress( sLook4, bAddDash = True, bSubModelsOK = True )
     #
-    if sRegExpress != r'\b604[- ]*[A-Z]\b':
+    if sRegExpress != '604[- ]*[A-Z]':
         #
         print3( sRegExpress )
         #
@@ -1276,7 +1291,20 @@ if __name__ == "__main__":
             '_getAlphaAndDigitsTogether(%s)' % sLook4 )
         #
     #
+    sLook4 = 'ab\rcdefghi\n\rjk'
     #
+    sRegExpress = getRegExpress( sLook4, iWordBoundChrs  = 3 )
+    #
+    # \bab\b|\bjk\b|cdefghi
+    #
+    setExpected = frozenset( ( r'\bab\b', r'\bjk\b', 'cdefghi' ) )
+    setReturned = frozenset( sRegExpress.split( '|' ) )
+    #
+    if setExpected != setReturned:
+        #
+        lProblems.append(
+            'getRegExpress(%s) testing "%s"' % ( sLook4, 'boundary chars' ) )
+        #
     #
     #
     #
