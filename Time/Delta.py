@@ -182,7 +182,6 @@ def getIsoDateFromIsoDatePlus( sDate, iDays = 0 ):
     return sDateTimePlus[:10]
 
 
-
 def _getDeltaDaysFromObjs( oOlder, oNewer = None ):
     #
     from datetime import datetime
@@ -200,6 +199,10 @@ def _getDeltaDaysFromObjs( oOlder, oNewer = None ):
     return float( fDeltaSecs ) / iSecsPerDay
 
 
+
+# getDeltaDaysFromISOs      needs ISO date times
+# getDeltaDaysFromStrings   needs ISO date times and rounds the return
+# getDeltaDaysFromDates     needs ISO date w/o times
 
 def getDeltaDaysFromISOs( sOlder, sNewer = None ):
     #
