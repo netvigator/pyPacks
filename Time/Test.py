@@ -23,10 +23,15 @@
 # Copyright 2004-2018 Rick Graves
 #
 
-from Time import sFormatISOdateTime, sFormatISOdateTimeNoColon # __init__.py
+from datetime   import datetime
+
+from Time       import sFormatISOdateTime, sFormatISOdateTimeNoColon # __init__.py
 
 
 class Finished( Exception ): pass
+
+
+def isDateTimeObj( uTest ): return isinstance( uTest, datetime )
 
 
 def isISOdatetime( sDateTime, sFormat = sFormatISOdateTime ):
@@ -166,8 +171,10 @@ if __name__ == "__main__":
     #
     from time import time
     #
-    from Utils.Result   import sayTestResult
+    from Time.Convert   import getDateTimeObjFromString
     from Time.Output    import getNowIsoDateTimeFileNameSafe
+    #
+    from Utils.Result   import sayTestResult
     #
     lProblems = []
     #
@@ -257,6 +264,20 @@ if __name__ == "__main__":
     if isDateTimeUSA( sDateTime ):
         #
         lProblems.append( 'isDateTimeUSA() %s' % sDateTime )
+        #
+    #
+    sDateTime = '2008-04-17 14:28:28'
+    #
+    oDateTime = getDateTimeObjFromString( sDateTime )
+    #
+    if not isDateTimeObj( oDateTime ):
+        #
+        lProblems.append( 'isDateTimeObj() passed oDateTime' )
+        #
+    #
+    if isDateTimeObj( sDateTime ):
+        #
+        lProblems.append( 'isDateTimeObj() passed string' )
         #
     #
     #
