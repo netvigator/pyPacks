@@ -145,7 +145,8 @@ def getSecsSinceEpochFromString(
 def getDateTimeObjFromString(
             sDateTime,
             sFormat     = sFormatISOdateTime,
-            bAdjust2UTC = False ):
+            bAdjust2UTC = False,
+            oTimeZone   = None ):
     #
     from time           import timezone
     from Utils.ImIf     import ImIf
@@ -155,7 +156,7 @@ def getDateTimeObjFromString(
     #
     lDateTime       = list( tDateTime[ : 6 ] )
     #
-    lDateTime.extend( [ 0, None ] )
+    lDateTime.extend( [ 0, oTimeZone ] )
     #
     oDateTimeObj    = datetime( *lDateTime )
     #
