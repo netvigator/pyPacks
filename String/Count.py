@@ -68,9 +68,17 @@ def getDigitCount( s ):
     return len( getDigitsOnly( s ) )
 
 
+def getAlphaNumCount( s ):
+    #
+    from String.Dumpster import getAlphaNumCleanNoSpaces
+    #
+    return len( getAlphaNumCleanNoSpaces( s ) )
+
+
 
 if __name__ == "__main__":
     #
+    from Utils.Both2n3  import print3
     from Utils.Result   import sayTestResult
     #
     lProblems = []
@@ -101,6 +109,11 @@ if __name__ == "__main__":
     if getDigitCount( '1 (800) 555-1212' ) != 11:
         #
         lProblems.append( 'getDigitCount()' )
+        #
+    #
+    if getAlphaNumCount( 'Melrose 2 1212' ) != 12:
+        #
+        lProblems.append( 'getAlphaNumCount()' )
         #
     #
     sayTestResult( lProblems )
