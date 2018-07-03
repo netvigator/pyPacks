@@ -23,6 +23,8 @@
 # Copyright 2004-2018 Rick Graves
 #
 
+from time       import time, mktime
+
 from Time       import ( iSecsPerDay,
                          sFormatISOdateTime,
                          sFormatISOdateTimeNoColon,
@@ -289,6 +291,19 @@ def getSayDurationAsDaysHrsMinsSecs( nSince = 0, nNow = None ):
     return sSayDuration
 
 
+def getSayDurationAsDaysHrsMinsSecsFromObjs( oSince, oNow = None ):
+    #
+    nSince = mktime( oSince.timetuple() )
+    #
+    nNow = None
+    #
+    if oNow is not None:
+        #
+        nNow = mktime( oNow.timetuple() )
+        #
+    #
+    return getSayDurationAsDaysHrsMinsSecs( nSince, nNow )
+
 
 def getIsoDate( fSecsSinceEpoch = None, bWantLocal = True ):
     #
@@ -349,7 +364,7 @@ if __name__ == "__main__":
     #
     lProblems = []
     #
-    from datetime       import datetime
+    from datetime       import datetime, timedelta
     from sys            import argv
     from time           import gmtime, time
     #
@@ -493,6 +508,36 @@ if __name__ == "__main__":
         lProblems.append( 'getTextDowOffIntDow()' )
         #
     #
+    oBefore = datetime.today() - timedelta( days = 1, hours = 1, minutes = 10 )
+    oRecent = datetime.today() - timedelta( days = 0, hours = 2, minutes = 20 )
+    #    
+    sDuration1 = getSayDurationAsDaysHrsMinsSecsFromObjs( oBefore )
+    #
+    if sDuration1 != '1 d 1 h 10 m':
+        #
+        lProblems.append(
+            'getSayDurationAsDaysHrsMinsSecsFromObjs( oBefore )' )
+        #
+    #    
+    sDuration2 = getSayDurationAsDaysHrsMinsSecsFromObjs( oBefore, oRecent )
+    #
+    if sDuration2 != '22 h 50 m 0 s':
+        #
+        print3( 'oBefore, oRecent:', sDuration2 )
+        lProblems.append(
+            'getSayDurationAsDaysHrsMinsSecsFromObjs( oBefore, oRecent )' )
+        #
+    #    
+    sDuration3 = getSayDurationAsDaysHrsMinsSecsFromObjs( oRecent )
+    
+    if sDuration3 != '2 h 20 m 0 s':
+        #
+        print3( 'oRecent:', sDuration3 )
+        lProblems.append(
+            'getSayDurationAsDaysHrsMinsSecsFromObjs( oRecent )' )
+        #
+    #    
+
     sNow = getNowIsoDateTimeStr()
     #
     oNow = getDateTimeObjFromString( sNow )
