@@ -29,13 +29,30 @@ from six            import print_ as print3
 from Iter.AllVers   import iRange
 
 
-def getRegExSpecialsEscapedNoShortcut( sString ):
+
+def _getSpecials( bEscBegEndOfStr ):
+    #
+    if bEscBegEndOfStr:
+        #
+        sSpecials = r'\*?[]{}$^+|()'
+        #
+    else:
+        #
+        sSpecials = r'\*?[]{}+|()'
+        #
+    #
+    return sSpecials
+
+
+def getRegExSpecialsEscapedNoShortcut( sString, bEscBegEndOfStr = True ):
     #
     from Iter.AllVers import getEnumerator
     #
     lString = list( sString )
     #
-    for cSpecial in '*?\[]{}$^+|()':
+    sSpecials = _getSpecials( bEscBegEndOfStr )
+    #
+    for cSpecial in sSpecials:
         #
         for i, c in getEnumerator( lString ):
             #
@@ -47,11 +64,13 @@ def getRegExSpecialsEscapedNoShortcut( sString ):
     return ''.join( lString )
 
 
-def getRegExSpecialsEscapedWithShortcut( sString ):
+def getRegExSpecialsEscapedWithShortcut( sString, bEscBegEndOfStr = True ):
     #
     from Iter.AllVers import getEnumerator
     #
-    lGotChars = [ c for c in '*?\[]{}$^+|()' if c in sString ]
+    sSpecials = _getSpecials( bEscBegEndOfStr )
+    #
+    lGotChars = [ c for c in sSpecials if c in sString ]
     #
     if lGotChars:
         #
@@ -301,11 +320,15 @@ def _getSplit( s, oSplitOn ):
     return [ s for s in l if s ] # remove any empties
 
 
-def _getEscapedThenSplit( s, oSplitOn ):
+oFinderCRorLF = getRegExObj( '\r|\n' )
+
+
+
+def _getEscapedThenSplit( s, oSplitOn, bEscBegEndOfStr = True ):
     #
-    s = getRegExSpecialsEscaped( s )
+    sNew = getRegExSpecialsEscaped( s, bEscBegEndOfStr = bEscBegEndOfStr )
     #
-    return _getSplit( s, oSplitOn )
+    return _getSplit( sNew, oSplitOn )
 
 
 
@@ -314,10 +337,6 @@ def gotRawRex( s ):
     return (
         ( s.startswith( 'r"' ) and s.endswith( '"' ) ) or
         ( s.startswith( "r'" ) and s.endswith( "'" ) ) )
-
-
-oFinderCRorLF = getRegExObj( '\r|\n' )
-
 
 def _getAlphaAndDigitsTogether( s ):
     #
@@ -377,7 +396,8 @@ def getRegExpress(
         bAddDash        = False,
         bSubModelsOK    = False,
         iWordBoundChrs  = 0,
-        bCaseSensitive  = False ): # will the search object be case sensitive?
+        bCaseSensitive  = False,
+        bEscBegEndOfStr = True ): # will the search object be case sensitive?
     #
     from Iter.AllVers   import permutations
     from String.Get     import getRawGotStr # not sure we need this
@@ -412,7 +432,8 @@ def getRegExpress(
         sLook4       = fDoThisFirst( sLook4 )
         #
     #
-    lDashed = _getEscapedThenSplit( sLook4, oSeparator )
+    lDashed = _getEscapedThenSplit(
+                    sLook4, oSeparator, bEscBegEndOfStr = bEscBegEndOfStr )
     #
     if bPermutate:
         #
@@ -462,7 +483,9 @@ def getRegExpress(
         #
         for i in iRange( len( lOrig ) ):
             #
-            if lLengths[ i ] <= iWordBoundChrs:
+            if (    lLengths[ i ] <= iWordBoundChrs and
+                    not ( lOrig[ i ].startswith( '^' ) or
+                          lOrig[ i ].endswith(   '$' ) ) ):
                 #
                 lRegEx[ i ] = r'\b%s\b' % lRegEx[ i ]
                 #
@@ -1162,6 +1185,21 @@ if __name__ == "__main__":
         #
         lProblems.append(
             'getRegExpObj(%s) testing "%s"' % ( sLook4, sTest ) )
+        #
+    #
+    sLook4 = 'Lot of 10\r^10'
+    #
+    sRegExpress = getRegExpress( sLook4, bEscBegEndOfStr = False )
+    #
+    lParts = sRegExpress.split( '|' )
+    #
+    if '^10' not in lParts or 'Lot *of *10' not in lParts:
+        #
+        print3( sRegExpress )
+        print3( lParts )
+        #
+        lProblems.append(
+            'getRegExpress(%s) testing "%s"' % ( sLook4, 'bEscBegEndOfStr = False' ) )
         #
     #
     sLook4 = 'BM258'
