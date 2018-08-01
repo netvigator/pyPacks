@@ -26,7 +26,7 @@ from collections    import OrderedDict
 
 from six            import print_ as print3
 
-from Iter.AllVers   import iRange
+from Iter.AllVers   import iRange, getEnumerator
 
 
 
@@ -45,8 +45,6 @@ def _getSpecials( bEscBegEndOfStr ):
 
 
 def getRegExSpecialsEscapedNoShortcut( sString, bEscBegEndOfStr = True ):
-    #
-    from Iter.AllVers import getEnumerator
     #
     lString = list( sString )
     #
@@ -202,7 +200,6 @@ def _getPartsParenedAndBarred( u ):
 def _getPartsBarred( u ):
     #
     l = list( u )
-    #
     #
     return '|'.join( l )
 
@@ -396,8 +393,9 @@ def getRegExpress(
         bAddDash        = False,
         bSubModelsOK    = False,
         iWordBoundChrs  = 0,
-        bCaseSensitive  = False,
-        bEscBegEndOfStr = True ): # will the search object be case sensitive?
+        bCaseSensitive  = False,   # will the search RegEx be case sensitive?
+        bEscBegEndOfStr = True,    # escape RegEx beg/end of string chars
+        bPluralize      = False ): # will also find plural version of word
     #
     from Iter.AllVers   import permutations
     from String.Get     import getRawGotStr # not sure we need this
@@ -474,6 +472,20 @@ def getRegExpress(
         elif lRegEx[0][-1].isdigit():
             #
             lRegEx[0] = lRegEx[0][:-1] + '[0-9]'
+            #
+        #
+    elif bPluralize:
+        #
+        for i, s in getEnumerator( lRegEx ):
+            #
+            if s.endswith( 'e' ):
+                #
+                lRegEx[ i ] = s + 's{0,1}'
+                #
+            elif not s.endswith( 's' ):
+                #
+                lRegEx[ i ] = s + '(?:s|es){0,1}'
+                #
             #
         #
     #
@@ -1185,6 +1197,22 @@ if __name__ == "__main__":
         #
         lProblems.append(
             'getRegExpObj(%s) testing "%s"' % ( sLook4, sTest ) )
+        #
+    #
+    sLook4 = 'watch\rphone'
+    #
+    sRegExpress = getRegExpress( sLook4, bPluralize = True )
+    #
+    tPossible = (   'phones{0,1}|watch(?:s|es){0,1}',
+                    'watch(?:s|es){0,1}|phones{0,1}' )
+    #
+    if sRegExpress not in tPossible:
+        #
+        print3( sRegExpress )
+        print3( tPossible )
+        #
+        lProblems.append(
+            'getRegExpress(%s) testing "%s"' % ( sLook4, 'bPluralize = True' ) )
         #
     #
     sLook4 = 'Lot of 10\r^10'
