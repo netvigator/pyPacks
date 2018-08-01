@@ -478,9 +478,15 @@ def getRegExpress(
         #
         for i, s in getEnumerator( lRegEx ):
             #
+            s = s.lower()
+            #
             if s.endswith( 'e' ):
                 #
                 lRegEx[ i ] = s + 's{0,1}'
+                #
+            elif s.endswith( 'y' ):
+                #
+                lRegEx[ i ] = s[ : -1 ] + '(?:y|ies)'
                 #
             elif not s.endswith( 's' ):
                 #
@@ -1199,17 +1205,24 @@ if __name__ == "__main__":
             'getRegExpObj(%s) testing "%s"' % ( sLook4, sTest ) )
         #
     #
-    sLook4 = 'watch\rphone'
+    sLook4 = 'watch\rphone\rcaddy'
     #
     sRegExpress = getRegExpress( sLook4, bPluralize = True )
     #
-    tPossible = (   'phones{0,1}|watch(?:s|es){0,1}',
-                    'watch(?:s|es){0,1}|phones{0,1}' )
+    tAll = (    'phones{0,1}',
+                'watch(?:s|es){0,1}',
+                'cadd(?:y|ies)' )
     #
-    if sRegExpress not in tPossible:
+    bAllIn = True
+    #
+    for s in tAll:
+        if s not in sRegExpress:
+            bAllIn = False
+    #
+    if not bAllIn:
         #
         print3( sRegExpress )
-        print3( tPossible )
+        print3( tAll )
         #
         lProblems.append(
             'getRegExpress(%s) testing "%s"' % ( sLook4, 'bPluralize = True' ) )
