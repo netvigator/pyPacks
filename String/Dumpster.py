@@ -155,7 +155,9 @@ def getAlphaOnly( s ):
     return getWhiteWiped( sAlphaSpaces )
 
 
-_oKeepAlphaDigitsOnly = KeepYouNameItClass( letters + '0123456789' )
+_oKeepAlphaDigitsOnly   = KeepYouNameItClass( letters + '0123456789' )
+
+_oKeepAlphaDigitsDashes = KeepYouNameItClass( letters + '0123456789-' )
 
 
 def getAlphaNumClean( s ):
@@ -173,6 +175,16 @@ def getAlphaNumCleanNoSpaces( s ):
     from String.Split import getWhiteOut
     #
     sAlphaNumSpaces = _oKeepAlphaDigitsOnly.Dump( s )
+    #
+    return getWhiteOut( sAlphaNumSpaces )
+
+
+
+def getAlphaNumDashNoSpaces( s ):
+    #
+    from String.Split import getWhiteOut
+    #
+    sAlphaNumSpaces = _oKeepAlphaDigitsDashes.Dump( s )
     #
     return getWhiteOut( sAlphaNumSpaces )
 
@@ -198,6 +210,7 @@ if __name__ == "__main__":
     #
     from string import digits
     #
+    from Utils.Both2n3  import print3
     from Utils.Result   import sayTestResult
     #
     lProblems = []
@@ -258,6 +271,11 @@ if __name__ == "__main__":
     if getAlphaNumCleanNoSpaces( 'P.O. Box' ) != 'POBox':
         #
         lProblems.append( 'getAlphaNumCleanNoSpaces()' )
+        #
+    #
+    if getAlphaNumDashNoSpaces( 'N-15 0.0A' ) != 'N-1500A':
+        #
+        lProblems.append( 'getAlphaNumDashNoSpaces()' )
         #
     #
     if getChoppedOff( digits * 2, '6' ) != digits + '012345':
