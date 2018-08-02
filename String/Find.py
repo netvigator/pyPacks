@@ -28,6 +28,7 @@ from six            import print_ as print3
 
 from Iter.AllVers   import iRange, getEnumerator
 
+from String.Dumpster import getAlphaNumCleanNoSpaces, getAlphaNumDashNoSpaces
 
 
 def _getSpecials( bEscBegEndOfStr ):
@@ -208,8 +209,6 @@ def _getBoundCodesIfShort( s, iMinLen ):
     #
     '''get the string within word boundary codes'''
     #
-    from String.Dumpster import getAlphaNumCleanNoSpaces
-    #
     if (    len( getAlphaNumCleanNoSpaces( s ) ) <= iMinLen and 
             not ( s.startswith( r'\b' ) or s.endswith( r'\b' ) ) ):
         return r'\b%s\b' % s
@@ -335,23 +334,38 @@ def gotRawRex( s ):
         ( s.startswith( 'r"' ) and s.endswith( '"' ) ) or
         ( s.startswith( "r'" ) and s.endswith( "'" ) ) )
 
+
 def _getAlphaAndDigitsTogether( s ):
     #
-    from Iter.Get        import iRevRange
-    from String.Dumpster import getAlphaNumCleanNoSpaces
+    from Iter.Get       import iRevRange
+    from String.Split   import getPartsIterAndBothStarts
+    #
+    sWithDash = getAlphaNumDashNoSpaces( s )
+    #
+    lDashStarts = getPartsIterAndBothStarts( sWithDash, '-' )[ 1 ]
+    #
+    for i in iRange( len( lDashStarts ) ):
+        #
+        lDashStarts[ i ] = lDashStarts[ i ] - ( i + 1 )
+        #
     #
     lChars = list( getAlphaNumCleanNoSpaces( s ) )
     #
     wasDigit = lChars[ -1 ].isdigit()
     wasAlpha = lChars[ -1 ].isalpha()
     #
-    for i in iRevRange( len( lChars ) -1 ):
+    for i in iRevRange( len( lChars ) - 1 ):
         #
         sThisChar = lChars[ i ]
         #
-        if wasDigit:
+        if i and i in lDashStarts:
             #
-            if lChars[ i ].isdigit():
+            wasAlpha = sThisChar.isalpha()
+            wasDigit = sThisChar.isdigit()
+            #
+        elif wasDigit:
+            #
+            if sThisChar.isdigit():
                 #
                 lChars[ i ] += lChars[ i + 1 ]
                 #
@@ -363,7 +377,7 @@ def _getAlphaAndDigitsTogether( s ):
                 #
         else: # wasAlpha
             #
-            if lChars[ i ].isalpha():
+            if sThisChar.isalpha():
                 #
                 lChars[ i ] += lChars[ i + 1 ]
                 #
@@ -489,7 +503,7 @@ def getRegExpress(
                 #
             elif s.endswith( 'y' ):
                 #
-                lRegEx[ i ] = s[ : -1 ] + '(?:y|ies)'
+                lRegEx[ i ] = s[ : -1 ] + '(?:y|ys|ies)'
                 #
             elif not s.endswith( 's' ):
                 #
@@ -1208,12 +1222,35 @@ if __name__ == "__main__":
             'getRegExpObj(%s) testing "%s"' % ( sLook4, sTest ) )
         #
     #
+    sLook4  = 'BM258'
+    #
+    lGot    = _getAlphaAndDigitsTogether( sLook4 )
+    #
+    if lGot != ['BM', '258']:
+        #
+        print3( lGot )
+        #
+        lProblems.append(
+            '_getAlphaAndDigitsTogether(%s)' % sLook4 )
+        #
+    #
+    sLook4 = 'N-15-00A00-18'
+    #
+    lGot    = _getAlphaAndDigitsTogether( sLook4 )
+    #
+    if lGot != ['N', '15', '00', 'A', '00', '18' ]:
+        #
+        print3( lGot )
+        #
+        lProblems.append(
+            '_getAlphaAndDigitsTogether(%s)' % sLook4 )
+        #
+    #
     sLook4 = '288-8F'
     #
     sRegExpress = getRegExpress( sLook4,
                             bSubModelsOK   = True,
-                            bAddDash       = True,
-                            iWordBoundChrs = 5 )
+                            bAddDash       = True )
     #
     if sRegExpress != '288[- ]*8[A-Z]':
         #
@@ -1223,13 +1260,20 @@ if __name__ == "__main__":
             'getRegExpress(%s) testing "%s"' % ( sLook4, 'bSubModelsOK = True' ) )
         #
     #
+    sLook4 = 'N-1500A'
+    #
+    sRegExpress = getRegExpress( sLook4,
+                            bSubModelsOK   = True,
+                            bAddDash       = True )
+    #
+    #
     sLook4 = 'watch\rphone\rcaddy'
     #
     sRegExpress = getRegExpress( sLook4, bPluralize = True )
     #
     tAll = (    'phones{0,1}',
                 'watch(?:s|es){0,1}',
-                'cadd(?:y|ies)' )
+                'cadd(?:y|ys|ies)' )
     #
     bAllIn = True
     #
@@ -1374,18 +1418,6 @@ if __name__ == "__main__":
         #
         lProblems.append(
             'getRegExpress(%s) testing "%s"' % ( sLook4, 'repeated split chars' ) )
-        #
-    #
-    sLook4  = 'BM258'
-    #
-    sGot    = _getAlphaAndDigitsTogether( sLook4 )
-    #
-    if sGot != ['BM', '258']:
-        #
-        print3( sGot )
-        #
-        lProblems.append(
-            '_getAlphaAndDigitsTogether(%s)' % sLook4 )
         #
     #
     sLook4 = 'ab\rcdefghi\n\rjk'
