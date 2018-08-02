@@ -410,7 +410,10 @@ def getRegExpress(
     #
     lOrig = _getSplit( sLook4, oSeparator )
     #
+    sLook4Orig = sLook4
+    #
     if (        bAddDash and
+                '-' not in sLook4 and
                 hasAnyAlpha(  sLook4 ) and
                 hasAnyDigits( sLook4 ) ):
         #
@@ -1203,6 +1206,21 @@ if __name__ == "__main__":
         #
         lProblems.append(
             'getRegExpObj(%s) testing "%s"' % ( sLook4, sTest ) )
+        #
+    #
+    sLook4 = '288-8F'
+    #
+    sRegExpress = getRegExpress( sLook4,
+                            bSubModelsOK   = True,
+                            bAddDash       = True,
+                            iWordBoundChrs = 5 )
+    #
+    if sRegExpress != '288[- ]*8[A-Z]':
+        #
+        print3( sRegExpress )
+        #
+        lProblems.append(
+            'getRegExpress(%s) testing "%s"' % ( sLook4, 'bSubModelsOK = True' ) )
         #
     #
     sLook4 = 'watch\rphone\rcaddy'
