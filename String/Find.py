@@ -427,7 +427,6 @@ def getRegExpress(
     sLook4Orig = sLook4
     #
     if (        bAddDash and
-                '-' not in sLook4 and
                 hasAnyAlpha(  sLook4 ) and
                 hasAnyDigits( sLook4 ) ):
         #
@@ -1246,13 +1245,39 @@ if __name__ == "__main__":
             '_getAlphaAndDigitsTogether(%s)' % sLook4 )
         #
     #
+    sLook4  = 'N-1500A'
+    #
+    lGot    = _getAlphaAndDigitsTogether( sLook4 )
+    #
+    if lGot != ['N', '1500', 'A' ]:
+        #
+        print3( lGot )
+        #
+        lProblems.append(
+            '_getAlphaAndDigitsTogether(%s)' % sLook4 )
+        #
+    #    
+    sRegExpress = getRegExpress( sLook4,
+                            bSubModelsOK   = True,
+                            bAddDash       = True )
+    #
+    if sRegExpress != 'N[- ]*1500[- ]*[A-Z]':
+        #
+        print3( 'got: ', sRegExpress )
+        print3( 'want:', 'N[- ]*1500[- ]*[A-Z]' )
+        #
+        lProblems.append(
+            'getRegExpress(%s) testing "%s"' % ( sLook4, 'bSubModelsOK = True, bAddDash = True' ) )
+        #
+    #
+    #
     sLook4 = '288-8F'
     #
     sRegExpress = getRegExpress( sLook4,
                             bSubModelsOK   = True,
                             bAddDash       = True )
     #
-    if sRegExpress != '288[- ]*8[A-Z]':
+    if sRegExpress != '288[- ]*8[- ]*[A-Z]':
         #
         print3( sRegExpress )
         #
@@ -1260,11 +1285,6 @@ if __name__ == "__main__":
             'getRegExpress(%s) testing "%s"' % ( sLook4, 'bSubModelsOK = True' ) )
         #
     #
-    sLook4 = 'N-1500A'
-    #
-    sRegExpress = getRegExpress( sLook4,
-                            bSubModelsOK   = True,
-                            bAddDash       = True )
     #
     #
     sLook4 = 'watch\rphone\rcaddy'
