@@ -335,64 +335,42 @@ def gotRawRex( s ):
         ( s.startswith( "r'" ) and s.endswith( "'" ) ) )
 
 
-def _getAlphaAndDigitsTogether( s ):
+
+
+def _gotAlphaNumPutSeparator( sChars ):
     #
     from Iter.Get       import iRevRange
-    from String.Split   import getPartsIterAndBothStarts
     #
-    sWithDash = getAlphaNumDashNoSpaces( s )
+    lNew   = []
     #
-    lDashStarts = getPartsIterAndBothStarts( sWithDash, '-' )[ 1 ]
+    wasAlpha = wasDigit = False
     #
-    for i in iRange( len( lDashStarts ) ):
+    for i in iRevRange( len( sChars ) ):
         #
-        lDashStarts[ i ] = lDashStarts[ i ] - ( i + 1 )
+        sThisChar = sChars[ i ]
         #
-    #
-    lChars = list( getAlphaNumCleanNoSpaces( s ) )
-    #
-    wasDigit = lChars[ -1 ].isdigit()
-    wasAlpha = lChars[ -1 ].isalpha()
-    #
-    for i in iRevRange( len( lChars ) - 1 ):
+        isAlpha = sThisChar.isalpha()
+        isDigit = sThisChar.isdigit()
         #
-        sThisChar = lChars[ i ]
-        #
-        if i and i in lDashStarts:
+        if ( isAlpha and wasDigit ) or ( isDigit and wasAlpha ):
             #
-            wasAlpha = sThisChar.isalpha()
-            wasDigit = sThisChar.isdigit()
+            lNew.append( ' ' )
             #
-        elif wasDigit:
-            #
-            if sThisChar.isdigit():
-                #
-                lChars[ i ] += lChars[ i + 1 ]
-                #
-                del lChars[ i + 1 ]
-                #
-            else: # not wasDigit:
-                #
-                wasAlpha = True
-                #
-        else: # wasAlpha
-            #
-            if sThisChar.isalpha():
-                #
-                lChars[ i ] += lChars[ i + 1 ]
-                #
-                del lChars[ i + 1 ]
-                #
-            else: # not wasAlpha:
-                #
-                wasDigit = True
-                #
         #
-        wasDigit = sThisChar.isdigit()
-        wasAlpha = sThisChar.isalpha()
+        wasAlpha = isAlpha
+        wasDigit = isDigit
+        #
+        lNew.append( sThisChar )
         #
     #
-    return lChars
+    lNew.reverse()
+    #
+    sNew = ''.join( lNew )
+    #
+    lNew = sNew.split()
+    #
+    return lNew
+
 
 
 
@@ -415,6 +393,8 @@ def getRegExpress(
     from String.Get     import getRawGotStr # not sure we need this
     from String.Test    import hasAnyAlpha, hasAnyDigits, hasPunctOrSpace
     #
+    sLook4Orig = sLook4
+    #
     if gotRawRex( sLook4 ):
         #
         sInside = sLook4[ 2 : -1 ]
@@ -422,9 +402,10 @@ def getRegExpress(
         return getRawGotStr( sLook4 )
         #
     #
-    lOrig = _getSplit( sLook4, oSeparator )
+    #if sLook4Orig == '15" Silver':
+        #print3( 'sLook4 0:', sLook4 )
     #
-    sLook4Orig = sLook4
+    lOrig = _getSplit( sLook4, oSeparator )
     #
     if (        bAddDash and
                 hasAnyAlpha(  sLook4 ) and
@@ -432,12 +413,15 @@ def getRegExpress(
         #
         lParts = _getSplit( sLook4, oSeparator )
         #
-        lParts = [ _getAlphaAndDigitsTogether( s ) for s in lParts ]
+        lParts = [ _gotAlphaNumPutSeparator( s ) for s in lParts ]
         #
         lParts = [ '-'.join( lChars ) for lChars in lParts ]
         #
         sLook4 = '\r'.join( lParts )
         #
+    #
+    #if sLook4Orig == '15" Silver':
+        #print3( 'sLook4 1:', sLook4 )
     #
     sRegEx = ''
     #
@@ -445,6 +429,10 @@ def getRegExpress(
         #
         sLook4       = fDoThisFirst( sLook4 )
         #
+    #
+    #
+    #if sLook4Orig == '15" Silver':
+        #print3( 'sLook4 2:', sLook4 )
     #
     lDashed = _getEscapedThenSplit(
                     sLook4, oSeparator, bEscBegEndOfStr = bEscBegEndOfStr )
@@ -1223,38 +1211,38 @@ if __name__ == "__main__":
     #
     sLook4  = 'BM258'
     #
-    lGot    = _getAlphaAndDigitsTogether( sLook4 )
+    lGot    = _gotAlphaNumPutSeparator( sLook4 )
     #
     if lGot != ['BM', '258']:
         #
         print3( lGot )
         #
         lProblems.append(
-            '_getAlphaAndDigitsTogether(%s)' % sLook4 )
+            '_gotAlphaNumPutSeparator(%s)' % sLook4 )
         #
     #
     sLook4 = 'N-15-00A00-18'
     #
-    lGot    = _getAlphaAndDigitsTogether( sLook4 )
+    lGot    = _gotAlphaNumPutSeparator( sLook4 )
     #
-    if lGot != ['N', '15', '00', 'A', '00', '18' ]:
+    if lGot != ['N-15-00', 'A', '00-18']:
         #
         print3( lGot )
         #
         lProblems.append(
-            '_getAlphaAndDigitsTogether(%s)' % sLook4 )
+            '_gotAlphaNumPutSeparator(%s)' % sLook4 )
         #
     #
     sLook4  = 'N-1500A'
     #
-    lGot    = _getAlphaAndDigitsTogether( sLook4 )
+    lGot    = _gotAlphaNumPutSeparator( sLook4 )
     #
-    if lGot != ['N', '1500', 'A' ]:
+    if lGot != ['N-1500', 'A' ]:
         #
         print3( lGot )
         #
         lProblems.append(
-            '_getAlphaAndDigitsTogether(%s)' % sLook4 )
+            '_gotAlphaNumPutSeparator(%s)' % sLook4 )
         #
     #    
     sRegExpress = getRegExpress( sLook4,
@@ -1282,10 +1270,43 @@ if __name__ == "__main__":
         print3( sRegExpress )
         #
         lProblems.append(
-            'getRegExpress(%s) testing "%s"' % ( sLook4, 'bSubModelsOK = True' ) )
+            'getRegExpress(%s) testing "%s"' % ( sLook4, 'bSubModelsOK = True, bAddDash = True' ) )
+        #
+    #
+    sLook4  = 'LSU/HF/15'
+    #
+    sRegExpress = getRegExpress( sLook4, bAddDash = True )
+    #
+    oRegExObj = getRegExObj( sRegExpress )
+    #
+    sThis  = 'TANNOY GRF CORNER CABINET w. 15" SILVER DUAL CONCENTRIC DRIVER LSU/HF/15 SUPERB'
+    #
+    if not oRegExObj.search( sThis ):
+        #
+        lProblems.append( '%s : getRegExObj() title has target' % oRegExObj )
         #
     #
     #
+    sLook4 = '15" Silver'
+    #
+    sRegExpress = getRegExpress( sLook4, bAddDash = True )
+    #
+    if sRegExpress != '15"*[- ]*Silver':
+        #
+        print3( sRegExpress )
+        #
+        lProblems.append(
+            'getRegExpress(%s) testing "%s"' % ( sLook4, 'bAddDash = True' ) )
+        #
+    #
+    oRegExObj = getRegExObj( sRegExpress )
+    #
+    sThis  = 'TANNOY GRF CORNER CABINET w. 15" SILVER DUAL CONCENTRIC DRIVER'
+    #
+    if not oRegExObj.search( sThis ):
+        #
+        lProblems.append( '%s : getRegExObj() title has target' % oRegExObj )
+        #
     #
     sLook4 = 'watch\rphone\rcaddy'
     #
