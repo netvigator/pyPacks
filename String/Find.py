@@ -357,19 +357,18 @@ def _gotAlphaNumPutSeparator( sChars ):
             lNew.append( ' ' )
             #
         #
+        lNew.append( sThisChar )
+        #
         wasAlpha = isAlpha
         wasDigit = isDigit
-        #
-        lNew.append( sThisChar )
         #
     #
     lNew.reverse()
     #
     sNew = ''.join( lNew )
     #
-    lNew = sNew.split()
-    #
-    return lNew
+    return sNew.split()
+
 
 
 
