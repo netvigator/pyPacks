@@ -472,7 +472,7 @@ def getRegExpress(
                 #
                 lRegEx[0] = lRegEx[0][:-1] + '[A-Z]'
                 #
-        elif lRegEx[0][-1].isdigit():
+        elif lRegEx[0][-1].isdigit() and lRegEx[0][-6:-1] == '[- ]*':
             #
             lRegEx[0] = lRegEx[0][:-1] + '[0-9]'
             #
