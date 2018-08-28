@@ -510,6 +510,10 @@ def getRegExpress(
                 #
                 lRegEx[ i ] = r'\b%s\b' % lRegEx[ i ]
                 #
+            elif lOrig[ i ][ -1 ].isdigit():
+                #
+                lRegEx[ i ] = r'%s\b' % lRegEx[ i ]
+                #
             #
         #
     #
@@ -1256,6 +1260,20 @@ if __name__ == "__main__":
         lProblems.append(
             'getRegExpress(%s) testing "%s"' % ( sLook4, 'bSubModelsOK = True, bAddDash = True' ) )
         #
+    #
+    #
+    sLook4 = 'Model 2'
+    #
+    sRegExpress = getRegExpress( sLook4, iWordBoundChrs = 4 )
+    #
+    if sRegExpress != r'Model *2\b':
+        #
+        print3( '%s:' % sLook4, sRegExpress )
+        #
+        lProblems.append(
+            'getRegExpress(%s) testing "%s"' % ( sLook4, 'iWordBoundChrs = 4' ) )
+        #
+    #
     #
     #
     sLook4 = '288-8F'
