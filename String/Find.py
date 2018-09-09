@@ -171,7 +171,7 @@ dSub1st = OrderedDict( (
 
 dSub2nd = OrderedDict( (
     ( ' ',      ' *'        ),  # space    matches ZERO or more spaces
-    ( '-',      '[- ]*'     ),  # hyphen   matches ZERO or more hypens or spaces
+    ( '-',      '[-/ ]*'    ),  # hyphen   matches ZERO or more hypens, slashes or spaces
     ( ',',      '[, ]*'     ),  # comma    matches ZERO or more commas or spaces
     ( '.',      '[. ]*'     ))) # dot      matches ZERO or more dots or spaces
 
@@ -472,7 +472,7 @@ def getRegExpress(
                 #
                 lRegEx[0] = lRegEx[0][:-1] + '[A-Z]'
                 #
-        elif lRegEx[0][-1].isdigit() and lRegEx[0][-6:-1] == '[- ]*':
+        elif lRegEx[0][-1].isdigit() and lRegEx[0][-7:-1] == '[-/ ]*':
             #
             lRegEx[0] = lRegEx[0][:-1] + '[0-9]'
             #
@@ -865,7 +865,7 @@ if __name__ == "__main__":
         lProblems.append( 'getRegExObj() compound regex expression' )
         #
     #
-    s = r'\bXP[- ]*55[- ]*B\b'
+    s = r'\bXP[-/ ]*55[-/ ]*B\b'
     #
     oRegExObj = getRegExObj( s )
     #
@@ -944,7 +944,7 @@ if __name__ == "__main__":
     #
     sGot = getRegEx4Chars( 'Harman-Kardon' )
     #
-    if sGot != 'Harman[- ]*Kardon':
+    if sGot != 'Harman[-/ ]*Kardon':
         #
         print3( sGot )
         #
@@ -988,7 +988,7 @@ if __name__ == "__main__":
     #
     sGot = getRegEx4Chars( 'Unholtz-Dickie Corp.' )
     #
-    if sGot != 'Unholtz[- ]*Dickie *(Corporation|Company|Corp|Co)':
+    if sGot != 'Unholtz[-/ ]*Dickie *(Corporation|Company|Corp|Co)':
         #
         print3( sGot )
         #
@@ -1035,7 +1035,7 @@ if __name__ == "__main__":
     #
     sGot    = getRegEx4Chars( sLook4 )
     #
-    if sGot != '50[- ]*W[- ]*2':
+    if sGot != '50[-/ ]*W[-/ ]*2':
         #
         print3( sGot )
         #
@@ -1057,7 +1057,7 @@ if __name__ == "__main__":
     #
     sGot    = getRegEx4Chars( sLook4 )
     #
-    if sGot != "TR[- ]*10 *'*Tri[- ]*ette'*":
+    if sGot != "TR[-/ ]*10 *'*Tri[-/ ]*ette'*":
         #
         print3( sGot )
         #
@@ -1068,7 +1068,7 @@ if __name__ == "__main__":
     #
     sGot    = getRegEx4Chars( sLook4 )
     #
-    if sGot != 'TV[- ]*2(/ *)+U':
+    if sGot != 'TV[-/ ]*2(/ *)+U':
         #
         print3( sGot )
         #
@@ -1079,7 +1079,7 @@ if __name__ == "__main__":
     #
     sGot    = getRegEx4Chars( sLook4 )
     #
-    if sGot != '50[- ]*X[- ]*C3':
+    if sGot != '50[-/ ]*X[-/ ]*C3':
         #
         print3( sGot )
         #
@@ -1098,6 +1098,23 @@ if __name__ == "__main__":
         #
     #
 
+    #
+    sLook4  = '1217-1290'
+    #
+    oFinder = getRegExpObj( sLook4 ).search
+    #
+    sTest   = 'VINTAGE JBL 175 driver with 1217/1290 HORNS!!'
+    #
+    oGot    = oFinder( sTest )
+    #
+    if not oGot:
+        #
+        print3( oGot )
+        #
+        lProblems.append(
+            'getRegExpObj(%s) testing "%s"' % ( sLook4, sTest ) )
+        #
+    #
     #
     sLook4  = 'Heintz&Kaufman'
     #
@@ -1252,10 +1269,10 @@ if __name__ == "__main__":
                             bSubModelsOK   = True,
                             bAddDash       = True )
     #
-    if sRegExpress != 'N[- ]*1500[- ]*[A-Z]':
+    if sRegExpress != 'N[-/ ]*1500[-/ ]*[A-Z]':
         #
         print3( 'got: ', sRegExpress )
-        print3( 'want:', 'N[- ]*1500[- ]*[A-Z]' )
+        print3( 'want:', 'N[-/ ]*1500[-/ ]*[A-Z]' )
         #
         lProblems.append(
             'getRegExpress(%s) testing "%s"' % ( sLook4, 'bSubModelsOK = True, bAddDash = True' ) )
@@ -1282,7 +1299,7 @@ if __name__ == "__main__":
                             bSubModelsOK   = True,
                             bAddDash       = True )
     #
-    if sRegExpress != '288[- ]*8[- ]*[A-Z]':
+    if sRegExpress != '288[-/ ]*8[-/ ]*[A-Z]':
         #
         print3( sRegExpress )
         #
@@ -1308,7 +1325,7 @@ if __name__ == "__main__":
     #
     sRegExpress = getRegExpress( sLook4, bAddDash = True )
     #
-    if sRegExpress != '15"*[- ]*Silver':
+    if sRegExpress != '15"*[-/ ]*Silver':
         #
         print3( sRegExpress )
         #
@@ -1367,7 +1384,7 @@ if __name__ == "__main__":
     #
     sRegExpress = getRegExpress( sLook4, bAddDash = True )
     #
-    if sRegExpress != 'BM[- ]*258':
+    if sRegExpress != 'BM[-/ ]*258':
         #
         print3( sRegExpress )
         #
@@ -1379,7 +1396,7 @@ if __name__ == "__main__":
     #
     sRegExpress = getRegExpress( sLook4, bSubModelsOK = True )
     #
-    if sRegExpress != 'LHT[- ]*[0-9]':
+    if sRegExpress != 'LHT[-/ ]*[0-9]':
         #
         print3( sRegExpress )
         #
@@ -1432,7 +1449,7 @@ if __name__ == "__main__":
     #
     sRegExpress = getRegExpress( sLook4, bAddDash = True, bSubModelsOK = True )
     #
-    if sRegExpress != '604[- ]*[A-Z]':
+    if sRegExpress != '604[-/ ]*[A-Z]':
         #
         print3( sRegExpress )
         #
