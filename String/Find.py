@@ -466,15 +466,15 @@ def getRegExpress(
             #
             if bCaseSensitive: # will the search object be case sensitive?
                 #
-                lRegEx[0] = lRegEx[0][:-1] + '[a-zA-Z]'
+                lRegEx[0] = lRegEx[0][:-1] + '[ a-zA-Z]'
                 #
             else:
                 #
-                lRegEx[0] = lRegEx[0][:-1] + '[A-Z]'
+                lRegEx[0] = lRegEx[0][:-1] + '[ A-Z]'
                 #
         elif lRegEx[0][-1].isdigit() and lRegEx[0][-7:-1] == '[-/ ]*':
             #
-            lRegEx[0] = lRegEx[0][:-1] + '[0-9]'
+            lRegEx[0] = lRegEx[0][:-1] + '[ 0-9]'
             #
         #
     elif bPluralize:
@@ -1269,10 +1269,12 @@ if __name__ == "__main__":
                             bSubModelsOK   = True,
                             bAddDash       = True )
     #
-    if sRegExpress != 'N[-/ ]*1500[-/ ]*[A-Z]':
+    sWant = 'N[-/ ]*1500[-/ ]*[ A-Z]'
+    #
+    if sRegExpress != sWant:
         #
         print3( 'got: ', sRegExpress )
-        print3( 'want:', 'N[-/ ]*1500[-/ ]*[A-Z]' )
+        print3( 'want:', sWant )
         #
         lProblems.append(
             'getRegExpress(%s) testing "%s"' % ( sLook4, 'bSubModelsOK = True, bAddDash = True' ) )
@@ -1299,9 +1301,12 @@ if __name__ == "__main__":
                             bSubModelsOK   = True,
                             bAddDash       = True )
     #
-    if sRegExpress != '288[-/ ]*8[-/ ]*[A-Z]':
+    sWant = '288[-/ ]*8[-/ ]*[ A-Z]'
+    #
+    if sRegExpress != sWant:
         #
-        print3( sRegExpress )
+        print3( 'got: ', sRegExpress )
+        print3( 'want:', sWant )
         #
         lProblems.append(
             'getRegExpress(%s) testing "%s"' % ( sLook4, 'bSubModelsOK = True, bAddDash = True' ) )
@@ -1396,9 +1401,12 @@ if __name__ == "__main__":
     #
     sRegExpress = getRegExpress( sLook4, bSubModelsOK = True )
     #
-    if sRegExpress != 'LHT[-/ ]*[0-9]':
+    sWant = 'LHT[-/ ]*[ 0-9]'
+    #
+    if sRegExpress != sWant:
         #
-        print3( sRegExpress )
+        print3( 'got: ', sRegExpress )
+        print3( 'want:', sWant )
         #
         lProblems.append(
             'getRegExpress(%s) testing "%s"' % ( sLook4, 'bSubModelsOK = True' ) )
@@ -1408,9 +1416,12 @@ if __name__ == "__main__":
     #
     sRegExpress = getRegExpress( sLook4, bSubModelsOK = True )
     #
-    if sRegExpress != '26[A-Z]':
+    sWant = '26[ A-Z]'
+    #
+    if sRegExpress != sWant:
         #
-        print3( sRegExpress )
+        print3( 'got: ', sRegExpress )
+        print3( 'want:', sWant )
         #
         lProblems.append(
             'getRegExpress(%s) testing "%s"' % ( sLook4, 'bSubModelsOK = True' ) )
@@ -1421,9 +1432,12 @@ if __name__ == "__main__":
     sRegExpress = getRegExpress( sLook4,
                                  bSubModelsOK = True, iWordBoundChrs = 5 )
     #
-    if sRegExpress != r'\b604[A-Z]\b':
+    sWant = r'\b604[ A-Z]\b'
+    #
+    if sRegExpress != sWant:
         #
-        print3( sRegExpress )
+        print3( 'got: ', sRegExpress )
+        print3( 'want:', sWant )
         #
         lProblems.append(
             'getRegExpress(%s) testing "%s"' % ( sLook4, 'bSubModelsOK = True' ) )
@@ -1449,9 +1463,12 @@ if __name__ == "__main__":
     #
     sRegExpress = getRegExpress( sLook4, bAddDash = True, bSubModelsOK = True )
     #
-    if sRegExpress != '604[-/ ]*[A-Z]':
+    sWant = '604[-/ ]*[ A-Z]'
+    #
+    if sRegExpress != sWant:
         #
-        print3( sRegExpress )
+        print3( 'got: ', sRegExpress )
+        print3( 'want:', sWant )
         #
         lProblems.append(
             'getRegExpress(%s) testing "%s"' % ( sLook4, 'bAddDash & bSubModelsOK = True' ) )
