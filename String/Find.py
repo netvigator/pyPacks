@@ -370,7 +370,7 @@ def _gotAlphaNumPutSeparator( sChars ):
     return sNew.split()
 
 
-
+def _endsWithWordBoundary( s ): return s.endswith( r'\b' )
 
 
 def getRegExpress(
@@ -462,19 +462,40 @@ def getRegExpress(
     #
     if bSubModelsOK:
         #
-        if lRegEx[0][-1].isalpha():
+        sLastChar = lRegEx[0][-1]
+        #
+        if sLastChar.isdigit() and lRegEx[0][-7:-1] != '[-/ ]*':
             #
-            if bCaseSensitive: # will the search object be case sensitive?
+            pass
+            #
+        elif sLastChar.isalpha() or sLastChar.isdigit():
+            #
+            if sLastChar.isalpha() and bCaseSensitive: # will the search object be case sensitive?
                 #
-                lRegEx[0] = lRegEx[0][:-1] + '[ a-zA-Z]'
+                sSubModelsVary = '[a-zA-Z]'
+                #
+            elif sLastChar.isalpha():
+                #
+                sSubModelsVary = '[A-Z]'
                 #
             else:
                 #
-                lRegEx[0] = lRegEx[0][:-1] + '[ A-Z]'
+                sSubModelsVary = '[0-9]'
                 #
-        elif lRegEx[0][-1].isdigit() and lRegEx[0][-7:-1] == '[-/ ]*':
-            #
-            lRegEx[0] = lRegEx[0][:-1] + '[ 0-9]'
+            #        
+            if lRegEx[0][-7:-1] == '[-/ ]*':
+                #
+                lRegEx[0] = ''.join( (
+                        lRegEx[0][:-7],
+                        '(?:[-/ ]*',
+                        sSubModelsVary,
+                        r'){0,1}\b' ) )
+                #
+            else:
+                #
+                lRegEx[0] = ''.join(
+                        ( lRegEx[0][:-1], sSubModelsVary, r'{0,1}\b' ) )
+                #
             #
         #
     elif bPluralize:
@@ -500,21 +521,58 @@ def getRegExpress(
     #
     if iWordBoundChrs > 0:
         #
-        lLengths = [ len( s ) for s in lOrig ]
+        lLengths = [ len( getAlphaNumCleanNoSpaces( s ) )
+                     for s in lOrig ]
+        #
+        #if sLook4Orig == 'CA-3':
+            #print3( 'lLengths:', lLengths )
         #
         for i in iRange( len( lOrig ) ):
             #
-            if (    lLengths[ i ] <= iWordBoundChrs and
-                    not ( lOrig[ i ].startswith( '^' ) or
-                          lOrig[ i ].endswith(   '$' ) ) ):
+            if lOrig[ i ][ -1 ].isdigit():
                 #
-                lRegEx[ i ] = r'\b%s\b' % lRegEx[ i ]
+                if lOrig[ i ].startswith( '^' ):
+                    #
+                    lRegEx[ i ] = r'%s\b' % lRegEx[ i ]
+                    #
+                elif lLengths[ i ] <= iWordBoundChrs:
+                    #
+                    lRegEx[ i ] = r'\b%s\b' % lRegEx[ i ]
+                    #
+                else:
+                    #
+                    lRegEx[ i ] = r'%s\b' % lRegEx[ i ]
+                    #
                 #
-            elif lOrig[ i ][ -1 ].isdigit():
+            elif lLengths[ i ] <= iWordBoundChrs:
                 #
-                lRegEx[ i ] = r'%s\b' % lRegEx[ i ]
+                if (    lOrig[ i ].startswith( '^' ) and
+                        lOrig[ i ].endswith(   '$' ) ):
+                    #
+                    continue
+                    #
+                elif lOrig[ i ].startswith( '^' ):
+                    #
+                    lRegEx[ i ] = r'%s\b' % lRegEx[ i ]
+                    #
+                elif lOrig[ i ].endswith( '$' ):
+                    #
+                    lRegEx[ i ] = r'\b%s' % lRegEx[ i ]
+                    #
+                else:
+                    #
+                    lRegEx[ i ] = r'\b%s\b' % lRegEx[ i ]
+                    #
                 #
             #
+            while lRegEx[ i ].endswith( r'\b\b' ):
+                #
+                lRegEx[ i ] = lRegEx[ i ][ : -2 ]
+                #
+            while lRegEx[ i ].startswith( r'\b\b' ):
+                #
+                lRegEx[ i ] = lRegEx[ i ][ 2 : ]
+                #
         #
     #
     sRegEx = _getPartsBarred( frozenset( lRegEx ) )
@@ -1269,7 +1327,7 @@ if __name__ == "__main__":
                             bSubModelsOK   = True,
                             bAddDash       = True )
     #
-    sWant = 'N[-/ ]*1500[-/ ]*[ A-Z]'
+    sWant = r'N[-/ ]*1500(?:[-/ ]*[A-Z]){0,1}\b'
     #
     if sRegExpress != sWant:
         #
@@ -1301,7 +1359,7 @@ if __name__ == "__main__":
                             bSubModelsOK   = True,
                             bAddDash       = True )
     #
-    sWant = '288[-/ ]*8[-/ ]*[ A-Z]'
+    sWant = r'288[-/ ]*8(?:[-/ ]*[A-Z]){0,1}\b'
     #
     if sRegExpress != sWant:
         #
@@ -1382,7 +1440,8 @@ if __name__ == "__main__":
         print3( lParts )
         #
         lProblems.append(
-            'getRegExpress(%s) testing "%s"' % ( sLook4, 'bEscBegEndOfStr = False' ) )
+            'getRegExpress(%s) testing "%s"' %
+                ( sLook4, 'bEscBegEndOfStr = False' ) )
         #
     #
     sLook4 = 'BM258'
@@ -1394,14 +1453,32 @@ if __name__ == "__main__":
         print3( sRegExpress )
         #
         lProblems.append(
-            'getRegExpress(%s) testing "%s"' % ( sLook4, 'bAddDash = True' ) )
+            'getRegExpress(%s) testing "%s"' %
+                ( sLook4, 'bAddDash = True' ) )
         #
     #
+    sLook4 = 'CA-3'
+    #
+    sRegExpress = getRegExpress(
+                    sLook4, bSubModelsOK = True, iWordBoundChrs = 4 )
+    #
+    sWant = r'\bCA(?:[-/ ]*[0-9]){0,1}\b'
+    #
+    if sRegExpress != sWant:
+        #
+        print3( 'got: ', sRegExpress )
+        print3( 'want:', sWant )
+        #
+        lProblems.append(
+            'getRegExpress(%s) testing "%s"' % ( sLook4, 'bSubModelsOK = True' ) )
+        #
+    #
+    
     sLook4 = 'LHT-1'
     #
     sRegExpress = getRegExpress( sLook4, bSubModelsOK = True )
     #
-    sWant = 'LHT[-/ ]*[ 0-9]'
+    sWant = r'LHT(?:[-/ ]*[0-9]){0,1}\b'
     #
     if sRegExpress != sWant:
         #
@@ -1416,7 +1493,7 @@ if __name__ == "__main__":
     #
     sRegExpress = getRegExpress( sLook4, bSubModelsOK = True )
     #
-    sWant = '26[ A-Z]'
+    sWant = r'26[A-Z]{0,1}\b'
     #
     if sRegExpress != sWant:
         #
@@ -1432,7 +1509,7 @@ if __name__ == "__main__":
     sRegExpress = getRegExpress( sLook4,
                                  bSubModelsOK = True, iWordBoundChrs = 5 )
     #
-    sWant = r'\b604[ A-Z]\b'
+    sWant = r'\b604[A-Z]{0,1}\b'
     #
     if sRegExpress != sWant:
         #
@@ -1447,7 +1524,8 @@ if __name__ == "__main__":
     #
     if not oRegExpObj.search( '604D' ):
         #
-        print3( sRegExpress )
+        print3( "oRegExpObj = getRegExpObj( '604C', bSubModelsOK = True )" )
+        print3( "oRegExpObj.search( '604D' )", 'returned False' )
         #
         lProblems.append(
             'getRegExpObj(%s) testing "%s"' % ( sLook4, 'bSubModelsOK = True' ) )
@@ -1455,7 +1533,8 @@ if __name__ == "__main__":
     #
     if oRegExpObj.search( '605C' ):
         #
-        print3( sRegExpress )
+        print3( "oRegExpObj = getRegExpObj( '604C', bSubModelsOK = True )" )
+        print3( "oRegExpObj.search( '605C' )", 'returned True' )
         #
         lProblems.append(
             'getRegExpObj(%s) testing "%s"' % ( sLook4, 'bSubModelsOK = True' ) )
@@ -1463,7 +1542,7 @@ if __name__ == "__main__":
     #
     sRegExpress = getRegExpress( sLook4, bAddDash = True, bSubModelsOK = True )
     #
-    sWant = '604[-/ ]*[ A-Z]'
+    sWant = r'604(?:[-/ ]*[A-Z]){0,1}\b'
     #
     if sRegExpress != sWant:
         #
@@ -1478,7 +1557,8 @@ if __name__ == "__main__":
     #
     if not oRegExpObj.search( '604D' ):
         #
-        print3( sRegExpress )
+        print3( "oRegExpObj = getRegExpress( '604C', bAddDash = True, bSubModelsOK = True )" )
+        print3( "oRegExpObj.search( '604D' )", 'returned False' )
         #
         lProblems.append(
             'getRegExpObj(%s) testing "%s"' % ( sLook4, 'bAddDash & bSubModelsOK = True' ) )
@@ -1486,7 +1566,8 @@ if __name__ == "__main__":
     #
     if oRegExpObj.search( '605C' ):
         #
-        print3( sRegExpress )
+        print3( "oRegExpObj = getRegExpress( '604C', bAddDash = True, bSubModelsOK = True )" )
+        print3( "oRegExpObj.search( '605C' )", 'returned True' )
         #
         lProblems.append(
             'getRegExpObj(%s) testing "%s"' % ( sLook4, 'bAddDash & bSubModelsOK = True' ) )
