@@ -401,10 +401,14 @@ def getRegExpress(
         return getRawGotStr( sLook4 )
         #
     #
-    #if sLook4Orig == '15" Silver':
+    #if sLook4Orig == '26A':
         #print3( 'sLook4 0:', sLook4 )
     #
     lOrig = _getSplit( sLook4, oSeparator )
+    #
+    lLengths = [ len( getAlphaNumCleanNoSpaces( s ) )
+                 for s
+                 in lOrig ]
     #
     if (        bAddDash and
                 hasAnyAlpha(  sLook4 ) and
@@ -419,7 +423,7 @@ def getRegExpress(
         sLook4 = '\r'.join( lParts )
         #
     #
-    #if sLook4Orig == '15" Silver':
+    #if sLook4Orig == '26A':
         #print3( 'sLook4 1:', sLook4 )
     #
     sRegEx = ''
@@ -430,7 +434,7 @@ def getRegExpress(
         #
     #
     #
-    #if sLook4Orig == '15" Silver':
+    #if sLook4Orig == '26A':
         #print3( 'sLook4 2:', sLook4 )
     #
     lDashed = _getEscapedThenSplit(
@@ -450,7 +454,7 @@ def getRegExpress(
                 #
             #
         #
-        lRegEx = frozenset( lNewParts )
+        lRegEx = list( frozenset( lNewParts ) )
         #
     else:
         #
@@ -460,21 +464,47 @@ def getRegExpress(
                         tSubLast       = tSubLast )
                     for s in lDashed ]
     #
+    #if sLook4Orig == '26A':
+        #print3( 'lRegEx 1:', lRegEx )
+    #
     if bSubModelsOK:
         #
         if lRegEx[0][-1].isalpha():
             #
-            if bCaseSensitive: # will the search object be case sensitive?
+            if lRegEx[0][-7:-1] == '[-/ ]*':
                 #
-                lRegEx[0] = lRegEx[0][:-1] + '[ a-zA-Z]'
+                sBeg = '(?:[-/ ]*'
+                iDrop = -7
                 #
             else:
                 #
-                lRegEx[0] = lRegEx[0][:-1] + '[ A-Z]'
+                sBeg = '(?:'
+                iDrop = -1
                 #
+            #
+            if bCaseSensitive: # will the search object be case sensitive?
+                #
+                sMid = '[a-zA-Z])'
+                #
+            else:
+                #
+                sMid = '[A-Z])'
+                #
+            #
+            if lLengths[0] > 3:
+                #
+                sEnd = r'{0,1}\b'
+                #
+            else:
+                #
+                sEnd = r'\b'
+                #
+            #
+            lRegEx[0] = ''.join( ( lRegEx[0][:iDrop], sBeg, sMid, sEnd ) )
+            #
         elif lRegEx[0][-1].isdigit() and lRegEx[0][-7:-1] == '[-/ ]*':
             #
-            lRegEx[0] = lRegEx[0][:-1] + '[ 0-9]'
+            lRegEx[0] = lRegEx[0][:-1] + r'[-/ ]*[0-9]\b'
             #
         #
     elif bPluralize:
@@ -498,9 +528,10 @@ def getRegExpress(
             #
         #
     #
+    #if sLook4Orig == '26A':
+        #print3( 'lRegEx 2:', lRegEx )
+    #
     if iWordBoundChrs > 0:
-        #
-        lLengths = [ len( s ) for s in lOrig ]
         #
         for i in iRange( len( lOrig ) ):
             #
@@ -514,6 +545,14 @@ def getRegExpress(
                 #
                 lRegEx[ i ] = r'%s\b' % lRegEx[ i ]
                 #
+            #
+        #
+    #
+    for i in iRange( len( lOrig ) ):
+        #
+        while lRegEx[ i ].endswith( r'\b\b' ):
+            #
+            lRegEx[ i ] = lRegEx[ i ][ : -2 ]
             #
         #
     #
@@ -1269,7 +1308,7 @@ if __name__ == "__main__":
                             bSubModelsOK   = True,
                             bAddDash       = True )
     #
-    sWant = 'N[-/ ]*1500[-/ ]*[ A-Z]'
+    sWant = r'N[-/ ]*1500(?:[-/ ]*[A-Z]){0,1}\b'
     #
     if sRegExpress != sWant:
         #
@@ -1301,7 +1340,7 @@ if __name__ == "__main__":
                             bSubModelsOK   = True,
                             bAddDash       = True )
     #
-    sWant = '288[-/ ]*8[-/ ]*[ A-Z]'
+    sWant = r'288[-/ ]*8(?:[-/ ]*[A-Z]){0,1}\b'
     #
     if sRegExpress != sWant:
         #
@@ -1401,7 +1440,7 @@ if __name__ == "__main__":
     #
     sRegExpress = getRegExpress( sLook4, bSubModelsOK = True )
     #
-    sWant = 'LHT[-/ ]*[ 0-9]'
+    sWant = r'LHT[-/ ]*[-/ ]*[0-9]\b'
     #
     if sRegExpress != sWant:
         #
@@ -1416,7 +1455,7 @@ if __name__ == "__main__":
     #
     sRegExpress = getRegExpress( sLook4, bSubModelsOK = True )
     #
-    sWant = '26[ A-Z]'
+    sWant = r'26(?:[A-Z])\b'
     #
     if sRegExpress != sWant:
         #
@@ -1432,7 +1471,7 @@ if __name__ == "__main__":
     sRegExpress = getRegExpress( sLook4,
                                  bSubModelsOK = True, iWordBoundChrs = 5 )
     #
-    sWant = r'\b604[ A-Z]\b'
+    sWant = r'\b604(?:[A-Z]){0,1}\b'
     #
     if sRegExpress != sWant:
         #
@@ -1463,7 +1502,7 @@ if __name__ == "__main__":
     #
     sRegExpress = getRegExpress( sLook4, bAddDash = True, bSubModelsOK = True )
     #
-    sWant = '604[-/ ]*[ A-Z]'
+    sWant = r'604(?:[-/ ]*[A-Z]){0,1}\b'
     #
     if sRegExpress != sWant:
         #
