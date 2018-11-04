@@ -137,10 +137,20 @@ if PYTHON3:
 
     def getEncoded( s, sEncoding = 'utf-8' ):
         #
+        '''
+        Encoding is the process of translating a string of characters 
+        into its raw bytes form, according to a desired encoding name.
+        '''
+        #
         return s.encode( encoding = sEncoding )
 
 
     def getDecoded( b, sEncoding = 'utf-8' ):
+        #
+        '''
+        Decoding is the process of translating a raw string of bytes 
+        into is character string form, according to its encoding name.
+        '''
         #
         return b.decode( encoding = sEncoding )
 
@@ -159,6 +169,11 @@ else:
 
     def getEncoded( s, sEncoding = 'utf-8' ):
         #
+        '''
+        Encoding is the process of translating a string of characters 
+        into its raw bytes form, according to a desired encoding name.
+        '''
+        #
         if isinstance( s, str ):
             uReturn = unicode( s, sEncoding )
         else:
@@ -168,6 +183,11 @@ else:
 
 
     def getDecoded( b, sEncoding = 'utf-8' ):
+        #
+        '''
+        Decoding is the process of translating a raw string of bytes 
+        into is character string form, according to its encoding name.
+        '''
         #
         try:
             sReturn = b.decode( sEncoding )

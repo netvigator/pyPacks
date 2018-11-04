@@ -401,10 +401,14 @@ def getRegExpress(
         return getRawGotStr( sLook4 )
         #
     #
-    #if sLook4Orig == '15" Silver':
+    #if sLook4Orig == '26A':
         #print3( 'sLook4 0:', sLook4 )
     #
     lOrig = _getSplit( sLook4, oSeparator )
+    #
+    lLengths = [ len( getAlphaNumCleanNoSpaces( s ) )
+                 for s
+                 in lOrig ]
     #
     if (        bAddDash and
                 hasAnyAlpha(  sLook4 ) and
@@ -419,7 +423,7 @@ def getRegExpress(
         sLook4 = '\r'.join( lParts )
         #
     #
-    #if sLook4Orig == '15" Silver':
+    #if sLook4Orig == '26A':
         #print3( 'sLook4 1:', sLook4 )
     #
     sRegEx = ''
@@ -430,7 +434,7 @@ def getRegExpress(
         #
     #
     #
-    #if sLook4Orig == '15" Silver':
+    #if sLook4Orig == '26A':
         #print3( 'sLook4 2:', sLook4 )
     #
     lDashed = _getEscapedThenSplit(
@@ -450,7 +454,7 @@ def getRegExpress(
                 #
             #
         #
-        lRegEx = frozenset( lNewParts )
+        lRegEx = list( frozenset( lNewParts ) )
         #
     else:
         #
@@ -459,6 +463,9 @@ def getRegExpress(
                         dSub2nd        = dSub2nd,
                         tSubLast       = tSubLast )
                     for s in lDashed ]
+    #
+    #if sLook4Orig == '26A':
+        #print3( 'lRegEx 1:', lRegEx )
     #
     if bSubModelsOK:
         #
@@ -519,6 +526,9 @@ def getRegExpress(
             #
         #
     #
+    #if sLook4Orig == '26A':
+        #print3( 'lRegEx 2:', lRegEx )
+    #
     if iWordBoundChrs > 0:
         #
         lLengths = [ len( getAlphaNumCleanNoSpaces( s ) )
@@ -573,6 +583,14 @@ def getRegExpress(
                 #
                 lRegEx[ i ] = lRegEx[ i ][ 2 : ]
                 #
+        #
+    #
+    for i in iRange( len( lOrig ) ):
+        #
+        while lRegEx[ i ].endswith( r'\b\b' ):
+            #
+            lRegEx[ i ] = lRegEx[ i ][ : -2 ]
+            #
         #
     #
     sRegEx = _getPartsBarred( frozenset( lRegEx ) )
