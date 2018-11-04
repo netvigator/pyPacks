@@ -26,16 +26,32 @@ from collections    import OrderedDict
 
 from six            import print_ as print3
 
-from Iter.AllVers   import iRange
+from Iter.AllVers   import iRange, getEnumerator
+
+from String.Dumpster import getAlphaNumCleanNoSpaces, getAlphaNumDashNoSpaces
 
 
-def getRegExSpecialsEscapedNoShortcut( sString ):
+def _getSpecials( bEscBegEndOfStr ):
     #
-    from Iter.AllVers import getEnumerator
+    if bEscBegEndOfStr:
+        #
+        sSpecials = r'\*?[]{}$^+|()'
+        #
+    else:
+        #
+        sSpecials = r'\*?[]{}+|()'
+        #
+    #
+    return sSpecials
+
+
+def getRegExSpecialsEscapedNoShortcut( sString, bEscBegEndOfStr = True ):
     #
     lString = list( sString )
     #
-    for cSpecial in '*?\[]{}$^+|()':
+    sSpecials = _getSpecials( bEscBegEndOfStr )
+    #
+    for cSpecial in sSpecials:
         #
         for i, c in getEnumerator( lString ):
             #
@@ -47,11 +63,13 @@ def getRegExSpecialsEscapedNoShortcut( sString ):
     return ''.join( lString )
 
 
-def getRegExSpecialsEscapedWithShortcut( sString ):
+def getRegExSpecialsEscapedWithShortcut( sString, bEscBegEndOfStr = True ):
     #
     from Iter.AllVers import getEnumerator
     #
-    lGotChars = [ c for c in '*?\[]{}$^+|()' if c in sString ]
+    sSpecials = _getSpecials( bEscBegEndOfStr )
+    #
+    lGotChars = [ c for c in sSpecials if c in sString ]
     #
     if lGotChars:
         #
@@ -153,7 +171,7 @@ dSub1st = OrderedDict( (
 
 dSub2nd = OrderedDict( (
     ( ' ',      ' *'        ),  # space    matches ZERO or more spaces
-    ( '-',      '[- ]*'     ),  # hyphen   matches ZERO or more hypens or spaces
+    ( '-',      '[-/ ]*'    ),  # hyphen   matches ZERO or more hypens, slashes or spaces
     ( ',',      '[, ]*'     ),  # comma    matches ZERO or more commas or spaces
     ( '.',      '[. ]*'     ))) # dot      matches ZERO or more dots or spaces
 
@@ -184,15 +202,12 @@ def _getPartsBarred( u ):
     #
     l = list( u )
     #
-    #
     return '|'.join( l )
 
 
 def _getBoundCodesIfShort( s, iMinLen ):
     #
     '''get the string within word boundary codes'''
-    #
-    from String.Dumpster import getAlphaNumCleanNoSpaces
     #
     if (    len( getAlphaNumCleanNoSpaces( s ) ) <= iMinLen and 
             not ( s.startswith( r'\b' ) or s.endswith( r'\b' ) ) ):
@@ -301,11 +316,15 @@ def _getSplit( s, oSplitOn ):
     return [ s for s in l if s ] # remove any empties
 
 
-def _getEscapedThenSplit( s, oSplitOn ):
+oFinderCRorLF = getRegExObj( '\r|\n' )
+
+
+
+def _getEscapedThenSplit( s, oSplitOn, bEscBegEndOfStr = True ):
     #
-    s = getRegExSpecialsEscaped( s )
+    sNew = getRegExSpecialsEscaped( s, bEscBegEndOfStr = bEscBegEndOfStr )
     #
-    return _getSplit( s, oSplitOn )
+    return _getSplit( sNew, oSplitOn )
 
 
 
@@ -316,53 +335,41 @@ def gotRawRex( s ):
         ( s.startswith( "r'" ) and s.endswith( "'" ) ) )
 
 
-oFinderCRorLF = getRegExObj( '\r|\n' )
 
 
-def _getAlphaAndDigitsTogether( s ):
+def _gotAlphaNumPutSeparator( sChars ):
     #
-    from Iter.Get        import iRevRange
-    from String.Dumpster import getAlphaNumCleanNoSpaces
+    from Iter.Get       import iRevRange
     #
-    lChars = list( getAlphaNumCleanNoSpaces( s ) )
+    lNew   = []
     #
-    wasDigit = lChars[ -1 ].isdigit()
-    wasAlpha = lChars[ -1 ].isalpha()
+    wasAlpha = wasDigit = False
     #
-    for i in iRevRange( len( lChars ) -1 ):
+    for i in iRevRange( len( sChars ) ):
         #
-        sThisChar = lChars[ i ]
+        sThisChar = sChars[ i ]
         #
-        if wasDigit:
+        isAlpha = sThisChar.isalpha()
+        isDigit = sThisChar.isdigit()
+        #
+        if ( isAlpha and wasDigit ) or ( isDigit and wasAlpha ):
             #
-            if lChars[ i ].isdigit():
-                #
-                lChars[ i ] += lChars[ i + 1 ]
-                #
-                del lChars[ i + 1 ]
-                #
-            else: # not wasDigit:
-                #
-                wasAlpha = True
-                #
-        else: # wasAlpha
+            lNew.append( ' ' )
             #
-            if lChars[ i ].isalpha():
-                #
-                lChars[ i ] += lChars[ i + 1 ]
-                #
-                del lChars[ i + 1 ]
-                #
-            else: # not wasAlpha:
-                #
-                wasDigit = True
-                #
         #
-        wasDigit = sThisChar.isdigit()
-        wasAlpha = sThisChar.isalpha()
+        lNew.append( sThisChar )
+        #
+        wasAlpha = isAlpha
+        wasDigit = isDigit
         #
     #
-    return lChars
+    lNew.reverse()
+    #
+    sNew = ''.join( lNew )
+    #
+    return sNew.split()
+
+
 
 
 
@@ -377,11 +384,15 @@ def getRegExpress(
         bAddDash        = False,
         bSubModelsOK    = False,
         iWordBoundChrs  = 0,
-        bCaseSensitive  = False ): # will the search object be case sensitive?
+        bCaseSensitive  = False,   # will the search RegEx be case sensitive?
+        bEscBegEndOfStr = True,    # escape RegEx beg/end of string chars
+        bPluralize      = False ): # will also find plural version of word
     #
     from Iter.AllVers   import permutations
     from String.Get     import getRawGotStr # not sure we need this
     from String.Test    import hasAnyAlpha, hasAnyDigits, hasPunctOrSpace
+    #
+    sLook4Orig = sLook4
     #
     if gotRawRex( sLook4 ):
         #
@@ -390,7 +401,14 @@ def getRegExpress(
         return getRawGotStr( sLook4 )
         #
     #
+    #if sLook4Orig == '26A':
+        #print3( 'sLook4 0:', sLook4 )
+    #
     lOrig = _getSplit( sLook4, oSeparator )
+    #
+    lLengths = [ len( getAlphaNumCleanNoSpaces( s ) )
+                 for s
+                 in lOrig ]
     #
     if (        bAddDash and
                 hasAnyAlpha(  sLook4 ) and
@@ -398,12 +416,15 @@ def getRegExpress(
         #
         lParts = _getSplit( sLook4, oSeparator )
         #
-        lParts = [ _getAlphaAndDigitsTogether( s ) for s in lParts ]
+        lParts = [ _gotAlphaNumPutSeparator( s ) for s in lParts ]
         #
         lParts = [ '-'.join( lChars ) for lChars in lParts ]
         #
         sLook4 = '\r'.join( lParts )
         #
+    #
+    #if sLook4Orig == '26A':
+        #print3( 'sLook4 1:', sLook4 )
     #
     sRegEx = ''
     #
@@ -412,7 +433,12 @@ def getRegExpress(
         sLook4       = fDoThisFirst( sLook4 )
         #
     #
-    lDashed = _getEscapedThenSplit( sLook4, oSeparator )
+    #
+    #if sLook4Orig == '26A':
+        #print3( 'sLook4 2:', sLook4 )
+    #
+    lDashed = _getEscapedThenSplit(
+                    sLook4, oSeparator, bEscBegEndOfStr = bEscBegEndOfStr )
     #
     if bPermutate:
         #
@@ -428,7 +454,7 @@ def getRegExpress(
                 #
             #
         #
-        lRegEx = frozenset( lNewParts )
+        lRegEx = list( frozenset( lNewParts ) )
         #
     else:
         #
@@ -438,34 +464,95 @@ def getRegExpress(
                         tSubLast       = tSubLast )
                     for s in lDashed ]
     #
+    #if sLook4Orig == '26A':
+        #print3( 'lRegEx 1:', lRegEx )
+    #
     if bSubModelsOK:
         #
         if lRegEx[0][-1].isalpha():
             #
-            if bCaseSensitive: # will the search object be case sensitive?
+            if lRegEx[0][-7:-1] == '[-/ ]*':
                 #
-                lRegEx[0] = lRegEx[0][:-1] + '[a-zA-Z]'
+                sBeg = '(?:[-/ ]*'
+                iDrop = -7
                 #
             else:
                 #
-                lRegEx[0] = lRegEx[0][:-1] + '[A-Z]'
+                sBeg = '(?:'
+                iDrop = -1
                 #
-        elif lRegEx[0][-1].isdigit():
             #
-            lRegEx[0] = lRegEx[0][:-1] + '[0-9]'
+            if bCaseSensitive: # will the search object be case sensitive?
+                #
+                sMid = '[a-zA-Z])'
+                #
+            else:
+                #
+                sMid = '[A-Z])'
+                #
+            #
+            if lLengths[0] > 3:
+                #
+                sEnd = r'{0,1}\b'
+                #
+            else:
+                #
+                sEnd = r'\b'
+                #
+            #
+            lRegEx[0] = ''.join( ( lRegEx[0][:iDrop], sBeg, sMid, sEnd ) )
+            #
+        elif lRegEx[0][-1].isdigit() and lRegEx[0][-7:-1] == '[-/ ]*':
+            #
+            lRegEx[0] = lRegEx[0][:-1] + r'[-/ ]*[0-9]\b'
+            #
+        #
+    elif bPluralize:
+        #
+        for i, s in getEnumerator( lRegEx ):
+            #
+            s = s.lower()
+            #
+            if s.endswith( 'e' ):
+                #
+                lRegEx[ i ] = s + 's{0,1}'
+                #
+            elif s.endswith( 'y' ):
+                #
+                lRegEx[ i ] = s[ : -1 ] + '(?:y|ys|ies)'
+                #
+            elif not s.endswith( 's' ):
+                #
+                lRegEx[ i ] = s + '(?:s|es){0,1}'
+                #
             #
         #
     #
+    #if sLook4Orig == '26A':
+        #print3( 'lRegEx 2:', lRegEx )
+    #
     if iWordBoundChrs > 0:
-        #
-        lLengths = [ len( s ) for s in lOrig ]
         #
         for i in iRange( len( lOrig ) ):
             #
-            if lLengths[ i ] <= iWordBoundChrs:
+            if (    lLengths[ i ] <= iWordBoundChrs and
+                    not ( lOrig[ i ].startswith( '^' ) or
+                          lOrig[ i ].endswith(   '$' ) ) ):
                 #
                 lRegEx[ i ] = r'\b%s\b' % lRegEx[ i ]
                 #
+            elif lOrig[ i ][ -1 ].isdigit():
+                #
+                lRegEx[ i ] = r'%s\b' % lRegEx[ i ]
+                #
+            #
+        #
+    #
+    for i in iRange( len( lOrig ) ):
+        #
+        while lRegEx[ i ].endswith( r'\b\b' ):
+            #
+            lRegEx[ i ] = lRegEx[ i ][ : -2 ]
             #
         #
     #
@@ -817,7 +904,7 @@ if __name__ == "__main__":
         lProblems.append( 'getRegExObj() compound regex expression' )
         #
     #
-    s = r'\bXP[- ]*55[- ]*B\b'
+    s = r'\bXP[-/ ]*55[-/ ]*B\b'
     #
     oRegExObj = getRegExObj( s )
     #
@@ -896,7 +983,7 @@ if __name__ == "__main__":
     #
     sGot = getRegEx4Chars( 'Harman-Kardon' )
     #
-    if sGot != 'Harman[- ]*Kardon':
+    if sGot != 'Harman[-/ ]*Kardon':
         #
         print3( sGot )
         #
@@ -940,7 +1027,7 @@ if __name__ == "__main__":
     #
     sGot = getRegEx4Chars( 'Unholtz-Dickie Corp.' )
     #
-    if sGot != 'Unholtz[- ]*Dickie *(Corporation|Company|Corp|Co)':
+    if sGot != 'Unholtz[-/ ]*Dickie *(Corporation|Company|Corp|Co)':
         #
         print3( sGot )
         #
@@ -987,7 +1074,7 @@ if __name__ == "__main__":
     #
     sGot    = getRegEx4Chars( sLook4 )
     #
-    if sGot != '50[- ]*W[- ]*2':
+    if sGot != '50[-/ ]*W[-/ ]*2':
         #
         print3( sGot )
         #
@@ -1009,7 +1096,7 @@ if __name__ == "__main__":
     #
     sGot    = getRegEx4Chars( sLook4 )
     #
-    if sGot != "TR[- ]*10 *'*Tri[- ]*ette'*":
+    if sGot != "TR[-/ ]*10 *'*Tri[-/ ]*ette'*":
         #
         print3( sGot )
         #
@@ -1020,7 +1107,7 @@ if __name__ == "__main__":
     #
     sGot    = getRegEx4Chars( sLook4 )
     #
-    if sGot != 'TV[- ]*2(/ *)+U':
+    if sGot != 'TV[-/ ]*2(/ *)+U':
         #
         print3( sGot )
         #
@@ -1031,7 +1118,7 @@ if __name__ == "__main__":
     #
     sGot    = getRegEx4Chars( sLook4 )
     #
-    if sGot != '50[- ]*X[- ]*C3':
+    if sGot != '50[-/ ]*X[-/ ]*C3':
         #
         print3( sGot )
         #
@@ -1050,6 +1137,23 @@ if __name__ == "__main__":
         #
     #
 
+    #
+    sLook4  = '1217-1290'
+    #
+    oFinder = getRegExpObj( sLook4 ).search
+    #
+    sTest   = 'VINTAGE JBL 175 driver with 1217/1290 HORNS!!'
+    #
+    oGot    = oFinder( sTest )
+    #
+    if not oGot:
+        #
+        print3( oGot )
+        #
+        lProblems.append(
+            'getRegExpObj(%s) testing "%s"' % ( sLook4, sTest ) )
+        #
+    #
     #
     sLook4  = 'Heintz&Kaufman'
     #
@@ -1164,11 +1268,167 @@ if __name__ == "__main__":
             'getRegExpObj(%s) testing "%s"' % ( sLook4, sTest ) )
         #
     #
+    sLook4  = 'BM258'
+    #
+    lGot    = _gotAlphaNumPutSeparator( sLook4 )
+    #
+    if lGot != ['BM', '258']:
+        #
+        print3( lGot )
+        #
+        lProblems.append(
+            '_gotAlphaNumPutSeparator(%s)' % sLook4 )
+        #
+    #
+    sLook4 = 'N-15-00A00-18'
+    #
+    lGot    = _gotAlphaNumPutSeparator( sLook4 )
+    #
+    if lGot != ['N-15-00', 'A', '00-18']:
+        #
+        print3( lGot )
+        #
+        lProblems.append(
+            '_gotAlphaNumPutSeparator(%s)' % sLook4 )
+        #
+    #
+    sLook4  = 'N-1500A'
+    #
+    lGot    = _gotAlphaNumPutSeparator( sLook4 )
+    #
+    if lGot != ['N-1500', 'A' ]:
+        #
+        print3( lGot )
+        #
+        lProblems.append(
+            '_gotAlphaNumPutSeparator(%s)' % sLook4 )
+        #
+    #    
+    sRegExpress = getRegExpress( sLook4,
+                            bSubModelsOK   = True,
+                            bAddDash       = True )
+    #
+    sWant = r'N[-/ ]*1500(?:[-/ ]*[A-Z]){0,1}\b'
+    #
+    if sRegExpress != sWant:
+        #
+        print3( 'got: ', sRegExpress )
+        print3( 'want:', sWant )
+        #
+        lProblems.append(
+            'getRegExpress(%s) testing "%s"' % ( sLook4, 'bSubModelsOK = True, bAddDash = True' ) )
+        #
+    #
+    #
+    sLook4 = 'Model 2'
+    #
+    sRegExpress = getRegExpress( sLook4, iWordBoundChrs = 4 )
+    #
+    if sRegExpress != r'Model *2\b':
+        #
+        print3( '%s:' % sLook4, sRegExpress )
+        #
+        lProblems.append(
+            'getRegExpress(%s) testing "%s"' % ( sLook4, 'iWordBoundChrs = 4' ) )
+        #
+    #
+    #
+    #
+    sLook4 = '288-8F'
+    #
+    sRegExpress = getRegExpress( sLook4,
+                            bSubModelsOK   = True,
+                            bAddDash       = True )
+    #
+    sWant = r'288[-/ ]*8(?:[-/ ]*[A-Z]){0,1}\b'
+    #
+    if sRegExpress != sWant:
+        #
+        print3( 'got: ', sRegExpress )
+        print3( 'want:', sWant )
+        #
+        lProblems.append(
+            'getRegExpress(%s) testing "%s"' % ( sLook4, 'bSubModelsOK = True, bAddDash = True' ) )
+        #
+    #
+    sLook4  = 'LSU/HF/15'
+    #
+    sRegExpress = getRegExpress( sLook4, bAddDash = True )
+    #
+    oRegExObj = getRegExObj( sRegExpress )
+    #
+    sThis  = 'TANNOY GRF CORNER CABINET w. 15" SILVER DUAL CONCENTRIC DRIVER LSU/HF/15 SUPERB'
+    #
+    if not oRegExObj.search( sThis ):
+        #
+        lProblems.append( '%s : getRegExObj() title has target' % oRegExObj )
+        #
+    #
+    #
+    sLook4 = '15" Silver'
+    #
+    sRegExpress = getRegExpress( sLook4, bAddDash = True )
+    #
+    if sRegExpress != '15"*[-/ ]*Silver':
+        #
+        print3( sRegExpress )
+        #
+        lProblems.append(
+            'getRegExpress(%s) testing "%s"' % ( sLook4, 'bAddDash = True' ) )
+        #
+    #
+    oRegExObj = getRegExObj( sRegExpress )
+    #
+    sThis  = 'TANNOY GRF CORNER CABINET w. 15" SILVER DUAL CONCENTRIC DRIVER'
+    #
+    if not oRegExObj.search( sThis ):
+        #
+        lProblems.append( '%s : getRegExObj() title has target' % oRegExObj )
+        #
+    #
+    sLook4 = 'watch\rphone\rcaddy'
+    #
+    sRegExpress = getRegExpress( sLook4, bPluralize = True )
+    #
+    tAll = (    'phones{0,1}',
+                'watch(?:s|es){0,1}',
+                'cadd(?:y|ys|ies)' )
+    #
+    bAllIn = True
+    #
+    for s in tAll:
+        if s not in sRegExpress:
+            bAllIn = False
+    #
+    if not bAllIn:
+        #
+        print3( sRegExpress )
+        print3( tAll )
+        #
+        lProblems.append(
+            'getRegExpress(%s) testing "%s"' % ( sLook4, 'bPluralize = True' ) )
+        #
+    #
+    sLook4 = 'Lot of 10\r^10'
+    #
+    sRegExpress = getRegExpress( sLook4, bEscBegEndOfStr = False )
+    #
+    lParts = sRegExpress.split( '|' )
+    #
+    if '^10' not in lParts or 'Lot *of *10' not in lParts:
+        #
+        print3( sRegExpress )
+        print3( lParts )
+        #
+        lProblems.append(
+            'getRegExpress(%s) testing "%s"' % ( sLook4, 'bEscBegEndOfStr = False' ) )
+        #
+    #
     sLook4 = 'BM258'
     #
     sRegExpress = getRegExpress( sLook4, bAddDash = True )
     #
-    if sRegExpress != 'BM[- ]*258':
+    if sRegExpress != 'BM[-/ ]*258':
         #
         print3( sRegExpress )
         #
@@ -1180,9 +1440,12 @@ if __name__ == "__main__":
     #
     sRegExpress = getRegExpress( sLook4, bSubModelsOK = True )
     #
-    if sRegExpress != 'LHT[- ]*[0-9]':
+    sWant = r'LHT[-/ ]*[-/ ]*[0-9]\b'
+    #
+    if sRegExpress != sWant:
         #
-        print3( sRegExpress )
+        print3( 'got: ', sRegExpress )
+        print3( 'want:', sWant )
         #
         lProblems.append(
             'getRegExpress(%s) testing "%s"' % ( sLook4, 'bSubModelsOK = True' ) )
@@ -1192,9 +1455,12 @@ if __name__ == "__main__":
     #
     sRegExpress = getRegExpress( sLook4, bSubModelsOK = True )
     #
-    if sRegExpress != '26[A-Z]':
+    sWant = r'26(?:[A-Z])\b'
+    #
+    if sRegExpress != sWant:
         #
-        print3( sRegExpress )
+        print3( 'got: ', sRegExpress )
+        print3( 'want:', sWant )
         #
         lProblems.append(
             'getRegExpress(%s) testing "%s"' % ( sLook4, 'bSubModelsOK = True' ) )
@@ -1205,9 +1471,12 @@ if __name__ == "__main__":
     sRegExpress = getRegExpress( sLook4,
                                  bSubModelsOK = True, iWordBoundChrs = 5 )
     #
-    if sRegExpress != r'\b604[A-Z]\b':
+    sWant = r'\b604(?:[A-Z]){0,1}\b'
+    #
+    if sRegExpress != sWant:
         #
-        print3( sRegExpress )
+        print3( 'got: ', sRegExpress )
+        print3( 'want:', sWant )
         #
         lProblems.append(
             'getRegExpress(%s) testing "%s"' % ( sLook4, 'bSubModelsOK = True' ) )
@@ -1233,9 +1502,12 @@ if __name__ == "__main__":
     #
     sRegExpress = getRegExpress( sLook4, bAddDash = True, bSubModelsOK = True )
     #
-    if sRegExpress != '604[- ]*[A-Z]':
+    sWant = r'604(?:[-/ ]*[A-Z]){0,1}\b'
+    #
+    if sRegExpress != sWant:
         #
-        print3( sRegExpress )
+        print3( 'got: ', sRegExpress )
+        print3( 'want:', sWant )
         #
         lProblems.append(
             'getRegExpress(%s) testing "%s"' % ( sLook4, 'bAddDash & bSubModelsOK = True' ) )
@@ -1277,18 +1549,6 @@ if __name__ == "__main__":
         #
         lProblems.append(
             'getRegExpress(%s) testing "%s"' % ( sLook4, 'repeated split chars' ) )
-        #
-    #
-    sLook4  = 'BM258'
-    #
-    sGot    = _getAlphaAndDigitsTogether( sLook4 )
-    #
-    if sGot != ['BM', '258']:
-        #
-        print3( sGot )
-        #
-        lProblems.append(
-            '_getAlphaAndDigitsTogether(%s)' % sLook4 )
         #
     #
     sLook4 = 'ab\rcdefghi\n\rjk'
