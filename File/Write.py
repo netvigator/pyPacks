@@ -66,16 +66,31 @@ def QuickDump( sText, *sFileSpec, **kwargs ):
     #print3( 'sEncoding:', sEncoding )
     #print3( str( sText.encode( sEncoding ) ) )
     #
+    if isinstance( sText, bytes ): # python2 always returns True
+        #
+        sText = getStrGotBytes( sText )
+        #
+    #
+    # underlying OS environmental variables
+    # determine whether python can write!
+    #
+    # https://stackoverflow.com/questions/41408791/python-3-unicodeencodeerror-ascii-codec-cant-encode-characters
+    #
     try:
         #
         hTemp.write( sText )
         #
     except UnicodeEncodeError:
         #
-        hTemp.write( getEncoded( sText, sEncoding ).encode( sEncoding ) )
+        #print3( 'UnicodeEncodeError:' )
+        #print3( type( sText ) )
+        #print3( 'sEncoding:', sEncoding )
+        #print3( str( sText.encode( sEncoding ) ) )
+        hTemp.write( getEncoded( sText, sEncoding ).decode( sEncoding ) )
         #
     except UnicodeDecodeError:
         #
+        #print3( 'UnicodeDecodeError:' )
         #sLineBefore = ''
         #
         for sLine in sText:
@@ -482,6 +497,16 @@ if __name__ == "__main__":
         #
         lProblems.append( 'QuietDumpLines() QuickDumpLines()' )
         #
+    #
+    #
+    uText = chr(40960) + 'abcd' + chr(1972)
+    #
+    sTemp = getTempFile()
+    #
+    QuietDump( uText, sTemp )
+    #
+    sContent = getContent( sTemp )
+    #
     #
     lText = [ s.strip() + '\n\n' for s in lText ]
     #
