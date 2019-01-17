@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2007-2016 Rick Graves
+# Copyright 2007-2019 Rick Graves
 #
 
 from six            import print_ as print3
@@ -203,6 +203,7 @@ dNickProper = dict( (
     ('dotha', ('dorothy',)),
     ('dottie', ('dorothy',)),
     ('dotty', ('dorothy',)),
+    ('doug', ('douglas',)),
     ('drew', ('andrew',)),
     ('dyer', ('obadiah', 'jedediah')),
     ('eb', ('ebenezer',)),
@@ -1337,25 +1338,29 @@ if __name__ == "__main__":
     #
     #
     if    ( not isNickName( 'bill', 'william'   ) or
-        not isNickName( 'jill', 'julie'     ) or
-        not isNickName( 'susan', 'sue'      ) or
-        not isNickName( 'sue',  'susan'     ) or
-        not isNickName( 'rick', 'dick'      ) or
-        not isNickName( 'rick', 'richard'   ) or
-        not isNickName( 'ed',   'edward'    ) or
-        not isNickName( 'tina', 'valentina' ) or
-        not isNickName( 'woody','woodrow'   ) or
-        not isNickName( 'lena', 'lynn'      ) or
-        not isNickName( 'lynn', 'kathleen'  ) or
-        not isNickName( 'steven', 'stephen' ) or
-        not isNickName( 'carol', 'carolyn'  ) or
-        not isNickName( 'julie', 'julia'    ) or
-        not isNickName( 'kristi', 'Kristine') or
-        not isNickName( 'mike',   'Michael' ) or
-        isNickName( 'bill', 'ralph'     ) or
-        isNickName( 'chrstine', 'christine' ) ):
+            not isNickName( 'jill', 'julie'     ) or
+            not isNickName( 'susan', 'sue'      ) or
+            not isNickName( 'sue',  'susan'     ) or
+            not isNickName( 'rick', 'dick'      ) or
+            not isNickName( 'rick', 'richard'   ) or
+            not isNickName( 'ed',   'edward'    ) or
+            not isNickName( 'tina', 'valentina' ) or
+            not isNickName( 'woody','woodrow'   ) or
+            not isNickName( 'lena', 'lynn'      ) or
+            not isNickName( 'lynn', 'kathleen'  ) or
+            not isNickName( 'steven', 'stephen' ) or
+            not isNickName( 'carol', 'carolyn'  ) or
+            not isNickName( 'julie', 'julia'    ) or
+            not isNickName( 'kristi', 'Kristine') or
+            not isNickName( 'mike',   'Michael' ) or
+                isNickName( 'bill', 'ralph'     ) or
+                isNickName( 'chrstine', 'christine' ) ):
     #
         lProblems.append( 'isNickName()' )
+    #
+    if    not isNickName( 'doug', 'douglas' ):
+    #
+        lProblems.append( "isNickName( 'doug', 'douglas' )" )
     #
     #
     if not isNameMisSpelled( 'kevin', 'kevn' ):
