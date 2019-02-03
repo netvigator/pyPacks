@@ -1528,6 +1528,7 @@ if __name__ == "__main__":
                                  bSubModelsOK = True, iWordBoundChrs = 5 )
     #
     sWant = r'\b604[A-Z]{0,1}\b'
+
     #
     if sRegExpress != sWant:
         #
@@ -1626,6 +1627,19 @@ if __name__ == "__main__":
             'getRegExpress(%s) testing "%s"' % ( sLook4, 'boundary chars' ) )
         #
     #
+    #
+    sLook4 = 'Model 2\rModel Two'
+    #
+    sRegExpress = getRegExpress( sLook4, iWordBoundChrs  = 3 )
+    #
+    setExpected = frozenset( ( r'Model *Two', r'Model *2\b' ) )
+    setReturned = frozenset( sRegExpress.split( '|' ) )
+    #
+    if setExpected != setReturned:
+        #
+        lProblems.append(
+            'getRegExpress(%s) testing "%s"' % ( sLook4, 'boundary chars' ) )
+        #
     #
     #
     sayTestResult( lProblems )
