@@ -23,8 +23,12 @@
 # Copyright 2004-2016 Rick Graves
 #
 
-from os import sep as cSep
+from os         import sep as cSep
 
+from Dir.Test   import isDirThere
+
+from File.Del   import DeleteIfExists
+from File.Test  import isFileThere
 
 def _stripLeadingSlash( sDir ):
     if sDir[:1] == cSep: sDir = sDir[1:]
@@ -68,6 +72,8 @@ def getMakeDir( *sDir ):
     from os.path import exists, isdir, join
     #
     sDir = join( *sDir )
+    #
+    if isFileThere( sDir ): DeleteIfExists( sDir )
     #
     if not isdir( sDir ) or not exists( sDir ):
         #
@@ -131,7 +137,9 @@ if __name__ == "__main__":
         lProblems.append( 'getDirBelow()' )
         #
     #
-    if exists( join( sTempDir, 'test' ) ): rmdir( join( sTempDir, 'test' ) )
+    sWillMake = join( sTempDir, 'test' )
+    #
+    DeleteIfExists( sWillMake )
     #
     getMakeDir( sTempDir, 'test' )
     #
@@ -153,6 +161,20 @@ if __name__ == "__main__":
     else:
         #
         rmdir( join( sTempDir, 'test' ) )
+        #
+    #
+    DeleteIfExists( join( sTempDir, 'test' ) )
+    #
+    Path( join( sTempDir, 'test' ) ).touch()
+    #
+    try:
+        #
+        getMakeDir( join( sTempDir, 'test' ) )
+        #
+    except FileExistsError:
+        #
+        lProblems.append(
+            'getMakeDir() hits error if file with same name exists' )
         #
     #
     if sTempDir not in ( sTempDir, 'C:\\temp' ):
