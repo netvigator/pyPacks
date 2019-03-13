@@ -300,4 +300,12 @@ if __name__ == "__main__":
         print3( 'uOrig:', uOrig )
         print3( 'uNew: ', uNew  )
     #
+    if PYTHON2:
+        uText = u'ꀀ' + u'abcd' + u'\u07b4'
+    else:
+        uText = chr(40960) + 'abcd' + chr(1972)
+    #
+    getEncoded( uText )
+    #
+    #
     sayTestResult( lProblems )
