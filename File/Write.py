@@ -25,18 +25,21 @@
 # getFullSpec( *sFileSpec )
 # getFullSpecDefaultOrPassed( *sFileSpec )
 
-from os             import sep as cSep
+from os             import utime, rmdir, sep as cSep
 from os.path        import join
 
 from six            import print_ as print3
 
 from Dir.Get        import sTempDir
+from Dir.Test       import isDirThere
 from File.Spec      import getFullSpec, getFullSpecDefaultOrPassed
+from Utils.Both2n3  import PYTHON2
 
 def QuickDump( sText, *sFileSpec, **kwargs ):
     #
     # chr(92) is backslash
     #
+    import              io
     from String.Get     import getTextAfterLast
     from String.Convert import getUnicodeOut
     from Utils.Both2n3  import getEncoded, getStrGotBytes
@@ -51,7 +54,7 @@ def QuickDump( sText, *sFileSpec, **kwargs ):
     bSayBytes   = kwargs.get( 'bSayBytes', True )
     sMode       = kwargs.get( 'sMode',     'w'  )
     bWantDir    = kwargs.get( 'bWantDir',  True )
-    sEncoding   = kwargs.get( 'sEncoding', 'utf-8' ) 
+    sEncoding   = kwargs.get( 'sEncoding', 'UTF-8' ) 
     #
     if bWantDir and not ( cSep in sName or chr(92) in sName ):
         sName = join( sTempDir, sName )
@@ -60,16 +63,29 @@ def QuickDump( sText, *sFileSpec, **kwargs ):
     #
     sNameOnly = ImIf( cSep in sName, getTextAfterLast( sName, cSep ), sName )
     #
-    hTemp = open( sName, sMode )
+    bUseIO = False
+    #
+    if PYTHON2 and isinstance( sText, type( u'' ) ):
+        #
+        bUseIO = True
+        #
+    elif isinstance( sText, bytes ): # python2 always returns True
+        #
+        sText = getStrGotBytes( sText )
+        #
+    #
+    if bUseIO:
+        #
+        hTemp = io.open( sName, sMode, encoding = sEncoding )
+        #
+    else:
+        #
+        hTemp = open( sName, sMode )
+        #
     #
     #print3( type( sText ) )
     #print3( 'sEncoding:', sEncoding )
     #print3( str( sText.encode( sEncoding ) ) )
-    #
-    if isinstance( sText, bytes ): # python2 always returns True
-        #
-        sText = getStrGotBytes( sText )
-        #
     #
     # underlying OS environmental variables
     # determine whether python can write!
@@ -82,11 +98,11 @@ def QuickDump( sText, *sFileSpec, **kwargs ):
         #
     except UnicodeEncodeError:
         #
-        #print3( 'UnicodeEncodeError:' )
-        #print3( type( sText ) )
-        #print3( 'sEncoding:', sEncoding )
-        #print3( str( sText.encode( sEncoding ) ) )
-        hTemp.write( getEncoded( sText, sEncoding ).decode( sEncoding ) )
+        print3( 'UnicodeEncodeError:' )
+        print3( type( sText ) )
+        print3( 'sEncoding:', sEncoding )
+        print3( str( sText.encode( sEncoding ) ) )
+        hTemp.write( getEncoded( sText, sEncoding ) )
         #
     except UnicodeDecodeError:
         #
@@ -427,6 +443,16 @@ def putCsvOut( lOutput, *sFileSpec, **kwargs ):
 
 
 
+def Touch(fname):
+    if isDirThere( fname ):
+        rmdir( fname )
+    try:
+        utime(fname, None)
+    except OSError:
+        open(fname, 'a').close()
+
+
+
 
 if __name__ == "__main__":
     #
@@ -435,6 +461,7 @@ if __name__ == "__main__":
     from File.Del       import DeleteIfExists
     from File.Get       import getTempFile, getListFromFileLines, getContent, \
                             getRandomFileName
+    from File.Test      import isFileThere
     from Iter.AllVers   import tRange
     from Utils.Result   import sayTestResult
     #
@@ -499,7 +526,10 @@ if __name__ == "__main__":
         #
     #
     #
-    uText = chr(40960) + 'abcd' + chr(1972)
+    if PYTHON2:
+        uText = u'ꀀ' + u'abcd' + u'\u07b4'
+    else:
+        uText = chr(40960) + 'abcd' + chr(1972)
     #
     sTemp = getTempFile()
     #
@@ -608,6 +638,13 @@ if __name__ == "__main__":
     if getExcelCsvLine( tRange(9) ) != '"0","1","2","3","4","5","6","7","8"':
         #
         lProblems.append( 'getExcelCsvLine()' )
+        #
+    #
+    Touch( '/tmp/test' )
+    #
+    if not isFileThere( '/tmp/test' ):
+        #
+        lProblems.append( "Touch( '/tmp/test' )" )
         #
     #
     sayTestResult( lProblems )
