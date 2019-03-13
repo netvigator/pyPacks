@@ -25,9 +25,9 @@
 
 def isDirThere( sDir ):
     #
-    from os import access, F_OK
+    from os import access, F_OK, path
     #
-    return access( sDir, F_OK )
+    return access( sDir, F_OK ) and path.isdir( sDir )
 
 
 def isDirWritable( sDir ):
@@ -45,6 +45,8 @@ def isDirThereAndWritable( sDir ):
 if __name__ == "__main__":
     #
     from Dir.Get        import sTempDir
+    from File.Del       import DeleteIfExists
+    from File.Get       import getTempFile
     from Utils.Result   import sayTestResult
     #
     lProblems = []
@@ -59,5 +61,15 @@ if __name__ == "__main__":
         lProblems.append( 'isDirWritable()' )
         #
 
+    #
+    sTempFile = getTempFile()
+    #
+    if isDirThere( sTempFile ):
+        #
+        lProblems.append( 'isDirThere() called on temp file' )
+        #
+
+    #
+    DeleteIfExists( sTempFile )
     #
     sayTestResult( lProblems )
