@@ -316,7 +316,7 @@ def _getSplit( s, oSplitOn ):
     return [ s for s in l if s ] # remove any empties
 
 
-oFinderCRorLF = getRegExObj( '\r|\n' )
+oFinderCRorLF = getRegExObj( '\r|\n' ) # finds carriage return or line feed
 
 
 
