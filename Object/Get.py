@@ -28,6 +28,11 @@
 # note getObjFromFileContent() and PutReprInTemp() are in File.Get & File.Write
 # note getObjFromFileContent() and PutReprInTemp() are in File.Get & File.Write
 
+import inspect
+
+from Utils.Both2n3 import PYTHON3
+
+
 class QuickObject( object ):
     #
     '''
@@ -415,6 +420,44 @@ def getDictOffObject( oObj ):
 
 
 
+if PYTHON3:
+
+    def getName( uVar ):
+        """
+        Gets the name of var or object.
+        Does it from the out most frame inner-wards.
+        :param var: variable to get name from.
+        :return: string
+        https://stackoverflow.com/questions/18425225/getting-the-name-of-a-variable-as-a-string/18425523
+        caveat: watch out of more than one var points to the same object
+        """
+        for fi in reversed( inspect.stack() ):
+            names = [   var_name for var_name, var_val
+                        in fi.frame.f_locals.items()
+                        if var_val is uVar ]
+            if names:
+                return names[0]
+
+else:
+
+    def getName( uVar ):
+        """
+        Gets the name of var or object.
+        :param var: variable to get name from.
+        :return: string
+        https://stackoverflow.com/questions/18425225/getting-the-name-of-a-variable-as-a-string/18425523
+        caveat: watch out of more than one var points to the same object
+        """
+        callers_local_vars = inspect.currentframe().f_back.f_locals.items()
+        #
+        names = [   var_name for var_name, var_val
+                    in callers_local_vars
+                    if var_val is uVar ]
+        #
+        if names:
+            return names[0][0]
+
+
 if __name__ == "__main__":
     #
     from string         import digits
@@ -569,6 +612,26 @@ if __name__ == "__main__":
         #
         print3( lSequence )
         lProblems.append( 'SequencerClass()' )
+        #
+    #
+    x,y,z = 1,2,3
+    #
+    if getName( x ) != 'x':
+        #
+        print3( 'getName( x )' )
+        lProblems.append( 'getName( x )' )
+        #
+    #
+    if getName( y ) != 'y':
+        #
+        print3( 'getName( y )' )
+        lProblems.append( 'getName( y )' )
+        #
+    #
+    if getName( z ) != 'z':
+        #
+        print3( 'getName( z )' )
+        lProblems.append( 'getName( z )' )
         #
     #
     sayTestResult( lProblems )
