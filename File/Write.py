@@ -37,6 +37,7 @@ from Utils.Both2n3  import PYTHON2
 
 def QuickDump( sText, *sFileSpec, **kwargs ):
     #
+    ''' pass content, *filespec, **kwargs '''
     # chr(92) is backslash
     #
     import              io
