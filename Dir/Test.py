@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2015 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
 
 def isDirThere( sDir ):
