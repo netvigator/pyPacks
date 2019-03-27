@@ -20,15 +20,15 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2011 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
 
 
 def AscStats( sString ):
     #
     from Iter.AllVers   import tMap
-    from Numb.Stats import getMeanMembers
-    from Object.Get import ValueContainer
+    from Numb.Stats     import getMeanMembers
+    from Object.Get     import ValueContainer
     #
     tOrds       = tMap( ord, sString )
     #
@@ -37,7 +37,7 @@ def AscStats( sString ):
     #
     fAvg        = getMeanMembers( *tOrds )
     #
-    iTotal      = int( round( fAvg * len( tOrds ) ) )
+    iTotal      = sum( tOrds )
     #
     iLast       = tOrds[0]
     #
