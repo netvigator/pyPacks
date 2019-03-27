@@ -391,7 +391,7 @@ if __name__ == "__main__":
     from Iter.AllVers   import lRange
     from Iter.AllVers   import iMap
     from Utils.Result   import sayTestResult
-    #
+    from Utils.Both2n3  import print3
     #
     #
     lSeq = letters
@@ -430,6 +430,26 @@ if __name__ == "__main__":
             #
             lProblems.append( 'ShuffleDigits() "%s"' % sDigits )
             #
+        #
+    #
+    lCut = CutTheCards( letters, bPutBack = False, iOffset = 10 )
+    #
+    sNew = lCut[1] + lCut[0]
+    #
+    lCut = CutTheCards( sNew, bPutBack = True, iOffset = 10 )
+    #
+    sNewer = lCut[1] + lCut[0]
+    #
+    if sNewer != letters:
+        #
+        lProblems.append( 'CutTheCards() put back' )
+        #
+    #
+    sNew = ShuffleAndCut( letters, bPutBack = False, iCutOffset = 10 )
+    #
+    if ShuffleAndCut( sNew, bPutBack = True, iCutOffset = 10 ) != letters:
+        #
+        lProblems.append( 'ShuffleAndCut() put back' )
         #
     #
     #
