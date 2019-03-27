@@ -321,7 +321,6 @@ def Encrypt( sEncryptThis, sPassPhrase = sFilePhrase ):
         #
     else:
         #
-        #
         # Encrypt STEP 1 splice in the pass phrase
         #
         sAlternating= _getAlternatingChars( sEncryptThis, sPassPhrase )
@@ -790,17 +789,6 @@ if __name__ == "__main__":
         print3( 'want: ', sWant )
         print3( 'got:  ', sGot  ) 
         lProblems.append( '_getFirstCharThenAlternate( s2 )' )
-        #
-    #
-    sGot = _get2ndCharThenAlternate( s2 )
-    #
-    sWant   = 'BDFhjlnp'
-    #
-    if sGot != sWant:
-        #
-        print3( 'want: ', sWant )
-        print3( 'got:  ', sGot  ) 
-        lProblems.append( '_get2ndCharThenAlternate( s2 )' )
         #
     #
     if (    _getShift(  88 ) != 88 or
