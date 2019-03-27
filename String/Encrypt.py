@@ -63,6 +63,14 @@ if isFileThere( sPassPhraseFileSpec ):
     l = [ s for s in oFinderCRorLF.split( sFilePhrase ) if s ]
     sFilePhrase = ''.join( l )
 
+def _getMoreAscStats( s ):
+    #
+    o = AscStats( s )
+    #
+    o.iCutAt = o.iTotal % o.iLength - ( o.iLength // 2 )
+    #
+    return o
+
 
 def _getAlternatingChars( uOne, uTwo ):
     #
@@ -197,15 +205,13 @@ def _getThisUnShifted( iThis, iShift, iMax = 126 ):
     return iThis - iShift
 
 
-def _getCharsShifted( sShiftThis, sPassPhrase, getShifted ):
-    #
-    oPassPhStats    = AscStats( sPassPhrase )
+def _getCharsShifted( sShiftThis, sPassPhrase, getShifted, oStats ):
     #
     iMax        = 126
     #
-    if oPassPhStats.iMax > 126: iMax = 255
+    if oStats.iMax > 126: iMax = 255
     #
-    iShift      = _getShift( oPassPhStats.iTotal, iMax )
+    iShift      = _getShift( oStats.iTotal, iMax )
     #
     lConverted  = [ chr( getShifted( ord( s ), iShift ) )
                     for s in sShiftThis ]
@@ -230,6 +236,9 @@ def Encrypt( sEncryptThis, sPassPhrase = sFilePhrase ):
         #
         sConverted  = FlipCase( DescendChars( sConverted, 0, 1 ), True )
         #
+        iCutAt      = 0
+        #
+        #
     else:
         #
         #
@@ -239,13 +248,27 @@ def Encrypt( sEncryptThis, sPassPhrase = sFilePhrase ):
         #
         # Encrypt STEP 2 shuffle & cut, reverse, shuffle & cut
         #
+        oStats      = _getMoreAscStats( sPassPhrase )
+        #
+        iCutAt      = oStats.iCutAt
+        #
+        while abs( iCutAt ) >= len( sAlternating ) // 4:
+            #
+            iCutAt = iCutAt // 2
+            #
+        #
         sConverted  = ShuffleAndCut(
-                        getTextReversed( ShuffleAndCut( sAlternating ) ) )
+                        getTextReversed(
+                            ShuffleAndCut(
+                                sAlternating ) ), iCutOffset = iCutAt )
         #
         # Encrypt STEP  3 shift all characters
         #
         sConverted  = _getCharsShifted(
-                            sConverted, sPassPhrase, _getThisShifted )
+                            sConverted,
+                            sPassPhrase,
+                            _getThisShifted,
+                            oStats )
         #
         # Encrypt STEP 4 FlipCase
         #
@@ -263,11 +286,13 @@ def Decrypt( sDecryptThis, sPassPhrase = sFilePhrase ):
         #
         sConverted  = DescendChars( FlipCase( sDecryptThis, True ), 0, 1 )
         #
-        oStats          = AscStats( sConverted )
+        oStats      = AscStats( sConverted )
         #
-        iUseOffset      = ( oStats.iLength % 4 ) - ( oStats.iDifference % 8 )
+        iUseOffset  = ( oStats.iLength % 4 ) - ( oStats.iDifference % 8 )
         #
-        sConverted      = DescendChars( sConverted, iUseOffset )
+        sConverted  = DescendChars( sConverted, iUseOffset )
+        #
+        iCutAt      = 0
         #
     else:
         #
@@ -277,15 +302,27 @@ def Decrypt( sDecryptThis, sPassPhrase = sFilePhrase ):
         #
         # Decrypt STEP -3 shift all characters
         #
+        oStats      = _getMoreAscStats( sPassPhrase )
+        #
         sConverted  = _getCharsShifted(
-                            sConverted, sPassPhrase, _getThisUnShifted )
+                            sConverted,
+                            sPassPhrase,
+                            _getThisUnShifted,
+                            oStats )
         #
+        iCutAt      = oStats.iCutAt
         #
+        while abs( iCutAt ) >= len( sConverted ) // 4:
+            #
+            iCutAt = iCutAt // 2
+            #
     #
     # Encrypt STEP -2 shuffle & cut, reverse, shuffle & cut
     #
     sConverted  = ShuffleAndCut(
-                getTextReversed( ShuffleAndCut( sConverted, True ) ), True )
+                    getTextReversed(
+                        ShuffleAndCut(
+                            sConverted, True, iCutOffset = iCutAt ) ), True )
     #
     if sPassPhrase is not None: # Encrypt
         #
@@ -378,12 +415,16 @@ def EncryptLite( sThis, sPassPhrase = sFilePhrase ):
         #
         def doSometimes( s ): return s
         #
+        iCutAt      = 0
+        #
     else:
+        #
+        oStats    = _getMoreAscStats( sPassPhrase )
         #
         def getShifted( sShiftThis ):
             #
             return _getCharsShifted(
-                        sShiftThis, sPassPhrase, _getThisShifted )
+                        sShiftThis, sPassPhrase, _getThisShifted, oStats )
             #
         #
         def doSometimes( s ):
@@ -391,13 +432,20 @@ def EncryptLite( sThis, sPassPhrase = sFilePhrase ):
             return _getAlternatingChars( s, sPassPhrase )
             #
         #
+        iCutAt      = oStats.iCutAt
+        #
+        while abs( iCutAt ) >= len( sThis ) // 2:
+            #
+            iCutAt = iCutAt // 2
+            #
+        #
     #
     sConverted  = doSometimes(
                     ShuffleAndCut(
-                        getShifted(
-                            getTextReversed(
-                                FlipCase(
-                                    changePunct( sThis ), True ) ) ) ) )
+                    getShifted(
+                    getTextReversed(
+                    FlipCase(
+                    changePunct( sThis ), True ) ) ), iCutOffset = iCutAt ) )
     #
     return sConverted
 
@@ -411,49 +459,61 @@ def DecryptLite( sThis, sPassPhrase = sFilePhrase ):
         #
         def doSometimes( s ): return s
         #
+        iCutAt      = 0
+        #
     else:
+        #
+        oStats    = _getMoreAscStats( sPassPhrase )
         #
         def getShifted( sShiftThis ):
             #
+            #
             return _getCharsShifted(
-                        sShiftThis, sPassPhrase, _getThisUnShifted )
+                        sShiftThis, sPassPhrase, _getThisUnShifted, oStats )
             #
         #
         doSometimes = _getFirstCharThenAlternate
         #
+        iCutAt      = oStats.iCutAt
+        #
+        while abs( iCutAt ) >= len( sThis ) // 4:
+            #
+            iCutAt = iCutAt // 2
+            #
+        #
     #
     sConverted  = changePunct(
                     FlipCase(
-                        getTextReversed(
-                            getShifted(
-                                ShuffleAndCut(
-                                    doSometimes( sThis ), True ) ) ), True ) )
+                    getTextReversed(
+                    getShifted(
+                    ShuffleAndCut(
+                    doSometimes( sThis ), 1, iCutOffset = iCutAt ) ) ), 1 ) )
     #
     return sConverted
 
 
 
 
-def getYahooHtmlDecrypted( s, bLite = True ):
-    #
-    '''
-    default is lite
-    pass False as 2nd param to use heavy
-    '''
-    from Web.HTML import getTextgotYahooHTML
-    #
-    sFixed = getTextgotYahooHTML( s )
-    #
-    # sFixed = sFixed[ 1 : ][ 0 : -1 ] # strip quote chars
-    #
-    sFixed = sFixed.replace( "\\", '' ) # don't want \ chars
-    #
-    if bLite:
-        fDecription = DecryptLite
-    else:
-        fDecription = Decrypt
-    #
-    return fDecription( sFixed, sPassPhrase = None )
+#def getYahooHtmlDecrypted( s, bLite = True ):
+    ##
+    #'''
+    #default is lite
+    #pass False as 2nd param to use heavy
+    #'''
+    #from Web.HTML import getTextgotYahooHTML
+    ##
+    #sFixed = getTextgotYahooHTML( s )
+    ##
+    ## sFixed = sFixed[ 1 : ][ 0 : -1 ] # strip quote chars
+    ##
+    #sFixed = sFixed.replace( "\\", '' ) # don't want \ chars
+    ##
+    #if bLite:
+        #fDecription = DecryptLite
+    #else:
+        #fDecription = Decrypt
+    ##
+    #return fDecription( sFixed, sPassPhrase = None )
 
 
 
@@ -532,41 +592,41 @@ if __name__ == "__main__":
     # to
     # &quot;&#39;***&amp;!%%***&amp;((&#39;&quot;
     #
-    sOrig   = '&#39;*g$fh%bA%Yt&#39;'
-    sWant   = 'Tung6550Sol'
-    #
-    sGot    = getYahooHtmlDecrypted( sOrig )
-    #
-    if sGot != sWant:
-        #
-        print3( 'want: ', sWant )
-        print3( 'got:  ', sGot  ) 
-        lProblems.append( 'getYahooHtmlDecrypted()' )
-        #
-    #
-    sOrig   = '&#39;*g$fh%bA%Yt&#39;'.replace( '&', '&amp;' )
-    sWant   = 'Tung6550Sol'
-    #
-    sGot    = getYahooHtmlDecrypted( sOrig )
-    #
-    if sGot != sWant:
-        #
-        print3( 'want: ', sWant )
-        print3( 'got:  ', sGot  ) 
-        lProblems.append( 'getYahooHtmlDecrypted()' )
-        #
-    #
-    sOrig   = '&#39;_@Mpz5HxJ&quot;7&#39;'
-    sWant   = 'em8Bp3t$bnY'
-    #
-    sGot    = getYahooHtmlDecrypted( sOrig, bLite = False )
-    #
-    if sGot != sWant:
-        #
-        print3( 'want: ', sWant )
-        print3( 'got:  ', sGot  ) 
-        lProblems.append( 'getYahooHtmlDecrypted() not lite' )
-        #
+    #sOrig   = '&#39;*g$fh%bA%Yt&#39;'
+    #sWant   = 'Tung6550Sol'
+    ##
+    #sGot    = getYahooHtmlDecrypted( sOrig )
+    ##
+    #if sGot != sWant:
+        ##
+        #print3( 'want: ', sWant )
+        #print3( 'got:  ', sGot  ) 
+        #lProblems.append( 'getYahooHtmlDecrypted()' )
+        ##
+    ##
+    #sOrig   = '&#39;*g$fh%bA%Yt&#39;'.replace( '&', '&amp;' )
+    #sWant   = 'Tung6550Sol'
+    ##
+    #sGot    = getYahooHtmlDecrypted( sOrig )
+    ##
+    #if sGot != sWant:
+        ##
+        #print3( 'want: ', sWant )
+        #print3( 'got:  ', sGot  ) 
+        #lProblems.append( 'getYahooHtmlDecrypted()' )
+        ##
+    ##
+    #sOrig   = '&#39;_@Mpz5HxJ&quot;7&#39;'
+    #sWant   = 'em8Bp3t$bnY'
+    ##
+    #sGot    = getYahooHtmlDecrypted( sOrig, bLite = False )
+    ##
+    #if sGot != sWant:
+        ##
+        #print3( 'want: ', sWant )
+        #print3( 'got:  ', sGot  ) 
+        #lProblems.append( 'getYahooHtmlDecrypted() not lite' )
+        ##
     #
     s1 = 'abcde'
     s2 = 'ABCDEFG'
