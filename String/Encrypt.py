@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2017 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
 '''
 sTest                = 'The quick brown fox jumped over the lazy dog.'
@@ -36,20 +36,86 @@ getRot13( sTest )    = 'Gur dhvpx oebja sbk whzcrq bire gur ynml qbt.'
 
 '''
 
+from os.path            import join, dirname, realpath
 from string             import punctuation, digits
 
 from Collect.Cards      import ShuffleAndCut
+from File.Get           import getFileContent
+from File.Test          import isFileThere
+from Iter.AllVers       import iRange
+from Numb.Test          import isEven, isOdd
+from String.Find        import oFinderCRorLF
 from String.Replace     import getTextReversed
+from String.Stats       import AscStats
 from String.Transform   import TranslatorFactory
+from Utils.Both2n3      import print3
 
 sSafe   =  punctuation.replace( '\\', ' ' ) + digits
 
 changePunct = TranslatorFactory( sSafe, getTextReversed( sSafe ) )
 
+sFilePhrase = None
+
+sPassPhraseFileSpec = join(dirname(realpath(__file__)),'.secret-passphrase')
+
+if isFileThere( sPassPhraseFileSpec ):
+    sFilePhrase = getFileContent( sPassPhraseFileSpec )
+    l = [ s for s in oFinderCRorLF.split( sFilePhrase ) if s ]
+    sFilePhrase = ''.join( l )
+
+
+def _getAlternatingChars( uOne, uTwo ):
+    #
+    '''
+    s1 = 'abcde'
+    s2 = 'ABCDEFG'
+    _getAlternatingChars( s1, s2 ) returns:
+    'aAbBcCdDeE'
+    '''
+    #
+    lOne = list( uOne )
+    lTwo = list( uTwo )
+    #
+    if len( lOne ) > len( lTwo ):
+        #
+        iMakeLonger = ( len( lOne ) // len( lTwo ) ) + 1
+        #
+        lTwo = lTwo * iMakeLonger
+        #
+    #
+    lOut = []
+    #
+    for i in iRange( len( lOne ) ):
+        #
+        lOut.extend( [ lOne[i], lTwo[i] ] )
+        #
+    #
+    return ''.join( lOut )
+
+
+
+def _getFirstCharThenAlternate( s, fChoose = isEven ):
+    #
+    lOut = []
+    #
+    for i in iRange( len( s ) ):
+        #
+        if fChoose( i ):
+            #
+            lOut.append( s[i] )
+            #
+        #
+    #
+    return ''.join( lOut )
+
+
+def _get2ndCharThenAlternate( s ):
+    #
+    return _getFirstCharThenAlternate( s, fChoose = isOdd )
 
 
 def DescendChars( sOrig,
-        iOffset         = False,
+        iOffset         = 0,
         bStepIncrement  = False,
         bBackStep       = False,
         bBackwards      = False ):
@@ -105,49 +171,130 @@ def FlipCase( sText, bAlternate = False ):
 
 
 
+def _getShift( iSeed, iMax = 126 ):
+    #
+    iUseRange = iMax - 31
+    #
+    return iSeed % iUseRange
 
 
-def Encrypt( sEncryptThis, bUnEncrypt = False ):
+def _getThisShifted( iThis, iShift, iMax = 126 ):
     #
-    from String.Stats   import AscStats
+    if iShift + iThis > iMax:
+        #
+        iShift += 31 - iMax
+        #
     #
-    if bUnEncrypt:
+    return iShift + iThis
+
+
+def _getThisUnShifted( iThis, iShift, iMax = 126 ):
+    #
+    if iThis - iShift < 32:
         #
-        sConverted  = DescendChars( FlipCase( sEncryptThis, True ), 0, 1 )
+        iShift -= iMax - 31
         #
-    else: # Encrypt
+    return iThis - iShift
+
+
+def _getCharsShifted( sShiftThis, sPassPhrase, getShifted ):
+    #
+    oPassPhStats    = AscStats( sPassPhrase )
+    #
+    iMax        = 126
+    #
+    if oPassPhStats.iMax > 126: iMax = 255
+    #
+    iShift      = _getShift( oPassPhStats.iTotal, iMax )
+    #
+    lConverted  = [ chr( getShifted( ord( s ), iShift ) )
+                    for s in sShiftThis ]
+    #
+    return ''.join( lConverted )
+
+
+
+def Encrypt( sEncryptThis, sPassPhrase = sFilePhrase ):
+    #
+    if sPassPhrase is None:
         #
-        # sConverted   = sEncryptThis
         sConverted  = ShuffleAndCut(
                         getTextReversed( ShuffleAndCut( sEncryptThis ) ) )
         #
-    #
-    oStats          = AscStats( sConverted )
-    #
-    iUseOffset      = ( oStats.iLength % 4 ) - ( oStats.iDifference % 8 )
-    #
-    sConverted      = DescendChars( sConverted, iUseOffset )
-    #
-    if bUnEncrypt:
         #
-        # pass
-        sConverted  = ShuffleAndCut(
-                        getTextReversed( ShuffleAndCut( sConverted, 1 ) ), 1 )
+        oStats          = AscStats( sConverted )
         #
-    else: # Encrypt
+        iUseOffset      = ( oStats.iLength % 4 ) - ( oStats.iDifference % 8 )
+        #
+        sConverted      = DescendChars( sConverted, iUseOffset )
         #
         sConverted  = FlipCase( DescendChars( sConverted, 0, 1 ), True )
         #
-    #
+    else:
+        #
+        #
+        # Encrypt STEP 1 splice in the pass phrase
+        #
+        sAlternating= _getAlternatingChars( sEncryptThis, sPassPhrase )
+        #
+        # Encrypt STEP 2 shuffle & cut, reverse, shuffle & cut
+        #
+        sConverted  = ShuffleAndCut(
+                        getTextReversed( ShuffleAndCut( sAlternating ) ) )
+        #
+        # Encrypt STEP  3 shift all characters
+        #
+        sConverted  = _getCharsShifted(
+                            sConverted, sPassPhrase, _getThisShifted )
+        #
+        # Encrypt STEP 4 FlipCase
+        #
+        sConverted  = FlipCase( sConverted, True )
+        #
     #
     #
     return sConverted
 
 
 
-def Decrypt( sThis ):
+def Decrypt( sDecryptThis, sPassPhrase = sFilePhrase ):
     #
-    return Encrypt( sThis, bUnEncrypt = True )
+    if sPassPhrase is None:
+        #
+        sConverted  = DescendChars( FlipCase( sDecryptThis, True ), 0, 1 )
+        #
+        oStats          = AscStats( sConverted )
+        #
+        iUseOffset      = ( oStats.iLength % 4 ) - ( oStats.iDifference % 8 )
+        #
+        sConverted      = DescendChars( sConverted, iUseOffset )
+        #
+    else:
+        #
+        # Decrypt STEP -4 FlipCase
+        #
+        sConverted  = FlipCase( sDecryptThis, True )
+        #
+        # Decrypt STEP -3 shift all characters
+        #
+        sConverted  = _getCharsShifted(
+                            sConverted, sPassPhrase, _getThisUnShifted )
+        #
+        #
+    #
+    # Encrypt STEP -2 shuffle & cut, reverse, shuffle & cut
+    #
+    sConverted  = ShuffleAndCut(
+                getTextReversed( ShuffleAndCut( sConverted, True ) ), True )
+    #
+    if sPassPhrase is not None: # Encrypt
+        #
+        # Encrypt STEP -1 unsplice the pass phrase
+        #
+        sConverted = _getFirstCharThenAlternate( sConverted )
+        #
+    #
+    return sConverted
 
 
 
@@ -223,25 +370,64 @@ def getRot13( sText ):
 
 
 
-def EncryptLite( sThis ):
+def EncryptLite( sThis, sPassPhrase = sFilePhrase ):
     #
-    sConverted  = ShuffleAndCut(
-                    getRot13(
-                        getTextReversed(
-                            FlipCase(
-                                changePunct( sThis ), True ) ) ) )
+    if sPassPhrase is None:
+        #
+        getShifted  = getRot13
+        #
+        def doSometimes( s ): return s
+        #
+    else:
+        #
+        def getShifted( sShiftThis ):
+            #
+            return _getCharsShifted(
+                        sShiftThis, sPassPhrase, _getThisShifted )
+            #
+        #
+        def doSometimes( s ):
+            #
+            return _getAlternatingChars( s, sPassPhrase )
+            #
+        #
+    #
+    sConverted  = doSometimes(
+                    ShuffleAndCut(
+                        getShifted(
+                            getTextReversed(
+                                FlipCase(
+                                    changePunct( sThis ), True ) ) ) ) )
     #
     return sConverted
 
 
 
-def DecryptLite( sThis ):
+def DecryptLite( sThis, sPassPhrase = sFilePhrase ):
+    #
+    if sPassPhrase is None:
+        #
+        getShifted  = getRot13
+        #
+        def doSometimes( s ): return s
+        #
+    else:
+        #
+        def getShifted( sShiftThis ):
+            #
+            return _getCharsShifted(
+                        sShiftThis, sPassPhrase, _getThisUnShifted )
+            #
+        #
+        doSometimes = _getFirstCharThenAlternate
+        #
     #
     sConverted  = changePunct(
                     FlipCase(
                         getTextReversed(
-                            getRot13(
-                                ShuffleAndCut( sThis, 1 ) ) ), True ) )
+                            getShifted(
+                                ShuffleAndCut(
+                                    doSometimes( sThis ), True ) ) ), True ) )
     #
     return sConverted
 
@@ -267,8 +453,7 @@ def getYahooHtmlDecrypted( s, bLite = True ):
     else:
         fDecription = Decrypt
     #
-    
-    return fDecription( sFixed )
+    return fDecription( sFixed, sPassPhrase = None )
 
 
 
@@ -280,11 +465,15 @@ if __name__ == "__main__":
     from string         import ascii_lowercase as lowercase
     from string         import ascii_uppercase as uppercase
     #
-    from six            import print_ as print3
-    #
     from Utils.Result   import sayTestResult
     #
     lProblems = []
+    #
+    def EncryptNone(    s ): return Encrypt(    s, sPassPhrase = None )
+    def DecryptNone(    s ): return Decrypt(    s, sPassPhrase = None )
+    def EncryptLiteNone(s ): return EncryptLite(s, sPassPhrase = None )
+    def DecryptLiteNone(s ): return DecryptLite(s, sPassPhrase = None )
+    #
     #
     if DescendChars( lowercase ) != \
             '\x9e\x9d\x9c\x9b\x9a\x99\x98\x97\x96\x95\x94\x93\x92\x91' + \
@@ -303,23 +492,21 @@ if __name__ == "__main__":
         #
     sTest = 'The cat in the hat.'
     #
-    if      Encrypt( Encrypt( sTest ), bUnEncrypt = True ) != sTest or \
-                     Encrypt( sTest ) == sTest:
+    if DecryptNone( EncryptNone( sTest ) ) != sTest:
         #
-        lProblems.append( 'Encrypt( "%s" )' % sTest )
+        lProblems.append( 'EncryptNone( "%s" )' % sTest )
         #
-    if      DecryptLite( EncryptLite( sTest ) ) != sTest or \
-                         EncryptLite( sTest )   == sTest:
+    if DecryptLiteNone( EncryptLiteNone( sTest ) ) != sTest:
         #
-        lProblems.append( 'EncryptLite( "%s" )' % sTest )
+        lProblems.append( 'EncryptLiteNone( "%s" )' % sTest )
         #
-    if Decrypt( Encrypt( sTest ) ) != sTest:
+    if DecryptNone( EncryptNone( sTest ) ) != sTest:
         #
-        lProblems.append( 'Decrypt( "%s" )' % sTest )
+        lProblems.append( 'DecryptNone( "%s" )' % sTest )
         #
-    if DecryptLite( EncryptLite( sTest ) ) != sTest:
+    if DecryptLiteNone( EncryptLiteNone( sTest ) ) != sTest:
         #
-        lProblems.append( 'DecryptLite( "%s" )' % sTest )
+        lProblems.append( 'DecryptLiteNone( "%s" )' % sTest )
         #
     if XOREncrypt( sTest ) != '3c0d094c0c09114c0501481104094f00041842':
         #
@@ -380,5 +567,127 @@ if __name__ == "__main__":
         print3( 'got:  ', sGot  ) 
         lProblems.append( 'getYahooHtmlDecrypted() not lite' )
         #
+    #
+    s1 = 'abcde'
+    s2 = 'ABCDEFG'
+    #
+    sWant   = 'aAbBcCdDeE'
+    sGot = _getAlternatingChars( s1, s2 )
+    #
+    if sGot != sWant:
+        #
+        print3( 'want: ', sWant )
+        print3( 'got:  ', sGot  ) 
+        lProblems.append( '_getAlternatingChars( s1, s2 )' )
+        #
+    #
+    s2 = 'ABCDEFGhIjKlMnOp'
+    #
+    sGot = _getAlternatingChars( s1, s2 )
+    #
+    if sGot != sWant:
+        #
+        print3( 'want: ', sWant )
+        print3( 'got:  ', sGot  ) 
+        lProblems.append( '_getAlternatingChars( s1, s2 longer )' )
+        #
+    #
+    sGot = _getFirstCharThenAlternate( s2 )
+    #
+    sWant   = 'ACEGIKMO'
+    #
+    if sGot != sWant:
+        #
+        print3( 'want: ', sWant )
+        print3( 'got:  ', sGot  ) 
+        lProblems.append( '_getFirstCharThenAlternate( s2 )' )
+        #
+    #
+    sGot = _get2ndCharThenAlternate( s2 )
+    #
+    sWant   = 'BDFhjlnp'
+    #
+    if sGot != sWant:
+        #
+        print3( 'want: ', sWant )
+        print3( 'got:  ', sGot  ) 
+        lProblems.append( '_get2ndCharThenAlternate( s2 )' )
+        #
+    #
+    if (    _getShift(  88 ) != 88 or
+            _getShift(  89 ) != 89 or
+            _getShift(  90 ) != 90 or
+            _getShift(  91 ) != 91 or
+            _getShift(  92 ) != 92 or
+            _getShift(  93 ) != 93 or
+            _getShift(  94 ) != 94 or
+            _getShift(  95 ) !=  0 or
+            _getShift(  96 ) !=  1 or
+            _getShift(  97 ) !=  2 or
+            _getShift(  98 ) !=  3 or
+            _getShift(  99 ) !=  4 or
+            _getShift( 100 ) !=  5 ):
+        #
+        lProblems.append( '_getShift( 88 - 100 )' )
+        #
+    #
+    iShift = _getShift( 95 )
+    #
+    if _getThisShifted( 32, iShift ) != 32:
+        #
+        lProblems.append( '_getThisShifted( 32, 0 )' )
+        #
+    #
+    iShift = _getShift( 96 )
+    #
+    if _getThisShifted( 32, iShift ) != 33:
+        #
+        lProblems.append( '_getThisShifted( 32, 1 )' )
+        #
+    #
+    if (    _getThisShifted( 32, 92 ) != 124 or
+            _getThisShifted( 32, 93 ) != 125 or
+            _getThisShifted( 32, 94 ) != 126 or
+            _getThisShifted( 32, 95 ) !=  32 or
+            _getThisShifted( 32, 96 ) !=  33 or
+            _getThisShifted( 32, 97 ) !=  34 or
+            _getThisShifted( 32, 98 ) !=  35 ):
+        #
+        lProblems.append( '_getThisShifted( 32, 92 - 98 )' )
+        #
+    #
+    if (    _getThisUnShifted( 124, 92 ) !=  32 or
+            _getThisUnShifted( 125, 93 ) !=  32 or
+            _getThisUnShifted( 126, 94 ) !=  32 or
+            _getThisUnShifted(  32,  0 ) !=  32 or
+            _getThisUnShifted(  33,  1 ) !=  32 or
+            _getThisUnShifted(  34,  2 ) !=  32 or
+            _getThisUnShifted(  35,  3 ) !=  32 ):
+        #
+        lProblems.append( '_getThisUnShifted( various, 92 - 98 )' )
+        #
+    #
+    if (    _getThisUnShifted(  35,  0 ) !=  35 or
+            _getThisUnShifted(  35,  1 ) !=  34 or
+            _getThisUnShifted(  35,  2 ) !=  33 or
+            _getThisUnShifted(  35,  3 ) !=  32 or
+            _getThisUnShifted(  35,  4 ) != 126 or
+            _getThisUnShifted(  35,  5 ) != 125 ):
+        #
+        lProblems.append( '_getThisUnShifted( 35, various )' )
+        #
+    #
+    sGreatPw = 'Gr34tP@55w0rd'
+    #
+    if Decrypt( Encrypt( sGreatPw ) ) != sGreatPw:
+        #
+        lProblems.append( 'encrypt/decrypt great password' )
+        #
+    #
+    if DecryptLite( EncryptLite( sGreatPw ) ) != sGreatPw:
+        #
+        lProblems.append( 'encrypt lite /decrypt lite great password' )
+        #
+    #
     #
     sayTestResult( lProblems )
