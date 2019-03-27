@@ -613,6 +613,10 @@ if __name__ == "__main__":
     def EncryptLiteNone(s ): return EncryptLite(s, sPassPhrase = None )
     def DecryptLiteNone(s ): return DecryptLite(s, sPassPhrase = None )
     #
+    if sFilePhrase is None:
+        sFilePhrase = 'See Dick. See Jane. See Dick run. See Jane run.'
+        # need a passphrase to test code expecting a passphrase,
+        # any passphrase will do
     #
     if DescendChars( lowercase ) != \
             '\x9e\x9d\x9c\x9b\x9a\x99\x98\x97\x96\x95\x94\x93\x92\x91' + \
