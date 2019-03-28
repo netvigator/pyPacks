@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2017 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
 '''
 simulates suffling a deck of cards
@@ -38,11 +38,9 @@ _dMaxShuffles = {
 
 
 
-def CutTheCards( uSeq, bPutBack = False, bSloppy = False, iOffset = 0 ):
+def getCutPosition( uSeq, bPutBack = False, iOffset = 0 ):
     #
-    from math       import ceil
-    from random     import random, randrange
-    from Utils.ImIf import ImIf
+    from math   import ceil
     #
     iLen        = len( uSeq )
     #
@@ -54,12 +52,23 @@ def CutTheCards( uSeq, bPutBack = False, bSloppy = False, iOffset = 0 ):
         #
         iCutAt  = iLen // 2 + iOffset
         #
-        if bSloppy:
-            #
-            iLenTenth   = iCutAt // 5 or 1
-            #
-            iCutAt      = iCutAt + ( ImIf( random() > 0.5, 1, -1 ) * randrange( iLenTenth ) )
-            #
+    #
+    return iCutAt
+
+
+def CutTheCards( uSeq, bPutBack = False, bSloppy = False, iOffset = 0 ):
+    #
+    from random     import random, randrange
+    from Utils.ImIf import ImIf
+    #
+    iCutAt = getCutPosition( uSeq, bPutBack = bPutBack, iOffset = iOffset )
+    #
+    if bSloppy:
+        #
+        iLenTenth   = iCutAt // 5 or 1
+        #
+        iCutAt      = iCutAt + ( ImIf( random() > 0.5, 1, -1 ) * randrange( iLenTenth ) )
+        #
     #
     return uSeq[ : iCutAt ], uSeq[ iCutAt : ] # uTop, uBot
 
