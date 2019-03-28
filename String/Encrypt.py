@@ -37,6 +37,7 @@ getRot13( sTest )    = 'Gur dhvpx oebja sbk whzcrq bire gur ynml qbt.'
 '''
 
 from os.path            import join, dirname, realpath
+from platform           import system
 from string             import punctuation, digits
 
 from Collect.Cards      import ShuffleAndCut
@@ -57,7 +58,13 @@ changePunct = TranslatorFactory( sSafe, getTextReversed( sSafe ) )
 sFilePhrase = None
 
 sThisLocation       = dirname(realpath(__file__))
-sPassPhraseFileSpec = join(sThisLocation,'.secret-passphrase')
+
+if system() == 'Windows':
+    sPassPhraseFileName = 'secret-passphrase' # leading dots not allowed
+else:
+    sPassPhraseFileName = '.secret-passphrase' # leading dots not allowed
+
+sPassPhraseFileSpec = join( sThisLocation, sPassPhraseFileName )
 
 if isFileThere( sPassPhraseFileSpec ):
     sFilePhrase = getFileContent( sPassPhraseFileSpec )
@@ -66,24 +73,24 @@ if isFileThere( sPassPhraseFileSpec ):
     if not sFilePhrase:
         #
         print3('')
-        print3( 'the file named ".secret-passphrase" in %s is empty, '
+        print3( 'the file named "%s" in %s is empty, '
                 'it should contain your secret passphrase'
-                % sThisLocation )
+                % ( sPassPhraseFileName, sThisLocation ) )
         #
         print3('')
     elif len( sFilePhrase ) < 10:
         print3('')
-        print3( 'the passphrase in ".secret-passphrase" in %s is short, '
+        print3( 'the passphrase in "%s" in %s is short, '
                 'a longer secret passphrase would be better'
-                % sThisLocation )
+                % ( sPassPhraseFileName, sThisLocation ) )
         #
         print3('')
 else:
     #
     print3('')
-    print3( 'best to have a file named ".secret-passphrase" '
+    print3( 'best to have a file named "%s" '
             'in %s, it can contain your secret passphrase'
-            % sThisLocation )
+            % ( sPassPhraseFileName, sThisLocation ) )
     print3('')
 
 
