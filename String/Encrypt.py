@@ -40,7 +40,8 @@ from os.path            import join, dirname, realpath
 from platform           import system
 from string             import punctuation, digits
 
-from Collect.Cards      import ShuffleAndCut
+from Collect.Cards      import ShuffleAndCut, getCutPosition
+from Collect.Query      import get1stThatMeets
 from File.Get           import getFileContent
 from File.Test          import isFileThere
 from Iter.AllVers       import iRange
@@ -66,31 +67,34 @@ else:
 
 sPassPhraseFileSpec = join( sThisLocation, sPassPhraseFileName )
 
+sMsg = None
+
 if isFileThere( sPassPhraseFileSpec ):
     sFilePhrase = getFileContent( sPassPhraseFileSpec )
     l = [ s for s in oFinderCRorLF.split( sFilePhrase ) if s ]
     sFilePhrase = ''.join( l )
     if not sFilePhrase:
         #
-        print3('')
-        print3( 'the file named "%s" in %s is empty, '
-                'it should contain your secret passphrase'
-                % ( sPassPhraseFileName, sThisLocation ) )
+        sMsg = ( 'the file named "%s" in %s is empty, '
+                 'it should contain your secret passphrase'
+               % ( sPassPhraseFileName, sThisLocation ) )
         #
-        print3('')
     elif len( sFilePhrase ) < 10:
-        print3('')
-        print3( 'the passphrase in "%s" in %s is short, '
-                'a longer secret passphrase would be better'
-                % ( sPassPhraseFileName, sThisLocation ) )
+        sMsg = ( 'the passphrase in "%s" in %s is short, '
+                 'a longer secret passphrase would be better'
+               % ( sPassPhraseFileName, sThisLocation ) )
         #
-        print3('')
 else:
     #
+    sMsg = ( 'best to have a file named "%s" '
+             'in %s, it can contain your secret passphrase'
+           % ( sPassPhraseFileName, sThisLocation ) )
+    #
+
+if sMsg is not None:
+    #
     print3('')
-    print3( 'best to have a file named "%s" '
-            'in %s, it can contain your secret passphrase'
-            % ( sPassPhraseFileName, sThisLocation ) )
+    print3( sMsg )
     print3('')
 
 
@@ -99,7 +103,7 @@ if sFilePhrase is None:
     sFilePhrase = 'See Dick. See Jane. See Spot. See Spot run.'
 
 
-def _getMoreAscStats( s ):
+def _getMoreAscStats( s, iStringLen ):
     #
     '''
     consider zero to be the middle position in the string,
@@ -108,9 +112,23 @@ def _getMoreAscStats( s ):
     used to decide where to cut the cards/characters in the string
     '''
     #
-    o = AscStats( s )
+    o            = AscStats( s )
     #
-    o.iCutAt = o.iTotal % o.iLength - ( o.iLength // 2 )
+    iCutAt       = o.iTotal % iStringLen - ( iStringLen // 2 )
+    #
+    tCutPosition = ( getCutPosition( s, bPutBack = True,  iOffset = iCutAt ),
+                     getCutPosition( s, bPutBack = False, iOffset = iCutAt ) )
+    #
+    def isNotWithin( i ):
+        # definitely want a cut position > 0 and before the end of the deck
+        return i < 1 or i >= len( s )
+    #
+    if get1stThatMeets( tCutPosition, isNotWithin ):
+        #
+        iCutAt   = iCutAt // 2
+        #
+    #
+    o.iCutAt     = iCutAt
     #
     return o
 
@@ -339,14 +357,9 @@ def Encrypt( sEncryptThis, sPassPhrase = sFilePhrase ):
         #
         # Encrypt STEP 2 shuffle & cut, reverse, shuffle & cut
         #
-        oStats      = _getMoreAscStats( sPassPhrase )
+        oStats      = _getMoreAscStats( sPassPhrase, len( sAlternating ) )
         #
         iCutAt      = oStats.iCutAt
-        #
-        while abs( iCutAt ) >= len( sAlternating ) // 4:
-            #
-            iCutAt = iCutAt // 2
-            #
         #
         sConverted  = ShuffleAndCut(
                         getTextReversed(
@@ -392,7 +405,7 @@ def Decrypt( sDecryptThis, sPassPhrase = sFilePhrase ):
         #
         # Decrypt STEP -3 shift all characters
         #
-        oStats      = _getMoreAscStats( sPassPhrase )
+        oStats      = _getMoreAscStats( sPassPhrase, len( sConverted ) )
         #
         sConverted  = _getCharsShifted(
                             sConverted,
@@ -401,10 +414,6 @@ def Decrypt( sDecryptThis, sPassPhrase = sFilePhrase ):
         #
         iCutAt      = oStats.iCutAt
         #
-        while abs( iCutAt ) >= len( sConverted ) // 4:
-            #
-            iCutAt = iCutAt // 2
-            #
     #
     # Encrypt STEP -2 shuffle & cut, reverse, shuffle & cut
     #
@@ -510,7 +519,7 @@ def EncryptLite( sThis, sPassPhrase = sFilePhrase ):
         #
     else:
         #
-        oStats    = _getMoreAscStats( sPassPhrase )
+        oStats    = _getMoreAscStats( sPassPhrase, len( sThis ) * 2 )
         #
         def getShifted( sShiftThis ):
             #
@@ -523,11 +532,6 @@ def EncryptLite( sThis, sPassPhrase = sFilePhrase ):
             #
         #
         iCutAt      = oStats.iCutAt
-        #
-        while abs( iCutAt ) >= len( sThis ) // 2:
-            #
-            iCutAt = iCutAt // 2
-            #
         #
     #
     sConverted  = ShuffleAndCut(
@@ -553,7 +557,7 @@ def DecryptLite( sThis, sPassPhrase = sFilePhrase ):
         #
     else:
         #
-        oStats    = _getMoreAscStats( sPassPhrase )
+        oStats    = _getMoreAscStats( sPassPhrase, len( sThis ) )
         #
         def getShifted( sShiftThis ):
             #
@@ -564,11 +568,6 @@ def DecryptLite( sThis, sPassPhrase = sFilePhrase ):
         doSometimes = _getFirstCharThenAlternate
         #
         iCutAt      = oStats.iCutAt
-        #
-        while abs( iCutAt ) >= len( sThis ) // 4:
-            #
-            iCutAt = iCutAt // 2
-            #
         #
     #
     sConverted  = doSometimes(
