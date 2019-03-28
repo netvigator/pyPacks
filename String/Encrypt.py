@@ -23,11 +23,11 @@
 # Copyright 2004-2019 Rick Graves
 #
 '''
-sTest                = 'The quick brown fox jumped over the lazy dog.'
+sTest                   = 'The quick brown fox jumped over the lazy dog.'
 
-Encrypt( sTest )     = '\x1ffPrTvWgW.EkW{~pGoLg#hR&DbMqJiZ&Nz!V#gMt\x1fuFx#'
+Encrypt(sTest,None)     = '\x1ffPrTvWgW.EkW{~pGoLg#hR&DbMqJiZ&Nz!V#gMt\x1fuFx#'
 
-EncryptLite( sTest ) = 'Y=REjqRp=KurB=cVRbgIelZhuS{bOMhDG=t==nW==ABqX'
+EncryptLite(sTest,None) = 'Y=REjqRp=KurB=cVRbgIelZhuS{bOMhDG=t==nW==ABqX'
 
 XOREncrypt( sTest )  = '3c0d094c1e1d0c0f074f0a17031b01480303144f0210' +
                        '011c0a0c45031a0a1a4518040a48090d16164801030b41'
@@ -60,9 +60,9 @@ sFilePhrase = None
 sThisLocation       = dirname(realpath(__file__))
 
 if system() == 'Windows':
-    sPassPhraseFileName = 'secret-passphrase' # leading dots not allowed
+    sPassPhraseFileName =  'secret-passphrase' # leading dots not allowed
 else:
-    sPassPhraseFileName = '.secret-passphrase' # leading dots not allowed
+    sPassPhraseFileName = '.secret-passphrase' # leading dots are allowed
 
 sPassPhraseFileSpec = join( sThisLocation, sPassPhraseFileName )
 
@@ -92,6 +92,11 @@ else:
             'in %s, it can contain your secret passphrase'
             % ( sPassPhraseFileName, sThisLocation ) )
     print3('')
+
+
+if sFilePhrase is None:
+    # need a sFilePhrase for testing
+    sFilePhrase = 'See Dick. See Jane. See Spot. See Spot run.'
 
 
 def _getMoreAscStats( s ):
