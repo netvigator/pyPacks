@@ -662,14 +662,14 @@ def _getRandomChars( seq, iHowMany = 10 ):
     get ramdom characters off a sequence
     '''
     #
-    from math   import ceil
     from random import shuffle
     #
     l = list( seq )
     #
     if 3 * iHowMany > len( l ):
         #
-        l = l * int( ceil( iHowMany * 3 / float( len( l ) ) ) )
+        l = l * ( ( iHowMany * 3 // len( l ) ) +
+                  ( iHowMany * 3 %  len( l ) > 0 ) )
         #
     #
     shuffle( l )
