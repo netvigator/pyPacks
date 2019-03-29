@@ -76,7 +76,7 @@ cd ../String
 ./Delimit.py
 ./Dumpster.py
 ./Eat.py
-./Encrypt.py
+./Enigma.py
 ./Find.py
 ./Get.py
 ./getEncrypted.py
