@@ -43,7 +43,6 @@ from platform           import system
 from string             import punctuation, digits
 
 from Collect.Cards      import ShuffleAndCut, getCutPosition
-from Collect.Query      import get1stThatMeets
 from File.Get           import getFileContent
 from File.Test          import isFileThere
 from Iter.AllVers       import iRange
@@ -74,7 +73,7 @@ sMsg = None
 if isFileThere( sPassPhraseFileSpec ):
     sFilePhrase = getFileContent( sPassPhraseFileSpec )
     l = [ s for s in oFinderCRorLF.split( sFilePhrase ) if s ]
-    sFilePhrase = ''.join( l )
+    sFilePhrase = ''.join( l ).strip()
     if not sFilePhrase:
         #
         sMsg = ( 'the file named "%s" in %s is empty, '
@@ -111,7 +110,12 @@ def _getMoreAscStats( s, iStringLen ):
     consider zero to be the middle position in the string,
     this function should return an object with property iCutAt,
     iCutAt being zero or a signed integer about zero,
-    used to decide where to cut the cards/characters in the string
+    used to decide where to cut the cards/characters in the string.
+    if iCutAt = zero, the deck/string will be cut in the middle
+    if iCutAt < zero, the deck/string will be cut closer to the front
+    if iCutAt > zero, the deck/string will be cut closer to the end
+    getCutPosition returns the regular index position where to cut
+    the first character of the string has regular index position of zero
     '''
     #
     o            = AscStats( s )
@@ -122,10 +126,10 @@ def _getMoreAscStats( s, iStringLen ):
                      getCutPosition( s, bPutBack = False, iOffset = iCutAt ) )
     #
     def isNotWithin( i ):
-        # definitely want a cut position > 0 and before the end of the deck
+        # want a cut position > 0 and before the end of the deck/string
         return i < 1 or i >= len( s )
     #
-    if get1stThatMeets( tCutPosition, isNotWithin ):
+    if isNotWithin( tCutPosition[0] ) or isNotWithin( tCutPosition[1] ):
         #
         iCutAt   = iCutAt // 2
         #
