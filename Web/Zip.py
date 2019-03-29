@@ -207,7 +207,6 @@ def getCompressedChunks( sText, iWantChunks = 3, iMaxLen = None ):
     # not used anywhere yet
     #
     from Iter.AllVers       import iZip
-    from Numb.Get           import getSumOnlyIntegers
     from Numb.Accumulate    import getCumulativeIntegerTotals
     from Iter.Get           import getSequencePairsThisWithNext as getThisWithNext
     from Utils.Version      import PYTHON3
@@ -228,7 +227,7 @@ def getCompressedChunks( sText, iWantChunks = 3, iMaxLen = None ):
     #
     lLens               = [ iWantLen ] * iWantChunks
     #
-    lLens[ -1 ]         += iLen - getSumOnlyIntegers( *lLens )
+    lLens[ -1 ]         += iLen - sum( lLens )
     #
     lTotals             = getCumulativeIntegerTotals( lLens )
     #
