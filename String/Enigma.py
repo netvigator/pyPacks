@@ -27,14 +27,20 @@
 '''
 sTest                   = 'The quick brown fox jumped over the lazy dog.'
 
-Encrypt(sTest,None)     = '\x1ffPrTvWgW.EkW{~pGoLg#hR&DbMqJiZ&Nz!V#gMt\x1fuFx#'
+EncryptNone(sTest)      = '\x1ffPrTvWgW.EkW{~pGoLg#hR&DbMqJiZ&Nz!V#gMt\x1fuFx#'
 
-EncryptLite(sTest,None) = 'Y=REjqRp=KurB=cVRbgIelZhuS{bOMhDG=t==nW==ABqX'
+EncryptLiteNone(sTest)  = 'Y=REjqRp=KurB=cVRbgIelZhuS{bOMhDG=t==nW==ABqX'
 
-XOREncrypt( sTest )  = '3c0d094c1e1d0c0f074f0a17031b01480303144f0210' +
-                       '011c0a0c45031a0a1a4518040a48090d16164801030b41'
+XOREncrypt( sTest )     = '3c0d094c1e1d0c0f074f0a17031b01480303144f0210' +
+                          '011c0a0c45031a0a1a4518040a48090d16164801030b41'
 
-getRot13( sTest )    = 'Gur dhvpx oebja sbk whzcrq bire gur ynml qbt.'
+getRot13( sTest )       = 'Gur dhvpx oebja sbk whzcrq bire gur ynml qbt.'
+
+with pass phrase        = 'See Dick. See Jane. See Spot. See Spot run.'
+
+Encrypt(sTest)          = 'DWXr&bqPwtK_Ph:MTermSKHlCXUj.oNe: 7Y^tuXln.:U'
+
+EncryptLite(sTest)      = '|]dxX=H<G5aVIxdZErc3hNTOUu>uG:=MK.M},="5d;Z.S'
 
 '''
 
@@ -70,10 +76,18 @@ sPassPhraseFileSpec = join( sThisLocation, sPassPhraseFileName )
 
 sMsg = None
 
-if isFileThere( sPassPhraseFileSpec ):
+if __name__ == "__main__":
+    #
+    # need a sFilePhrase for testing
+    #
+    sFilePhrase = 'See Dick. See Jane. See Spot. See Spot run.'
+    #
+elif isFileThere( sPassPhraseFileSpec ):
+    #
     sFilePhrase = getFileContent( sPassPhraseFileSpec )
     l = [ s for s in oFinderCRorLF.split( sFilePhrase ) if s ]
     sFilePhrase = ''.join( l ).strip()
+    #
     if not sFilePhrase:
         #
         sMsg = ( 'the file named "%s" in %s is empty, '
@@ -99,9 +113,6 @@ if sMsg is not None:
     print3('')
 
 
-if sFilePhrase is None:
-    # need a sFilePhrase for testing
-    sFilePhrase = 'See Dick. See Jane. See Spot. See Spot run.'
 
 
 def _getMoreAscStats( s, iStringLen ):
@@ -605,11 +616,6 @@ if __name__ == "__main__":
     #
     lProblems = []
     #
-    if sFilePhrase is None:
-        sFilePhrase = 'See Dick. See Jane. See Dick run. See Jane run.'
-        # need a passphrase to test code expecting a passphrase,
-        # any passphrase will do
-    #
     if DescendChars( lowercase ) != \
             '\x9e\x9d\x9c\x9b\x9a\x99\x98\x97\x96\x95\x94\x93\x92\x91' + \
             '\x90\x8f\x8e\x8d\x8c\x8b\x8a\x89\x88\x87\x86\x85':
@@ -859,6 +865,5 @@ if __name__ == "__main__":
         #
         lProblems.append( 'encrypt lite /decrypt lite great password' )
         #
-    #
     #
     sayTestResult( lProblems )
