@@ -80,14 +80,13 @@ def CutTheCards( uSeq, bPutBack = False, bSloppy = False, iOffset = 0 ):
 
 def ShuffleTheCards( uSeq, bPutBack = False, iShuffles = 1 ):
     #
-    from math import ceil
     from copy import copy
     #
     uEmpty                  = uSeq[ len( uSeq ) : ]
     #
     iLen                    = len( uSeq )
     #
-    iHalfLen                = int( ceil( iLen / 2.0 ) )
+    iHalfLen                = iLen // 2  + ( iLen % 2 > 0 )
     #
     tCards                  = tRange( iHalfLen )
     #
@@ -181,7 +180,6 @@ def _getOffBottom( lSeq, iMax = 3 ):
 
 def SloppyShuffle( uSeq, iShuffles = 1 ):
     #
-    from math           import ceil
     from random         import random, randrange
     #
     uEmpty              = uSeq[ len( uSeq ) : ]
@@ -248,7 +246,6 @@ def ShuffleAndCut(
             bSloppy     = False,
             iCutOffset  = 0 ):
     #
-    from math           import ceil
     from Numb.Test      import isOdd
     from Utils.ImIf     import ImIf
     #
