@@ -40,13 +40,17 @@ _dMaxShuffles = {
 
 def getCutPosition( uSeq, bPutBack = False, iOffset = 0 ):
     #
-    from math   import ceil
-    #
+    '''
+    returns iCutAt, the regular index position of the place to cut,
+    with the first character having a regular index position of zero
+    string will be cut as follows:
+    return uSeq[ : iCutAt ], uSeq[ iCutAt : ]
+    '''
     iLen        = len( uSeq )
     #
     if bPutBack:
         #
-        iCutAt  = int( ceil( iLen / float( 2 ) ) ) - iOffset
+        iCutAt  = ( iLen // 2 ) + ( iLen % 2 > 0 ) - iOffset
         #
     else:
         #
