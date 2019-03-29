@@ -60,5 +60,5 @@ docs/_build/
 # PyBuilder
 target/
 
-# top secret passphrase file
-.secret-passphrase
+# enigma info file
+.enigma-info
