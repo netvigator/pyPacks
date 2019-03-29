@@ -1,7 +1,7 @@
 #!/usr/bin/pythonTest
 # -*- coding: utf-8 -*-
 #
-# string functions Encrypt
+# string functions Enigma
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,6 +21,8 @@
 #   http://www.gnu.org/licenses/gpl.html
 #
 # Copyright 2004-2019 Rick Graves
+#
+# file known as Encrypt until 2019-03-29
 #
 '''
 sTest                   = 'The quick brown fox jumped over the lazy dog.'
@@ -61,9 +63,9 @@ sFilePhrase = None
 sThisLocation       = dirname(realpath(__file__))
 
 if system() == 'Windows':
-    sPassPhraseFileName =  'secret-passphrase' # leading dots not allowed
+    sPassPhraseFileName =  'enigma-info' # leading dots not allowed
 else:
-    sPassPhraseFileName = '.secret-passphrase' # leading dots are allowed
+    sPassPhraseFileName = '.enigma-info' # leading dots are allowed
 
 sPassPhraseFileSpec = join( sThisLocation, sPassPhraseFileName )
 
@@ -400,6 +402,12 @@ def Encrypt( sEncryptThis, sPassPhrase = sFilePhrase ):
 
 
 
+def EncryptNone( sEncryptThis ):
+    #
+    return Encrypt( sEncryptThis, sPassPhrase = None )
+
+
+
 def Decrypt( sDecryptThis, sPassPhrase = sFilePhrase ):
     #
     if sPassPhrase is None:
@@ -435,6 +443,11 @@ def Decrypt( sDecryptThis, sPassPhrase = sFilePhrase ):
     #
     return sConverted
 
+
+
+def DecryptNone( sDecryptThis ):
+    #
+    return Decrypt( sDecryptThis, sPassPhrase = None )
 
 
 
@@ -511,6 +524,7 @@ def getRot13( sText ):
 def _doReturnString( s ): return s
 
 
+
 def EncryptLite( sThis, sPassPhrase = sFilePhrase ):
     #
     if sPassPhrase is None:
@@ -539,6 +553,11 @@ def EncryptLite( sThis, sPassPhrase = sFilePhrase ):
                     changePunct( sThis ), True ) ) ), iCutOffset = iCutAt )
     #
     return sConverted
+
+
+def EncryptLiteNone(sThis ):
+    #
+    return EncryptLite( sThis, sPassPhrase = None )
 
 
 
@@ -572,6 +591,11 @@ def DecryptLite( sThis, sPassPhrase = sFilePhrase ):
     #
     return sConverted
 
+
+
+def DecryptLiteNone( sThis ):
+    #
+    return DecryptLite( sThis, sPassPhrase = None )
 
 
 
@@ -609,11 +633,6 @@ if __name__ == "__main__":
     from Utils.Result   import sayTestResult
     #
     lProblems = []
-    #
-    def EncryptNone(    s ): return Encrypt(    s, sPassPhrase = None )
-    def DecryptNone(    s ): return Decrypt(    s, sPassPhrase = None )
-    def EncryptLiteNone(s ): return EncryptLite(s, sPassPhrase = None )
-    def DecryptLiteNone(s ): return DecryptLite(s, sPassPhrase = None )
     #
     if sFilePhrase is None:
         sFilePhrase = 'See Dick. See Jane. See Dick run. See Jane run.'
