@@ -152,6 +152,12 @@ def pairDivide(   x, y ): return x / y
 
 def getSumOnlyIntegers( *Numbers, **kwargs ):
     #
+    '''
+    sum() was new in python 2.3
+    if you have a sequence of integers, sum() is much faster!
+    this function is obsolete!!!
+    '''
+    #
     from six.moves      import reduce as Reduce
     #
     #from Utils.Both2n3 import Reduce
@@ -199,9 +205,11 @@ def getSumLeft2Right( *args ):
 
 def getSumOffList( *Numbers ):
     #
-    '''sum() was new in python 2.3 but sums from left to right,
+    '''
+    sum() was new in python 2.3 but sums from left to right,
     which can result in catastrophic cumulative rounding errors
-    if there are floats.  this avoids rounding errors.'''
+    if there are floats.  this avoids rounding errors.
+    '''
     #
     from itertools      import islice
     #
@@ -258,6 +266,12 @@ def getSumOffList( *Numbers ):
 
 def getSum( *args ):
     #
+    '''
+    sum() was new in python 2.3 but sums from left to right,
+    which can result in catastrophic cumulative rounding errors
+    if there are floats.  this avoids rounding errors.
+    '''
+    #
     from Numb.Test      import hasIntegersOnly
     from Collect.Test   import isListOrTuple
     #
@@ -267,7 +281,7 @@ def getSum( *args ):
     #
     if hasIntegersOnly( *args ):
         #
-        uSum = getSumOnlyIntegers( *args )
+        uSum = sum( args )
         #
     else:
         #
