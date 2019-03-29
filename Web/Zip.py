@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2017 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
 
 from six            import print_ as print3
@@ -206,9 +206,7 @@ def getCompressedChunks( sText, iWantChunks = 3, iMaxLen = None ):
     #
     # not used anywhere yet
     #
-    from math               import ceil
-    #
-    from Iter.AllVers       import lMap, iZip
+    from Iter.AllVers       import iZip
     from Numb.Get           import getSumOnlyIntegers
     from Numb.Accumulate    import getCumulativeIntegerTotals
     from Iter.Get           import getSequencePairsThisWithNext as getThisWithNext
@@ -226,9 +224,9 @@ def getCompressedChunks( sText, iWantChunks = 3, iMaxLen = None ):
     #
     iLen                = len( sText )
     #
-    lLens               = [ ceil( iLen / float( iWantChunks  ) ) ] * iWantChunks
+    iWantLen            = iLen // iWantChunks + ( iLen % iWantChunks > 0 )
     #
-    lLens               = lMap( int, lLens )
+    lLens               = [ iWantLen ] * iWantChunks
     #
     lLens[ -1 ]         += iLen - getSumOnlyIntegers( *lLens )
     #
