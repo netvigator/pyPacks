@@ -556,16 +556,18 @@ def getRegExpress(
                 #
             elif lLengths[ i ] <= iWordBoundChrs:
                 #
-                if (    lOrig[ i ].startswith( '^' ) and
-                        lOrig[ i ].endswith(   '$' ) ):
+                # world boundary chars not wanted if the string
+                # begins or ends with parens!
+                #
+                if lOrig[ i ][ 0 ] in '^(' and lOrig[ i ][ -1 ] in '$)':
                     #
                     continue
                     #
-                elif lOrig[ i ].startswith( '^' ):
+                elif lOrig[ i ][ 0 ] in '^(':
                     #
                     lRegEx[ i ] = r'%s\b' % lRegEx[ i ]
                     #
-                elif lOrig[ i ].endswith( '$' ):
+                elif lOrig[ i ][ -1 ] in '$)':
                     #
                     lRegEx[ i ] = r'\b%s' % lRegEx[ i ]
                     #
@@ -1639,6 +1641,21 @@ if __name__ == "__main__":
         #
         lProblems.append(
             'getRegExpress(%s) testing "%s"' % ( sLook4, 'boundary chars' ) )
+        #
+    #
+    #
+    sLook4 = '(2)'
+    #
+    sRegExpress = getRegExpress( sLook4, iWordBoundChrs  = 3 )
+    #
+    sWant = '\(2\)'
+    #
+    if sRegExpress != sWant:
+        #
+        print3( 'got: ', sRegExpress )
+        print3( 'want:', sWant )
+        #
+        lProblems.append( 'getRegExpress(%s)' % sLook4 )
         #
     #
     #
