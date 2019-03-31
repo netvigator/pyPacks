@@ -127,6 +127,12 @@ def _getMoreAscStats( s, iStringLen ):
     if iCutAt > zero, the deck/string will be cut closer to the end
     getCutPosition returns the regular index position where to cut
     the first character of the string has regular index position of zero
+    properties of the default object:
+    AscStats.iDifference
+    AscStats.iLength
+    AscStats.iMin
+    AscStats.iMax
+    AscStats.iTotal
     '''
     #
     o            = AscStats( s )
@@ -149,57 +155,6 @@ def _getMoreAscStats( s, iStringLen ):
     #
     return o
 
-
-def _getAlternatingChars( uOne, uTwo ):
-    #
-    '''
-    s1 = 'abcde'
-    s2 = 'ABCDEFG'
-    _getAlternatingChars( s1, s2 ) returns:
-    'aAbBcCdDeE'
-    '''
-    #
-    lOne = list( uOne )
-    lTwo = list( uTwo )
-    #
-    if len( lOne ) > len( lTwo ):
-        #
-        iMakeLonger = ( len( lOne ) // len( lTwo ) ) + 1
-        #
-        lTwo = lTwo * iMakeLonger
-        #
-    #
-    lOut = []
-    #
-    for i in iRange( len( lOne ) ):
-        #
-        lOut.extend( [ lOne[i], lTwo[i] ] )
-        #
-    #
-    return ''.join( lOut )
-
-
-
-def _getFirstCharThenAlternate( s, fChoose = isEven ):
-    #
-    '''
-    s = 'ABCDEFGhIjKlMnOp'
-    _getFirstCharThenAlternate( s )
-    returns
-    'ACEGIKMO'
-    '''
-    #
-    lOut = []
-    #
-    for i in iRange( len( s ) ):
-        #
-        if fChoose( i ):
-            #
-            lOut.append( s[i] )
-            #
-        #
-    #
-    return ''.join( lOut )
 
 
 
@@ -301,7 +256,7 @@ def _getThisShifted( iThis, iShift, iMax = 126 ):
     _getThisShifted( 32, 97 ) returns  34
     '''
     #
-    if iShift + iThis > iMax:
+    while iShift + iThis > iMax:
         #
         iShift += 31 - iMax
         #
@@ -323,28 +278,39 @@ def _getThisUnShifted( iThis, iShift, iMax = 126 ):
     _getThisUnShifted(  35,  6 ) returns 124
     '''
     #
-    if iThis - iShift < 32:
+    while iThis - iShift < 32:
         #
         iShift -= iMax - 31
         #
+    #
     return iThis - iShift
 
 
 
-def _getCharsShifted( sShiftThis, getShifted, sPassPhrase ):
+def _getCharsShifted( sShiftThis, getShifted, sPassPhrase, iPassPhraseNumb ):
     #
-    lThisShifted = [ None ] * len( sShiftThis )
+    iShiftThisLen = len( sShiftThis )
+    #
+    lThisShifted = [ None ] * iShiftThisLen
     #
     lPassPhrase = list( sPassPhrase )
     #
-    if len( sShiftThis ) > len( sPassPhrase ):
+    if iShiftThisLen > len( sPassPhrase ):
         #
-        iMore = 1 + len( sShiftThis ) // len( sPassPhrase )
+        iMore = 1 + iShiftThisLen // len( sPassPhrase )
         #
         lPassPhrase *= iMore
         #
     #
-    for i in iRange( len( sShiftThis ) ):
+    iPassPhraseStartAt = iPassPhraseNumb % (
+                                len( lPassPhrase ) - iShiftThisLen )
+    #
+    if iPassPhraseStartAt > 0:
+        #
+        del lPassPhrase[ : iPassPhraseStartAt ]
+        #
+    #
+    for i in iRange( iShiftThisLen ):
         #
         lThisShifted[i] = chr(
                             getShifted(
@@ -372,8 +338,13 @@ def Encrypt( sEncryptThis, sPassPhrase = sFilePhrase ):
     #
     # Encrypt STEP  2 shift all characters
     #
+    iPassPhraseNumb = oStats.iTotal - oStats.iDifference
+    #
     sConverted  = _getCharsShifted(
-                        sConverted, _getThisShifted, sPassPhrase )
+                        sConverted,
+                        _getThisShifted,
+                        sPassPhrase,
+                        iPassPhraseNumb )
     #
     return sConverted
 
@@ -412,8 +383,13 @@ def Decrypt( sDecryptThis, sPassPhrase = sFilePhrase ):
     #
     oStats      = _getMoreAscStats( sPassPhrase, len( sDecryptThis ) )
     #
+    iPassPhraseNumb = oStats.iTotal - oStats.iDifference
+    #
     sConverted  = _getCharsShifted(
-                        sDecryptThis, _getThisUnShifted, sPassPhrase )
+                        sDecryptThis,
+                        _getThisUnShifted,
+                        sPassPhrase,
+                        iPassPhraseNumb )
     #
     iCutAt      = oStats.iCutAt
     #
@@ -524,10 +500,12 @@ def EncryptLite( sThis, sPassPhrase = sFilePhrase ):
     #
     oStats    = _getMoreAscStats( sPassPhrase, len( sThis ) )
     #
+    iPassPhraseNumb = oStats.iTotal - oStats.iDifference
+    #
     def getShifted( sShiftThis ):
         #
         return _getCharsShifted(
-                    sShiftThis, _getThisShifted, sPassPhrase )
+                    sShiftThis, _getThisShifted, sPassPhrase, iPassPhraseNumb )
         #
     #
     iCutAt      = oStats.iCutAt
@@ -558,10 +536,15 @@ def DecryptLite( sThis, sPassPhrase = sFilePhrase ):
     #
     oStats    = _getMoreAscStats( sPassPhrase, len( sThis ) )
     #
+    iPassPhraseNumb = oStats.iTotal - oStats.iDifference
+    #
     def getShifted( sShiftThis ):
         #
         return _getCharsShifted(
-                    sShiftThis, _getThisUnShifted, sPassPhrase )
+                    sShiftThis,
+                    _getThisUnShifted,
+                    sPassPhrase,
+                    iPassPhraseNumb )
     #
     #
     iCutAt      = oStats.iCutAt
@@ -755,40 +738,6 @@ if __name__ == "__main__":
         #lProblems.append( 'getYahooHtmlDecrypted() not lite' )
         ##
     #
-    s1 = 'abcde'
-    s2 = 'ABCDEFG'
-    #
-    sWant   = 'aAbBcCdDeE'
-    sGot = _getAlternatingChars( s1, s2 )
-    #
-    if sGot != sWant:
-        #
-        print3( 'want: ', sWant )
-        print3( 'got:  ', sGot  ) 
-        lProblems.append( '_getAlternatingChars( s1, s2 )' )
-        #
-    #
-    s2 = 'ABCDEFGhIjKlMnOp'
-    #
-    sGot = _getAlternatingChars( s1, s2 )
-    #
-    if sGot != sWant:
-        #
-        print3( 'want: ', sWant )
-        print3( 'got:  ', sGot  ) 
-        lProblems.append( '_getAlternatingChars( s1, s2 longer )' )
-        #
-    #
-    sGot = _getFirstCharThenAlternate( s2 )
-    #
-    sWant   = 'ACEGIKMO'
-    #
-    if sGot != sWant:
-        #
-        print3( 'want: ', sWant )
-        print3( 'got:  ', sGot  ) 
-        lProblems.append( '_getFirstCharThenAlternate( s2 )' )
-        #
     #
     if (    _getShift(  88 ) != 88 or
             _getShift(  89 ) != 89 or
