@@ -866,4 +866,15 @@ if __name__ == "__main__":
         lProblems.append( 'encrypt lite /decrypt lite great password' )
         #
     #
+    if Decrypt( Encrypt( sGreatPw, 'abc' ), 'abc' ) != sGreatPw:
+        #
+        lProblems.append( 'encrypt/decrypt great password short passphrase' )
+        #
+    #
+    if DecryptLite( EncryptLite( sGreatPw, 'abc' ), 'abc' ) != sGreatPw:
+        #
+        lProblems.append(
+            'encrypt lite /decrypt lite great password short passphrase' )
+        #
+    #
     sayTestResult( lProblems )
