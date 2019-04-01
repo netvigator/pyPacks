@@ -99,7 +99,8 @@ elif isFileThere( sPassPhraseFileSpec ):
                  'a longer secret passphrase would be better'
                % ( sPassPhraseFileName, sThisLocation ) )
         #
-else:
+
+if not isFileThere( sPassPhraseFileSpec ) and sMsg is None:
     #
     sMsg = ( 'best to have a file named "%s" '
              'in %s, it can contain your secret passphrase'
