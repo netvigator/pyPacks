@@ -45,8 +45,23 @@ def getCutPosition( uSeq, bPutBack = False, iOffset = 0 ):
     with the first character having a regular index position of zero
     string will be cut as follows:
     return uSeq[ : iCutAt ], uSeq[ iCutAt : ]
+
+    getCutPosition( 26, iOffset = -13 ) returns  0
+    getCutPosition( 26, iOffset =   0 ) returns 13
+    getCutPosition( 26, iOffset =  13 ) returns 26
+    getCutPosition( 25, iOffset = -12 ) returns  0
+    getCutPosition( 25, iOffset =   0 ) returns 12
+    getCutPosition( 25, iOffset =  13 ) returns 25
     '''
-    iLen        = len( uSeq )
+    #
+    if isinstance( uSeq, int ):
+        #
+        iLen    = uSeq
+        #
+    else:
+        #
+        iLen    = len( uSeq )
+        #
     #
     if bPutBack:
         #
@@ -460,6 +475,16 @@ if __name__ == "__main__":
     if ShuffleAndCut( sNew, bPutBack = True, iCutOffset = 10 ) != letters:
         #
         lProblems.append( 'ShuffleAndCut() put back' )
+        #
+    #
+    if (    getCutPosition( 26, iOffset =  -13 ) !=  0 or
+            getCutPosition( 26, iOffset =    0 ) != 13 or
+            getCutPosition( 26, iOffset =   13 ) != 26 or
+            getCutPosition( 25, iOffset =  -12 ) !=  0 or
+            getCutPosition( 25, iOffset =    0 ) != 12 or
+            getCutPosition( 25, iOffset =   13 ) != 25 ):
+        #
+        lProblems.append( 'getCutPosition() various' )
         #
     #
     #
