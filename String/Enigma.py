@@ -114,9 +114,29 @@ if sMsg is not None:
     print3('')
 
 
+def _getCutAt( iBigNumb, iEncryptThisLen ):
+    #
+    iCutAt       = iBigNumb % iEncryptThisLen - ( iEncryptThisLen // 2 )
+    #
+    iLen         = iEncryptThisLen # want to keep below lines < 80 chars
+    #
+    tCutPosition = (
+            getCutPosition( iLen, bPutBack = True,  iOffset = iCutAt ),
+            getCutPosition( iLen, bPutBack = False, iOffset = iCutAt ) )
+    #
+    def isNotWithin( i ):
+        # want a cut position > 0 and before the end of the deck/string
+        return i < 1 or i >= iEncryptThisLen
+    #
+    if isNotWithin( tCutPosition[0] ) or isNotWithin( tCutPosition[1] ):
+        #
+        iCutAt   = iCutAt // 2
+        #
+    #
+    return iCutAt
 
 
-def _getMoreAscStats( s, iStringLen ):
+def _getMoreAscStats( sPassPhrase, iEncryptThisLen ):
     #
     '''
     consider zero to be the middle position in the string,
@@ -136,23 +156,13 @@ def _getMoreAscStats( s, iStringLen ):
     AscStats.iTotal
     '''
     #
-    o            = AscStats( s )
+    o           = AscStats( sPassPhrase )
     #
-    iCutAt       = o.iTotal % iStringLen - ( iStringLen // 2 )
+    iBigNumb    = max( o.iDifference, ( o.iTotal - o.iDifference ) )
     #
-    tCutPosition = ( getCutPosition( s, bPutBack = True,  iOffset = iCutAt ),
-                     getCutPosition( s, bPutBack = False, iOffset = iCutAt ) )
+    o.iCutAt0   = _getCutAt( iBigNumb, iEncryptThisLen )
     #
-    def isNotWithin( i ):
-        # want a cut position > 0 and before the end of the deck/string
-        return i < 1 or i >= len( s )
-    #
-    if isNotWithin( tCutPosition[0] ) or isNotWithin( tCutPosition[1] ):
-        #
-        iCutAt   = iCutAt // 2
-        #
-    #
-    o.iCutAt     = iCutAt
+    o.iCutAt1   = _getCutAt( o.iTotal, iEncryptThisLen )
     #
     return o
 
@@ -330,16 +340,20 @@ def Encrypt( sEncryptThis, sPassPhrase = sFilePhrase ):
     #
     oStats      = _getMoreAscStats( sPassPhrase, len( sEncryptThis ) )
     #
-    iCutAt      = oStats.iCutAt
+    iCutAt0     = oStats.iCutAt0
+    iCutAt1     = oStats.iCutAt1
     #
     sConverted  = ShuffleAndCut(
-                    getTextReversed(
-                        ShuffleAndCut(
-                            sEncryptThis ) ), iCutOffset = iCutAt )
+                        getTextReversed(
+                            ShuffleAndCut( sEncryptThis, iCutOffset = iCutAt0 )
+                        ),
+                    iCutOffset = iCutAt1 )
     #
     # Encrypt STEP  2 shift all characters
     #
-    iPassPhraseNumb = oStats.iTotal - oStats.iDifference
+    iPassPhraseNumb = max(
+                oStats.iDifference,
+                ( oStats.iTotal - oStats.iDifference ) )
     #
     sConverted  = _getCharsShifted(
                         sConverted,
@@ -370,12 +384,12 @@ def EncryptNone( sEncryptThis ):
 
 
 
-def _getShuffleCutReverseShuffleCut( sConverted, iCutAt ):
+def _getShuffleCutReverseShuffleCut( sConverted, iCutAt0, iCutAt1 ):
     #
     return ShuffleAndCut(
-                getTextReversed(
-                    ShuffleAndCut(
-                        sConverted, True, iCutOffset = iCutAt ) ), True )
+                    getTextReversed(
+                    ShuffleAndCut( sConverted, True, iCutOffset = iCutAt1 ) ),
+                True, iCutOffset = iCutAt0 )
 
 
 def Decrypt( sDecryptThis, sPassPhrase = sFilePhrase ):
@@ -392,12 +406,13 @@ def Decrypt( sDecryptThis, sPassPhrase = sFilePhrase ):
                         sPassPhrase,
                         iPassPhraseNumb )
     #
-    iCutAt      = oStats.iCutAt
+    iCutAt0     = oStats.iCutAt0
+    iCutAt1     = oStats.iCutAt1
     #
     #
     # Encrypt STEP -1 shuffle & cut, reverse, shuffle & cut
     #
-    return _getShuffleCutReverseShuffleCut( sConverted, iCutAt )
+    return _getShuffleCutReverseShuffleCut( sConverted, iCutAt0, iCutAt1 )
 
 
 
@@ -411,9 +426,7 @@ def DecryptNone( sDecryptThis ):
     #
     sConverted  = DescendChars( sConverted, iUseOffset )
     #
-    iCutAt      = 0
-    #
-    return _getShuffleCutReverseShuffleCut( sConverted, iCutAt )
+    return _getShuffleCutReverseShuffleCut( sConverted, 0, 0 )
 
 
 
@@ -499,7 +512,7 @@ def _getShuffleShiftReverseFlipPunctuate( sThis, getShifted, iCutAt ):
 
 def EncryptLite( sThis, sPassPhrase = sFilePhrase ):
     #
-    oStats    = _getMoreAscStats( sPassPhrase, len( sThis ) )
+    oStats  = _getMoreAscStats( sPassPhrase, len( sThis ) )
     #
     iPassPhraseNumb = oStats.iTotal - oStats.iDifference
     #
@@ -509,9 +522,10 @@ def EncryptLite( sThis, sPassPhrase = sFilePhrase ):
                     sShiftThis, _getThisShifted, sPassPhrase, iPassPhraseNumb )
         #
     #
-    iCutAt      = oStats.iCutAt
+    iCutAt1 = oStats.iCutAt1
     #
-    return _getShuffleShiftReverseFlipPunctuate( sThis, getShifted, iCutAt )
+    return _getShuffleShiftReverseFlipPunctuate(
+                sThis, getShifted, iCutAt1 )
 
 
 
@@ -519,23 +533,21 @@ def EncryptLiteNone( sThis ):
     #
     getShifted  = getRot13
     #
-    iCutAt      = 0
-    #
-    return _getShuffleShiftReverseFlipPunctuate( sThis, getShifted, iCutAt )
+    return _getShuffleShiftReverseFlipPunctuate( sThis, getShifted, 0 )
 
 
-def _getPunctuateFlipReverseShiftShuffleCut( sThis, getShifted, iCutAt ):
+def _getPunctuateFlipReverseShiftShuffleCut( sThis, getShifted, iCutAt1 ):
     #
     return changePunct(
                 FlipCase(
                 getTextReversed(
                 getShifted(
-                ShuffleAndCut( sThis, 1, iCutOffset = iCutAt ) ) ), 1 ) )
+                ShuffleAndCut( sThis, 1, iCutOffset = iCutAt1 ) ) ), 1 ) )
 
 
 def DecryptLite( sThis, sPassPhrase = sFilePhrase ):
     #
-    oStats    = _getMoreAscStats( sPassPhrase, len( sThis ) )
+    oStats  = _getMoreAscStats( sPassPhrase, len( sThis ) )
     #
     iPassPhraseNumb = oStats.iTotal - oStats.iDifference
     #
@@ -547,11 +559,9 @@ def DecryptLite( sThis, sPassPhrase = sFilePhrase ):
                     sPassPhrase,
                     iPassPhraseNumb )
     #
+    iCutAt1 = oStats.iCutAt1
     #
-    iCutAt      = oStats.iCutAt
-    #
-    #
-    return _getPunctuateFlipReverseShiftShuffleCut( sThis, getShifted, iCutAt )
+    return _getPunctuateFlipReverseShiftShuffleCut( sThis, getShifted, iCutAt1 )
 
 
 
@@ -559,9 +569,7 @@ def DecryptLiteNone( sThis ):
     #
     getShifted  = getRot13
     #
-    iCutAt      = 0
-    #
-    return _getPunctuateFlipReverseShiftShuffleCut( sThis, getShifted, iCutAt )
+    return _getPunctuateFlipReverseShiftShuffleCut( sThis, getShifted, 0 )
 
 
 
