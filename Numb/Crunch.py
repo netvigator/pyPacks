@@ -102,6 +102,17 @@ def getHourlyRateForNow( iMaxPerDay, iTotalLast24hrs, sFirstRequestTime, bWantLo
 
 
 
+def getIntegerDivisionRoundUp( iAbove, iBelow ):
+    #
+    '''
+    integer division rounds down: 7 // 2 = 3
+    this rounds up getIntegerDivisionRoundUp( 7, 2 ) = 4
+    '''
+    #
+    return iAbove // iBelow + ( iAbove % iBelow > 0 )
+
+
+
 if __name__ == "__main__":
     #
     from sys import argv
@@ -435,5 +446,17 @@ if __name__ == "__main__":
         #
         lProblems.append( 'getHourlyRateForNow() local, 20 hrs thru day 1, batches were long' )
         #
+    #
+    #
+    if getIntegerDivisionRoundUp( 7, 2 ) != 4:
+        #
+        lProblems.append( 'getIntegerDivisionRoundUp( 7, 2 )' )
+        #
+    #
+    if getIntegerDivisionRoundUp( 6, 2 ) != 3:
+        #
+        lProblems.append( 'getIntegerDivisionRoundUp( 6, 2 )' )
+        #
+    #
     #
     sayTestResult( lProblems )
