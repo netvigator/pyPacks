@@ -28,6 +28,8 @@ you supply the sequence (the deck)
 '''
 
 from Iter.AllVers   import iRange, tRange
+from Numb.Crunch    import getIntegerDivisionRoundUp
+
 
 _dMaxShuffles = {
     3 : 1,
@@ -65,7 +67,7 @@ def getCutPosition( uSeq, bPutBack = False, iOffset = 0 ):
     #
     if bPutBack:
         #
-        iCutAt  = ( iLen // 2 ) + ( iLen % 2 > 0 ) - iOffset
+        iCutAt  = getIntegerDivisionRoundUp( iLen, 2 ) - iOffset
         #
     else:
         #
@@ -101,7 +103,7 @@ def ShuffleTheCards( uSeq, bPutBack = False, iShuffles = 1 ):
     #
     iLen                    = len( uSeq )
     #
-    iHalfLen                = iLen // 2  + ( iLen % 2 > 0 )
+    iHalfLen                = getIntegerDivisionRoundUp( iLen, 2 )
     #
     tCards                  = tRange( iHalfLen )
     #
