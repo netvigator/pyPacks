@@ -25,6 +25,7 @@
 
 from six            import print_ as print3
 
+from Numb.Crunch    import getIntegerDivisionRoundUp
 from Utils.Version  import PYTHON3
 
 # NOT WORKING IN PYTHON3
@@ -223,7 +224,7 @@ def getCompressedChunks( sText, iWantChunks = 3, iMaxLen = None ):
     #
     iLen                = len( sText )
     #
-    iWantLen            = iLen // iWantChunks + ( iLen % iWantChunks > 0 )
+    iWantLen            = getIntegerDivisionRoundUp( iLen, iWantChunks )
     #
     lLens               = [ iWantLen ] * iWantChunks
     #
