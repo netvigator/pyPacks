@@ -126,9 +126,9 @@ if __name__ == "__main__":
     from os             import mkdir, rmdir
     from os.path        import exists, join
     #
-    from six            import print_ as print3
-    #
+    from File.Get       import Touch
     from Utils.Result   import sayTestResult
+    from Utils.Both2n3  import print3
     #
     lProblems = []
     #
@@ -165,7 +165,7 @@ if __name__ == "__main__":
     #
     DeleteIfExists( join( sTempDir, 'test' ) )
     #
-    Path( join( sTempDir, 'test' ) ).touch()
+    Touch( join( sTempDir, 'test' ) )
     #
     try:
         #
