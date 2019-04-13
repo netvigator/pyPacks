@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2018 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
 
 #from os.path import join, isfile, getmtime, split, splitext, exists, basename, isdir
@@ -28,6 +28,7 @@
 
 # from os.path import exists, join, isfile, isdir
 
+from os             import utime
 from os.path        import join, isfile
 from glob           import glob
 
@@ -363,15 +364,26 @@ def getFileSpecHereOrThere( sFileName, tMaybeThere = ( '/tmp', ) ):
     return sFullSpec
 
 
+
+def Touch( sFileSpec, times=None):
+    with open( sFileSpec, 'a' ):
+        utime( sFileSpec, times )
+
+
+
 if __name__ == "__main__":
     #
     lProblems = []
+    #
+    from os.path        import getmtime
+    from time           import sleep
     #
     from six            import print_ as print3
     #
     from Collect.Query  import get1stThatMeets
     from File.Del       import DeleteIfExists
     from File.Spec      import getPathNameExt
+    from File.Test      import isFileThere
     from File.Write     import PutReprInTemp, QuietDump
     from Time.ReadWrite import putTimeInFile
     from Time.Test      import isISOdatetime
@@ -452,6 +464,8 @@ if __name__ == "__main__":
     #
     sTemp = getTempFile()
     #
+    sHoldTemp = sTemp
+    #
     QuietDump( sText, sTemp )
     #
     sPath, sFile, sExtn = getPathNameExt( sTemp )
@@ -466,10 +480,19 @@ if __name__ == "__main__":
             'getFileSpecHereOrThere() should return full spec (no ext)' )
         #
     #
+    # DeleteIfExists( sTemp )
+    #
+    sTemp = getTempFile()
+    #
+    sPath, sFile, sExtn = getPathNameExt( sTemp )
+    #
+    sNameNoPath = sFile + sExtn
+    #
     DeleteIfExists( sTemp )
     #
     if getFileSpecHereOrThere( sNameNoPath ) is not None:
         #
+        print3( sNameNoPath )
         lProblems.append( 'getFileSpecHereOrThere() file not there' )
         #
     #
@@ -489,6 +512,7 @@ if __name__ == "__main__":
             'getFileSpecHereOrThere() should return full spec (with ext)' )
         #
     #
+    
     DeleteIfExists( sTemp )
     #
     sTemp = 'test_file_%s_.txt'
@@ -524,5 +548,30 @@ if __name__ == "__main__":
         DeleteIfExists( '/tmp', sTemp % str( i ) )
         #
     #
+    tLastMod = getmtime(sHoldTemp)
+    #
+    sleep( 0.1 )
+    #
+    Touch( sHoldTemp )
+    #
+    tRecently = getmtime(sHoldTemp)
+    #
+    if tLastMod >= tRecently:
+        #
+        print3( tLastMod  )
+        print3( tRecently )
+        lProblems.append( 'Touch() file already exists' )
+        #
+    #
+    DeleteIfExists( sHoldTemp )
+    #
+    Touch( sHoldTemp )
+    #
+    if not isFileThere( sHoldTemp ):
+        #
+        lProblems.append( 'Touch() non existing file' )
+        #
+    #
+    DeleteIfExists( sHoldTemp )
     #
     sayTestResult( lProblems )
