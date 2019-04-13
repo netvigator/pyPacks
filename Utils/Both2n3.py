@@ -155,7 +155,7 @@ if PYTHON3:
         return b.decode( encoding = sEncoding )
 
 
-else:
+else: # PYTHON2
     #
     def getBytes( s, encoding = sDefaultEncoding ): return s
 
