@@ -62,8 +62,6 @@ def QuickDump( sText, *sFileSpec, **kwargs ):
     #
     # print3( 'sName (expanded):', sName )
     #
-    sNameOnly = ImIf( cSep in sName, getTextAfterLast( sName, cSep ), sName )
-    #
     bUseIO = False
     #
     if PYTHON2 and isinstance( sText, type( u'' ) ):
@@ -117,15 +115,6 @@ def QuickDump( sText, *sFileSpec, **kwargs ):
                 hTemp.write( getStrGotBytes( sLine, sEncoding ) )
                 #
             except UnicodeDecodeError:
-                #
-                #print3( 'UnicodeDecodeError!' )
-                #print3( 'file     :', sNameOnly )
-                #print3( 'sEncoding:', sEncoding )
-                #if sLineBefore:
-                    #print3(
-                        #'Before   :', sLineBefore )
-                #print3( 'content  :', sLine )
-                #print3( 'ordinals :', map( ord, sLine ) )
                 #
                 sInstead = getUnicodeOut( sLine )
                 hTemp.write( sInstead )
