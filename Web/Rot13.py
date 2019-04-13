@@ -20,12 +20,12 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2017 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
 
 from six.moves.urllib.parse import quote, unquote
 
-from String.Encrypt import getRot13
+from String.Enigma import getRot13
 
 def getDecodeRot13( s ):
     #
