@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2012-2016 Rick Graves
+# Copyright 2012-2019 Rick Graves
 #
 '''
 call from shell
@@ -39,7 +39,7 @@ if __name__ == "__main__":
     #
     from six            import print_ as print3
     #
-    from String.Encrypt import EncryptLite
+    from String.Enigma  import EncryptLite
     #
     args = argv[ 1 : ]
     #
@@ -52,3 +52,4 @@ if __name__ == "__main__":
         print3( ' must decrypt in python cuz bash gets confused by its special characters' )
         print3( ' from String.Encrypt import DecryptLite' )
         print3( ' DecryptLite( {triple quotes}{string}{triple quotes} )' )
+        print3( ' also any backslashes must be escaped (preceeded by a backslash)' )
