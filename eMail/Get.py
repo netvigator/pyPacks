@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2018 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
 '''
 
@@ -32,8 +32,25 @@ dNew = dict.fromkeys( getListFromFileLines( 'NewEmails.txt' ) )
 l =  getListFromFileLines( 'NewDump.txt' )
 
 '''
-from String.Dumpster    import DumpYouNameItClass as _dumpYouNameItClass
-from String.Find        import getRegExObj        as _getRegExObj
+
+try:
+    from ..Collect.Query    import get1stThatMeets
+    from ..Collect.Test     import isListOrTuple
+    from ..Iter.AllVers     import iFilter, lFilter, iMap
+    from ..String.Dumpster  import DumpYouNameItClass as _dumpYouNameItClass
+    from ..String.Find      import getRegExObj        as _getRegExObj
+    from ..String.Get       import getTitleizedIfNeeded, getTextWithin
+    from ..String.Replace   import getSpaceForWhiteAlsoStrip
+except ValueError:
+    from Collect.Query      import get1stThatMeets
+    from Collect.Test       import isListOrTuple
+    from Iter.AllVers       import iFilter, lFilter, iMap
+    from String.Dumpster    import DumpYouNameItClass as _dumpYouNameItClass
+    from String.Find        import getRegExObj        as _getRegExObj
+    from String.Get         import getTitleizedIfNeeded, getTextWithin
+    from String.Replace     import getSpaceForWhiteAlsoStrip
+
+
 
 _oPeriodCommaDumpster   = _dumpYouNameItClass( '.,' )
 _oEmailBracketDumpster  = _dumpYouNameItClass( '<>' )
@@ -46,8 +63,10 @@ def getHyphen( s ): return s.replace( '_', '-' )
 
 def getEmailAddsIter( s ):
     #
-    from eMail.Test     import isEmailAddress
-    from Iter.AllVers   import iFilter
+    try: # moving this to the top breaks this package!
+        from .Test import isEmailAddress
+    except ValueError: # maybe circular import issue
+        from Test  import isEmailAddress
     #
     lParts = _oEmailBracketDumpster.Dump( s.lower() ).split()
     #
@@ -63,8 +82,10 @@ def getEmailAddsTuple( s ):
 
 def getEmailAdd( s ):
     #
-    from eMail.Test     import isEmailAddress
-    from Collect.Query  import get1stThatMeets
+    try: # moving this to the top breaks this package!
+        from .Test import isEmailAddress
+    except ValueError: # maybe circular import issue
+        from Test  import isEmailAddress
     #
     lParts = _oEmailBracketDumpster.Dump( s ).split()
     #
@@ -85,9 +106,6 @@ def getCleanName( sName ):
     this cleans them out
     '''
     #
-    from Iter.AllVers   import iMap
-    from String.Get     import getTitleizedIfNeeded
-    from String.Replace import getSpaceForWhiteAlsoStrip
     #
     sName = getSpaceForWhiteAlsoStrip( _oPeriodCommaDumpster.Dump( sName ) )
     #
@@ -120,14 +138,12 @@ def _getSplitOnSpacesComasSemis( s ):
 
 def getEmailListFromString( s ):
     #
-    from Iter.AllVers   import lFilter
     #
     return lFilter( None, _getSplitOnSpacesComasSemis( s ) )
 
 
 def getRealEmail( s ):
     #
-    from String.Get import getTextWithin
     #
     if '<' in s and '>' in s:
         #
@@ -139,7 +155,6 @@ def getRealEmail( s ):
 
 def getUserFriendlyAddress( sName, sEmail ):
     #
-    from Iter.AllVers   import lFilter
     #
     lEmails = lFilter( bool, [ s.strip() for s in sEmail.split( ',' ) ] )
     #
@@ -165,7 +180,6 @@ def getUserFriendlyAddress( sName, sEmail ):
 
 def getAddresseeStrOffSeq( uTo ):
     #
-    from Collect.Test import isListOrTuple
     #
     if isListOrTuple( uTo ):
         #

@@ -20,15 +20,39 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2016 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
-from string             import ascii_letters, digits
-#
-from six                import print_ as print3
+from string                 import ascii_letters, digits
 
-from Iter.AllVers       import iZip        as _iZip
-from String.Transform   import getSwapper  as _getSwapper
-from Dict.Get           import getItemIter as _getItemIter
+from six                    import print_ as print3
+
+try:
+    from .Get               import ( getRealEmail, getEmailListFromString,
+                                     getAddresseeStrOffSeq, getHyphen )
+    from ..Iter.AllVers     import iMap, iZip  as _iZip, lZip
+    from ..Dict.Get         import getItemIter as _getItemIter
+    from ..Collect.Query    import get1stThatMeets
+    from ..Collect.Test     import ContainsAll
+    from ..Dict.Get         import getValueIter, getKeyList
+    from ..Dir.Get          import sTempDir
+    from ..File.Write       import putCsvOut, QuietDump
+    from ..Iter.Get         import getListSwapValueKey
+    from ..Iter.AllVers     import iMap
+    from ..String.Transform import getSwapper  as _getSwapper
+except ValueError:
+    from Get                import ( getRealEmail, getEmailListFromString,
+                                     getAddresseeStrOffSeq, getHyphen )
+    from Collect.Query      import get1stThatMeets
+    from Collect.Test       import ContainsAll
+    from Dict.Get           import getValueIter, getKeyList
+    from Dir.Get            import sTempDir
+    from File.Write         import putCsvOut, QuietDump
+    from Iter.Get           import getListSwapValueKey
+    from Iter.AllVers       import iMap, iZip  as _iZip, lZip
+    from Dict.Get           import getItemIter as _getItemIter
+    from String.Transform   import getSwapper  as _getSwapper
+
+
 #
 class Failure( Exception ): pass
 #
@@ -63,7 +87,10 @@ def isEmailAddress( s, setExcludeDomains = None ):
     use isOKasEmail() to return true for the NOT OK's 
     '''
     #
-    from Web.Test       import isDomainName
+    try: # moving this to the top breaks this package!
+        from ..Web.Test import isDomainName
+    except ValueError: # maybe circular import issue
+        from Web.Test   import isDomainName
     #
     try:
         #
@@ -130,9 +157,6 @@ def isOKasEmail( sEmail ):
     OK 'bill@microsoft.com, sergy@google.com'
     '''
     #
-    from Collect.Query  import get1stThatMeets
-    from eMail.Get      import getRealEmail, getEmailListFromString
-    from Iter.AllVers   import iMap
     #
     lEmails = iMap( getRealEmail, getEmailListFromString( sEmail ) )
     #
@@ -147,7 +171,6 @@ def isNotOKasEmail( sEmail ):
 
 def isSentBefore( oSentBefore, lSendNow ):
     #
-    from Collect.Test import ContainsAll
     #
     return oSentBefore and ContainsAll( oSentBefore, lSendNow )
 
@@ -230,7 +253,6 @@ def _getSayAdds( uTo ):
 
 def _getToTable( uTo, uCC, uBcc, bHtml, sFrom, sSubject, **kwargs ):
     #
-    from Iter.AllVers import iMap, lZip
     #
     def getRow( t ):
         #
@@ -267,8 +289,6 @@ def _getToTable( uTo, uCC, uBcc, bHtml, sFrom, sSubject, **kwargs ):
 def _getShowEmail(
         d, getMsgInfo, bHtml = True, sFrom = '', sSubject = '', **kwargs ):
     #
-    from eMail.Get  import getAddresseeStrOffSeq
-    from eMail.Get  import getHyphen
     #
     sText, uTo, uCC, uBcc = getMsgInfo( d )
     #
@@ -340,11 +360,6 @@ def dumpEmailBodies2Temp( l, getMsgInfo,
     use a set (non-frozen)
     '''
     #
-    from Dict.Get       import getValueIter, getKeyList
-    from Dir.Get        import sTempDir
-    from eMail.Get      import getHyphen
-    from File.Write     import putCsvOut, QuietDump
-    from Iter.Get       import getListSwapValueKey
     #
     if sFrom    is None: sFrom    = ''
     if sSubject is None: sSubject = ''
