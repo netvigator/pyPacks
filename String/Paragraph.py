@@ -20,10 +20,32 @@
 #
 # http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2018 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
+from random         import randint
 
-from String.Find import getRegExObj
+
+try:
+    from .Eat           import eatWhiteSpaceFront
+    from .Find          import getRegExObj
+    from .Get           import getCharsOffEnd
+    from .Test          import is1stCharAlpha
+    from .Transform     import getSpace4NewLine
+    from ..Collect.Test import AllMeet
+    from ..File.Get     import getFileContent, getContent
+    from ..File.Spec    import getFullSpecDefaultOrPassed
+    from ..Iter.AllVers import iMap, tFilter, iRange
+except ValueError:
+    from Eat            import eatWhiteSpaceFront
+    from Find           import getRegExObj
+    from Get            import getCharsOffEnd
+    from Test           import is1stCharAlpha
+    from Transform      import getSpace4NewLine
+    from Collect.Test   import AllMeet
+    from File.Get       import getFileContent, getContent
+    from File.Spec      import getFullSpecDefaultOrPassed
+    from Iter.AllVers   import iMap, tFilter, iRange
+
 
 _oMultiLinesFinder = getRegExObj( '\n\n\n+',
         bCaseSensitive = True, bMultiLine = True )
@@ -32,11 +54,6 @@ _oMultiLinesFinder = getRegExObj( '\n\n\n+',
 def getTextMakeParagraphs( sText = '', *sFileSpec, **kwargs ):
     # sFile = join( sTempDir, 'temp.txt' )
     #
-    from File.Get         import getFileContent
-    from File.Spec        import getFullSpecDefaultOrPassed
-    from Iter.AllVers     import iMap
-    from String.Eat       import eatWhiteSpaceFront
-    from String.Transform import getSpace4NewLine
     #
     sFile = getFullSpecDefaultOrPassed( *sFileSpec, **kwargs )
     #
@@ -64,13 +81,6 @@ def getTextMakeParagraphs( sText = '', *sFileSpec, **kwargs ):
 def _getRamdomText( iWantWords = 250, *sFileSpec, **kwargs ):
     # sDict = '/etc/dictionaries-common/words' ):
     #
-    from random         import randint
-    #
-    from Iter.AllVers   import tFilter, iRange
-    from File.Get       import getContent
-    from File.Spec      import getFullSpecDefaultOrPassed
-    from Test           import is1stCharAlpha
-    from Collect.Test   import AllMeet
     #
     if 'sDefault' not in kwargs: kwargs['sDefault'] = '/etc/dictionaries-common/words'
     #
@@ -125,8 +135,6 @@ def _getRamdomText( iWantWords = 250, *sFileSpec, **kwargs ):
 
 def _getShortLines( sOrig ):
     #
-    # from Iter.AllVers   import iMap
-    from String.Get import getCharsOffEnd
     #
     lWords = sOrig.split( ' ' )
     #
