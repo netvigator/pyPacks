@@ -20,21 +20,38 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2012-2016 Rick Graves
+# Copyright 2012-2019 Rick Graves
 #
 '''
 determine whether selftest.sh is complete,
 list any python files omitted from global self test
 
 '''
+from os                 import walk, sep
+
+from six                import print_ as print3
+
+try:
+    from .Get           import getFileObject
+    from .Spec          import getFullSpec
+    from .Test          import isFileThere
+    from Dict.Get       import getKeyIter
+    from ..Iter.AllVers import tFilter
+    from ..String.Get   import getTextAfter, getTextAfterLast
+except ValueError:
+    from Get            import getFileObject
+    from Spec           import getFullSpec
+    from Test           import isFileThere
+    from Dict.Get       import getKeyIter
+    from Iter.AllVers   import tFilter
+    from String.Get     import getTextAfter, getTextAfterLast
 
 def _getSelfTestScriptFiles( sTestFile = 'selftest.sh' ):
     #
-    from Dir.Get        import getParentDir
-    from File.Get       import getFileObject
-    from File.Spec      import getFullSpec
-    from File.Test      import isFileThere
-    from String.Get     import getTextAfter
+    try: # moving this to the top breaks this package!
+        from ..Dir.Get  import getParentDir
+    except ValueError: # maybe circular import issue
+        from Dir.Get    import getParentDir
     #
     sParentDir      = getParentDir()
     #
@@ -107,13 +124,7 @@ def _getSelfTestScriptFiles( sTestFile = 'selftest.sh' ):
 
 def testSelfTestScript( sTestFile = 'selftest.sh' ):
     #
-    from os             import walk, sep
     #
-    from six            import print_ as print3
-    #
-    from Dict.Get       import getKeyIter
-    from Iter.AllVers   import tFilter
-    from String.Get     import getTextAfterLast
     #
     def isPySource( s ): return s.endswith( '.py' )
     #

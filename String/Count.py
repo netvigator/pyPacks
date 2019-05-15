@@ -20,23 +20,27 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2011 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
 
 
+try:
+    from ..String.Dumpster  import getDigitsOnly, getAlphaNumCleanNoSpaces
+    from ..String.Split     import SplitRegular, SplitC
+except ValueError:
+    from Dumpster           import getDigitsOnly, getAlphaNumCleanNoSpaces
+    from Split              import SplitRegular, SplitC
 
 
 def CountRegular( s, sCountThese ): return s.count( sCountThese )
 
 def CountSplit(   s, sCountThese ):
     #
-    from String.Split import SplitRegular
     #
     return len( SplitRegular( s, sCountThese ) ) - 1
 
 def CountSplitC(  s, sCountThese ):
     #
-    from String.Split import SplitC
     #
     return len( SplitC(       s, sCountThese ) ) - 1
 
@@ -63,14 +67,12 @@ def OccursInC( sSearchIn, sSearchFor ):
 
 def getDigitCount( s ):
     #
-    from String.Dumpster import getDigitsOnly
     #
     return len( getDigitsOnly( s ) )
 
 
 def getAlphaNumCount( s ):
     #
-    from String.Dumpster import getAlphaNumCleanNoSpaces
     #
     return len( getAlphaNumCleanNoSpaces( s ) )
 

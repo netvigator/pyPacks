@@ -20,16 +20,23 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2016 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
 
+try:
+    from .Get           import getSumOffList
+    from .Test          import isNumber
+    from ..Iter.AllVers import iFilter
+except ValueError:
+    from Get            import getSumOffList
+    from Test           import isNumber
+    from Iter.AllVers   import iFilter
 
 
 def getMeanMembers( *Numbers ):
     #
     '''aka def ListAverage
     '''
-    from Numb.Get import getSumOffList
     #
     if Numbers:
         lNumbs  = Numbers
@@ -49,8 +56,6 @@ def getPercent( fRatio, iDecimals = 1 ):
 
 def MinExcludeZero( *Numbers ):
     #
-    from Iter.AllVers import iFilter
-    from Test     import isNumber
     #
     MinNumber   = None
     #

@@ -20,12 +20,20 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2018 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
-from Collect.Test   import isScaler
-from Iter.AllVers   import iMap, iFilter, iRange, iZip
-from Utils.Get      import getTrue as _getTrue
-
+try:
+    from .Test          import isScaler, isListOrTuple
+    from ..Iter.AllVers import iMap, iFilter, iRange, tRange, iZip, lZip
+    from ..Iter.Get     import getSequencePairsThisWithNext as getWithNext
+    from ..Iter.Get     import getListSwapValueKey
+    from ..Utils.Get    import getTrue as _getTrue    
+except ValueError:
+    from Test           import isScaler, isListOrTuple
+    from Iter.AllVers   import iMap, iFilter, iRange, tRange, iZip, lZip
+    from Iter.Get       import getSequencePairsThisWithNext as getWithNext
+    from Iter.Get       import getListSwapValueKey
+    from Utils.Get      import getTrue as _getTrue
 
 
 def getListFromNestedLists( lList, gotScaler = isScaler ): # flatten nested list
@@ -76,7 +84,6 @@ def getSequencePairsThisWithNext( lSeq ):
     If you want an iterator instead of a tuple, import from Iter.Get.
     """
     #
-    from Iter.Get import getSequencePairsThisWithNext as getWithNext
     #
     return tuple( getWithNext( lSeq ) )
 
@@ -121,8 +128,6 @@ def _hasElement( seq, iIndex = 1 ):
     #
     '''does the list or tuple have an element of a certain index?
     '''
-    #
-    from Collect.Test   import isListOrTuple
     #
     return isListOrTuple( seq ) and len( seq ) > iIndex
 
@@ -271,8 +276,6 @@ def getSeparateKeysValues( items, fCondition = _getTrue ):
 
     """
     #
-    from Collect.Test import isListOrTuple
-    #
     iThis = 0
     #
     if isListOrTuple( items ):
@@ -317,9 +320,6 @@ def getSeparateKeysValues( items, fCondition = _getTrue ):
 # unZip = getSeparateKeysValues
 
 def unZip( items ):
-    #
-    from Collect.Test import isListOrTuple
-    from Iter.AllVers import iRange, tRange
     #
     if isListOrTuple( items ):
         #
@@ -403,8 +403,6 @@ def getDecoratedKeysFromObject( lKeys, uObject, getDecoration, fCondition = None
     #
     # it can be faster to sort just the decoration + key than decoration + object
     #
-    from Iter.AllVers import lZip
-    #
     if fCondition is None:
         #
         lDecorations    = iMap( getDecoration, lKeys )
@@ -422,8 +420,6 @@ def getDecoratedKeysFromObject( lKeys, uObject, getDecoration, fCondition = None
 
 
 def getSwapSortKeys( lKeysValues, sOrder = 'ascending' ):
-    #
-    from Iter.Get import getListSwapValueKey
     #
     lValuesKeys     = getListSwapValueKey( lKeysValues )
     #

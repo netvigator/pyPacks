@@ -22,6 +22,14 @@
 #
 # Copyright 2004-2011 Rick Graves
 #
+from bisect import bisect_right
+
+try:
+    from .Query         import get1stTrue
+    from ..Iter.AllVers import iMap
+except ValueError:
+    from Query          import get1stTrue
+    from Iter.AllVers   import iMap
 
 def isListOrTuple( u ):
     #
@@ -50,7 +58,6 @@ def hasSomething( seq ):
     this stops testing after finding one list member that evaluates as true.
     """
     #
-    from Collect.Query import get1stTrue
     #
     return bool( get1stTrue( seq ) )
 
@@ -132,7 +139,6 @@ def isInSortedList( uItem, lList, fEquality = _isEqual ):
     #
     # from original Python cookbook -- list must be sorted!
     #
-    from bisect import bisect_right
     #
     if not isinstance( lList, list ):
         raise TypeError( 'sequence must be a list' )
@@ -165,7 +171,6 @@ def hasNoEmpties( lSeq ):
 
 def isAllEmpty( lSeq ):
     #
-    from Collect.Test import AllMeet
     #
     return AllMeet( lSeq, isEmpty )
 
@@ -185,7 +190,6 @@ def getHasTester( collect, bGetHasTester = True ):
     getHasNotTester calls this and is used more widely
     """
     #
-    from Collect.Test   import isInSortedList, isNotInSortedList
     #
     try:
         #
@@ -256,7 +260,6 @@ def ContainsAny( seq1, seq2 ):
     the 2nd param (set) can be any iterable
     """
     #
-    from Iter.AllVers import iMap
     #
     return True in iMap( seq1.__contains__, seq2 )
 
@@ -269,7 +272,6 @@ def AllMeet( seq, pred = bool ):
     (lazily, via shortcutting).
     """
     #
-    from Iter.AllVers import iMap
     #
     return False not in iMap( pred, seq )
 
@@ -289,7 +291,6 @@ def NoneMeet( seq, pred = bool ): # name cannot be None!
     (lazily, via shortcutting).
     """
     #
-    from Iter.AllVers import iMap
     #
     return True not in iMap( pred, seq )
 
@@ -300,7 +301,6 @@ def AnyMeet( seq, pred = bool ):
     (lazily, via shortcutting).
     """
     #
-    from Iter.AllVers import iMap
     #
     return True in iMap( pred, seq )
 

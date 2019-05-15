@@ -20,13 +20,25 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2016 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
 #
 
-from sys            import exc_info
+from errno                  import EEXIST, ESRCH
+from os                     import ( O_EXCL, O_CREAT, O_WRONLY, remove, write,
+                                     getpid, makedirs, close, kill, getpid,
+                                     open as os_open )
+from os.path                import dirname, exists
+from signal                 import SIGKILL
+from sys                    import exc_info
 
-from File.Get       import getFileContent
+
+try:
+    from ..File.Get         import getFileContent
+    from ..Utils.Version    import PYTHON3
+except ValueError:
+    from File.Get           import getFileContent
+    from Utils.Version      import PYTHON3
 
 class LockError( OSError ): pass
 
@@ -36,12 +48,7 @@ IMODELOCK  = 420 # 0o644
 
 def _WroteLockFile( sFileName, sContents='', iMode=IMODEWROTE ):
     #
-    from os         import makedirs, O_EXCL, O_CREAT, O_WRONLY, close, write
-    from os         import open as os_open
-    from os.path    import dirname, exists
-    from errno      import EEXIST
     #
-    from Utils.Version import PYTHON3
     #
     sLockDir = dirname(sFileName)
     #
@@ -64,7 +71,6 @@ def _WroteLockFile( sFileName, sContents='', iMode=IMODEWROTE ):
 
 def doUnlock(sLockFile):
     #
-    from    os      import remove
     #
     try:
         remove(sLockFile)
@@ -91,8 +97,6 @@ def _GetPID( sLockFile ):
 
 def doLock( sLockFile, bKill = False, oLogger = None ):
     #
-    from os             import getpid, kill
-    from errno          import ESRCH
     #
     mypid   = str( getpid() )
     #
@@ -134,9 +138,6 @@ def doLock( sLockFile, bKill = False, oLogger = None ):
 
 def isAnotherProgramRunning( sLockFile ):
     #
-    from os.path        import exists
-    from os             import getpid, kill
-    from errno          import ESRCH
     #
     bAnotherProgramRunning  = False
     #
@@ -175,9 +176,6 @@ def isAnotherProgramRunning( sLockFile ):
 
 def doKill( sLockFile, oLogger = None ):
     #
-    from os.path        import exists
-    from signal         import SIGKILL
-    from os             import kill
     #
     if exists( sLockFile ):
         #

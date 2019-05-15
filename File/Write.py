@@ -25,26 +25,43 @@
 # getFullSpec( *sFileSpec )
 # getFullSpecDefaultOrPassed( *sFileSpec )
 
+import              io
+
 from os             import utime, rmdir, sep as cSep
 from os.path        import join
 
 from six            import print_ as print3
 
-from Dir.Get        import sTempDir
-from Dir.Test       import isDirThere
-from File.Spec      import getFullSpec, getFullSpecDefaultOrPassed
-from Utils.Both2n3  import PYTHON2
+try:
+    from .Get               import getFileObject, getFileContent
+    from .Spec              import getFullSpec, getFullSpecDefaultOrPassed
+    from ..Collect.Output   import getPrintableTextFromSeq
+    from ..Dir.Get          import sTempDir
+    from ..Dir.Test         import isDirThere
+    from ..Iter.AllVers     import iMap, lMap, iRange
+    from ..String.Convert   import getUnicodeOut
+    from ..String.Get       import getTextAfterLast
+    from ..String.Paragraph import getTextMakeParagraphs
+    from ..Utils.Both2n3    import PYTHON2, getEncoded, getStrGotBytes
+    from ..Utils.ImIf       import ImIf
+except ValueError:
+    from Get                import getFileObject, getFileContent
+    from Spec               import getFullSpec, getFullSpecDefaultOrPassed
+    from Collect.Output     import getPrintableTextFromSeq
+    from Dir.Get            import sTempDir
+    from Dir.Test           import isDirThere
+    from Iter.AllVers       import iMap, lMap, iRange
+    from String.Convert     import getUnicodeOut
+    from String.Get         import getTextAfterLast
+    from String.Paragraph   import getTextMakeParagraphs
+    from Utils.Both2n3      import PYTHON2, getEncoded, getStrGotBytes
+    from Utils.ImIf         import ImIf
 
 def QuickDump( sText, *sFileSpec, **kwargs ):
     #
     ''' pass content, *filespec, **kwargs '''
     # chr(92) is backslash
     #
-    import              io
-    from String.Get     import getTextAfterLast
-    from String.Convert import getUnicodeOut
-    from Utils.Both2n3  import getEncoded, getStrGotBytes
-    from Utils.ImIf     import ImIf
     #
     # print3( '*sFileSpec:', *sFileSpec )
     #
@@ -174,7 +191,6 @@ def openAppendClose( sText, *sFileSpec, **kwargs ):
 
 def Append2LastLine( sText, *sFileSpec, **kwargs ):
     #
-    from File.Get   import getFileObject
     #
     bNewLineBefore  = kwargs.get( 'bNewLineBefore', False )
     bNewLineAfter   = kwargs.get( 'bNewLineAfter',  True  )
@@ -215,7 +231,6 @@ def _NoDoubleQotes( s ): return s.replace( '"', "'" )
 
 def getExcelCsvLine( seq ):
     #
-    from Iter.AllVers import iMap
     #
     l = iMap( str, seq )
     #
@@ -230,7 +245,6 @@ def MakeTemp( sText, bSayBytes = True ):
 
 def QuickDumpLines( lText, *sFileSpec, **kwargs ):
     #
-    from Collect.Output import getPrintableTextFromSeq
     #
     bSayBytes   = kwargs.get( 'bSayBytes',  False   )
     sNewLine    = kwargs.get( 'sNewLine',   '\n'    )
@@ -283,8 +297,6 @@ def getTextRemoveReturnsReWrite( *sFileSpec, **kwargs ):
     best to make a backup first.
     """
     #
-    from File.Get           import getFileContent
-    from String.Paragraph   import getTextMakeParagraphs
     #
     sFile   = getFullSpecDefaultOrPassed( *sFileSpec )
     #
@@ -304,7 +316,6 @@ def WriteRepr2File( u, *sFileSpec ):
     content can be reconstituted with getObjFromFileContent in File.Get
     '''
     #
-    from File.Spec import getFullSpec
     #
     sFileSpec = getFullSpec( *sFileSpec )
     #
@@ -335,7 +346,6 @@ def _getListLenRight( l, iWantLen ):
 
 def putCsvOut( lOutput, *sFileSpec, **kwargs ):
     #
-    from Iter.AllVers   import iMap, lMap, iRange
     #
     if not sFileSpec :
         sFileSpec = ( join( sTempDir, 'temp.csv' ), )

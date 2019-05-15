@@ -20,20 +20,41 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2015 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
 # from os.path import join, isfile, getmtime, split, splitext, exists, basename, isdir
 # from os      import stat, environ, getcwd, listdir, rename, remove
 
+from os                 import stat
+from os.path            import getmtime
+from time               import timezone
 
-from File.Spec import getFullSpec as _getFullSpec
+try:
+    from .Get           import FileNotThereError
+    from .Spec          import getFullSpec as _getFullSpec
+    from .Test          import isFileThere
+    from .Write         import putListInTemp
+    from ..Collect.Info import getCounts
+    from ..Dict.Get     import getItemIter
+    from ..Iter.AllVers import iMap
+    from ..Iter.Get     import getListSwapValueKey
+    from ..Utils.ImIf   import ImIf
+    from ..Web.Address  import getDomainOffUrl
+    from ..Web.Test     import isURL
+except ValueError:
+    from Get            import FileNotThereError
+    from Spec           import getFullSpec as _getFullSpec
+    from Test           import isFileThere
+    from Write          import putListInTemp
+    from Collect.Info   import getCounts
+    from Dict.Get       import getItemIter
+    from Iter.Get       import getListSwapValueKey
+    from Iter.AllVers   import iMap
+    from Utils.ImIf     import ImIf
+    from Web.Address    import getDomainOffUrl
+    from Web.Test       import isURL
 
 def getModTime( *tParts, **kwargs ):
-    #
-    from time           import timezone
-    from os.path        import getmtime
-    #
-    from Utils.ImIf   import ImIf
     #
     sFullSpec   = _getFullSpec( *tParts )
     #
@@ -49,7 +70,6 @@ def getModTime( *tParts, **kwargs ):
 
 def getTimeStamp( *tParts ):
     #
-    from os.path import getmtime
     #
     sPathName = _getFullSpec( *tParts )
     #
@@ -60,7 +80,6 @@ def getTimeStamp( *tParts ):
 
 def getSize( *tParts ):
     #
-    from os      import stat
     #
     sFullSpec   = _getFullSpec( *tParts )
     #
@@ -104,8 +123,6 @@ def getSaySize( iBytes ):
 
 def getLineCount( *tParts ):
     #
-    from File.Get       import FileNotThereError
-    from File.Test      import isFileThere
     #
     sFileSpec = _getFullSpec( *tParts )
     #
@@ -126,7 +143,6 @@ def getLineCount( *tParts ):
 
 def _isURL( s ):
     #
-    from Web.Test import isURL
     #
     return isURL( s,
             bAnySchemeOK = False, bSecureHttpOK = False, bNoSchemeOK = True )
@@ -134,7 +150,10 @@ def _isURL( s ):
 
 def _getDomainsOffLine( s ):
     #
-    from Iter.AllVers import iFilter
+    try: # moving this to the top breaks this package!
+        from ..Iter.AllVers import iFilter
+    except ValueError: # maybe circular import issue
+        from Iter.AllVers   import iFilter
     #
     lParts = s.split()
     #
@@ -145,14 +164,6 @@ def getDomainCount( *tParts ):
     #
     # see Web.Info.getDomainCountsOffFile()
     #
-    from Collect.Info   import getCounts
-    from Dict.Get       import getItemIter
-    from File.Get       import FileNotThereError
-    from File.Test      import isFileThere
-    from Iter.AllVers   import iMap
-    from Iter.Get       import getListSwapValueKey
-    from File.Write     import putListInTemp
-    from Web.Address    import getDomainOffUrl
     #
     #
     sFileSpec = _getFullSpec( *tParts )

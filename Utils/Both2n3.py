@@ -222,7 +222,10 @@ else:
 try:
     from collections import OrderedDict
 except ImportError:
-    from Dict.Get import OrderedDictBackport as OrderedDict
+    try: # moving this to the top breaks this package!
+        from ..Dict.Get import OrderedDictBackport as OrderedDict
+    except ValueError: # maybe circular import issue
+        from Dict.Get   import OrderedDictBackport as OrderedDict
 
 
 if __name__ == "__main__":

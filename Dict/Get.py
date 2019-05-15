@@ -20,12 +20,21 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2018 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
+from copy import deepcopy
 
-from Utils.Version  import PYTHON3
+try:
+    from ..Iter.AllVers     import iZip
+    from ..Iter.Get         import getIterSwapValueKey as _getIterSwapValueKey
+    from ..Object.Test      import isMutable
+    from ..Utils.Version    import PYTHON3
+except ValueError:
+    from Iter.AllVers       import iZip
+    from Iter.Get           import getIterSwapValueKey as _getIterSwapValueKey
+    from Object.Test        import isMutable
+    from Utils.Version      import PYTHON3
 
-from Iter.Get import getIterSwapValueKey as _getIterSwapValueKey
 
 if PYTHON3:
     #
@@ -108,7 +117,6 @@ else:
 
 def getDictOffPairOfLists( lKeys, lValues ): # getDictOffTwoLists, getDictOff2Lists
     #
-    from Iter.AllVers import iZip
     #
     return dict( iZip( lKeys, lValues ) ) # dict() new in 2.2
 
@@ -116,7 +124,6 @@ def getDictOffPairOfLists( lKeys, lValues ): # getDictOffTwoLists, getDictOff2Li
 
 def _getTypicalValueIter( uTypicalValue = None ):
     #
-    from copy import deepcopy
     #
     while True:
         #
@@ -154,7 +161,6 @@ def getDictGotKeys( keys, uTypicalValue = None ):
     if the typical value is None or an immutable, use dict.fromkeys.
     """
     #
-    from Object.Test import isMutable
     #
     if isMutable( uTypicalValue ):
         #
@@ -331,7 +337,6 @@ def getAnyValue( d ):
 # Backport of OrderedDict() class that runs on Python 2.4, 2.5, 2.6, 2.7 and pypy.
 # Passes Python2.7's test suite and incorporates all the latest updates.
 
-from six.moves._dummy_thread import get_ident as _get_ident
 
 try:
     from _abcoll import KeysView, ValuesView, ItemsView

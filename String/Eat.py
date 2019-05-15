@@ -22,7 +22,22 @@
 #
 # Copyright 2004-2018 Rick Graves
 #
-from String.Test    import isAsciiAlpha, isAsciiDigit
+
+from string import whitespace
+
+try:
+    from .Get           import getTheseCharsOffOneEnd, getTextAfter
+    from .Test          import ( isAsciiAlpha, isAsciiDigit, isPunctuation,
+                                 isPunctOrSpace, isNotDigit, isDigit, isSpace )
+    from ..Collect.Get  import getListNoFalsies
+except ValueError:
+    from Get            import getTheseCharsOffOneEnd, getTextAfter
+    from Test           import ( isAsciiAlpha, isAsciiDigit, isPunctuation,
+                                 isPunctOrSpace, isNotDigit, isDigit, isSpace )
+    from Collect.Get    import getListNoFalsies
+
+
+
 
 
 def _eatOffOneEnd( sText, sEatThese = '',
@@ -33,7 +48,6 @@ def _eatOffOneEnd( sText, sEatThese = '',
     it is normally only called by specific implementations below.
     """
     #
-    from String.Get import getTheseCharsOffOneEnd
     #
     iEat = len(
         getTheseCharsOffOneEnd( sText, sEatThese, fEatThese, bEatOffFront ) )
@@ -74,7 +88,6 @@ def eatCharsOffBothEnds( sText, sEatThese = '', fEatThese = None ):
 
 def eatPunctuationBegAndEnd( sFrag ):
     #
-    from String.Test  import isPunctuation
     #
     return eatCharsOffEnd(
                 eatCharsOffBeg( sFrag, fEatThese = isPunctuation ), fEatThese = isPunctuation )
@@ -83,7 +96,6 @@ def eatPunctuationBegAndEnd( sFrag ):
 
 def eatPunctuationEnd( sFrag ):
     #
-    from String.Test  import isPunctuation
     #
     return eatCharsOffEnd( sFrag, fEatThese = isPunctuation )
 
@@ -91,14 +103,12 @@ def eatPunctuationEnd( sFrag ):
 
 def eatPunctAndSpacesOffEnd( sFrag ):
     #
-    from String.Test  import isPunctOrSpace
     #
     return eatCharsOffEnd( sFrag, fEatThese = isPunctOrSpace )
 
 
 def eatPunctAndSpacesOffBegAndEnd( sFrag ):
     #
-    from String.Test  import isPunctOrSpace
     #
     return eatCharsOffEnd(
                 eatCharsOffBeg( sFrag, fEatThese = isPunctOrSpace ), fEatThese = isPunctOrSpace )
@@ -113,14 +123,12 @@ def eatFrontNonAlpha( sText ):
 
 def eatFrontNonDigits( sText ):
     #
-    from String.Test import isNotDigit
     #
     return _eatOffOneEnd( sText, fEatThese = isNotDigit )
 
 
 def eatBackNonDigits( sText ):
     #
-    from String.Test import isNotDigit
     #
     return _eatOffOneEnd( sText, fEatThese = isNotDigit, bEatOffFront = False )
 
@@ -207,21 +215,18 @@ def eatEndNonAlpha( sText ):
 
 def eatFrontDigits( sText ):
     #
-    from String.Test  import isDigit
     #
     return _eatOffOneEnd( sText, fEatThese = isDigit )
 
 
 def eatEndDigits( sText ):
     #
-    from String.Test  import isDigit
     #
     return _eatOffOneEnd( sText, fEatThese = isDigit, bEatOffFront = False )
 
 
 def eatWhiteSpaceBothEnds( sText ):
     #
-    from string import whitespace
     #
     return _eatOffOneEnd(
             _eatOffOneEnd( sText, whitespace ),
@@ -230,14 +235,12 @@ def eatWhiteSpaceBothEnds( sText ):
 
 def eatWhiteSpaceFront( sText ):
     #
-    from string import whitespace
     #
     return _eatOffOneEnd( sText, whitespace )
 
 
 def eatEndSpaces( sText ):
     #
-    from String.Test  import isSpace
     #
     return _eatOffOneEnd( sText, fEatThese = isSpace, bEatOffFront = False )
 
@@ -281,7 +284,6 @@ def eatFrontZerosOnes( s ):
 
 def eatFrontOneByOne( sOrig, sEat ):
     #
-    from String.Get import getTextAfter
     #
     sRest = sOrig
     #
@@ -295,7 +297,6 @@ def eatFrontOneByOne( sOrig, sEat ):
 
 def eatFromWithin( sOrig, oFinder ):
     #
-    from Collect.Get import getListNoFalsies
     #
     lFound = getListNoFalsies( oFinder( sOrig ) )
     #

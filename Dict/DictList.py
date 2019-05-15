@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2016 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
 
 """
@@ -29,10 +29,20 @@ like what you get from some database queries
 each row is a dictionary, column names are the keys,
 column contents are the values
 """
-
-from Iter.AllVers import iZip
-from Utils.Get    import getTrue
-
+try:
+    from .Get           import ( getDictOfListsOffItems, getItemList,
+                                 getKeyIter, getItemList )
+    from .Numbs         import ( getDictOfCountsOffDictOfLists,
+                                 getDictOfAvgsOffDictOfLists )
+    from ..Iter.AllVers import iMap, tZip
+    from ..Utils.Get    import getTrue
+except ValueError:
+    from Get            import ( getDictOfListsOffItems, getItemList,
+                                 getKeyIter, getItemList )
+    from Numbs          import ( getDictOfCountsOffDictOfLists,
+                                 getDictOfAvgsOffDictOfLists )
+    from Iter.AllVers   import iMap, tZip
+    from Utils.Get      import getTrue
 
 def _WipeNull( s ):
     #
@@ -49,7 +59,6 @@ def getDictListFields( d, oFields, bWipeNulls = False ):
     "Decorate, Sort, Undecorate".
     """
     #
-    from Iter.AllVers import iMap
     #
     # need single quotes inside CSV out looks OK in spreadsheets
     # 2012-08-15
@@ -184,7 +193,6 @@ def _getTupleOfDictListFieldTuples(
             lDictList, oFieldsL, oFieldsR,
             fConditionL = getTrue, fConditionR = getTrue ):
     #
-    from Iter.AllVers import tZip
     #
     lFieldsL    = getListOfDictListFields( lDictList, oFieldsL, fConditionL )
     #
@@ -197,7 +205,6 @@ def _getTupleOfDictListFieldTuples(
 def _gelDictListKeysValuesDictOfLists(
             lDictList, tKeyFields, tValueFields, fKeyCondition = None, fValueCondition = None ):
     #
-    from Dict.Get  import getDictOfListsOffItems
     #
     lKeysValues    = _getTupleOfDictListFieldTuples(
                         lDictList, tKeyFields, tValueFields, fKeyCondition, fValueCondition )
@@ -217,8 +224,6 @@ def gelDictListKeysCounts(
     Why pass values?
     '''
     #
-    from Dict.Numbs     import getDictOfCountsOffDictOfLists
-    from Dict.Get       import getItemList
     #
     dKeysValues     = _gelDictListKeysValuesDictOfLists(
                         lDictList, tKeyFields, tValueFields, fKeyCondition, fValueCondition )
@@ -237,8 +242,6 @@ def gelDictListKeysAvgs(
     returns avgs -- for each unique key combo, what is the avg value ?
     '''
     #
-    from Dict.Numbs     import getDictOfAvgsOffDictOfLists
-    from Dict.Get       import getItemList
     #
     dKeysValues     = _gelDictListKeysValuesDictOfLists(
                         lDictList, tKeyFields, tValueFields, fKeyCondition, fValueCondition )
@@ -271,7 +274,6 @@ def getValueKeyLookupDict( d, sValue, fCondition = getTrue ):
     pass the dict and the value
     '''
     #
-    from Dict.Get import getKeyIter
     #
     dLookUp = {}
     #

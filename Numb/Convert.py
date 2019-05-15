@@ -20,15 +20,35 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2018 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
 
-from six import print_ as print3
+from bisect                 import bisect
+from collections            import OrderedDict
 
+from six                    import print_ as print3
+
+try:
+    from .Get               import getSum, pairMultiply
+    from ..Dict.Get         import getKeyList, getKeyIter, getReverseDict
+    from ..Dict.Get         import getReverseDictGotUniqueItems
+    from ..Iter.AllVers     import iMap, lMap, tMap, iZip, iRange
+    from ..String.Dumpster  import KeepDotsDigitsClass
+    from ..String.Test      import hasAnyDigits
+    from ..String.Find      import getFinderFindAll, getRegExObj
+    from ..Utils.TimeTrial  import TimeTrial
+except ValueError:
+    from Get                import getSum, pairMultiply
+    from Dict.Get           import getKeyList, getKeyIter, getReverseDict
+    from Dict.Get           import getReverseDictGotUniqueItems
+    from Iter.AllVers       import iMap, lMap, tMap, iZip, iRange
+    from String.Dumpster    import KeepDotsDigitsClass
+    from String.Test        import hasAnyDigits
+    from String.Find        import getFinderFindAll, getRegExObj
+    from Utils.TimeTrial    import TimeTrial
 
 def _getKeepDotsDigits():
     #
-    from String.Dumpster import KeepDotsDigitsClass
     #
     oKeepDotsDigits = KeepDotsDigitsClass()
     #
@@ -40,7 +60,6 @@ oKeepDotsDigits = _getKeepDotsDigits()
 
 def getNumberFromUncleanString( s ):
     #
-    from String.Test import hasAnyDigits
     #
     sNumber = oKeepDotsDigits.Dump( s ).split()[ 0 ]
     #
@@ -98,8 +117,6 @@ dNumberWords, dMultipliers = _getDicts()
 
 def _getNumberWordFinder():
     #
-    from String.Find    import getFinderFindAll
-    from Dict.Get       import getKeyList, getKeyIter
     #
     lPattern = getKeyList( dNumberWords )
     #
@@ -118,8 +135,6 @@ getNumberWords = _getNumberWordFinder()
 
 def _getMultiplierFinder():
     #
-    from String.Find    import getRegExObj
-    from Dict.Get       import getKeyIter
     #
     sPattern = '|'.join(
             [   r'\b%s\b' % sNumber
@@ -151,8 +166,6 @@ def getMultiplierOffWord( sWord ):
 
 def getNumberOffWords( sWords ):
     #
-    from Iter.AllVers import iMap, lMap, tMap, iZip
-    from Numb.Get import getSum, pairMultiply
     #
     lMultipliers = _oMultiplierFinder.findall( sWords )
     #
@@ -184,8 +197,6 @@ def getNumberOffWords( sWords ):
 
 def _getSayWordDicts():
     #
-    from Dict.Get import getReverseDict
-    from Iter.AllVers import lMap
     #
     return lMap( getReverseDict, ( dNumberWords, dMultipliers ) )
 
@@ -196,7 +207,6 @@ dNumberSayWord, dMultiSayWord = _getSayWordDicts()
 
 def _getRomanDictOrdered():
     #
-    from collections import OrderedDict
     #
     dIntRoman = OrderedDict()
     #
@@ -221,7 +231,6 @@ _dIntRomanOrder = _getRomanDictOrdered()
 
 def _getRomanDict():
     #
-    from Dict.Get import getReverseDictGotUniqueItems
     #
     return getReverseDictGotUniqueItems(
         dict(
@@ -243,12 +252,10 @@ def _getRomanDict():
 _tRoman = ( 1000,900,500,400,100,90,50,40,10,9,5,4,1 )
 
 
-from bisect import bisect
 
 
 def _getRomanOffIntTest( iNum, iStart = 0 ):
     #
-    from Iter.AllVers import iRange
     #
     for i in iRange( iStart, len( _tRoman ) ):
         #
@@ -330,8 +337,6 @@ def getRomanNumeralOffInt( iNum ):
 
 def _RomanNumeralConversionTimeTrial():
     #
-    from Iter.AllVers     import tMap
-    from Utils.TimeTrial  import TimeTrial
     #
     tTestVals = ( 69, 88, 153, 286, 386, 486, 500, 555, 1888, 1959, 2016 )
     #

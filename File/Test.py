@@ -20,18 +20,22 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2015 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
 
 #from os.path import join, isfile, getmtime, split, splitext, exists, basename, isdir
 #from os      import stat, environ, getcwd, listdir, rename, remove
 
+from os         import remove
+from os.path    import isfile, isdir
+
 
 def isFileThere( *sFileSpec ):
     #
-    from os.path    import isfile
-    #
-    from File.Spec  import getFullSpec
+    try: # moving this to the top breaks this package!
+        from .Spec import getFullSpec
+    except ValueError: # maybe circular import issue
+        from Spec  import getFullSpec
     #
     sFullSpec   = getFullSpec( *sFileSpec )
     #
@@ -39,13 +43,13 @@ def isFileThere( *sFileSpec ):
 
 
 
-
 def hasWritePrivilege( sDir = None ):
     #
-    from os         import remove
-    from os.path    import isdir
     #
-    from File.Get   import getTempFile
+    try: # moving this to the top breaks this package!
+        from ..File.Get import getTempFile
+    except ValueError: # maybe circular import issue
+        from File.Get   import getTempFile
     #
     if not sDir: sDir = '.'
     #

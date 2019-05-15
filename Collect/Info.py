@@ -20,12 +20,18 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2011 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
+
+try:
+    from ..Iter.AllVers     import iMap    
+    from ..Numb.Accumulate  import getCumulativeTotals
+except ValueError:
+    from Iter.AllVers       import iMap
+    from Numb.Accumulate    import getCumulativeTotals
 
 def getMaxLen( lList ):
     #
-    from Iter.AllVers import iMap
     #
     def getLen( u ):
         #
@@ -38,7 +44,6 @@ def getMaxLen( lList ):
     #
     #
     return max( iMap( getLen, lList ) )
-
 
 
 
@@ -81,8 +86,6 @@ def getAllIndexes( lList, uValue ):
 def getCumulativeLengths( lParts, iAddTo = 0, iStart = 0 ):
     #
     'pass lParts, iAddTo, iStart, returns Cumulative Lengths'
-    #
-    from Numb.Accumulate import getCumulativeTotals
     #
     return getCumulativeTotals( lParts, iAddTo, iStart, len )
 

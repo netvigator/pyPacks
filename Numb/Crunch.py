@@ -21,13 +21,19 @@
 #
 # Copyright 2012-2016 Rick Graves
 #
+try:
+    from ..Time.Delta   import getIsoDateTimeNowPlus as getNowPlus
+    from ..Time.Delta   import getDeltaDaysFromISOs  as getDeltaDays
+except ValueError:
+    from Time.Delta     import getIsoDateTimeNowPlus as getNowPlus
+    from Time.Delta     import getDeltaDaysFromISOs  as getDeltaDays
+
 bDebugPrint         = False
 bTurnOnDebugPrint   = False
 
+
 def getHourlyRateForNow( iMaxPerDay, iTotalLast24hrs, sFirstRequestTime, bWantLocal = False ):
     #
-    from Time.Delta import getIsoDateTimeNowPlus as getNowPlus
-    from Time.Delta import getDeltaDaysFromISOs  as getDeltaDays
     #
     iRateForNow = 0
     #

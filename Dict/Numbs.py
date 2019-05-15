@@ -20,9 +20,20 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2016 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
+from copy import copy
 
+try:
+    from .Get           import getItemIter, getKeyIter
+    from ..Collect.Get  import getNewValuesIter4Items, unZip
+    from ..Iter.AllVers import iZip, iFilter
+    from ..Numb.Get     import getSumOffList
+except ValueError:
+    from Get            import getItemIter, getKeyIter
+    from Collect.Get    import getNewValuesIter4Items, unZip
+    from Iter.AllVers   import iZip, iFilter
+    from Numb.Get       import getSumOffList
 
 def getDictOfCountsOffDictOfLists( dDictOfLists ):
     #
@@ -33,7 +44,6 @@ def getDictOfCountsOffDictOfLists( dDictOfLists ):
     values are len( Value List ) for each key
     """
     #
-    from copy import copy
     #
     dDictofCounts   = copy( dDictOfLists )
     #
@@ -52,9 +62,6 @@ def getDictOfCountsOffDictOfLists( dDictOfLists ):
 
 def getDictOfSumsOffDictOfLists( dDictOfLists ):
     #
-    from Collect.Get    import getNewValuesIter4Items
-    from Numb.Get       import getSumOffList
-    from Dict.Get       import getItemIter
     #
     iterTotals = getNewValuesIter4Items(
                 getItemIter( dDictOfLists ), getSumOffList )
@@ -67,9 +74,6 @@ def _isValNonZero( t ): return t[1]
 
 def getDictOfAvgsOffDictOfLists( dDictOfLists ):
     #
-    from Iter.AllVers   import iZip, iFilter
-    from Collect.Get    import unZip
-    from Dict.Get       import getItemIter
     #
     dDictOfSums     = getDictOfSumsOffDictOfLists( dDictOfLists )
     #
@@ -117,7 +121,6 @@ def getValuesAdded( dMain, dMore ):
     if k is not in dMain, k and v from dMore are added to dMain
     '''
     #
-    from Dict.Get import getKeyIter
     #
     for k in getKeyIter( dMore ):
         #

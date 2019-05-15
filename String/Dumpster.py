@@ -20,10 +20,21 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2018 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
 
 from string import punctuation, whitespace, ascii_letters as letters
+
+try:
+    from ..Collect.Test     import getHasNotTester
+    from ..Iter.AllVers     import iFilter, iMap, iRange
+    from ..Utils.Both2n3    import maketrans, translate
+except ValueError:
+    from Collect.Test       import getHasNotTester
+    from Iter.AllVers       import iFilter, iMap, iRange
+    from Utils.Both2n3      import maketrans, translate
+
+
 
 class DumpsterClass( object ):
     #
@@ -33,9 +44,6 @@ class DumpsterClass( object ):
     #
     def __init__( self, sKeepThese = '', sDumpThese = '' ):
         #
-        from Utils.Both2n3  import maketrans
-        from Collect.Test   import getHasNotTester
-        from Iter.AllVers   import iFilter, iMap, iRange
         #
         if sKeepThese:
             #
@@ -61,7 +69,6 @@ class DumpsterClass( object ):
 
     def Dump( self, sText ):
         #
-        from Utils.Both2n3 import translate
         #
         return translate( sText, self.sTransStr )
 
@@ -162,7 +169,10 @@ _oKeepAlphaDigitsDashes = KeepYouNameItClass( letters + '0123456789-' )
 
 def getAlphaNumClean( s ):
     #
-    from String.Split import getWhiteCleaned
+    try: # moving this to the top breaks this package!
+        from .Split import getWhiteCleaned
+    except ValueError: # maybe circular import issue
+        from Split  import getWhiteCleaned
     #
     sAlphaNumSpaces = _oKeepAlphaDigitsOnly.Dump( s )
     #
@@ -172,7 +182,10 @@ def getAlphaNumClean( s ):
 
 def getAlphaNumCleanNoSpaces( s ):
     #
-    from String.Split import getWhiteOut
+    try: # moving this to the top breaks this package!
+        from .Split import getWhiteOut
+    except ValueError: # maybe circular import issue
+        from Split  import getWhiteOut
     #
     sAlphaNumSpaces = _oKeepAlphaDigitsOnly.Dump( s )
     #
@@ -182,7 +195,10 @@ def getAlphaNumCleanNoSpaces( s ):
 
 def getAlphaNumDashNoSpaces( s ):
     #
-    from String.Split import getWhiteOut
+    try: # moving this to the top breaks this package!
+        from .Split import getWhiteOut
+    except ValueError: # maybe circular import issue
+        from Split  import getWhiteOut
     #
     sAlphaNumSpaces = _oKeepAlphaDigitsDashes.Dump( s )
     #

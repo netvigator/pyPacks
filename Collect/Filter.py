@@ -20,11 +20,22 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2017 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
 
-from Collect.Test   import isEmpty
-from Iter.AllVers   import iFilter, lFilter
+try:
+    from .Test          import isEmpty
+    from ..Iter.AllVers import iFilter, lFilter
+    from ..Iter.Test    import isIterable
+    from ..String.Test  import isStringNotEmpty, getHasSubstringTester
+    from ..String.Test  import isStringAndNotEmpty
+except ValueError:
+    from Test           import isEmpty
+    from Iter.AllVers   import iFilter, lFilter
+    from Iter.Test      import isIterable
+    from String.Test    import isStringNotEmpty, getHasSubstringTester
+    from String.Test    import isStringAndNotEmpty
+    #
 
 
 def RemoveDupes( seq ):
@@ -91,16 +102,12 @@ def RemoveDupesKeepOrder( lList ):
 
 def DumpDupesAndEmpties( lLines ):
     #
-    from String.Test   import isStringNotEmpty
-    #
     return lFilter( isStringNotEmpty, RemoveDupes( lLines ) )
 
 
 
 
 def DumpDupesAndEmptiesKeepOrder( lLines ):
-    #
-    from String.Test  import isStringNotEmpty
     #
     return lFilter( isStringNotEmpty, RemoveDupesKeepOrder( lLines ) )
 
@@ -183,7 +190,6 @@ def getOneItemListIfStr( lExpectList ):
 
 def getStringsWithSubstringInThisList( l, lSubs, bCaseSensitive = False ):
     #
-    from String.Test import getHasSubstringTester
     #
     lLinkRel = []
     #
@@ -200,8 +206,6 @@ def getStringsWithSubstringInThisList( l, lSubs, bCaseSensitive = False ):
 
 def getListOfStrings( uInput ):
     #
-    from Iter.Test      import isIterable
-    from String.Test    import isStringAndNotEmpty
     #
     uReturn     = None
     #

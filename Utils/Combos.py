@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2017 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
 """
 inspired by combinatorial.py
@@ -34,14 +34,19 @@ upper case function names are new, enhanced
    instead of requiring a list or tuple as in the originals.
 """
 
-from operator       import mul, add
-from copy           import copy
+from operator               import mul, add
+from copy                   import copy
 
-from six.moves      import reduce as Reduce
+from six.moves              import reduce as Reduce
 
-from Collect.Query  import get1stTrue, get1stFalse
-from Iter.AllVers   import iMap, tMap
-#from Utils.Both2n3 import Reduce
+try:
+    from ..Collect.Query    import get1stTrue, get1stFalse, get1stThatMeets
+    from ..Iter.AllVers     import iMap, tMap
+except ValueError:
+    from Collect.Query      import get1stTrue, get1stFalse, get1stThatMeets
+    from Iter.AllVers       import iMap, tMap
+
+
 
 #__apply_each = lambda fns, args=[]: m@p( apply, fns, [args]*len(fns))
 
@@ -121,7 +126,6 @@ except:
 
 def No( iterable, fCondition = bool ):
     #
-    from Collect.Query import get1stThatMeets
     #
     return get1stThatMeets( iterable, fCondition = fCondition ) is None
 

@@ -20,8 +20,15 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2017 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
+
+from six                import next as getNext
+
+try:
+    from ..Iter.AllVers import iFilter, iRange
+except ValueError:
+    from Iter.AllVers   import iFilter, iRange
 
 
 def get1stThatMeets( iterable, fCondition = bool ):
@@ -30,10 +37,6 @@ def get1stThatMeets( iterable, fCondition = bool ):
     this stops testing after finding one list member that meets the condition.
     """
     #
-    from six            import next as getNext
-    #
-    from Iter.AllVers   import iFilter
-   #from Utils.Both2n3  import getNext
     #
     uReturn = None
     #
@@ -78,8 +81,6 @@ def getBegAndEndIfInOrder( seq1, seq2 ):
     getBegAndEndIfInOrder( 'anna',      'deanna'   ) returns 'anna'
     getBegAndEndIfInOrder( 'Kimberley', 'Joe'      ) returns empty string
     '''
-    #
-    from Iter.AllVers import iRange
     #
     iLen1, iLen2 = len( seq1 ), len( seq2 )
     #

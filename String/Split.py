@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2018 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
 '''
 in general, splitting is fast
@@ -28,16 +28,38 @@ this module has some split utilities that can be useful
 getIterPartsAndBothStarts is a true iterator but takes a RE find object
 '''
 
-from six         import print_ as print3
+from six                    import print_ as print3
+from six                    import next as getNext
 
-from String.Find import getRegExObj
+try:
+    from .Find              import getRegExObj
+    from .Text4Tests        import sGoogleQuerResult_Chrome as sHTML
+    from ..Collect.Get      import unZip
+    from ..Collect.Query    import get1stThatMeets
+    from ..Iter.AllVers     import iFilter, iRange, iMap, lMap, tMap, iZip
+    from ..Iter.Get         import getSequencePairsThisWithNext as getThisWithNext
+    from ..Iter.Get         import iRevRange
+    from ..Numb.Test        import isOdd
+    from ..Utils.TimeTrial  import TimeTrial
+except ValueError:
+    from Find               import getRegExObj
+    from Collect.Get        import unZip
+    from Collect.Query      import get1stThatMeets
+    from Iter.AllVers       import iFilter, iRange, iMap, lMap, tMap, iZip
+    from Iter.Get           import getSequencePairsThisWithNext as getThisWithNext
+    from Iter.Get           import iRevRange
+    from Numb.Test          import isOdd
+    from Text4Tests         import sGoogleQuerResult_Chrome as sHTML
+    from Utils.TimeTrial    import TimeTrial
+
+
+
 
 class Success( Exception ): pass
 
 
 def _getTextStartsAndSplitStarts( lSplit, sSplitOn ):
     #
-    from Iter.AllVers import iRange
     #
     iSplitOnLen = len( sSplitOn )
     #
@@ -83,9 +105,6 @@ def getPartsIterAndBothStarts(
     returns same except list for iterator
     """
     #
-    # from copy       import copy
-    #
-    from Iter.AllVers   import iMap, iZip
     #
     lStartText  = []
     lStartSplit = []
@@ -171,10 +190,6 @@ def __getListsPartsAndBothStarts( s, uSplitOn ):
     last number in 2nd list is length of whole string!
     """
     #
-    from six            import next as getNext
-    #
-    from Iter.AllVers   import iRange
-   #from Utils.Both2n3  import getNext
     #
     if isinstance( uSplitOn, str ):
         #
@@ -265,11 +280,6 @@ def _getListsPartsAndBothStarts( s, oFinder ):
     last number in 2nd list is length of whole string!
     """
     #
-    from six            import next as getNext
-    #
-    from Iter.AllVers   import iRange
-   #from Utils.Both2n3  import getNext
-    #
     sPattern = oFinder.pattern
     #
     bVariableSplitOn = _oFindVariableLenPattern.findall( sPattern )
@@ -334,9 +344,6 @@ def getIterPartsAndBothStarts( s, oFinder ):
     last number in last tuple is length of whole string!
     """
     #
-    from six            import next as getNext
-    #
-   #from Utils.Both2n3  import getNext
     #
     iterSplitOn = oFinder.finditer( s )
     #
@@ -359,8 +366,6 @@ def getIterPartsAndBothStarts( s, oFinder ):
 
 
 def getListsPartsAndBothStarts( s, oFinder ):
-    #
-    from Collect.Get import unZip
     #
     return unZip( getIterPartsAndBothStarts( s, oFinder ) )
 
@@ -753,7 +758,6 @@ def _origGetTextSplitHere( sText, lSplits, iDrop = 0 ):
 
 def getTextSplitHere( sText, lSplits, iDrop = 0 ):
     #
-    from Iter.Get   import getSequencePairsThisWithNext as getThisWithNext
     #
     lSplitParts     = list( lSplits )
     #
@@ -779,11 +783,6 @@ def getSplitButNotIfQuoted( s, sSplitOn ):
     i.e., ignore the first comma, the one within "Mattia Melocchi, Macom srl"
     '''
     #
-    from Collect.Query  import get1stThatMeets
-    from Iter.AllVers   import lMap
-    from Iter.Get       import iRevRange
-    from Iter.Get       import getSequencePairsThisWithNext as getThisWithNext
-    from Numb.Test      import isOdd
     #
     Finished = Success
     #
@@ -927,8 +926,10 @@ except AttributeError:
 
 def getSplitAndStrip( s, uSplitOn = ',' ):
     #
-    from Iter.AllVers   import tMap
-    from String.Get     import getStripped
+    try: # moving this to the top breaks this package!
+        from .Get import getStripped
+    except ValueError: # maybe circular import issue
+        from Get  import getStripped
     #
     if isinstance( uSplitOn, str ):
         if uSplitOn.upper() == uSplitOn.lower():
@@ -954,7 +955,6 @@ def getRemoved( s, sRemove ):
 
 def getWhiteCleaned( s ):
     #
-    from Iter.AllVers import iFilter
     #
     iParts = iFilter( bool, s.split() )
     #
@@ -963,8 +963,6 @@ def getWhiteCleaned( s ):
 
 
 def getWhiteOut( s ):
-    #
-    from Iter.AllVers import iFilter
     #
     iParts = iFilter( bool, s.split() )
     #
@@ -994,8 +992,6 @@ def _chopViaRfind( sHaystack, sNeedle ):
 
 def _chopTimeTrial():
     #
-    from String.Text4Tests import sGoogleQuerResult_Chrome as sHTML
-    from Utils.TimeTrial   import TimeTrial
     #
     TimeTrial( _chopViaSplit, sHTML, '<' )
     TimeTrial( _chopViaRfind, sHTML, '<' )
@@ -1007,9 +1003,6 @@ def _chopTimeTrial():
 
 def _PartsAndStartsTimeTrial():
     #
-    from Collect.Get        import unZip
-    from String.Text4Tests  import sGoogleQuerResult_Chrome as sHTML
-    from Utils.TimeTrial    import TimeTrial
     #
     def getListLists( s, sSplitOn, sLower = '' ):
         #

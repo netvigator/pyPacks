@@ -20,9 +20,16 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2016 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
-from Dict.Get import getItemIter
+try:
+    from ..Collect.Get  import getListOfListsFromNestedLists
+    from ..Dict.Get     import getItemIter, getItemTuple, getKeyList
+    from ..Iter.AllVers import lMap
+except ValueError:
+    from Collect.Get    import getListOfListsFromNestedLists
+    from Dict.Get       import getItemIter, getItemTuple, getKeyList
+    from Iter.AllVers   import lMap
 
 
 def getListOfListsOffDictOfLists( dLists ):
@@ -37,8 +44,6 @@ def getListOfListsOffDictOfLists( dLists ):
 
 def getListOfListsOffDictOfDicts( dDicts ):
     #
-    from Collect.Get    import getListOfListsFromNestedLists
-    from Dict.Get       import getItemTuple
     #
     lListOfLists = [ ( uKey, getItemTuple( d ) )
                      for uKey, d
@@ -52,8 +57,6 @@ def getListOfListsOffDictOfDicts( dDicts ):
 
 def getDictKeysValuesSortedKeyOrder( d ):
     #
-    from Iter.AllVers   import lMap
-    from Dict.Get       import getKeyList
     #
     lKeys   = getKeyList( d )
     #

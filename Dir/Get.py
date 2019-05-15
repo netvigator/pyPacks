@@ -23,12 +23,18 @@
 # Copyright 2004-2019 Rick Graves
 #
 
-from os         import sep as cSep
+from os                 import makedirs, sep as cSep
+from os.path            import exists, isdir, join
 
-from Dir.Test   import isDirThere
+try:
+    from .Test          import isDirThere
+    from ..File.Del     import DeleteIfExists
+    from ..File.Test    import isFileThere
+except ValueError:
+    from Test           import isDirThere
+    from File.Del       import DeleteIfExists
+    from File.Test      import isFileThere
 
-from File.Del   import DeleteIfExists
-from File.Test  import isFileThere
 
 def _stripLeadingSlash( sDir ):
     if sDir[:1] == cSep: sDir = sDir[1:]
@@ -68,8 +74,6 @@ def getDirBelow( sHeadDir, sHeadAndBelow ):
 
 def getMakeDir( *sDir ):
     #
-    from os      import makedirs
-    from os.path import exists, isdir, join
     #
     sDir = join( *sDir )
     #
@@ -82,7 +86,6 @@ def getMakeDir( *sDir ):
 
 def _getTempDir():
     #
-    from Dir.Test import isDirThere
     #
     if cSep == '/':
         #

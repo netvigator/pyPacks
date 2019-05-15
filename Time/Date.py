@@ -20,11 +20,18 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2018 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
 
+from calendar import weekday
 
-from Time.Output    import getNowIsoDateTimeStr
+try:
+    from .Output        import getNowIsoDateTimeStr
+    from ..Iter.AllVers import iMap
+except ValueError:
+    from Output         import getNowIsoDateTimeStr
+    from Iter.AllVers   import iMap
+
 
 def getDateFromISODateTime( sDateTime = getNowIsoDateTimeStr() ):
     #
@@ -35,9 +42,7 @@ def getIntegerDOW( iYear, iMonth, iDay ):
     #
     """Get DOW, Sunday is 0, Monday is 1, etc.  Pass Year, Month, Day."""
     #
-    from calendar import weekday
     #
-    from Iter.AllVers import iMap
     #
     iYear, iMonth, iDay = iMap( int, ( iYear, iMonth, iDay ) )
     #

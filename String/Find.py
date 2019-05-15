@@ -22,13 +22,25 @@
 #
 # Copyright 2004-2019 Rick Graves
 #
-from collections    import OrderedDict
+from collections            import OrderedDict
+from re                     import compile as REcompile
+from re                     import IGNORECASE, DOTALL, MULTILINE
 
-from six            import print_ as print3
+from six                    import print_ as print3
 
-from Iter.AllVers   import iRange, getEnumerator
+try:
+    from .Dumpster          import getAlphaNumCleanNoSpaces, getAlphaNumDashNoSpaces
+    from ..Collect.Query    import get1stThatMeets
+    from ..Iter.AllVers     import iRange, getEnumerator, permutations
+    from ..Iter.Get         import iRevRange
+    from ..Utils.TimeTrial  import TimeTrial
+except ValueError:
+    from Dumpster           import getAlphaNumCleanNoSpaces, getAlphaNumDashNoSpaces
+    from Iter.AllVers       import iRange, getEnumerator, permutations
+    from Iter.Get           import iRevRange
+    from Collect.Query      import get1stThatMeets
+    from Utils.TimeTrial    import TimeTrial
 
-from String.Dumpster import getAlphaNumCleanNoSpaces, getAlphaNumDashNoSpaces
 
 
 def _getSpecials( bEscBegEndOfStr ):
@@ -65,7 +77,6 @@ def getRegExSpecialsEscapedNoShortcut( sString, bEscBegEndOfStr = True ):
 
 def getRegExSpecialsEscapedWithShortcut( sString, bEscBegEndOfStr = True ):
     #
-    from Iter.AllVers import getEnumerator
     #
     sSpecials = _getSpecials( bEscBegEndOfStr )
     #
@@ -107,7 +118,6 @@ def getRegExObj( sPattern,
     If you are only looking for one thing whether upper or lower case,
      string methods are faster if coded right
     '''
-    from re import compile as REcompile, IGNORECASE, DOTALL, MULTILINE
     #
     iFlags = 0
     #
@@ -222,8 +232,10 @@ def getRegEx4Chars( s,
             tSubLast        = tSubLast,
             iWordBoundChrs  = 0 ):
     #
-    from Collect.Query  import get1stThatMeets
-    from String.Replace import ReplaceManyOldWithManyNew
+    try: # moving this to the top breaks this package!
+        from Replace        import ReplaceManyOldWithManyNew
+    except ValueError: # maybe circular import issue
+        from .Replace       import ReplaceManyOldWithManyNew
     #
     s = s.strip()
     #
@@ -339,7 +351,6 @@ def gotRawRex( s ):
 
 def _gotAlphaNumPutSeparator( sChars ):
     #
-    from Iter.Get       import iRevRange
     #
     lNew   = []
     #
@@ -388,9 +399,12 @@ def getRegExpress(
         bEscBegEndOfStr = True,    # escape RegEx beg/end of string chars
         bPluralize      = False ): # will also find plural version of word
     #
-    from Iter.AllVers   import permutations
-    from String.Get     import getRawGotStr # not sure we need this
-    from String.Test    import hasAnyAlpha, hasAnyDigits, hasPunctOrSpace
+    try: # moving this to the top breaks this package!
+        from .Get       import getRawGotStr
+        from .Test      import hasAnyAlpha, hasAnyDigits, hasPunctOrSpace
+    except ValueError: # maybe circular import issue
+        from Get        import getRawGotStr
+        from Test       import hasAnyAlpha, hasAnyDigits, hasPunctOrSpace
     #
     sLook4Orig = sLook4
     #
@@ -398,7 +412,7 @@ def getRegExpress(
         #
         sInside = sLook4[ 2 : -1 ]
         #
-        return getRawGotStr( sLook4 )
+        return getRawGotStr( sLook4 ) # not sure we need getRawGotStr()
         #
     #
     #if sLook4Orig == '26A':
@@ -684,7 +698,6 @@ def getTextInQuotes( sText ):
 
 def _doTimeTrial():
     #
-    from Utils.TimeTrial import TimeTrial
     #
     tTestStrings = (
         "ACRO",

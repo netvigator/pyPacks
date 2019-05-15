@@ -22,10 +22,49 @@
 #
 # Copyright 2004-2019 Rick Graves
 #
+from itertools              import takewhile
+from gzip                   import GzipFile
+from random                 import shuffle, randint
+from string                 import digits, ascii_letters as letters
+from zlib                   import decompress
 
-from String.Dumpster import DumpYouNameItClass
-from String.Split    import SplitRegular, SplitRight, SplitC, SplitRightC
-#
+from six                    import BytesIO, print_ as print3
+
+try:
+    from .Count             import CountSplit
+    from .Dumpster          import ( DumpYouNameItClass, oKeepAlphaSpaces,
+                                     oKeepAlphaDigitsSpacesHash,
+                                     getDigitsOnly )
+    from .Split             import ( SplitRegular, SplitRight, SplitC,
+                                     SplitRightC, getWhiteCleaned )
+    from .Test              import ( getItemFoundInString, isDigit,
+                                     hasAlphaNumsOnly, isDigitOrDotOnly,
+                                     isAlphaNumOrDot, isQuote, isPunctuation,
+                                     isAsciiAlpha, getNumberPattern,
+                                     isStrongPasswordChar, isStrongPassword )
+    from ..Collect.Get      import getSequencePairsThisWithNext
+    from ..Collect.Query    import get1stThatMeets
+    from ..Iter.AllVers     import iMap, iRange, iFilter, lMap, tMap
+    from ..Utils.Combos     import Any_
+    from ..Utils.TimeTrial  import TimeTrial
+except ValueError:
+    from Count              import CountSplit
+    from Dumpster           import ( DumpYouNameItClass, oKeepAlphaSpaces,
+                                     oKeepAlphaDigitsSpacesHash,
+                                     getDigitsOnly )
+    from Split              import ( SplitRegular, SplitRight, SplitC,
+                                     SplitRightC, getWhiteCleaned )
+    from Test               import ( getItemFoundInString, isDigit,
+                                     hasAlphaNumsOnly, isDigitOrDotOnly,
+                                     isAlphaNumOrDot, isQuote, isPunctuation,
+                                     isAsciiAlpha, getNumberPattern,
+                                     isStrongPasswordChar, isStrongPassword )
+    from Collect.Get        import getSequencePairsThisWithNext
+    from Collect.Query      import get1stThatMeets
+    from Iter.AllVers       import iMap, iRange, iFilter, lMap, tMap
+    from Utils.Combos       import Any_
+    from Utils.TimeTrial    import TimeTrial
+
 
 _dumpDotsCommas = DumpYouNameItClass( ',.' )
 
@@ -42,7 +81,6 @@ except ImportError:
 
 def getStringInRange( iLo, iHi ):
     #
-    from Iter.AllVers import iMap, iRange
     #
     return ''.join( iMap( chr, iRange( iLo, iHi ) ) )
 
@@ -189,7 +227,6 @@ def getTextAfterItem( sString, lItems ):
     It returns the text after the first string item found in the main string.
     """
     #
-    from String.Test  import getItemFoundInString
     #
     sItem = getItemFoundInString( sString, lItems )
     #
@@ -255,7 +292,6 @@ def getTheseCharsOffOneEnd( sText, sGetThese = None, fGetIfMeets = None, bEatOff
     it is normally only called by specific implementations below.
     """
     #
-    from itertools import takewhile
     #
     if sText == '': return ''
     #
@@ -292,14 +328,12 @@ def getCharsOffEnd( sText, sGetThese = None, fGetIfMeets = None ):
 
 def getDigitsOffBeg( sText ):
     #
-    from String.Test  import isDigit
     #
     return getTheseCharsOffOneEnd( sText, fGetIfMeets = isDigit, bEatOffFront = True )
 
 
 def getDigitsOffEnd( sText ):
     #
-    from String.Test  import isDigit
     #
     return getTheseCharsOffOneEnd( sText, fGetIfMeets = isDigit, bEatOffFront = False )
 
@@ -307,7 +341,6 @@ def getDigitsOffEnd( sText ):
 
 def _isDgigitOrDash( c ):
     #
-    from String.Test  import isDigit
     #
     return isDigit( c ) or c == '-'
 
@@ -319,7 +352,6 @@ def getDigitsAndDashOffEnd( sText ):
 
 def getLineNo4SubStr( sSubStr, sText ):
     #
-    from Count import CountSplit
     #
     iLineNo     = -1
     #
@@ -336,7 +368,6 @@ def getLineNo4SubStr( sSubStr, sText ):
 
 def _getOnlySomeChars( sText, fCharsOK ):
     #
-    from Iter.AllVers import iFilter
     #
     iterText    = iFilter( fCharsOK, sText )
     #
@@ -346,19 +377,16 @@ def _getOnlySomeChars( sText, fCharsOK ):
 
 def getAlphaNumsOnly(           sText ):
     #
-    from String.Test  import hasAlphaNumsOnly
     #
     return _getOnlySomeChars( sText, hasAlphaNumsOnly )
 
 def getDigitsAndDotsOnly(       sText ):
     #
-    from String.Test  import isDigitOrDotOnly
     #
     return _getOnlySomeChars( sText, isDigitOrDotOnly )
 
 def getAlphaNumsAndDotsOnly(    sText ):
     #
-    from String.Test  import isAlphaNumOrDot
     #
     return _getOnlySomeChars( sText, isAlphaNumOrDot  )
 
@@ -387,8 +415,6 @@ _sQuoteChars = '"' + "'"
 
 def getCharsInQuotesAndQuote( s ):
     #
-    from Collect.Query  import get1stThatMeets
-    from String.Test    import isQuote
     #
     #
     sInQuotes, sFirstQuote, s2ndQuote = '', '', ''
@@ -457,7 +483,6 @@ def getEmptyString4None( uValue ):
 
 def getCharNotIn( s, iRangeEnd = 256, iRangeBeg = 1 ):
     #
-    from Iter.AllVers import iRange
     #
     for i in iRange( iRangeBeg, iRangeEnd ):
         #
@@ -472,7 +497,6 @@ def getCharNotIn( s, iRangeEnd = 256, iRangeBeg = 1 ):
 
 def getFrozenStringSetNotCaseSensitive( seq ):
     #
-    from Iter.AllVers import iMap
     #
     return frozenset( iMap( getLower, seq ) )
 
@@ -507,8 +531,6 @@ def getTitleizedIfNeeded( s ):
 
 def getLowerStripPunc( s ):
     #
-    from String.Dumpster import oKeepAlphaSpaces
-    from String.Split    import getWhiteCleaned
     #
     sNew = oKeepAlphaSpaces.Dump( s.lower() )
     #
@@ -517,8 +539,6 @@ def getLowerStripPunc( s ):
 
 def getStripPuncKeepHashOnly( s ):
     #
-    from String.Dumpster import oKeepAlphaDigitsSpacesHash
-    from String.Split    import getWhiteCleaned
     #
     sNew = oKeepAlphaDigitsSpacesHash.Dump( s )
     #
@@ -561,7 +581,6 @@ def getStripped( s ): return s.strip()
 
 def getWhatIs( c ):
     #
-    from String.Test import isPunctuation
     #
     sWhatIs = 'other'
     #
@@ -593,7 +612,6 @@ def _getWantSpaceWhere( c ):
     #
     # '!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~'
     #
-    from String.Test import isPunctuation
     #
     sWhere = 'after'
     if isPunctuation( c ):
@@ -609,9 +627,6 @@ def _getPairsNeedSpaceMaybe( t ): return t in setPairsNeedSpaceMaybe
 
 def putSpacesInMixed( s ):
     #
-    from Collect.Get    import getSequencePairsThisWithNext
-    from Iter.AllVers   import iMap, lMap, tMap, iRange
-    from Utils.Combos 	import Any_
     #
     lWhat = iMap( getWhatIs, s )
     #
@@ -662,7 +677,6 @@ def _getRandomChars( seq, iHowMany = 10 ):
     get ramdom characters off a sequence
     '''
     #
-    from random import shuffle
     #
     l = list( seq )
     #
@@ -687,8 +701,6 @@ def _getRandomChars( seq, iHowMany = 10 ):
 
 def _getLettersAndNumbers():
     #
-    from string import digits
-    from string import ascii_letters as letters
     #
     l = list( digits)
     l.extend( list( letters ) )
@@ -713,9 +725,6 @@ def _getRandomAlphaNums( iHowMany = 10 ):
 
 def _getRandomChar( isWanted = None, tRange = ( 33, 126 ) ):
     #
-    from random import randint
-    #
-    from String.Test import isAsciiAlpha
     #
     if isWanted is None: isWanted = isAsciiAlpha
     #
@@ -738,7 +747,6 @@ def getRandomChars( iHowMany = 10, isWanted = None, tRange = ( 33, 126 ) ):
     you get these if isWanted is not passed or is None
     '''
     #
-    from Iter.AllVers   import iRange
     #
     lReturn = [ None ] * iHowMany
     #
@@ -765,7 +773,6 @@ def getRandomDigits( iHowMany = 10 ):
     '''getRandomDigits in Numbs.Get is a lot faster
     '''
     #
-    from String.Test import isDigit
     #
     return getRandomChars( iHowMany, isDigit, ( 48, 57 ) )
 
@@ -777,7 +784,6 @@ def getRandomStrongPassword( iHowMany = 10 ):
     get ramdom ASCII letters & digits
     '''
     #
-    from String.Test import isStrongPasswordChar, isStrongPassword
     #
     lChars = []
     #
@@ -799,10 +805,6 @@ def getRandomStrongPassword( iHowMany = 10 ):
     
 def getUnGzipped( sCompressed ):
     #
-    from six            import BytesIO
-    #
-   #from Utils.Both2n3  import BytesIO
-    from gzip           import GzipFile
     #
     sStream         = BytesIO( sCompressed )
     #
@@ -826,7 +828,6 @@ def getUnGzipped( sCompressed ):
 
 def getUnZipped( s ):
     #
-    from zlib import decompress
     #
     bGzipped = True
     #
@@ -859,7 +860,6 @@ def getUnGzippedOrContent( s ):
 
 def getWhiteCleanedDumpDotsCommas( s ):
     #
-    from String.Split import getWhiteCleaned
     #
     return getWhiteCleaned( _dumpDotsCommas.Dump( s ) )
 
@@ -867,9 +867,6 @@ def getWhiteCleanedDumpDotsCommas( s ):
 
 def getPatternNumbers( sOrig, lPattern = [] ):
     #
-    from Iter.AllVers       import iRange
-    from String.Dumpster    import getDigitsOnly
-    from String.Test        import getNumberPattern
     #
     try:
         sOrig = sOrig.encode( 'ascii' )
@@ -952,8 +949,6 @@ def getRawGotStr(sOrig):
 
 def _doTimeTrial():
     #
-    from Utils.TimeTrial import TimeTrial
-    from six             import print_ as print3
     #
     sOrig = "C:\Documents and Settings\b_zz\Desktop\fy_file"
     #

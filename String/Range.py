@@ -20,8 +20,16 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2011 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
+
+try:
+    from .Output        import getZeroPadder, StrPadZero
+    from ..Iter.AllVers import iMap, tMap, iRange, tRange
+except ValueError:
+    from Output         import getZeroPadder, StrPadZero
+    from Iter.AllVers   import iMap, tMap, iRange, tRange
+
 
 
 def _getStringRangeIterOld( sBeg = 0, sEnd = None, sStep = 1 ):
@@ -34,8 +42,6 @@ def _getStringRangeIterOld( sBeg = 0, sEnd = None, sStep = 1 ):
     (instead of an iterator of integers in integer format).
     """
     #
-    from Iter.AllVers import iMap, iRange, tRange
-    from String.Output import getZeroPadder, StrPadZero
     #
     if sEnd is None:
         #
@@ -95,7 +101,6 @@ def getStringRangeIter( *args ):
     (instead of an iterator of integers in integer format).
     """
     #
-    from Iter.AllVers import iMap, tMap, iRange
     #
     iArgs = tMap( int, args )
     #

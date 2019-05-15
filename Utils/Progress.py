@@ -23,15 +23,18 @@
 # a part of urlgrabber, a high-level cross-protocol url-grabber
 # urlgrabber is Copyright 2002-2004 Michael D. Stenner, Ryan Tomayko
 #
-# Copyright 2008-2017 Rick Graves
+# Copyright 2008-2019 Rick Graves
 #
 #
 
-from sys             import stderr
-from time            import time
-from math            import log
+from sys                    import stderr
+from time                   import time
+from math                   import log
 #
-from String.Output   import ReadableNo
+try:
+    from ..String.Output    import ReadableNo
+except ValueError:
+    from String.Output      import ReadableNo
 
 
 class DummyMeter( object ):

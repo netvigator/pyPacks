@@ -20,8 +20,30 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2016 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
+
+from os.path        import join
+
+try:
+    from ..Dict.Get     import getReverseDictGotUniqueItems
+    from ..Dir.Get      import sDurableTempDir
+    from ..Iter.Get     import getItemIterWithKeysConsistentCase
+    from ..File.Get     import getFileObject
+    from ..File.Spec    import getFullSpecDefaultOrPassed
+    from ..File.Write   import MakeTemp
+    from ..Iter.AllVers import iMap, iZip, tFilter
+    from ..String.Get   import getTextAfter, getTextWithin
+except ValueError:
+    from Dict.Get       import getReverseDictGotUniqueItems
+    from Dir.Get        import sDurableTempDir
+    from Iter.Get       import getItemIterWithKeysConsistentCase
+    from File.Get       import getFileObject
+    from File.Spec      import getFullSpecDefaultOrPassed
+    from File.Write     import MakeTemp
+    from Iter.AllVers   import iMap, iZip, tFilter
+    from String.Get     import getTextAfter, getTextWithin
+
 
 def _getCountryCodeTuple( bUpper = False ):
     #
@@ -290,7 +312,6 @@ def _getCountryCodeTuple( bUpper = False ):
     #
     if bUpper:
         #
-        from Iter.Get import getItemIterWithKeysConsistentCase
         #
         tlCountryCodes = tuple(
             getItemIterWithKeysConsistentCase( tlCountryCodes, bUpper = True ) )
@@ -323,7 +344,6 @@ def getCountryDict( dCountryCodes = dCountryCodes ):
     you can import dCountryCodes from here, massage,
     then pass the massaged dict to this function.
     '''
-    from Dict.Get import getReverseDictGotUniqueItems
     #
     return( getReverseDictGotUniqueItems( dCountryCodes ) )
 
@@ -332,14 +352,6 @@ def getCountryDict( dCountryCodes = dCountryCodes ):
 
 def _getCodesFromTextFile( *sFileSpec, **kwargs ):
     #
-    from os.path        import join
-    #
-    from Dir.Get        import sDurableTempDir
-    from File.Get       import getFileObject
-    from File.Spec      import getFullSpecDefaultOrPassed
-    from File.Write     import MakeTemp
-    from Iter.AllVers   import iMap, iZip, tFilter
-    from String.Get     import getTextAfter, getTextWithin
     #
     if 'sDefault' not in kwargs:
         kwargs['sDefault'] = join( sDurableTempDir, 'country_codes.txt' )
@@ -373,7 +385,10 @@ def getCountryOffHost( sHost ): # just gets the country part of a host name
     #
     # not used anywhere
     #
-    from Test import isDotQuad
+    try: # moving this to the top breaks this package!
+        from .Test import isDotQuad
+    except ValueError: # maybe circular import issue
+        from Test import isDotQuad
     #
     sCountry                    = ''
     #

@@ -19,15 +19,18 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2011 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
 
+from os import remove
 
 def DeleteIfExists( *sFileSpec ):
     #
-    from os      import remove
     #
-    from File.Spec import getFullSpec
+    try: # moving this to the top breaks this package!
+        from ..File.Spec    import getFullSpec
+    except ValueError: # maybe circular import issue
+        from File.Spec      import getFullSpec
     #
     sFileSpec = getFullSpec( *sFileSpec )
     #

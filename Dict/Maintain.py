@@ -20,9 +20,16 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2012 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
-
+try:
+    from .Get               import getKeyTuple
+    from ..Numb.Test        import isOdd
+    from ..Utils.TimeTrial  import TimeTrial
+except ValueError:
+    from Get                import getKeyTuple
+    from Numb.Test          import isOdd
+    from Utils.TimeTrial    import TimeTrial
 
 def removeBlankValues( d ):
     #
@@ -40,7 +47,6 @@ def purgeNegativeValueMembers( d ):
     per TimeTrial with 256 length dictionary
     '''
     #
-    from Dict.Get import getKeyTuple
     #
     for k in getKeyTuple( d ):
         #
@@ -74,8 +80,6 @@ def getDictValuesFromSingleElementLists( d ):
 
 def _doTimeTrial():
     #
-    from Numb.Test          import isOdd
-    from Utils.TimeTrial    import TimeTrial
     #
     dTest = {}
     #

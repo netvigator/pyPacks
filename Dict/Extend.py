@@ -20,9 +20,16 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2012 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
+import bisect
 
+try:
+    from .Get   import ( getItemIter, getValueList,
+                         getReverseDictGotUniqueItems )
+except ValueError:
+    from Get    import ( getItemIter, getValueList,
+                         getReverseDictGotUniqueItems )
 
 class returnValueOrArg( dict ):
     #
@@ -68,7 +75,6 @@ class DoubleDictClass( dict ):
     #
     def UpdateReverseFromDict( self ):
         #
-        from Dict.Get import getReverseDictGotUniqueItems
         #
         self.dReverse   = getReverseDictGotUniqueItems( self )
     #
@@ -106,7 +112,6 @@ class getClosestClass( dict ): # not used anywhere
     #
     def __init__( self, dLookIn ):
         #
-        from Dict.Get import getItemIter, getValueList
         #
         self.update( dLookIn )
         #
@@ -125,7 +130,6 @@ class getClosestClass( dict ): # not used anywhere
 
     def getValue4Key( self, sLook4This ):
         #
-        import bisect
         #
         uValue      = None
         sKey        = None

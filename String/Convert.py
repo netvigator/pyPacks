@@ -20,16 +20,27 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2012-2016 Rick Graves
+# Copyright 2012-2019 Rick Graves
 #
 '''
 
 '''
+from unicodedata        import normalize
 
-from six import print_ as print3
+from six                import print_ as print3
+
+try:
+    from .Replace       import getSpaceForWhiteAlsoStrip
+    from .Test          import isASCII_128, hasAscii_128_Only
+    from ..Iter.AllVers import iRange
+except ValueError:
+    from Replace        import getSpaceForWhiteAlsoStrip
+    from Test           import isASCII_128, hasAscii_128_Only
+    from Iter.AllVers   import iRange
 
 bDebutPrint = False
-#
+
+
 class Finished( Exception ): pass
 
 
@@ -61,9 +72,6 @@ def getString( u, encoding = 'utf-8' ):
 
 def _AsciiOneByOne( s ):
     #
-    from Iter.AllVers   import iRange
-    from String.Replace import getSpaceForWhiteAlsoStrip
-    from String.Test    import isASCII_128
     #
     l = [ ' ' ] * len( s )
     #
@@ -83,9 +91,7 @@ def _AsciiOneByOne( s ):
 
 def getUnicodeOut( s ):
     #
-    from unicodedata    import normalize
     #
-    from String.Test    import hasAscii_128_Only
     try:
         #
         sReturn = getString( normalize( 'NFKD', s ).encode('ascii','ignore') )

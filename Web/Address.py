@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2017 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
 '''
 
@@ -28,7 +28,23 @@ need working ftp server to test?
 
 '''
 
-from six.moves.urllib.parse import urlsplit, urlunsplit
+from six.moves.urllib.parse import urlsplit, urlunsplit, urljoin
+
+try:
+    from .Country       import dCountryCodes
+    from .HTML          import oFindLinkStart # href=
+    from ..Collect.Get  import getDecoratedIter
+    from ..Dict.Get     import getDictOfListsOffItems
+    from ..Iter.AllVers import iRange, iMap, lMap, iZip
+    from ..String.Find  import getTextInQuotes
+except ValueError:
+    from Country        import dCountryCodes
+    from HTML           import oFindLinkStart # href=
+    from Collect.Get    import getDecoratedIter
+    from Dict.Get       import getDictOfListsOffItems
+    from Iter.AllVers   import iRange, iMap, lMap, iZip
+    from String.Find    import getTextInQuotes
+
 
 def _getTopLevelDomainSets():
     #
@@ -96,8 +112,10 @@ setTopLevelDomains, setMiniDomains  = _getTopLevelDomainSets()
 
 def getServerDomainOffURL( sHost ):
     #
-    from Web.Test       import isDotQuad
-    from Web.Country    import dCountryCodes
+    try: # moving this to the top breaks this package!
+        from .Test  import isDotQuad
+    except ValueError: # maybe circular import issue
+        from Test   import isDotQuad
     #
     sScheme, sUser, sPassword, sHost, sPort, sPath, sQuery, sFragmentID = UrlSplitMore( sHost )
     #
@@ -177,7 +195,6 @@ def UrlUnSplitMore( tTuple ):
     Inspired by location_parse.py in Text Processing in Python by David Mertz.
     """
     #
-    #from Utils.Both2n3 import urlunsplit
     #
     sScheme, sUser, sPassword, sHost, sPort, sPath, sQuery, sFragmentID = tTuple
     #
@@ -193,7 +210,6 @@ def UrlUnSplitMore( tTuple ):
 
 def UrlMustHaveSchemeAndPath( sURL ):
     #
-    #from Utils.Both2n3 import urlsplit, urlunsplit
     #
     sScheme, sLocation, sPath, sQuery, sFragmentID = urlsplit( sURL )
     #
@@ -214,8 +230,6 @@ def UrlSplitMore( sURL ):
     Return tuple (user, password, host, port) for sLocation.
     Inspired by location_parse.py in Text Processing in Python by David Mertz.
     """
-    #
-    #from Utils.Both2n3 import urlsplit
     #
     sScheme, sLocation, sPath, sQuery, sFragmentID = urlsplit( sURL )
     #
@@ -329,8 +343,6 @@ def getHostOnly( sURL ):
 def getUrlDropPathQuery( sURL ):
     #
     # not used anywhere
-    #
-    #from Utils.Both2n3 import urlsplit, urlunsplit
     #
     sScheme, sLocation, sPath, sQuery, sFragmentID = urlsplit( sURL )
     #
@@ -465,11 +477,6 @@ def UrlJoinBrowserStyle( *args ):
     Browsers get this join right, and this functions hopes to, too.
     """
     #
-    from six.moves.urllib.parse import urljoin
-    #
-    from Iter.AllVers   import iRange
-   #from Utils.Both2n3  import urljoin
-    #
     #
     bStartsWithHTTP     = False
     #
@@ -568,9 +575,6 @@ def UrlJoinBrowserStyle( *args ):
 
 def _getLinksMakeOver( sHTML, sURL ):
     #
-    from Iter.AllVers   import iMap, lMap, iZip
-    from String.Find    import getTextInQuotes
-    from Web.HTML       import oFindLinkStart # href=
     #
     lParts      = oFindLinkStart.split( sHTML ) # href=
     #
@@ -693,8 +697,6 @@ def _getSitePathOffUrl( sURL ):
 
 def _getDecorationUrlDict( lURLs, fGetDecoration ):
     #
-    from Collect.Get    import getDecoratedIter
-    from Dict.Get       import getDictOfListsOffItems
     #
     dDomainsURLs        = getDictOfListsOffItems(
                             getDecoratedIter( lURLs, fGetDecoration ) )

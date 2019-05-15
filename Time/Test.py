@@ -20,12 +20,24 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2018 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
 
-from datetime   import datetime
+from datetime       import datetime
+from time           import strptime
 
-from Time       import sFormatISOdateTime, sFormatISOdateTimeNoColon # __init__.py
+try:
+    from .Convert   import ( getSecsSinceEpochFromString, sFormatDateAm,
+                             getDateTimeObjFromString, sFormatUSAdateTime )
+    # __init__.py
+    from ..Time     import ( sFormatISOdateTime, sFormatISOdateTimeNoColon,
+                             sFormatDateEu )
+except ValueError:
+    from Convert    import ( getSecsSinceEpochFromString, sFormatDateAm,
+                             getDateTimeObjFromString, sFormatUSAdateTime )
+    # __init__.py
+    from Time       import ( sFormatISOdateTime, sFormatISOdateTimeNoColon,
+                             sFormatDateEu )
 
 
 class Finished( Exception ): pass
@@ -38,7 +50,6 @@ def isISOdatetime( sDateTime, sFormat = sFormatISOdateTime ):
     #
     # '2005-07-24 11:28:34'
     #
-    from time import strptime
     #
     bGotStringDate      = False
     #
@@ -98,7 +109,6 @@ def areSecsClose( iTime1, iTime2, iDeltaOK = 61 ):
 
 def isDateSomewhere( sDate, sFormat ):
     #
-    from Time.Convert import getSecsSinceEpochFromString
     #
     bSomeDate = False
     #
@@ -132,7 +142,6 @@ def isDateSomewhere( sDate, sFormat ):
    
 def isDateUSA( sDate ):
     #
-    from Time.Convert import sFormatDateAm
     #
     return isDateSomewhere( sDate, sFormatDateAm )
 
@@ -140,7 +149,6 @@ def isDateUSA( sDate ):
 
 def isDateTimeUSA( sDateTime ):
     #
-    from Time.Convert import getDateTimeObjFromString, sFormatUSAdateTime
     #
     bDateTimeOK = True
     #
@@ -159,7 +167,6 @@ def isDateTimeUSA( sDateTime ):
 
 def isDateEuro( sDate ):
     #
-    from Time import sFormatDateEu
     #
     return isDateSomewhere( sDate, sFormatDateEu )
 
@@ -171,7 +178,6 @@ if __name__ == "__main__":
     #
     from time import time
     #
-    from Time.Convert   import getDateTimeObjFromString
     from Time.Output    import getNowIsoDateTimeFileNameSafe
     #
     from Utils.Result   import sayTestResult

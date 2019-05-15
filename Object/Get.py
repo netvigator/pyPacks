@@ -29,8 +29,22 @@
 # note getObjFromFileContent() and PutReprInTemp() are in File.Get & File.Write
 
 import inspect
+from random                 import shuffle
+from string                 import digits
+from string                 import ascii_letters as letters
 
-from Utils.Both2n3 import PYTHON3
+try:
+    from ..Collect.Cards    import ShuffleAndCut
+    from ..Dict.Get         import getKeyIter
+    from ..Iter.AllVers     import lRange, tFilter, tZip
+    from ..Dict.Get         import getKeyList
+    from ..Utils.Both2n3    import PYTHON3
+except ValueError:
+    from Collect.Cards      import ShuffleAndCut
+    from Dict.Get           import getKeyIter
+    from Iter.AllVers       import lRange, tFilter, tZip
+    from Dict.Get           import getKeyList
+    from Utils.Both2n3      import PYTHON3
 
 
 class QuickObject( object ):
@@ -112,8 +126,6 @@ class RandomFeederClass( object ):
                    bShuffleOnRecycle = False,
                    bShuffle          = True ):
         #
-        from Iter.AllVers   import lRange
-        from Dict.Get       import getKeyList
         #
         if isinstance( uListDict, dict ): # dictionary
             #
@@ -145,8 +157,6 @@ class RandomFeederClass( object ):
 
     def doShuffle( self ):
         #
-        from random         import shuffle
-        from Collect.Cards  import ShuffleAndCut
         #
         shuffle( self.lSeq )
         #
@@ -314,8 +324,6 @@ class _RandomLettersAndNumbers( RandomFeederClass ):
     #
     def __init__( self ):
         #
-        from string import digits
-        from string import ascii_letters as letters
         #
         sLettersNumbers = digits + letters + digits
         #
@@ -361,8 +369,6 @@ def _notHidden( sProperty ):
 
 def _getObjProperties( oObj ):
     #
-    from Dict.Get       import getKeyIter
-    from Iter.AllVers   import tFilter
     #
     return tFilter( _notHidden, getKeyIter( oObj.__dict__ ) )
 
@@ -376,7 +382,6 @@ def getAllPropertyValues( oObj ):
     #
     # not used anywhere
     #
-    from Iter.AllVers   import tZip
     #
     tProperties = _getObjProperties( oObj )
     #

@@ -20,10 +20,15 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2016 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
 
 from six import print_ as print3
+
+try:
+    from ..Iter.Test    import isIterable
+except ValueError:
+    from Iter.Test      import isIterable
 
 class ObserverClass( object ):
     #
@@ -42,7 +47,6 @@ class ObserverClass( object ):
     #
     def __init__ ( self, uNewSubscribers = None ):
         #
-        from Iter.Test     import isIterable
         #
         self.lSubscribers = []
         #

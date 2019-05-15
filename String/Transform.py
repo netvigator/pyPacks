@@ -20,13 +20,28 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2018 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
+
+from re import compile as REcompile
+from re import escape, IGNORECASE, MULTILINE
+#
+try:
+    from .Find              import getRegExObj
+    from .Replace           import ReplaceManyOldWithBlanks
+    from ..Dict.Get         import getKeyIter, getItemIter, getValueIter
+    from ..Iter.AllVers     import iMap, iZip
+    from ..Utils.Both2n3    import maketrans, translate
+except ValueError:
+    from Find               import getRegExObj
+    from Replace            import ReplaceManyOldWithBlanks
+    from Dict.Get           import getKeyIter, getItemIter, getValueIter
+    from Iter.AllVers       import iMap, iZip
+    from Utils.Both2n3      import maketrans, translate
 
 
 def getTranslatorStr( sOld, sNew = None ):
     #
-    from Utils.Both2n3 import maketrans
     #
     if sNew is None: sNew = ''.ljust( len( sOld ) )
     #
@@ -37,7 +52,6 @@ def getTranslatorStr( sOld, sNew = None ):
 
 def TranslatorFactory( sOld, sNew = None ):
     #
-    from Utils.Both2n3 import translate
     #
     sTranslatorStr  = getTranslatorStr( sOld, sNew )
     #
@@ -53,7 +67,6 @@ def TranslatorFactory( sOld, sNew = None ):
 
 def getRemoveMulitNewLinesFinder( iWantLines = 1 ):
     #
-    from Find import getRegExObj
     #
     iFindHowMany = iWantLines + 1
     #
@@ -83,7 +96,6 @@ def SubstChars( sOrig, sOld = '', sNew = '' ):
     This performs CASE-SENSITIVE substitutions.
     """
     #
-    from Utils.Both2n3 import translate
     #
     sTransStr   = getTranslatorStr( sOld, sNew )
     #
@@ -113,11 +125,6 @@ def _stripEscapes( s ):
 def getSwapper( dReplace,
                 bIgnoreCase = False, bEscape = True, bMultiLine = False ):
     #
-    from re import compile as REcompile
-    from re import escape, IGNORECASE, MULTILINE
-    #
-    from Iter.AllVers   import iMap, iZip
-    from Dict.Get       import getKeyIter, getItemIter, getValueIter
     #
     dReplace        = dict( dReplace )
     #
@@ -174,7 +181,6 @@ def getSwapper( dReplace,
 
 def RemoveMany( sText, lReplace ):
     #
-    from String.Replace import ReplaceManyOldWithBlanks
     #
     return ReplaceManyOldWithBlanks( sText, lReplace, bJustRemove = True )
 
@@ -187,7 +193,6 @@ def StripString( sText ): return sText.strip()
 
 def StripLines( sText ):
     #
-    from Iter.AllVers import iMap
     #
     lLines          = sText.split( '\n' )
     #
@@ -246,7 +251,10 @@ def getLinesTrimmed( sText, bKeepLen = False ):
     blank lines get obliterated
     """
     #
-    from String.Eat import eatEndSpaces
+    try: # moving this to the top breaks this package!
+        from .Eat   import eatEndSpaces
+    except ValueError: # maybe circular import issue
+        from Eat    import eatEndSpaces
     #
     # from time import clock
     #

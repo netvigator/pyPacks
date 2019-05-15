@@ -20,10 +20,17 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2018 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
 
-from String.Split import SplitRegular as _SplitRegular
+try:
+    from .Split         import SplitC, iterSplit, SplitRegular as _SplitRegular
+    from ..Dict.Get     import getDictOffPairOfLists
+    from ..Iter.AllVers import iFilter, lFilter, iMap
+except ValueError:
+    from Split          import SplitC, iterSplit, SplitRegular as _SplitRegular
+    from Dict.Get       import getDictOffPairOfLists
+    from Iter.AllVers   import iFilter, lFilter, iMap
 
 
 
@@ -51,7 +58,10 @@ def _obsoleteGlobalReplacements( sText, lListofTuples ):
     Multiple replacements in one pass via re.
     """
     #
-    from String.Transform   import getSwapper
+    try: # moving this to the top breaks this package!
+        from Transform      import getSwapper
+    except ValueError: # maybe circular import issue
+        from .Transform     import getSwapper
     #
     dReplace            = dict( lListofTuples )
     #
@@ -106,7 +116,11 @@ def _obsoleteGlobalReplacements( sText, lListofTuples ):
 def getManyOldWithManyNewSwapper( dReplace,
                                     bEscape = True, bMultiLine = False ):
     #
-    from String.Transform import getSwapper
+    #
+    try: # moving this to the top breaks this package!
+        from Transform      import getSwapper
+    except ValueError: # maybe circular import issue
+        from .Transform     import getSwapper
     #
     Swapper = getSwapper( dReplace,
                     bEscape = bEscape, bMultiLine = bMultiLine )
@@ -126,8 +140,11 @@ def ReplaceManyOldWithManyNew( sText, dReplace, bEscape = True ):
 
 def getReplaceManyOldWithBlanksSwapper( lReplace, bJustRemove = False ):
     #
-    from Dict.Get           import getDictOffPairOfLists
-    from String.Transform   import getSwapper
+    try: # moving this to the top breaks this package!
+        from Transform      import getSwapper
+    except ValueError: # maybe circular import issue
+        from .Transform     import getSwapper
+    #
     #
     if bJustRemove:
         #
@@ -254,8 +271,10 @@ def replaceLast( s, sOld, sNew, iHowMany = 1 ):
 
 def getGlobalReplaceReSplits( oFinder, sHaystack, sNewNeedle ):
     #
-    from String.Get   import getStripped
-    from Iter.AllVers import iFilter, lFilter, iMap
+    try: # moving this to the top breaks this package!
+        from .Get   import getStripped
+    except ValueError: # maybe circular import issue
+        from Get    import getStripped    
     #
     lParts = oFinder.split( sHaystack )
     #
@@ -277,7 +296,6 @@ def _getReplacedSplit( sHaystack, oFinder, sNewNeedle='' ):
     currently not called anywhere, not even tested here
     """
     #
-    from Split  import iterSplit
     #
     iterParts = iterSplit( sHaystack, oFinder )
     #
@@ -330,7 +348,6 @@ def _global_ReplaceC( sThis, sDump, sWant = '' ):
     currently not used anywhere
     """
     #
-    from String.Split import SplitC
     #
     return _obsoleteGlobalReplace( sThis, sDump, sWant, SplitC )
 

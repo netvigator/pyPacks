@@ -23,13 +23,22 @@
 # Copyright 2004-2016 Rick Graves
 #
 
+from six                    import print_ as print3
+
+try:
+    from ..Dict.Get         import getItemIter
+    from ..Object.Get       import ValueContainer
+    from ..Utils.TimeTrial  import TimeTrial
+except ValueError:
+    from Dict.Get           import getItemIter
+    from Object.Get         import ValueContainer
+    from Utils.TimeTrial    import TimeTrial
 
 
 def getAttributesFromDict(d, obj=None, objName="self"):
     #
     """No need for self.foo = foo, self.bar = bar, etc."""
     #
-    from Dict.Get import getItemIter
     #
     if obj is None:
         obj = d.pop(objName)
@@ -55,10 +64,7 @@ class _getsAttributesFromKWArgs( object ):
 
 def _AttributesFromKWArgsSpeedTest():
     #
-    from six                import print_ as print3
     #
-    from Object.Get         import ValueContainer
-    from Utils.TimeTrial    import TimeTrial
     #
     print3( '\n_getsAttributesFromKWArgs' )
     TimeTrial( _getsAttributesFromKWArgs,

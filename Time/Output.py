@@ -20,15 +20,35 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2018 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
 
-from time       import time, mktime
+from locale import DAY_1, DAY_2, DAY_3, DAY_4, DAY_5, DAY_6, DAY_7, nl_langinfo
+from time   import time, mktime, strftime, localtime, tzname
 
-from Time       import ( iSecsPerDay,
-                         sFormatISOdateTime,
-                         sFormatISOdateTimeNoColon,
-                         sFormatISOdateTimeNoSpace ) # in __init__.py
+try:
+    from .Clock             import getTupleGMT
+    from .Convert           import getIsoDateTimeStrFromSecs, getNormalDateFromSecs
+    from ..Time             import ( iSecsPerDay,
+                                     sFormatISOdateTime,
+                                     sFormatISOdateTimeNoColon,
+                                     sFormatISOdateTimeNoSpace ) # in __init__.py
+    from ..Iter.AllVers     import tMap
+    from ..Numb.Output      import getSayLessThanOne
+    from ..String.Eat       import eatCharsOffEnd
+    from ..String.Output    import ReadableNo, Plural
+except ValueError:
+    from Clock              import getTupleGMT
+    from Convert            import getIsoDateTimeStrFromSecs, getNormalDateFromSecs
+    from Time               import ( iSecsPerDay,
+                                     sFormatISOdateTime,
+                                     sFormatISOdateTimeNoColon,
+                                     sFormatISOdateTimeNoSpace ) # in __init__.py
+    from Iter.AllVers       import tMap
+    from Numb.Output        import getSayLessThanOne
+    from String.Eat         import eatCharsOffEnd
+    from String.Output      import ReadableNo, Plural
+
 
 bDebugPrint         = False
 bTurnOnDebugPrint   = False
@@ -36,8 +56,6 @@ bTurnOnDebugPrint   = False
 
 def sayGMT( tNowGMT = None, sFormat = sFormatISOdateTime, sBetween = ' ' ):
     #
-    from time       import strftime
-    from Time.Clock import getTupleGMT
     #
     if tNowGMT is None:
         #
@@ -65,7 +83,6 @@ def sayGMT( tNowGMT = None, sFormat = sFormatISOdateTime, sBetween = ' ' ):
 
 def sayLocalTime( tNowGMT = None, sFormat = '%a, %d %b %Y, %H:%M:%S' ):
     #
-    from time import strftime, localtime, tzname
     #
     if tNowGMT is None:    tNowGMT    = localtime()
     #
@@ -99,7 +116,6 @@ def sayLocalDateNoTime( tNowGMT = None ):
 
 def getNowIsoDateTimeStr( bWantLocal = True, sFormat = sFormatISOdateTime ):
     #
-    from Time.Convert import getIsoDateTimeStrFromSecs
     #
     return getIsoDateTimeStrFromSecs(
             bWantLocal = bWantLocal, sFormat = sFormat )
@@ -108,7 +124,6 @@ def getNowIsoDateTimeStr( bWantLocal = True, sFormat = sFormatISOdateTime ):
 
 def getNowIsoDateOnly( bWantLocal = True ):
     #
-    from Time.Convert import getIsoDateTimeStrFromSecs
     #
     sDateTime = getIsoDateTimeStrFromSecs( bWantLocal = bWantLocal )
     #
@@ -151,7 +166,10 @@ def getIsoDateTimeNowPlusNoSpaces(
     if params are negative, returns time in the past
     '''
     #
-    from Time.Delta import getIsoDateTimeNowPlus
+    try: # moving this to the top breaks this package!
+        from .Delta import getIsoDateTimeNowPlus
+    except ValueError: # maybe circular import issue
+        from Delta import getIsoDateTimeNowPlus
     #
     sTime = getIsoDateTimeNowPlus(
         iDays       = iDays,
@@ -178,8 +196,10 @@ def getIsoDateTimeNoSpacesFromSecsFromNow( fSecsFromNow, bWantLocal = True ):
 
 def getSayDurationAsDecimal( nSince = 0, nNow = None ):
     #
-    from String.Output  import ReadableNo
-    from Time.Delta     import getDuration, getDurationUnits
+    try: # moving this to the top breaks this package!
+        from .Delta import getDuration, getDurationUnits
+    except ValueError: # maybe circular import issue
+        from Delta  import getDuration, getDurationUnits
     #
     nDuration           = getDuration( nSince, nNow )
     #
@@ -212,11 +232,10 @@ def getSayDurationAsDaysHrsMinsSecs( nSince = 0, nNow = None ):
     returns string showing days hours seconds duration between them.
     """
     #
-    from Iter.AllVers   import tMap
-    from Numb.Output    import getSayLessThanOne
-    from String.Output  import Plural
-    from String.Eat     import eatCharsOffEnd
-    from Time.Delta     import getDuration
+    try: # moving this to the top breaks this package!
+        from .Delta import getDuration
+    except ValueError: # maybe circular import issue
+        from Delta  import getDuration
     #
     nDuration           = getDuration( nSince, nNow )
     #
@@ -312,7 +331,6 @@ def getIsoDate( fSecsSinceEpoch = None, bWantLocal = True ):
     can pass seconds since epoch to get date for that time.
     """
     #
-    from Time.Convert   import getIsoDateTimeStrFromSecs
     #
     sSayDate    = getIsoDateTimeStrFromSecs(
                         fSecsSinceEpoch, bWantLocal = bWantLocal )
@@ -328,7 +346,6 @@ def getNormalDate( fSecsSinceEpoch = None, bWantLocal = True ):
     can pass seconds since epoch to get date for that time.
     """
     #
-    from Time.Convert    import getNormalDateFromSecs
     #
     return getNormalDateFromSecs( fSecsSinceEpoch, bWantLocal )
 
@@ -337,7 +354,6 @@ def getNormalDate( fSecsSinceEpoch = None, bWantLocal = True ):
 
 def _getDaysTuple():
     #
-    from locale import DAY_1, DAY_2, DAY_3, DAY_4, DAY_5, DAY_6, DAY_7
     #
     return ( DAY_1, DAY_2, DAY_3, DAY_4, DAY_5, DAY_6, DAY_7 )
 
@@ -347,7 +363,6 @@ _tDaysOfWeek = _getDaysTuple()
 
 def getTextDowOffIntDow( iDOW ):
     #
-    from locale import nl_langinfo
     #
     return nl_langinfo( _tDaysOfWeek[ iDOW ] )
 

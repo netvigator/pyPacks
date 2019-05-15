@@ -20,10 +20,17 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2016 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
 
-from Utils.Both2n3      import setNumberTypes
+try:
+    from ..Collect.Test     import isListOrTuple, AllMeet
+    from ..Iter.AllVers     import iRange
+    from ..Utils.Both2n3    import setNumberTypes
+except ValueError:
+    from Collect.Test       import isListOrTuple, AllMeet
+    from Iter.AllVers       import iRange
+    from Utils.Both2n3      import setNumberTypes
 
 
 def isEven( iNumb2Test ):
@@ -48,13 +55,11 @@ def isWhole( n ):   return int( n ) == n
 
 def hasIntegersOnly( *args ):
     #
-    from Collect.Test   import isListOrTuple
     #
     if args and len( args ) == 1 and isListOrTuple( args[0] ):
         #
         args = args[0]
     #
-    from Collect.Test import AllMeet
     #
     bIntegerOnly = AllMeet( args, isInteger )
     #
@@ -88,7 +93,6 @@ def areEquals( nOrig, nTest, iPerCent = 0 ):
 
 def getHowClose( nOrig, nTest ):
     #
-    from Iter.AllVers import iRange
     #
     if nOrig == nTest:
         #

@@ -20,18 +20,33 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2016 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
 '''
 
 '''
+from os.path        import isfile, splitext, join, exists
+from os             import listdir, rename, getcwd
+#
+from six            import print_ as print3
+
+try:
+    from ..Collect.Get    import getSeparateKeysValues
+    from ..Iter.AllVers import tFilter, iMap, tMap, iZip
+except ValueError:
+    from Collect.Get    import getSeparateKeysValues
+    from Iter.AllVers   import tFilter, iMap, tMap, iZip
+
 
 def _isDigit( c ): return c.isdigit()
 
 
 def _getEndDigits( s ):
     #
-    from Iter.AllVers   import takewhile
+    try: # moving this to the top breaks this package!
+        from ..Iter.AllVers import takewhile
+    except ValueError: # maybe circular import issue
+        from Iter.AllVers   import takewhile
     #
     lChars = list( s )
     #
@@ -51,7 +66,6 @@ def _getEndDigits( s ):
 
 def _getMaxEndDigits( l ):
     #
-    from Iter.AllVers import iMap
     #
     return max( iMap( len, l ) )
 
@@ -59,13 +73,7 @@ def _getMaxEndDigits( l ):
 
 def OrderFileNames( sDir = '', iWantDigits = None, sSeparator = '_' ):
     #
-    from os.path        import isfile, splitext, join, exists
-    from os             import listdir, rename, getcwd
     #
-    from six            import print_ as print3
-    #
-    from Collect.Get    import getSeparateKeysValues
-    from Iter.AllVers   import tFilter, iMap, tMap, iZip
     #
     if type( iWantDigits ) == str and iWantDigits.isdigit():
         #

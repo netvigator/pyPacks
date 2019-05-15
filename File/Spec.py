@@ -20,19 +20,23 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2015 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
 #from os.path import join, isfile, getmtime, split, splitext, exists, basename, isdir
 #from os      import stat, environ, getcwd, listdir, rename, remove
 
-from os.path    import join
+from os.path import join, split, splitext, basename, isdir, join
 
-from Dir.Get    import sTempDir, sDurableTempDir
+try:
+    from ..Dir.Get      import sTempDir, sDurableTempDir
+    from ..String.Test  import isStringLike
+except ValueError:
+    from Dir.Get        import sTempDir, sDurableTempDir
+    from String.Test    import isStringLike
 
 
 def getPathNameExt( sSpec ):
     #
-    from os.path import split, splitext
     #
     sPath, sFile = split( sSpec)
     #
@@ -44,7 +48,6 @@ def getPathNameExt( sSpec ):
 
 def getExtension( sFile ):
     #
-    from os.path import splitext
     #
     sName, sExt = splitext( sFile )
     #
@@ -54,7 +57,6 @@ def getExtension( sFile ):
 
 def getNameNoPathNoExt( sFullSpec ):
     #
-    from os.path import splitext, basename
     #
     sName, sExt = splitext( basename( sFullSpec ) )
     #
@@ -67,7 +69,6 @@ def _getPartsRight( tParts ):
     '''must pass tuple with file spec parts
     '''
     #
-    from os.path import isdir
     #
     while tParts and tParts[-1] is None:
         #
@@ -92,7 +93,6 @@ def _getFileSpecOffParts( tParts ):
     '''must pass tuple with file spec parts
     '''
     #
-    from os.path import join
     #
     tParts = _getPartsRight( tParts )
     #
@@ -103,7 +103,6 @@ def _getFileSpecOffParts( tParts ):
 
 def getFullSpec( *tParts ):
     #
-    from String.Test import isStringLike
     #
     if isStringLike( tParts ):
         #
@@ -124,7 +123,6 @@ def getFullSpec( *tParts ):
 
 def getFullSpecDefaultOrPassed( *tParts, **kwargs ):
     #
-    from String.Test import isStringLike
     #
     if not tParts:
         #

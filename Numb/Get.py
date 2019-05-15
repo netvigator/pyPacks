@@ -22,8 +22,23 @@
 #
 # Copyright 2004-2019 Rick Graves
 #
+#
+from itertools              import islice
+from random                 import random, shuffle
 
-from six import print_ as print3
+from six                    import print_ as print3
+from six.moves              import reduce as Reduce
+
+try:
+    from ..Collect.Test     import isListOrTuple, AnyMeet
+    from ..Numb.Test        import isFloat, hasIntegersOnly
+    from ..Iter.AllVers     import iMap, iRange, iZipLongest
+    from ..Utils.TimeTrial  import TimeTrial
+except ValueError:
+    from Collect.Test       import isListOrTuple, AnyMeet
+    from Test               import isFloat, hasIntegersOnly
+    from Iter.AllVers       import iMap, iRange, iZipLongest
+    from Utils.TimeTrial    import TimeTrial
 
 
 def getAdder( iAddTo ):
@@ -46,8 +61,6 @@ def getMultiplier( iTimes ):
 
 def getRandomDigits( iHowMany = 10 ):
     #
-    from random import random
-    #
     sRandom = ''
     #
     while len( sRandom  ) < iHowMany + 3:
@@ -61,7 +74,6 @@ def getRandomDigits( iHowMany = 10 ):
 
 def _RandomDigitFeederFactory():
     #
-    from random import random, shuffle
     #
     lDigits = []
     #
@@ -109,8 +121,6 @@ def getBooleanIntOther( u ):
 
 def _getBooleanIntTimeTrial():
     #
-    from Iter.AllVers       import iMap
-    from Utils.TimeTrial  import TimeTrial
     #
     tTestVals = ( 'a', '', 10, 0, 0.1, 0.0, [''], [],  getAdder, None )
     #
@@ -158,9 +168,6 @@ def getSumOnlyIntegers( *Numbers, **kwargs ):
     this function is obsolete!!!
     '''
     #
-    from six.moves      import reduce as Reduce
-    #
-    #from Utils.Both2n3 import Reduce
     #
     nEmptyListValue = kwargs.get( 'nEmptyListValue', 0 )
     #
@@ -185,7 +192,6 @@ def _getSumNoneOK( x, y = None ):
 
 def getSumLeft2Right( *args ):
     #
-    from Collect.Test import isListOrTuple
     #
     if args and len( args ) == 1 and isListOrTuple( args[0] ):
         #
@@ -210,16 +216,6 @@ def getSumOffList( *Numbers ):
     which can result in catastrophic cumulative rounding errors
     if there are floats.  this avoids rounding errors.
     '''
-    #
-    from itertools      import islice
-    #
-    from six.moves      import reduce as Reduce
-    #
-    from Collect.Test   import isListOrTuple
-    from Iter.AllVers   import iMap, iZipLongest
-    from Numb.Test      import isFloat
-   #from Utils.Both2n3  import Reduce
-    from Collect.Test   import AnyMeet
     #
     #
     if len( Numbers ) == 1 and isListOrTuple( Numbers[0] ):
@@ -272,8 +268,6 @@ def getSum( *args ):
     if there are floats.  this avoids rounding errors.
     '''
     #
-    from Numb.Test      import hasIntegersOnly
-    from Collect.Test   import isListOrTuple
     #
     if args and len( args ) == 1 and isListOrTuple( args[0] ):
         #
@@ -299,7 +293,6 @@ def iRanger( iStart, iStop, iStep = 1 ):
     iRanger( 6, 10 ) returns 6, 7, 8, 9, 10
     '''
     #
-    from Iter.AllVers   import iRange
     #
     return iRange( iStart, iStop + iStep, iStep ) 
 
@@ -351,7 +344,6 @@ def getHowManyDigitsNeeded( iNumb ):
     if you pass an integer under   1000, returns 3
     if you pass an integer under 10,000, returns 4
     '''
-    from Iter.AllVers import iRange
     #
     for i in iRange( 1, 20 ):
         #
@@ -368,7 +360,7 @@ if __name__ == "__main__":
     #
     from six            import next as getNext
     #
-    from Iter.AllVers   import iRange, tMap, iRange
+    from Iter.AllVers   import tMap
     #
     from Utils.Result   import sayTestResult
     #

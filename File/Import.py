@@ -20,16 +20,40 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2018 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
-from six            import print_ as print3
-from six            import next   as getNext
+class Finished( Exception ): pass
 
-from Dir.Get        import sTempDir
-from File.Test      import isFileThere
-from Iter.AllVers   import iMap, tMap
-from String.Find    import getRegExObj
-#from Utils.Both2n3 import getNext
+from copy                   import copy
+from csv                    import reader
+
+from six                    import print_ as print3
+from six                    import next   as getNext
+
+try:
+    from .Get               import getFileObject
+    from .Test              import isFileThere
+    from .Spec              import getFullSpec
+    from ..Dir.Get          import sTempDir
+    from ..Iter.AllVers     import iFilter, iMap, tMap, iRange, iZip
+    from ..String.Get       import ( getTextAfter, getCharNotIn,
+                                     getTextAfterLast, getContentOutOfQuotes )
+    from ..String.Find      import getRegExObj
+    from ..String.Replace   import getBlanksForReMatchObj
+    from ..String.Test      import isQuote
+except ValueError:
+    from Get           import getFileObject
+    from Test          import isFileThere
+    from Spec          import getFullSpec
+    from Dir.Get            import sTempDir
+    from Iter.AllVers       import iFilter, iMap, tMap, iRange, iZip
+    from String.Get         import ( getTextAfter, getCharNotIn,
+                                     getTextAfterLast, getContentOutOfQuotes )
+    from String.Find        import getRegExObj
+    from String.Replace     import getBlanksForReMatchObj
+    from String.Test        import isQuote
+
+
 
 tLineEnd = ( '\n', '\r' )
 
@@ -56,8 +80,6 @@ def unSlashQuotes( s ):
 
 def getFileObjFirstLine( *sFileSpec, **kwargs ):
     #
-    from File.Get       import getFileObject
-    from File.Spec      import getFullSpec
     #
     sMode = 'r'
     sNcode = ''
@@ -78,7 +100,6 @@ def getFileObjFirstLine( *sFileSpec, **kwargs ):
 
 def _killNulls( s ):
     #
-    from String.Replace import getBlanksForReMatchObj
     #
     return _oNullFinder.sub( getBlanksForReMatchObj, s )
 
@@ -97,14 +118,6 @@ def getDictIterOffCSV( *sFileSpec, **kwargs ):
     CSV file MUST have column headings as first line.
     """
     #
-    from String.Test import isQuote
-    #
-    class Finished( Exception ): pass
-    #
-    from copy           import copy
-    #
-    from Iter.AllVers   import iRange, iZip
-    from String.Get     import getTextAfter, getCharNotIn, getTextAfterLast
     #
     fLineTreatment  = kwargs.get( 'fLineTreatment', None  )
     bSayLineErrors  = kwargs.get( 'bSayLineErrors', True )
@@ -301,7 +314,6 @@ def getDictIterOffCsvReader( oCsvReader ):
     CSV file MUST have column headings as first line.    
     '''
     #
-    from Iter.AllVers   import iZip
     #
     lHeader = getNext( oCsvReader )
     #
@@ -315,9 +327,6 @@ def getDictIterOffCsvReader( oCsvReader ):
 
 def getDictIterUseCsvReader(  *sFileSpec , **kwargs ):
     #
-    from csv            import reader
-    #
-    from File.Get       import getFileObject
     #
     delimiter = kwargs.get( 'delimiter', ',' )
     quotechar = kwargs.get( 'quotechar', '"' )
@@ -378,9 +387,6 @@ def setFromFileLines( *sFileSpec ):
     the line is considered to be what is within the quotes
     """
     #
-    from File.Get       import getFileObject
-    from Iter.AllVers   import iFilter
-    from String.Get     import getContentOutOfQuotes
     #
     return frozenset(
             iFilter( bool,

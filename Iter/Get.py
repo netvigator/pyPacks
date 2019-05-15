@@ -20,11 +20,18 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2017 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
 # itertools: New in version 2.3.
 
-from Utils.Get import getTrue as _getTrue
+from six                import next as getNext
+
+try:
+    from .AllVers       import iRange, iZipLongest
+    from ..Utils.Get    import getTrue as _getTrue
+except ValueError:
+    from AllVers        import iRange, iZipLongest
+    from Utils.Get      import getTrue as _getTrue
 
 
 def getSequencePairsThisWithNext( something ):
@@ -34,9 +41,6 @@ def getSequencePairsThisWithNext( something ):
     This returns an iterator ('a', 'b'), ('b', 'c'), ('c', 'd'), ('d', 'e')
     """
     #
-    from six            import next as getNext
-    #
-    #from Utils.Both2n3  import getNext
     #
     iterable = iter( something )
     #
@@ -53,8 +57,12 @@ def getSequencePairsThisWithNext( something ):
 
 def getItemIterWithKeysConsistentCase( lItems, bUpper = True ):
     #
-    from Collect.Get    import unZip
-    from Dict.Get       import getItemIter
+    try: # moving these to the top breaks this package!
+        from ..Collect.Get  import unZip
+        from ..Dict.Get     import getItemIter
+    except ValueError: # maybe circular import issue
+        from Collect.Get    import unZip
+        from Dict.Get       import getItemIter
     #
     if isinstance( lItems, dict ):
         #
@@ -82,10 +90,10 @@ def getPairsOffIterable( iterable ):
     This returns an iterator [('a', 'b'), ('c', 'd'), ('e', None)].
     """
     #
-    from six            import next as getNext
-    #
-    from Iter.Test      import isIterator
-   #from Utils.Both2n3  import getNext
+    try: # moving these to the top breaks this package!
+        from ..Iter.Test    import isIterator
+    except ValueError: # maybe circular import issue
+        from Iter.Test      import isIterator
     #
     bOddLen = False
     #
@@ -138,7 +146,6 @@ def iRevRange( iLen ): # for stepping thru a list backwards
     #
     """For stepping thru a list backwards."""
     #
-    from Iter.AllVers import iRange
     #
     return iRange( iLen - 1, -1, -1 )
 
@@ -147,7 +154,6 @@ def lRevRange( iLen ): # for stepping thru a list backwards
     #
     """For stepping thru a list backwards."""
     #
-    from Iter.AllVers import iRange
     #
     return list( iRevRange( iLen ) )
 
@@ -156,7 +162,6 @@ def tRevRange( iLen ): # for stepping thru a list backwards
     #
     """For stepping thru a list backwards."""
     #
-    from Iter.AllVers import iRange
     #
     return tuple( iRevRange( iLen ) )
 
@@ -164,14 +169,12 @@ def tRevRange( iLen ): # for stepping thru a list backwards
 
 def lZipLongest( *args, **kwargs ):
     #
-    from Iter.AllVers import iZipLongest
     #
     return list( iZipLongest( *args, **kwargs ) )
 
 
 def tZipLongest( *args, **kwargs ):
     #
-    from Iter.AllVers import iZipLongest
     #
     return tuple( iZipLongest( *args, **kwargs ) )
 

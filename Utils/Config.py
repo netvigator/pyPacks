@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2017 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
 """
 you need this in ConfExample.conf:
@@ -37,9 +37,33 @@ has_option( section, option )
 
 """
 
-from six            import print_ as print3
+from copy               import copy
+from inspect            import stack
+from os                 import access, R_OK
+from os.path            import dirname, join
+from socket             import gethostname
+from sys                import path, argv
 
-from Dict.Get       import getItemIter
+from six                import print_ as print3
+
+try:
+    from ..Collect.Filter import RemoveDupes
+    from ..Collect.Test import isListOrTuple
+    from ..Dict.Get     import getItemIter, getDictOffPairOfLists, getKeyIter
+    from ..File.Test    import isFileThere
+    from ..Iter.AllVers import iFilter, lMap
+    from ..Object.Get   import ValueContainer
+    from ..String.Get   import getTextAfter, getTextBefore
+except ValueError:
+    from Collect.Filter import RemoveDupes
+    from Collect.Test   import isListOrTuple
+    from Dict.Get       import getItemIter, getDictOffPairOfLists, getKeyIter
+    from File.Test      import isFileThere
+    from Iter.AllVers   import iFilter, lMap
+    from Object.Get     import ValueContainer
+    from String.Get     import getTextAfter, getTextBefore
+
+
 
 class invalidInputError( ValueError ): pass
 
@@ -76,11 +100,6 @@ def _isNotUsrOrVar( s ):
 
 def _getPathTryThis():
     #
-    from inspect        import stack
-    from os.path        import dirname
-    from sys            import path, argv
-    #
-    from Iter.AllVers   import iFilter
     #
     yield argv[0]
     #
@@ -97,9 +116,6 @@ def _getPathTryThis():
 
 def _findConfFile( sConfigFile ):
     #
-    from File.Test      import isFileThere
-    #
-    from os.path        import join
     #
     if not isFileThere( sConfigFile ):
         #
@@ -124,9 +140,6 @@ def getConfigOptions(
     '''
     all config option names are coverted to all lower case!!!
     '''
-    from os             import access, R_OK
-    #
-    from Collect.Test   import isListOrTuple
     #
     if type( sConfigFile ) == type( [] ):   # list!? what the heck!!!
         #
@@ -188,7 +201,6 @@ def __hasContentNotComment( s ):
 
 def __getOption( s ):
     #
-    from String.Get import getTextBefore
     #
     s = getTextBefore( s, '=' )
     #
@@ -197,9 +209,10 @@ def __getOption( s ):
 
 def _getMainOptions( sConfigFile ):
     #
-    from File.Get   import getContent
-    from Iter.AllVers   import iFilter, lMap
-    from String.Get import getTextAfter, getTextBefore
+    try: # moving this to the top breaks this package!
+        from ..File.Get import getContent
+    except ValueError: # maybe circular import issue
+        from File.Get   import getContent
     #
     sConfigFile = _findConfFile( sConfigFile )
     #
@@ -233,9 +246,6 @@ def getConfLite(
     For everything under main, you can get return an object with
     properties for all the values under main (including defaults).
     '''
-    from Object.Get     import ValueContainer
-    from Dict.Get       import getDictOffPairOfLists, getKeyIter
-    from Collect.Filter import RemoveDupes
     #
     if not 'main' in dDefaults:
         #
@@ -453,9 +463,6 @@ def getConfName4Host( cBaseName, bVerbose = True ):
     This will look for MyApp-Gertrude.conf
     '''
     #
-    from socket     import gethostname
-    #
-    from File.Test  import isFileThere
     #
     sHostName = gethostname()
     #
@@ -487,10 +494,6 @@ def getConfMainIsDefaultHostnameVaries(
     see bash shell prompt, hostname is right there
     you must get the hostname exactly right!
     '''
-    from copy       import copy
-    from socket     import gethostname
-    #
-    from Dict.Get   import getKeyIter
     #
     dConfig = getConfDict( sConfigFile )
     #

@@ -20,20 +20,31 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2016 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
 
-from six            import print_ as print3
+from six                    import print_ as print3
 
-from String.Output  import getZeroPadder
+try:
+    from ..Iter.AllVers     import iMap, tFilter, lRange
+    from ..String.Get       import getAlphaNumsOnly
+    from ..String.Output    import getZeroPadder
+    from ..Utils.Both2n3    import getZeroFilled
+except ValueError:
+    from Iter.AllVers       import iMap, tFilter, lRange
+    from String.Get         import getAlphaNumsOnly
+    from String.Output      import getZeroPadder
+    from Utils.Both2n3      import getZeroFilled
+
 
 StrPadZero  = getZeroPadder( 3 )
 
 def getQuadTuple( sQuad, bIsDotQuad = False, bIsHexQuad = False ):
     #
-    from Iter.AllVers   import iMap
-    from String.Get import getAlphaNumsOnly
-    from Web.Test   import isHexQuad
+    try: # moving this to the top breaks this package!
+        from .Test          import isHexQuad
+    except ValueError: # maybe circular import issue
+        from Test           import isHexQuad
     #
     if bIsDotQuad:
         #
@@ -107,7 +118,10 @@ def getQuadTuple( sQuad, bIsDotQuad = False, bIsHexQuad = False ):
 
 def getDotQuad( sMayBeDotQuad, bLocalDotQuadOK = True, bExtremesOK = True, bOverOK = False ):
     #
-    from Web.Test import isDotQuadValid
+    try: # moving this to the top breaks this package!
+        from .Test  import isDotQuadValid
+    except ValueError: # maybe circular import issue
+        from Test   import isDotQuadValid
     #
     if type( sMayBeDotQuad ) == type( () ): sMayBeDotQuad = sMayBeDotQuad[0:1]
     #
@@ -137,7 +151,10 @@ def getDotQuadStripPort( sDotQuadColonPort ):
 
 def gotDotQuadPortTupleFromString( sMayBeDotQuad ):
     #
-    from Test import isDotQuadWithPort
+    try: # moving this to the top breaks this package!
+        from .Test import isDotQuadWithPort
+    except ValueError: # maybe circular import issue
+        from Test  import isDotQuadWithPort
     #
     tReturn = ( '', -1 )
     #
@@ -174,8 +191,10 @@ def getDotQuadsWithPorts( sStuff ):
     #
     # not used anywhere yet
     #
-    from Iter.AllVers import tFilter
-    from Web.Test import isDotQuadPortAfterCleanup
+    try: # moving this to the top breaks this package!
+        from .Test import isDotQuadPortAfterCleanup
+    except ValueError: # maybe circular import issue
+        from Test import isDotQuadPortAfterCleanup
     #
     lFrags = sStuff.split()
     #
@@ -185,7 +204,10 @@ def getDotQuadsWithPorts( sStuff ):
 
 def getDomainNameOrDotQuadWithPort( sMayBe ):
     #
-    from Test import isDomainNameOrDotQuadWithPort
+    try: # moving this to the top breaks this package!
+        from .Test import isDomainNameOrDotQuadWithPort
+    except ValueError: # maybe circular import issue
+        from Test import isDomainNameOrDotQuadWithPort
     #
     tReturn = ( '', -1 )
     #
@@ -233,7 +255,6 @@ def getQuadValue( uDotQuad, bIsDotQuad = False, bIsHexQuad = False ):
 
 def getDotQuadFromDotQuadTuple( tDotQuad ):
     #
-    from Iter.AllVers import iMap
     #
     lDotQuad    = iMap( str, tDotQuad )
     #
@@ -242,7 +263,6 @@ def getDotQuadFromDotQuadTuple( tDotQuad ):
 
 def getDotQuadFromValue( iValue ):
     #
-    from Iter.AllVers import lRange
     #
     lBits       = lRange( 4 )
     #
@@ -366,7 +386,6 @@ def getDotQuad4Sort( sDotQuad ):
     #
     #!# coverting to an integer may be better for storting
     #
-    from Iter.AllVers import iMap
     #
     sPort = ''
     #
@@ -418,8 +437,6 @@ def getHexQuadFromDotQuad( sQuad, sSeparator = '', bRemove0x = True ):
     #
     # not used anywhere yet
     #
-    from Iter.AllVers import iMap
-    from Utils.Both2n3 import getZeroFilled
     #
     tQuad   = getQuadTuple( sQuad, bIsDotQuad = True )
     #
@@ -443,7 +460,6 @@ def getHexQuadFromDotQuad( sQuad, sSeparator = '', bRemove0x = True ):
 
 def getDotQuadFromHexQuad( sQuad ):
     #
-    from Iter.AllVers import iMap
     #
     tQuad   = getQuadTuple( sQuad, bIsHexQuad = True )
     #

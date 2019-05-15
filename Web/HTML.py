@@ -20,11 +20,35 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2018 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
+from re import IGNORECASE, compile as REcompile
 
-from String.Find    import getRegExObj
-from String.Output  import getZeroPadder
+from six.moves.html_entities import entitydefs
+
+try:
+    from ..Dict.Get         import getDictOffPairOfLists, getItemIter
+    from ..Iter.AllVers     import iMap, lMap, tMap, tRange
+    from ..String.Find      import getRegExObj
+    from ..String.Get       import getTextBefore, getTextAfter
+    from ..String.Output    import getZeroPadder
+    from ..String.Replace   import ( getReplaceManyOldWithBlanksSwapper,
+                                     getGlobalReplaceReSplits )
+    from ..String.Test      import isStringQuoted
+    from ..String.Transform import getSwapper, getTranslatorStr
+    from ..Utils.Both2n3    import translate
+except ValueError:
+    from Dict.Get           import getDictOffPairOfLists, getItemIter
+    from Iter.AllVers       import iMap, lMap, tMap, tRange
+    from String.Find        import getRegExObj
+    from String.Get         import getTextBefore, getTextAfter
+    from String.Output      import getZeroPadder
+    from String.Replace     import ( getReplaceManyOldWithBlanksSwapper,
+                                     getGlobalReplaceReSplits )
+    from String.Test        import isStringQuoted
+    from String.Transform   import getSwapper, getTranslatorStr
+    from Utils.Both2n3      import translate
+
 
 #
 oFindiFrameBeg      = getRegExObj( '<iframe.*?>'  )
@@ -386,7 +410,6 @@ def _getCompleteTags():
 
 def getCompleteTagsWiper():
     #
-    from String.Replace import getReplaceManyOldWithBlanksSwapper
     #
     return getReplaceManyOldWithBlanksSwapper( _getCompleteTags() )
 
@@ -502,11 +525,6 @@ def _getEnvVariableTuple():
 
 def _getHTMLntts():
     #
-    from six.moves.html_entities    import entitydefs
-    #
-    from Dict.Get                   import getDictOffPairOfLists, getItemIter
-    from Iter.AllVers               import iMap, lMap, tMap, tRange
-   #from Utils.Both2n3              import entitydefs
     #
     #
     dCareful = \
@@ -614,7 +632,6 @@ class HTMLnttSwappersClass( object ):
     #
     def __init__(   self, **dUpdates ):
         #
-        from String.Transform   import getSwapper
         #
         dCareful, dHTMLntt, dNumbCodes, dOtherCodes, \
             dCarefulNoSemiC, dHTMLnttNoSemiC, dNumbCodesNoSemiC, dOthersNoSemiC = _getHTMLntts()
@@ -655,7 +672,6 @@ getChars4HtmlCodes = oHTMLnttSwapper.getChars4HtmlCodes
 
 def getEnvVariableFinder():
     #
-    from re import IGNORECASE, compile as REcompile
     #
     return REcompile( '|'.join( _getEnvVariableTuple() ), IGNORECASE )
 
@@ -721,7 +737,6 @@ def _getPaddedCells( lRows, iSpaces = 1 ):
 
 def getHtmlTable( lRows, sCaption = '', sCaptionAlign = '', iSpaces = 0, **dFormats ):
     #
-    from Iter.AllVers import iMap
     #
     if iSpaces:
         #
@@ -767,7 +782,6 @@ def _getSpecialCharCodes( sText ):
     Special Character Codes -- see _getSpecialCharCode().
     """
     #
-    from Iter.AllVers import iMap
     #
     lChars  = iMap( _getSpecialCharCode, sText )
     #
@@ -824,8 +838,6 @@ def getChars4SpecialCodes( sText, bKeepLen = False ):
     their regular characters -- see _getSpecialCharCode().
     """
     #
-    from Iter.AllVers   import iMap
-    from String.Get import getTextBefore, getTextAfter
     #
     lBlocks         = sText.split( '&#' )
     #
@@ -853,8 +865,6 @@ def ReplaceCharsWithSpecialCodes( sText, lCharNumbs, sTransStr = None ):
     Note -- sText cannot include high bit chars!!!
     """
     #
-    from Utils.Both2n3    import translate
-    from String.Transform   import getTranslatorStr
     #
     sText           = sText.replace( chr(160), ' ' )    # used as white space on web pages
     #
@@ -908,7 +918,6 @@ def addLineBreaks( sHTML ):
     you might appreciate this function.
     '''
     #
-    from String.Replace import getGlobalReplaceReSplits
     #
     return getGlobalReplaceReSplits( _oBreakHereFinder, sHTML, '\n<' )
 
@@ -925,7 +934,6 @@ def getTextgotYahooHTML( s ):
     # to
     # '_@Mpz5HxJ"7'
     #
-    from String.Test import isStringQuoted
     #
     while '&amp;' in s:
         #

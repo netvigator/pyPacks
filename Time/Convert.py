@@ -20,24 +20,46 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2018 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
 
-from Time import ( 
-        sFormatISOdateTime,
-        sFormatISOdate,
-        sFormatDateAm,
-        sFormatDateAmShort,
-        sFormatISONoSpace,
-        sFormatNatureUSA,
-        sFormatUSAdateTime ) # explicit imports better than implicit
+from datetime   import datetime, timedelta
+from time       import gmtime, localtime, mktime
+from time       import strftime, strptime, time, tzname, timezone
+
+
+try:
+    from ..Time          import ( 
+                sFormatISOdateTime,
+                sFormatISOdate,
+                sFormatDateAm,
+                sFormatDateAmShort,
+                sFormatISONoSpace,
+                sFormatNatureUSA,
+                sFormatUSAdateTime ) # explicit imports better than implicit
+    from ..Iter.AllVers import lMap, getEnumerator
+    from ..String.Find  import getRegExObj
+    from ..Utils.ImIf   import ImIf
+except ValueError:
+    from Time           import ( 
+                sFormatISOdateTime,
+                sFormatISOdate,
+                sFormatDateAm,
+                sFormatDateAmShort,
+                sFormatISONoSpace,
+                sFormatNatureUSA,
+                sFormatUSAdateTime ) # explicit imports better than implicit
+    from Iter.AllVers   import lMap, getEnumerator
+    from String.Find    import getRegExObj
+    from Utils.ImIf     import ImIf
+
+
 
 class FormatMismatchError( Exception ): pass
 
 class Finished( Exception ): pass
 
 
-from String.Find    import getRegExObj
 
 _oApacheDelimiters = getRegExObj( '[/: ]' )
 
@@ -78,9 +100,6 @@ def getIsoDateTimeFromObj( oDateTime ):
 def getIsoDateTimeStrFromSecs(
         fSecsSinceEpoch = None, bWantLocal = True, sFormat = sFormatISOdateTime ):
     #
-    from time           import strftime, gmtime, time, localtime
-    #
-    from Utils.ImIf     import ImIf
     #
     getTime             = ImIf( bWantLocal, localtime, gmtime )
     #
@@ -111,7 +130,6 @@ def getNormalDateFromSecs( fSecsSinceEpoch = None, bWantLocal = True ):
 
 def getDateTimeTupleFromString( sDateTime, sFormat = sFormatISOdateTime ):
     #
-    from time           import strptime, tzname
     #
     if '_' in sDateTime: sDateTime = sDateTime.replace( '_', ' ' )
     #
@@ -130,8 +148,6 @@ def getSecsSinceEpochFromString(
             sFormat     = sFormatISOdateTime,
             bAdjust2UTC = False ):
     #
-    from time           import mktime, timezone
-    from Utils.ImIf     import ImIf
     #
     tDateTime           = getDateTimeTupleFromString( sDateTime, sFormat )
     #
@@ -148,9 +164,10 @@ def getDateTimeObjFromString(
             bAdjust2UTC = False,
             oTimeZone   = None ):
     #
-    from time           import timezone
-    from Utils.ImIf     import ImIf
-    from datetime       import datetime, timedelta
+    try: # moving this to the top breaks this package!
+        from .Convert   import getDateTimeObjFromString
+    except ValueError: # maybe circular import issue
+        from Convert    import getDateTimeObjFromString
     #
     tDateTime       = getDateTimeTupleFromString( sDateTime, sFormat )
     #
@@ -174,7 +191,6 @@ def getSecsFromDuration( sHrsMinSec ):
     converts string 00:00:00 into integer seconds
     '''
     #
-    from Iter.AllVers import lMap
     #
     lParts = lMap( int, sHrsMinSec.split( ":" ) )
     #
@@ -245,9 +261,6 @@ def getIsoDateFromOther( sDate,
     handles coversions from formats such as 17 Jan 2014
     returns string date in desired format
     '''
-    from time           import strptime, strftime
-    #
-    from Iter.AllVers   import getEnumerator
     #
     sNewDate = sDate
     #
@@ -291,7 +304,6 @@ def getIsoDateFromOther( sDate,
 
 def getOtherTimeDatefromISO( sTimeStamp, sFormat = sFormatUSAdateTime ):
     #
-    from Time.Convert import getDateTimeObjFromString
     #
     oDateTime = getDateTimeObjFromString( sTimeStamp )
     #
@@ -306,7 +318,10 @@ def getDateTimeUSAfromISO( sTimeStamp, sFormat = sFormatUSAdateTime ):
 
 def getOtherDatefromISO( sDate, sFormat = sFormatISOdate ):
     #
-    from Time.Convert import getDateTimeObjFromString
+    try: # moving this to the top breaks this package!
+        from .Convert   import getDateTimeObjFromString
+    except ValueError: # maybe circular import issue
+        from Convert    import getDateTimeObjFromString
     #
     oDateTime = getDateTimeObjFromString( sDate, sFormatISOdate )
     #
@@ -321,7 +336,10 @@ def getDateUSAfromISO( sDate, sFormat = sFormatDateAm ):
 
 def getIsoDateTimeFromOther( sDateTime, sFormat = sFormatUSAdateTime ):
     #
-    from Time.Convert import getDateTimeObjFromString
+    try: # moving this to the top breaks this package!
+        from .Convert   import getDateTimeObjFromString
+    except ValueError: # maybe circular import issue
+        from Convert    import getDateTimeObjFromString
     #
     oDateTime = getDateTimeObjFromString( sDateTime, sFormat )
     #
@@ -333,7 +351,10 @@ def getIsoDateTimeFromOther( sDateTime, sFormat = sFormatUSAdateTime ):
 
 def getIsoDateTimeFromOtherStr( sDate, sFormat = sFormatUSAdateTime ):
     #
-    from Time.Convert import getDateTimeObjFromString
+    try: # moving this to the top breaks this package!
+        from .Convert   import getDateTimeObjFromString
+    except ValueError: # maybe circular import issue
+        from Convert    import getDateTimeObjFromString
     #
     oDateTime = getDateTimeObjFromString( sDate, sFormat )
     #

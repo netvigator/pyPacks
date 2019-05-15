@@ -20,10 +20,27 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2018 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
 
-from Time       import iSecsPerDay, sFormatISOdateTime # in __init__.py
+from bisect             import bisect_left, bisect_right
+from datetime           import datetime
+from time               import time
+
+try:
+    from .Clock         import getSecsSinceEpoch
+    from .Convert       import getIsoDateTimeStrFromSecs, getDateTimeObjFromString
+    from .Output        import getNowIsoDateTimeStr, sayIsoDateTimeLocal
+    from ..Time         import iSecsPerDay, sFormatISOdateTime # in __init__.py
+    from ..Utils.ImIf   import ImIf
+except ValueError:
+    from Clock          import getSecsSinceEpoch
+    from Convert        import getIsoDateTimeStrFromSecs, getDateTimeObjFromString
+    from Output         import getNowIsoDateTimeStr, sayIsoDateTimeLocal
+    from Time           import iSecsPerDay, sFormatISOdateTime # in __init__.py
+    from Utils.ImIf     import ImIf
+
+
 
 _tMagnitudes    = ( 1e-3, 1,  60,     3600, iSecsPerDay, iSecsPerDay * 24  )
 _tMultiplyBy    = ( 1e6,  1e3, 1, 1.0 / 60,  1.0 / 3600, 1.0 / iSecsPerDay )
@@ -39,7 +56,6 @@ bTurnOnDebugPrint   = False
 
 def getDurationUnits( nSayTime ):
     #
-    from bisect import bisect_left, bisect_right
     #
     iWhich = bisect_right( _tMagnitudes, nSayTime )
     #
@@ -56,7 +72,6 @@ def getDuration( nSince = 0, nNow = None ):
     returns number of seconds duration between them.
     """
     #
-    from time import time
     #
     if nNow is None:
         #
@@ -92,9 +107,6 @@ def getSecsNowPlusDHMS(
         iSecs       = 0,
         bWantLocal  = True ):
     #
-    from time           import time
-    from Utils.ImIf     import ImIf
-    from Time.Clock     import getSecsSinceEpoch
     #
     getTime             = ImIf( bWantLocal, time, getSecsSinceEpoch )
     #
@@ -110,7 +122,6 @@ def getIsoDateTimeNowPlus(
         iSecs       = 0,
         bWantLocal  = True ):
     #
-    from Time.Convert import getIsoDateTimeStrFromSecs
     #
     iWhen = getSecsNowPlusDHMS(
                 iDays, iHours, iMins, iSecs, bWantLocal = bWantLocal )
@@ -126,7 +137,6 @@ def _getIsoDateTimeSecsPlus( fSecs,
         iSecs       = 0,
         bWantLocal  = True ):
     #
-    from Time.Convert import getIsoDateTimeStrFromSecs
     #
     iWhen       = _getSecsPlusDHMS( fSecs, iDays, iHours, iMins, iSecs )
     #
@@ -150,7 +160,10 @@ def getIsoDateTimeFromIsoDateTimePlus( sDateTime,
         iSecs       = 0,
         bWantLocal  = True ):
     #
-    from Time.Convert    import getSecsSinceEpochFromString
+    try: # moving this to the top breaks this package!
+        from .Convert   import getSecsSinceEpochFromString
+    except ValueError: # maybe circular import issue
+        from Convert    import getSecsSinceEpochFromString
     #
     if (    iHours == 0 and
             iMins  == 0 and
@@ -184,7 +197,6 @@ def getIsoDateFromIsoDatePlus( sDate, iDays = 0 ):
 
 def _getDeltaDaysFromObjs( oOlder, oNewer = None ):
     #
-    from datetime import datetime
     #
     if oNewer is None: oNewer = datetime.now(tz=None)
     #
@@ -214,8 +226,6 @@ def getDeltaDaysFromISOs( sOlder, sNewer = None ):
     getDeltaDaysFromDates returns days between dates.
     """
     #
-    from Time.Convert   import getDateTimeObjFromString
-    from Time.Output    import getNowIsoDateTimeStr
     #
     if sNewer is None: sNewer = getNowIsoDateTimeStr()
     #
@@ -232,8 +242,6 @@ def getDeltaDaysFromISOs( sOlder, sNewer = None ):
 
 def getDeltaDaysFromSecs( iOlder, iNewer = None ):
     #
-    from datetime   import datetime
-    from time       import time
     #
     if iNewer is None: iNewer = time()
     #
@@ -265,7 +273,10 @@ def getDeltaDaysFromStrings( sEarlier, sLater = None, iDigitsAfterDot = 0 ):
     if you want a rounded float, pass iDigitsAfterDot
     """
     #
-    from Time.Convert   import getSecsSinceEpochFromString
+    try: # moving this to the top breaks this package!
+        from .Convert   import getSecsSinceEpochFromString
+    except ValueError: # maybe circular import issue
+        from Convert    import getSecsSinceEpochFromString
     #
     if sLater is None:
         #
@@ -300,7 +311,6 @@ def getDeltaDaysFromDates( sEarlier, sLater = None ):
     getDeltaDaysFromISOs does not.
     """
     #
-    from Time.Output import sayIsoDateTimeLocal
     #
     sTime       = '  12:00:00'
     #

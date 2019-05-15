@@ -20,15 +20,28 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2016 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
 
-from string import digits, punctuation
-from string import ascii_lowercase as lowercase
-from string import ascii_uppercase as uppercase
+from string                 import digits, punctuation
+from string                 import ascii_lowercase as lowercase
+from string                 import ascii_uppercase as uppercase
 
-from Collect.Query      import get1stThatMeets
-from String.Transform   import TranslatorFactory
+from zlib                   import decompress
+
+try:
+    from .Find              import getFinderFindAll
+    from .Transform         import TranslatorFactory
+    from ..Collect.Query    import get1stThatMeets, get1stThatFails
+    from ..Iter.AllVers     import iMap, iRange, iZip, lZip
+except ValueError:
+    from Find               import getFinderFindAll
+    from Transform          import TranslatorFactory
+    from Collect.Query      import get1stThatMeets, get1stThatFails
+    from Iter.AllVers       import iMap, iRange, iZip, lZip
+
+
+
 
 class Finished( Exception ): pass
 
@@ -43,7 +56,6 @@ setDigitsPuncSp = frozenset( digits + punctuation + ' ' )
 
 def _getASCII_128():
     #
-    from Iter.AllVers import iRange
     #
     l = []
     #
@@ -121,7 +133,6 @@ def hasDigitsAndDotsOnly( sFrag ):
 
 def hasAscii_128_Only( sFrag ):
     #
-    from Collect.Query  import get1stThatFails
     #
     return get1stThatFails( sFrag, isASCII_128 ) is None
 
@@ -169,7 +180,6 @@ def isPasswordNonAlphaNum( s ):
 
 def _hasAnyPasswordNonAlphaNums( sString ):
     #
-    from Collect.Query  import get1stThatMeets
     #
     return get1stThatMeets( sString, isPasswordNonAlphaNum )
 
@@ -195,7 +205,6 @@ def getItemFoundInString( sString, lItems ):
     return empty string if no item is ffound in the string.
     """
     #
-    from Collect.Query  import get1stThatMeets
     #
     def isFoundInString( s ): return s in sString
     #
@@ -300,7 +309,6 @@ def almostEndsWith( sText, sLookFor, iDropMax = 5 ):
     almostEndsWith( 'abcdefghijk', 'ghi' ) returns True
     """
     #
-    from Iter.AllVers import iRange
     #
     bAlmostEndsWith         = False
     #
@@ -471,7 +479,6 @@ def isSpace( s ):
 
 def isInOrder( s ):
     #
-    from Iter.AllVers   import iMap, iRange    
     #
     try:
         #
@@ -519,7 +526,6 @@ def _startsWithOneOfManually( sToTest, tTryThese ):
     returns whether string starts witn any of possible ending strings
     startswith() accepts tuple starting with python 2.5'''
     #
-    from Collect.Query  import get1stThatMeets
     #
     def isToTestStartsWith( s ): return sToTest.startswith( s )
     #
@@ -548,7 +554,6 @@ def _endsWithOneOfManually( sToTest, tTryThese ):
     returns whether string ends witn any of possible ending strings
     endswith() accepts tuple starting with python 2.5'''
     #
-    from Collect.Query  import get1stThatMeets
     #
     def isToTestEndsWith( s ): return sToTest.endswith( s )
     #
@@ -575,7 +580,6 @@ def getHasSubstrTester( sPattern ):
     '''pass a regex pattern, function returns tester;
     this is a factory returning a tester for the pattern
     '''
-    from String.Find import getFinderFindAll
     #
     fFinder = getFinderFindAll( sPattern )
     #
@@ -588,7 +592,6 @@ def getHasSubstrTester( sPattern ):
 
 def areWordsClose( sWord1, sWord2 ):
     #
-    from Iter.AllVers import iRange, iZip, lZip
     #
     bClose = False
     #
@@ -646,7 +649,6 @@ def areWordsClose( sWord1, sWord2 ):
 
 def isGzipped( s ):
     #
-    from zlib import decompress
     #
     bGzipped = True
     #

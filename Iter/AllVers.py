@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2017 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
 # itertools: New in version 2.3.
 
@@ -29,7 +29,11 @@ the aim is to provide python iterators
 that will work in all supported versions
 (2.4 through 3.n)
 '''
-from Utils.Version  import PYTHON3, isVersAtLeast
+
+try:
+    from ..Utils.Version    import PYTHON3, isVersAtLeast
+except ValueError:
+    from Utils.Version      import PYTHON3, isVersAtLeast
 
 _bAtLeast2dot6 = isVersAtLeast( '2.6' )
 
@@ -274,8 +278,11 @@ def _getEnumeratorYielding( seq, start = 0 ):
 
 
 def _getEnumeratorZipOrYield( seq, start = 0 ):
-    #    
-    from Collect.Test import isSequence
+    #
+    try: # moving these to the top breaks this package!
+        from ..Collect.Test     import isSequence
+    except ValueError: # maybe circular import issue
+        from Collect.Test       import isSequence
     #    
     if isSequence( seq ):
         #

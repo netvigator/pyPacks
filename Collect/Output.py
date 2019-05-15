@@ -20,10 +20,18 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2017 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
-
-
+try:
+    from ..Iter.AllVers import lMap, tMap, iZip
+    from ..Dict.Numbs   import getValuesAdded
+    from ..Numb.Get     import getBooleanInt
+    from ..Utils.Output import getSayYesOrBlank
+except ValueError:
+    from Iter.AllVers   import lMap, tMap, iZip
+    from Dict.Numbs     import getValuesAdded
+    from Numb.Get       import getBooleanInt
+    from Utils.Output   import getSayYesOrBlank
 
 def getPrintableTextFromSeq( lSeq, sNewLine = '\n', **kwargs ):
     #
@@ -68,10 +76,6 @@ def getColsUpdateTotals( *args, **kwargs ):
     #
     '''order of params must match tColHeads order!!!
     '''
-    from Iter.AllVers   import lMap, tMap, iZip
-    from Dict.Numbs     import getValuesAdded
-    from Numb.Get       import getBooleanInt
-    from Utils.Output   import getSayYesOrBlank
     #
     tVals       = tMap( getBooleanInt, args )
     #

@@ -20,12 +20,25 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2017 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
 #
+from shlex              import split
+from subprocess         import PIPE, Popen # new in 2.4
+from sys                import stdout, stderr
 
-from six import print_ as print3
+from six                import print_ as print3
 
+try:
+    from ..Iter.AllVers import iMap
+    from ..Iter.Test    import isIterable
+    from ..Object.Get   import StreamNull
+    from ..String.Test  import isString
+except ValueError:
+    from Iter.AllVers   import iMap
+    from Iter.Test      import isIterable
+    from Object.Get     import StreamNull
+    from String.Test    import isString
 
 def getTextOutputFromExternalCommand( sCommand ):
     #
@@ -34,8 +47,6 @@ def getTextOutputFromExternalCommand( sCommand ):
     returns the stdout and stderr of the external command
     """
     #
-    from shlex      import split
-    from subprocess import PIPE, Popen # new in 2.4
     #
     args = split( sCommand )
     #
@@ -51,8 +62,7 @@ def getTextOutputFromExternalCommand( sCommand ):
 
 def doSomethingSupressOutput( doSomething, *args, **kwargs ):
     #
-    from Object.Get import StreamNull
-    from sys        import stdout, stderr
+    from sys    import stdout, stderr # need this again !
     #
     OrigStdOut  = stdout
     OrigStdErr  = stderr
@@ -72,11 +82,6 @@ def doSomethingSupressOutput( doSomething, *args, **kwargs ):
 
 def PrintMaybe( uSomething, bPrintAnyway = False ):
     #
-    from sys            import stdout
-    #
-    from Iter.AllVers   import iMap
-    from Iter.Test      import isIterable
-    from String.Test    import isString
     #
     if stdout.isatty() or bPrintAnyway:
         #

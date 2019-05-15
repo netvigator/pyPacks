@@ -26,9 +26,21 @@
 simulates suffling a deck of cards
 you supply the sequence (the deck)
 '''
+from copy               import copy
+from random             import random, randrange, shuffle
 
-from Iter.AllVers   import iRange, tRange
-from Numb.Crunch    import getIntegerDivisionRoundUp
+try:
+    from ..Iter.AllVers import iRange, tRange, iMap
+    from ..Numb.Crunch  import getIntegerDivisionRoundUp
+    from ..Numb.Get     import getSumOnlyIntegers
+    from ..Numb.Test    import isOdd
+    from ..Utils.ImIf   import ImIf
+except ValueError:
+    from Iter.AllVers   import iRange, tRange, iMap
+    from Numb.Crunch    import getIntegerDivisionRoundUp
+    from Numb.Test      import isOdd
+    from Utils.ImIf     import ImIf
+    from Numb.Get       import getSumOnlyIntegers
 
 
 _dMaxShuffles = {
@@ -79,9 +91,6 @@ def getCutPosition( uSeq, bPutBack = False, iOffset = 0 ):
 
 def CutTheCards( uSeq, bPutBack = False, bSloppy = False, iOffset = 0 ):
     #
-    from random     import random, randrange
-    from Utils.ImIf import ImIf
-    #
     iCutAt = getCutPosition( uSeq, bPutBack = bPutBack, iOffset = iOffset )
     #
     if bSloppy:
@@ -96,8 +105,6 @@ def CutTheCards( uSeq, bPutBack = False, bSloppy = False, iOffset = 0 ):
 
 
 def ShuffleTheCards( uSeq, bPutBack = False, iShuffles = 1 ):
-    #
-    from copy import copy
     #
     uEmpty                  = uSeq[ len( uSeq ) : ]
     #
@@ -184,8 +191,6 @@ def ShuffleTheCards( uSeq, bPutBack = False, iShuffles = 1 ):
 
 def _getOffBottom( lSeq, iMax = 3 ):
     #
-    from random     import randrange
-    #
     iEat            = randrange( 1, iMax + 1 )
     #
     lEatThis        = list( lSeq[ - iEat : ] )
@@ -196,8 +201,6 @@ def _getOffBottom( lSeq, iMax = 3 ):
 
 
 def SloppyShuffle( uSeq, iShuffles = 1 ):
-    #
-    from random         import random, randrange
     #
     uEmpty              = uSeq[ len( uSeq ) : ]
     #
@@ -263,9 +266,6 @@ def ShuffleAndCut(
             bSloppy     = False,
             iCutOffset  = 0 ):
     #
-    from Numb.Test      import isOdd
-    from Utils.ImIf     import ImIf
-    #
     iLen            = len( uSeq )
     #
     if iShuffles is None:
@@ -328,8 +328,6 @@ def ShuffleDigits( sDigits, bPutBack = False ):
     8       5
     9       5
     '''
-    from Iter.AllVers import iMap
-    from Numb.Get import getSumOnlyIntegers
     #
     iSum        = getSumOnlyIntegers( *iMap( int, sDigits ) )
     #
@@ -352,8 +350,6 @@ def ShuffleDigits( sDigits, bPutBack = False ):
 
 
 def getRandoms( lSeq, iWant = -1, bSloppyShuffle = False ):
-    #
-    from random import shuffle
     #
     if len( lSeq ) == 0: return lSeq
     #

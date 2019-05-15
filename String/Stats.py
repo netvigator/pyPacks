@@ -23,12 +23,17 @@
 # Copyright 2004-2019 Rick Graves
 #
 
-
-def AscStats( sString ):
-    #
+try:
+    from ..Iter.AllVers import tMap
+    from ..Numb.Stats   import getMeanMembers
+    from ..Object.Get   import ValueContainer
+except ValueError:
     from Iter.AllVers   import tMap
     from Numb.Stats     import getMeanMembers
     from Object.Get     import ValueContainer
+
+def AscStats( sString ):
+    #
     #
     tOrds       = tMap( ord, sString )
     #

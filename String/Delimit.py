@@ -20,16 +20,48 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2018 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
 
-from six import print_ as print3
+from re                     import sub
+
+from six                    import print_ as print3
+from six                    import next as getNext
+
+try:
+    from .Get               import getTextBeforeC
+    from .Find              import getRegExObj
+    from .Replace           import getBlanksForReMatchObj
+    from .Split             import ( SplitC, getPartsListAndBothStarts,
+                                     getIterPartsAndBothStarts )
+    from .Text4Tests        import ( sHTML, ttDelims, tWantBlanks,
+                                     sGoogleQuerResult_Chrome as sHTML )
+    from ..Collect.Get      import getSeparateKeysValues
+    from ..Iter.AllVers     import iMap, lMap, iZip, iZipLongest
+    from ..Numb.Get         import getAdder
+    from ..Utils.Combos     import All
+    from ..Utils.TimeTrial  import TimeTrial
+except ValueError:
+    from Get                import getTextBeforeC
+    from Find               import getRegExObj
+    from Replace            import getBlanksForReMatchObj
+    from Split              import ( SplitC, getPartsListAndBothStarts,
+                                     getIterPartsAndBothStarts )
+    from Text4Tests         import ( sHTML, ttDelims, tWantBlanks,
+                                     sGoogleQuerResult_Chrome as sHTML )
+    from Collect.Get        import getSeparateKeysValues
+    from Iter.AllVers       import iMap, lMap, iZip, iZipLongest
+    from Numb.Get           import getAdder
+    from Utils.Combos       import All
+    from Utils.TimeTrial    import TimeTrial
+
+    
+
 
 def _LopOffEnd( sOrig, sSplitOn, sSplitB4 ):
     #
     # called in _blankBlockUseEnd
     #
-    from String.Split import SplitC
     #
     lParts  = SplitC( sOrig, sSplitOn, iMaxSplits = 1, bSplitLeft = False )
     #
@@ -43,7 +75,6 @@ def _LopOffBeg( sOrig, sSplitOn, sSplitB4 ):
     #
     # called in _blankBlockUseEnd
     #
-    from String.Split import SplitC
     #
     lParts  = SplitC( sOrig, sSplitOn, iMaxSplits = 1 )
     #
@@ -56,8 +87,6 @@ def _LopOffBeg( sOrig, sSplitOn, sSplitB4 ):
 def _blankBlockUseEnd(
         sOrigText, sBegCode = '!#', sEndCode = '$%*', sOrigLower = '' ):
     #
-    from Iter.AllVers import iZip, iMap
-    from String.Split import getPartsListAndBothStarts
     #
     lParts, lStartText, lStartSplit = \
         getPartsListAndBothStarts( sOrigText, sEndCode, sOrigLower )
@@ -92,8 +121,6 @@ def _blankBlockUseEnd(
 def _blankBlockUseBeg(
         sOrigText, sBegCode = '!#', sEndCode = '$%*', sOrigLower = '' ):
     #
-    from Iter.AllVers   import iMap, lMap, iZip
-    from String.Split   import getPartsListAndBothStarts
     #
     lParts, lStartText, lStartSplit = \
         getPartsListAndBothStarts( sOrigText, sBegCode, sOrigLower )
@@ -132,7 +159,6 @@ def _blankBlockUseBeg(
 
 def _getBlankBlocks( sOrigText, oFinder ):
     #
-    from String.Split import getIterPartsAndBothStarts
     #
     """
     getBlocksBlank( '012345!#spam$%*6789!#eggs$%*abcde!#toast$%*fghijk',
@@ -198,9 +224,7 @@ def getBlocksBlanked( sOrig, oFinder ):
     getBlocksFinder() can return finder
     example in self test code
     '''
-    from re import sub
     #
-    from String.Replace import getBlanksForReMatchObj
     #
     return sub( oFinder, getBlanksForReMatchObj, sOrig )
 
@@ -214,7 +238,6 @@ def getBlocksFinder( tDelims, bDotAll = True ):
     example in self test code
     '''
     #
-    from String.Find import getRegExObj
     #
     sPattern = '|'.join( tDelims )
     #
@@ -225,8 +248,6 @@ def getBlocksFinder( tDelims, bDotAll = True ):
 def _getRestAfter( sOrig, sSplitOn ):
     #
     # called in getListsTextBetween
-    #
-    from String.Split import SplitC
     #
     lParts  = SplitC( sOrig, sSplitOn, iMaxSplits = 1 )
     #
@@ -240,7 +261,6 @@ def _getRestAfter( sOrig, sSplitOn ):
 
 def _getBeforeOrAll( s, sBegCode ):
     #
-    from String.Get import getTextBeforeC
     #
     return getTextBeforeC( s, sBegCode, bWantEmptyIfNoAfter = False )
 
@@ -265,12 +285,6 @@ def getListsTextBetween(
     #
     # called in pGrab Scripts
     #
-    from Numb.Get       import getAdder
-    from Iter.AllVers   import iMap, lMap, iZip
-    from Collect.Get    import getSeparateKeysValues
-    from Utils.Combos   import All
-    
-    from String.Split   import getPartsListAndBothStarts
     #
     lParts, lStartText, lStartSplit = \
         getPartsListAndBothStarts( sOrigText, sEndCode, sOrigLower )
@@ -387,7 +401,6 @@ def ReconstituteDelimiters( lBetNew, lOutsideDelims ):
     # lBetNew members must be the the lengths in lBetLens
     # so manipulate lBetween before calling this function
     #
-    from Iter.AllVers import iZipLongest
     #
     #lBetNew = list( lBetNew )
     #
@@ -407,9 +420,6 @@ def _getOrigSandwich( sBetween, iPrefixLen, iSandwichLen, sNext ):
 
 def _getManipulateBetweenDelims( iter, getNewSandwich ):
     #
-    from six           import next as getNext
-    #
-   #from Utils.Both2n3 import getNext
     #
     sThisB4, sThisBetween, iThisPrefixLen, iThisSandwichLen = getNext( iter )
     #
@@ -436,7 +446,6 @@ def ReconstituteIterDelimiters( iter, getNewSandwich ):
 
 def _doOneByOne():
     #
-    from String.Text4Tests import sHTML, ttDelims
     #
     sBlanked = sHTML
     #
@@ -466,9 +475,6 @@ def _doOneByOne():
 
 def _BlankBlocksTimeTrial():
     #
-    from Utils.TimeTrial import TimeTrial
-    #
-    from String.Text4Tests import sHTML, tWantBlanks
     #
     oFinder = getBlocksFinder( tWantBlanks )
     #
@@ -492,10 +498,6 @@ def _BlankBlocksTimeTrial():
 
 def _TextBetweenTimeTrial():
     #
-    from String.Find     import getRegExObj
-    from Utils.TimeTrial import TimeTrial
-    #
-    from String.Text4Tests import sGoogleQuerResult_Chrome as sHTML
     #
     sHtmlLower = sHTML.lower()
     #

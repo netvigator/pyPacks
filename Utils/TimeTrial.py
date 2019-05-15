@@ -20,17 +20,25 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2018 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
 #
-from six import print_ as print3
+from time               import clock, time
+
+from six                import print_ as print3
+
+try:
+    from ..Iter.AllVers import iRange, tFilter
+    from ..Utils.ImIf   import ImIf
+except ValueError:
+    from Iter.AllVers   import iRange, tFilter
+    from Utils.ImIf     import ImIf
+
 
 def _sayClockTimeCPU( tBefore, sSay ):
-    from time import clock
     tNow = clock()
     print3( '%s: %s' % ( sSay, tNow - tBefore ) )
     return tNow
-
 
 
 def _callOverAndOver( iterCallsPerSet, TimeThis, args, kwargs ):
@@ -46,7 +54,6 @@ def _timer( getNow, iCallsPerSet, iSets, TimeThis, args, kwargs ):
     # iCallsPerSet is the number of times the function is call on each repetition
     # to test consistency,
     #
-    from Iter.AllVers import iRange
     #
     iCallsPerSet    = int( iCallsPerSet )
     #
@@ -94,9 +101,12 @@ def _getGoodInt( nOne2Ten ):
 
 def _definedTrial( getNow, iCallsPerSet, iSets, TimeThis, args, kwargs ):
     #
-    from Iter.AllVers   import tFilter
-    from String.Output  import ReadableNo
-    from Time.Delta     import getDurationUnits
+    try: # moving this to the top breaks this package!
+        from ..String.Output    import ReadableNo
+        from ..Time.Delta   import getDurationUnits
+    except ValueError: # maybe circular import issue
+        from String.Output      import ReadableNo
+        from Time.Delta     import getDurationUnits
     #
     lTimeList   = _timer( getNow, iCallsPerSet, iSets, TimeThis, args, kwargs )
     #
@@ -138,19 +148,16 @@ def _setClock( bUseClockNotTime = False ):
     #
     if bUseClockNotTime:
         #
-        from time import clock as getNow
+        return clock
         #
     else:
         #
-        from time import time as getNow
-    #
-    return getNow
+        return time
 
 
 
 def _sayClock( bUseClockNotTime ):
     #
-    from Utils.ImIf import ImIf
     #
     return ImIf( bUseClockNotTime, 'clock', 'time' )
 
@@ -165,7 +172,6 @@ def TimeTrial( TimeThis, *args, **kwargs ):
     timeit was new in 2.6, this works in all versions
     """
     #
-    from Iter.AllVers   import iRange
     #
     bProceed            = True
     #

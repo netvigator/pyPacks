@@ -20,10 +20,23 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2016 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
 
-from String.Transform import getSwapper
+from six    import print_ as print3
+
+from re     import compile as REcompile, MULTILINE
+
+try:
+    from .Replace           import ReplaceManyOldWithManyNew
+    from ..Iter.AllVers     import iMap, lMap, iRange, lRange
+    from ..Utils.ImIf       import ImIf
+    from ..String.Transform import getSwapper
+except ValueError:
+    from Replace            import ReplaceManyOldWithManyNew
+    from Iter.AllVers       import iMap, lMap, iRange, lRange
+    from Utils.ImIf         import ImIf
+    from String.Transform   import getSwapper
 
 
 def ReadableNo( nNumb, iRtJustLen = 0, iWantDecimals=0 ):
@@ -98,7 +111,6 @@ def ReadableNo( nNumb, iRtJustLen = 0, iWantDecimals=0 ):
 
 def Plural( iQty, sPlural = 's', sSingular = '' ):
     #
-    from Utils.ImIf   import ImIf
     #
     return ImIf( iQty == 1, sSingular, sPlural )
 
@@ -130,7 +142,6 @@ dTitleReplace = {
 
 def oldBetterTitle( sTitleize ):
     #
-    from Replace import ReplaceManyOldWithManyNew
     #
     sTitleize   = sTitleize.title()
     #
@@ -191,16 +202,12 @@ def show_re( sPattern, sString ):
     Try show_re( sPattern, sString ) to show what re matches.
     """
     #
-    from six    import print_ as print3
-    #
-    from re     import compile as REcompile, MULTILINE
     #
     print3( '\n', REcompile( sPattern, MULTILINE ).sub("{\g<0>}", sString.rstrip() ) )
 
 
 def WordWrapText( s, iMaxLen = 72 ):
     #
-    from Iter.AllVers import lMap, iRange, lRange
     #
     lLinesCRLF          = s.split( '\r\n' ) # Microsoft
     lLinesNewL          = s.split(   '\n' ) # Unix/Linux
@@ -272,7 +279,6 @@ def WordWrapText( s, iMaxLen = 72 ):
 
 def getCommaDelimited( *args, **kwargs ):
     #
-    from Iter.AllVers import iMap
     #
     if 'sTerminatorField' in kwargs:
         sTerminatorField = kwargs['sTerminatorField']

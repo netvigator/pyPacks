@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2011 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
 # ### ### ### ### ### ### ### ### ### ### ###
 # ### ### ### ### ### ### ### ### ### ### ###
@@ -29,6 +29,16 @@
 # ### ### ### ### ### ### ### ### ### ### ###
 # ### ### ### ### ### ### ### ### ### ### ###
 # ### ### ### ### ### ### ### ### ### ### ###
+
+
+try:
+    from .Stats             import getPercent
+    from ..Iter.AllVers     import iMap
+    from ..String.Output    import ReadableNo
+except ValueError:
+    from Stats              import getPercent
+    from Iter.AllVers       import iMap
+    from String.Output      import ReadableNo
 
 
 def getSayLessThanOne( nNumb, iWantSignificants = 2 ):
@@ -44,8 +54,6 @@ def getSayLessThanOne( nNumb, iWantSignificants = 2 ):
 
 def getSayPercentOffRatio( fRatio, iDecimals = 1, bZeroPad = False ):
     #
-    from Iter.AllVers   import iMap
-    from Numb.Stats import getPercent
     #
     fPC = getPercent( fRatio, iDecimals )
     #
@@ -90,7 +98,6 @@ dEndings = { '1' : 'st', '2' : 'nd', '3' : 'rd' }
 
 def sayOrdinalAsNumb( i ):
     #
-    from String.Output  import ReadableNo
     #
     sNumb = ReadableNo( i )
     #

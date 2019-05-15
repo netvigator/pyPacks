@@ -20,11 +20,14 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2009-2017 Rick Graves
+# Copyright 2009-2019 Rick Graves
 #
 from sys import version
 
-from Utils.Both2n3 import sayYouNeedSix
+try:
+    from ..Utils.Both2n3    import sayYouNeedSix
+except ValueError:
+    from Utils.Both2n3      import sayYouNeedSix
 
 
 def _getVersionTuple( sVersion = version ):
@@ -35,7 +38,7 @@ def _getVersionTuple( sVersion = version ):
     tVersion = lParts[0].split( '.' )
     #
     return tVersion
-    
+
 
 tVERSION = _getVersionTuple()
 

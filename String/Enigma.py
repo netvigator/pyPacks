@@ -44,20 +44,34 @@ EncryptLite(sTest)      = '|]dxX=H<G5aVIxdZErc3hNTOUu>uG:=MK.M},="5d;Z.S'
 
 '''
 
-from os.path            import join, dirname, realpath
-from platform           import system
-from string             import punctuation, digits
+from os.path                import join, dirname, realpath
+from platform               import system
+from string                 import punctuation, digits
+from string                 import ascii_lowercase as lowercase
+from string                 import ascii_uppercase as uppercase
 
-from Collect.Cards      import ShuffleAndCut, getCutPosition
-from File.Get           import getFileContent
-from File.Test          import isFileThere
-from Iter.AllVers       import iRange
-from Numb.Test          import isEven, isOdd
-from String.Find        import oFinderCRorLF
-from String.Replace     import getTextReversed
-from String.Stats       import AscStats
-from String.Transform   import TranslatorFactory
-from Utils.Both2n3      import print3
+try:
+    from .Find              import oFinderCRorLF
+    from .Replace           import getTextReversed
+    from .Stats             import AscStats
+    from .Transform         import TranslatorFactory, getSwapper
+    from ..Collect.Cards    import ShuffleAndCut, getCutPosition
+    from ..File.Get         import getFileContent
+    from ..File.Test        import isFileThere
+    from ..Iter.AllVers     import iMap, lMap, tMap, iZip, iRange
+    from ..Numb.Test        import isEven, isOdd
+    from ..Utils.Both2n3    import print3
+except ValueError:
+    from Find               import oFinderCRorLF
+    from Replace            import getTextReversed
+    from Stats              import AscStats
+    from Transform          import TranslatorFactory, getSwapper
+    from Collect.Cards      import ShuffleAndCut, getCutPosition
+    from File.Get           import getFileContent
+    from File.Test          import isFileThere
+    from Iter.AllVers       import iMap, lMap, tMap, iZip, iRange
+    from Numb.Test          import isEven, isOdd
+    from Utils.Both2n3      import print3
 
 sSafe   =  punctuation.replace( '\\', ' ' ) + digits
 
@@ -180,7 +194,6 @@ def DescendChars( sOrig,
     chr(101)+chr(102)+chr(103) becomes chr(154)+chr(153)+chr(152)
     '''
     #
-    from Iter.AllVers import lMap, iRange
     #
     def getIncrement( i ): return 0
     #
@@ -213,7 +226,6 @@ def FlipCase( sText, bAlternate = False ):
     if bAlternate = True  aBcDeF becomes ABCDEF
     '''
     #
-    from Iter.AllVers import iMap, iRange
     #
     if bAlternate:
         #
@@ -432,7 +444,6 @@ def DecryptNone( sDecryptThis ):
 
 def XOREncrypt( sText, sPassword = 'hello' ):
     #
-    from Iter.AllVers   import iMap, tMap, iZip
     #
     lText       = iMap( ord, list( sText     ) )
     tPassword   = tMap( ord, list( sPassword ) )
@@ -451,7 +462,6 @@ def XOREncrypt( sText, sPassword = 'hello' ):
 
 def XORdecript( sText, sPassword = 'hello' ):
     #
-    from Iter.AllVers   import iMap, tMap, iZip
     #
     lChrPairs   = [ ''.join( t ) for t in
                         iZip(   list( sText[ 0 : : 2 ] ),
@@ -473,11 +483,6 @@ def XORdecript( sText, sPassword = 'hello' ):
 
 def _getRot13Swapper():
     #
-    from string import ascii_lowercase as lowercase
-    from string import ascii_uppercase as uppercase
-    #
-    from Iter.AllVers     import iZip
-    from String.Transform import getSwapper
     #
     sTo     = ''.join( (    lowercase[ 13 : ],
                             lowercase[ : 13 ],

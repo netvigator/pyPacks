@@ -28,14 +28,25 @@
 
 # from os.path import exists, join, isfile, isdir
 
-from os             import utime
-from os.path        import join, isfile
-from glob           import glob
+from os                     import utime, environ, close
+from os.path                import join, isfile, isdir
+from glob                   import glob
+from tempfile               import mkstemp
 
-from Utils.Version  import PYTHON2
-from Dir.Get        import sTempDir
-from File.Test      import isFileThere
-from File.Spec      import getFullSpec, getFullSpecDefaultOrPassed
+try:
+    from .Test              import isFileThere
+    from .Spec              import getFullSpec, getFullSpecDefaultOrPassed
+    from ..Utils.Version    import PYTHON2
+    from ..Dir.Get          import sTempDir
+    from ..Numb.Get         import getRandomDigits
+    from ..Utils.Config     import getConfDict
+except ValueError:
+    from Test               import isFileThere
+    from Spec               import getFullSpec, getFullSpecDefaultOrPassed
+    from Utils.Version      import PYTHON2
+    from Dir.Get            import sTempDir
+    from Numb.Get           import getRandomDigits
+    from Utils.Config       import getConfDict
 
 class FileNotThereError( Exception ): pass
 
@@ -43,7 +54,6 @@ class LineParserObject( object ):
     #
     def __init__( self, sConfFile = 'LineParserTest.conf' ):
         #
-        from Utils.Config     import getConfDict
         #
         dMain       = { 'infile'  : join( sTempDir, 'LineParserTestInput.txt' ),
                         'rowhead' : 'new row',
@@ -69,7 +79,10 @@ class LineParserObject( object ):
 
     def _makeTestFile( self ):
         #
-        from File.Write import QuickDump
+        try: # moving this to the top breaks this package!
+            from .Write     import QuickDump
+        except ValueError: # maybe circular import issue
+            from File.Write import QuickDump
         #
         sTestContent = ( '\nnew row\nspam\n\nnext row\ntoast\n\n\n'
                          'new row\neggs\n\nnext row\nbeans\n\n' )
@@ -191,10 +204,6 @@ def getContent( *sFileSpec, **kwargs ):
 
 def getRandomFileName( sDir = None, bCreate = False ):
     #
-    from os             import environ
-    from os.path        import isfile, isdir
-    #
-    from Numb.Get       import getRandomDigits
     #
     if sDir is None:
         #
@@ -259,10 +268,6 @@ def getTempFile( suffix = None, dir = None ):
     Creates a unique temp file and returns the full path spec.
     """
     #
-    from tempfile   import mkstemp
-    from os         import close
-    #
-    # from String.Get import getBackslashEscaped
     #
     kwargs = {}
     #

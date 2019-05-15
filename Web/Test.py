@@ -20,11 +20,55 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2016 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
+from bisect                 import bisect_right, insort_right
+from string                 import digits
+from string                 import ascii_lowercase as lowercase
 
-from String.Transform   import getTranslatorStr
-from String.Dumpster    import KeepDotsDigitsClass
+
+try:
+    from .Quads             import ( getDotQuadFromValue, getDotQuad4Sort,
+                                     getClassCNetBegEnd, getQuadValue,
+                                     getClassCNetRangeBegEnd, getDotQuad,
+                                     getQuadTuple,
+                                     getDotQuadFromValue as getQ )
+    from .Address           import ( setTopLevelDomains, setMiniDomains,
+                                     UrlSplitMore )
+    from .Country           import dCountryCodes
+    from ..Collect.Get      import getValueIterOffItems as getValues
+    from ..Collect.Query    import get1stThatMeets
+    from ..Collect.Test     import AllMeet
+    from ..eMail.Test       import isEmailAddress
+    from ..Iter.AllVers     import iFilter, lMap, iMap, iRange, iZip
+    from ..Numb.Test        import isEven, isOdd
+    from ..String.Eat       import eatPunctuationBegAndEnd
+    from ..String.Test      import hasDigitAndDot
+    from ..String.Transform import getTranslatorStr, getSpacesForChars
+    from ..String.Dumpster  import KeepDotsDigitsClass
+    from ..Utils.Both2n3    import translate
+except ValueError:
+    from Quads              import ( getDotQuadFromValue, getDotQuad4Sort,
+                                     getClassCNetBegEnd, getQuadValue,
+                                     getClassCNetRangeBegEnd, getDotQuad,
+                                     getQuadTuple,
+                                     getDotQuadFromValue as getQ )
+    from Address            import ( setTopLevelDomains, setMiniDomains,
+                                     UrlSplitMore )
+    from Country            import dCountryCodes
+    from Collect.Get        import getValueIterOffItems as getValues
+    from Collect.Query      import get1stThatMeets
+    from Collect.Test       import AllMeet
+    from eMail.Test         import isEmailAddress
+    from Iter.AllVers       import iFilter, lMap, iMap, iRange, iZip
+    from Numb.Test          import isEven, isOdd
+    from String.Eat         import eatPunctuationBegAndEnd
+    from String.Test        import hasDigitAndDot
+    from String.Transform   import getTranslatorStr, getSpacesForChars
+    from String.Dumpster    import KeepDotsDigitsClass
+    from Utils.Both2n3      import translate
+
+
 
 sHexQuadDigitsOnly  = getTranslatorStr( '0123456789abcdefxABCDEFX'  )
 sHexQuadDigitsDots  = getTranslatorStr( '0123456789abcdefxABCDEFX.' )
@@ -38,7 +82,6 @@ class InRangeDotQuadBaseClass( list ):
 
     def getHostsForISP( self ):
         #
-        from Iter.AllVers import iMap
         #
         lQuads  = self.getExampleQuadList()
         #
@@ -48,7 +91,6 @@ class InRangeDotQuadBaseClass( list ):
 
     def getExampleQuad( self, iStart = None ):
         #
-        from Web.Quads import getDotQuadFromValue
         #
         if iStart is None:
             #
@@ -67,9 +109,6 @@ class InRangeDotQuadBaseClass( list ):
 
     def getExampleQuadList( self ):
         #
-        from Collect.Get    import getValueIterOffItems as getValues
-        from Iter.AllVers   import iFilter, lMap
-        from Numb.Test      import isEven
         #
         def EvenOnly( t ): return isEven( t[0] )
         #
@@ -95,9 +134,6 @@ class InRangeDotQuadClass( InRangeDotQuadBaseClass ):
     #
     def __init__( self, sDotQuadRangeOK ):
         #
-        from Iter.AllVers import lMap
-        from Web.Quads import getDotQuad4Sort, getClassCNetBegEnd, \
-                            getClassCNetRangeBegEnd
         #
         lDotQuadRanges = sDotQuadRangeOK.replace( ' ', '' ).split( ',' )
         #
@@ -134,9 +170,6 @@ class InRangeDotQuadClass( InRangeDotQuadBaseClass ):
 
     def _addRange( self, sBeg, sEnd ):
         #
-        from bisect     import bisect_right, insort_right
-        from Numb.Test  import isEven
-        from Web.Quads  import getQuadValue
         #
         iBeg4Sort   = getQuadValue( sBeg )
         iEnd4Sort   = getQuadValue( sEnd ) + 1
@@ -160,9 +193,6 @@ class InRangeDotQuadClass( InRangeDotQuadBaseClass ):
 
     def isQuadInRange( self, sDotQuad ):
         #
-        from bisect     import bisect_right
-        from Web.Quads  import getQuadValue
-        from Numb.Test  import isOdd
         #
         return isOdd( bisect_right( self, getQuadValue( sDotQuad ) ) )
 
@@ -171,8 +201,6 @@ class InRangeDotQuadClass( InRangeDotQuadBaseClass ):
         #
         # lBegEnd = m@p( getDotQuadFromDotQuad4Sort, self )
         #
-        from Iter.AllVers   import iMap, iRange, iZip
-        from Web.Quads  import getDotQuadFromValue as getQ
         #
         iLen    = len( self )
         #
@@ -193,13 +221,11 @@ class DotQuadOKClass( InRangeDotQuadBaseClass ):
     #
     def __init__( self, sDotQuad = None ):
         #
-        from Web.Quads      import getDotQuad
         #
         self.sDotQuad = getDotQuad( sDotQuad )
 
     def isQuadInRange( self, sDotQuad ):
         #
-        from Web.Quads      import getDotQuad
         #
         return  isDotQuad( sDotQuad ) and \
                 getDotQuad( sDotQuad, bOverOK = True ) == self.sDotQuad
@@ -241,7 +267,6 @@ def _isQuadValueWithinValidRange( iInteger ):
 
 def _areInValidDotQuadRange( tDotQuad, bOverOK = False ):
     #
-    from Collect.Test       import AllMeet
     #
     if bOverOK:
         #
@@ -279,7 +304,6 @@ def isDotQuadNotLocal( tDotQuad ):
 def _isValidQuad( sDotQuad,
         bLocalDotQuadOK = True, bExtremesOK = True, bOverOK = False, bIsDotQuad = False, bIsHexQuad = False ):
     #
-    from Web.Quads      import getQuadTuple
     #
     tDotQuad            = getQuadTuple( sDotQuad, bIsDotQuad = bIsDotQuad, bIsHexQuad = bIsHexQuad )
     #
@@ -311,7 +335,6 @@ def hasDotQuad( s, bLocalDotQuadOK = True, bExtremesOK = True, bOverOK = False )
     Tests whether there is a dot quad in a string.
     """
     #
-    from Collect.Query import get1stThatMeets
     #
     def isValidQuad( s ):
         #
@@ -336,14 +359,12 @@ def isValidNonLocalQuad( sAnyQuad ):
 
 def isDotQuad( sMayBeDotQuad, bLocalDotQuadOK = True, bExtremesOK = True, bOverOK = False ):
     #
-    from Web.Quads import getDotQuad
     #
     return getDotQuad( sMayBeDotQuad, bLocalDotQuadOK, bExtremesOK, bOverOK )
 
 
 def isHexQuad( sAnyQuad, bFormCheckOnly = False ):
     #
-    from Iter.AllVers import iMap
     #
     bOK = False # if it looks like a dot quad, it probably is a dot quad
     #
@@ -425,8 +446,6 @@ def isDotQuadPortTuple( tDotQuadPort ):
 
 def isDotQuadPortAfterCleanup( s ):
     #
-    from String.Test        import hasDigitAndDot
-    from String.Eat         import eatPunctuationBegAndEnd
     #
     bDotQuadPort        = False
     #
@@ -445,7 +464,6 @@ def hasDotQuadWithPort( sMaybeIP ):
     returns True if text contains any DotQuad with Port
     """
     #
-    from Collect.Query import get1stThatMeets
     #
     return bool(
             get1stThatMeets(
@@ -456,10 +474,6 @@ def hasDotQuadWithPort( sMaybeIP ):
 
 def hasDomainNameValidCharsOnly( sDomainName ):
     #
-    from string import digits
-    from string import ascii_lowercase as lowercase
-    #
-    from String.Transform import getSpacesForChars
     #
     if ' ' in sDomainName: return False
     #
@@ -475,8 +489,6 @@ def hasDomainNameValidCharsOnly( sDomainName ):
 
 def _allDomainNameTests( sDomainName ):
     #
-    from Web.Address import setTopLevelDomains, setMiniDomains
-    from Web.Country import dCountryCodes
     #
     if not hasDomainNameValidCharsOnly( sDomainName ):
         #
@@ -592,8 +604,6 @@ def hasAt( sFrag ): return '@' in sFrag
 
 def isURL( sURL, bAnySchemeOK = True, bSecureHttpOK = True, bNoSchemeOK = False ):
     #
-    from Web.Address    import UrlSplitMore
-    from eMail.Test     import isEmailAddress
     #
     sScheme, sUser, sPassword, sHost, sPort, sPath, sQuery, sFragmentID = \
         UrlSplitMore( sURL )
@@ -627,14 +637,12 @@ def isStartsWithHTTP( sHTML ): return sHTML.startswith( 'http://' )
 
 def hasHexQuadDigitsOnly( sMaybeHexQuad ):
     #
-    from Utils.Both2n3 import translate
     #
     return translate( sMaybeHexQuad, sHexQuadDigitsOnly ).strip() == ''
 #
 #
 def hasHexQuadDigitsDots( sMaybeHexQuad ):
     #
-    from Utils.Both2n3 import translate
     #
     return translate( sMaybeHexQuad, sHexQuadDigitsDots ).strip() == ''
 #

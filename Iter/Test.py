@@ -20,14 +20,20 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2017 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
 
-
+try:
+    from .Get               import iRevRange
+    from ..Utils.Get        import getTrue
+    from ..Utils.Version    import PYTHON3, PYTHON2
+except ValueError:
+    from Get                import iRevRange
+    from Utils.Get          import getTrue
+    from Utils.Version      import PYTHON3, PYTHON2
 
 def isIterator( u ):
     #
-    from Utils.Version import PYTHON3, PYTHON2
     #
     setDir = frozenset( dir( u ) )
     #
@@ -38,8 +44,6 @@ def isIterator( u ):
 
 def _getIterableTypes():
     #
-    from Iter.Get    import iRevRange
-    from Utils.Get   import getTrue
     #
     # range objects can be used over and over
     # some others cannot

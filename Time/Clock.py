@@ -20,22 +20,21 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2017 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
 
+from time import gmtime, mktime
 
 def getSecsSinceEpoch():
     #
     """This has a resolution of one second only!!!"""
     #
-    from time import gmtime, mktime
     #
     return int( mktime( gmtime() ) )
 
 
 def getTupleGMT():
     #
-    from time import gmtime
     #
     return gmtime()
 
