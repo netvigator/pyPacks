@@ -28,8 +28,8 @@ from calendar import weekday
 try:
     from .Output        import getNowIsoDateTimeStr
     from ..Iter.AllVers import iMap
-except ValueError:
-    from Output         import getNowIsoDateTimeStr
+except ( ValueError, ImportError ):
+    from Time.Output    import getNowIsoDateTimeStr
     from Iter.AllVers   import iMap
 
 
