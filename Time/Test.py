@@ -32,7 +32,7 @@ try:
     # __init__.py
     from ..Time     import ( sFormatISOdateTime, sFormatISOdateTimeNoColon,
                              sFormatDateEu )
-except ValueError:
+except ( ValueError, ImportError ):
     from Convert    import ( getSecsSinceEpochFromString, sFormatDateAm,
                              getDateTimeObjFromString, sFormatUSAdateTime )
     # __init__.py
