@@ -33,8 +33,8 @@ try:
     from ..File.Info    import getModTime
     from ..File.Spec    import getFullSpecDefaultOrPassed
     from ..File.Write   import QuickDump, openAppendClose
-except ValueError:
-    from Convert        import getSecsSinceEpochFromString, getIsoDateTimeStrFromSecs
+except ( ValueError, ImportError ):
+    from Time.Convert   import getSecsSinceEpochFromString, getIsoDateTimeStrFromSecs
     from File.Get       import getFileContent
     from File.Info      import getModTime
     from File.Spec      import getFullSpecDefaultOrPassed
@@ -64,7 +64,7 @@ def getTimeFromFile( *sFileSpec ):
         #
         fTime       = float( sTime )
         #
-    except ValueError:
+    except ( ValueError, ImportError ):
         #
         try:
             #
