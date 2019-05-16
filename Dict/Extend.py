@@ -25,11 +25,11 @@
 import bisect
 
 try:
-    from .Get   import ( getItemIter, getValueList,
-                         getReverseDictGotUniqueItems )
+    from .Get       import ( getItemIter, getValueList,
+                             getReverseDictGotUniqueItems )
 except ValueError:
-    from Get    import ( getItemIter, getValueList,
-                         getReverseDictGotUniqueItems )
+    from Dict.Get   import ( getItemIter, getValueList,
+                             getReverseDictGotUniqueItems )
 
 class returnValueOrArg( dict ):
     #

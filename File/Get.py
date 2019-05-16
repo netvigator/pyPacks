@@ -41,8 +41,8 @@ try:
     from ..Numb.Get         import getRandomDigits
     from ..Utils.Config     import getConfDict
 except ValueError:
-    from Test               import isFileThere
-    from Spec               import getFullSpec, getFullSpecDefaultOrPassed
+    from File.Test          import isFileThere
+    from File.Spec          import getFullSpec, getFullSpecDefaultOrPassed
     from Utils.Version      import PYTHON2
     from Dir.Get            import sTempDir
     from Numb.Get           import getRandomDigits

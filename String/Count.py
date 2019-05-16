@@ -28,8 +28,8 @@ try:
     from ..String.Dumpster  import getDigitsOnly, getAlphaNumCleanNoSpaces
     from ..String.Split     import SplitRegular, SplitC
 except ValueError:
-    from Dumpster           import getDigitsOnly, getAlphaNumCleanNoSpaces
-    from Split              import SplitRegular, SplitC
+    from String.Dumpster    import getDigitsOnly, getAlphaNumCleanNoSpaces
+    from String.Split       import SplitRegular, SplitC
 
 
 def CountRegular( s, sCountThese ): return s.count( sCountThese )

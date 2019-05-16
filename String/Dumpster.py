@@ -170,9 +170,9 @@ _oKeepAlphaDigitsDashes = KeepYouNameItClass( letters + '0123456789-' )
 def getAlphaNumClean( s ):
     #
     try: # moving this to the top breaks this package!
-        from .Split import getWhiteCleaned
+        from .Split       import getWhiteCleaned
     except ValueError: # maybe circular import issue
-        from Split  import getWhiteCleaned
+        from String.Split import getWhiteCleaned
     #
     sAlphaNumSpaces = _oKeepAlphaDigitsOnly.Dump( s )
     #
@@ -183,9 +183,9 @@ def getAlphaNumClean( s ):
 def getAlphaNumCleanNoSpaces( s ):
     #
     try: # moving this to the top breaks this package!
-        from .Split import getWhiteOut
+        from .Split       import getWhiteOut
     except ValueError: # maybe circular import issue
-        from Split  import getWhiteOut
+        from String.Split import getWhiteOut
     #
     sAlphaNumSpaces = _oKeepAlphaDigitsOnly.Dump( s )
     #
@@ -196,9 +196,9 @@ def getAlphaNumCleanNoSpaces( s ):
 def getAlphaNumDashNoSpaces( s ):
     #
     try: # moving this to the top breaks this package!
-        from .Split import getWhiteOut
+        from .Split       import getWhiteOut
     except ValueError: # maybe circular import issue
-        from Split  import getWhiteOut
+        from String.Split import getWhiteOut
     #
     sAlphaNumSpaces = _oKeepAlphaDigitsDashes.Dump( s )
     #

@@ -42,10 +42,10 @@ try:
     from ..Web.Address  import getDomainOffUrl
     from ..Web.Test     import isURL
 except ValueError:
-    from Get            import FileNotThereError
-    from Spec           import getFullSpec as _getFullSpec
-    from Test           import isFileThere
-    from Write          import putListInTemp
+    from File.Get       import FileNotThereError
+    from File.Spec      import getFullSpec as _getFullSpec
+    from File.Test      import isFileThere
+    from File.Write     import putListInTemp
     from Collect.Info   import getCounts
     from Dict.Get       import getItemIter
     from Iter.Get       import getListSwapValueKey

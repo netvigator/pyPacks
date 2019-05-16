@@ -33,7 +33,7 @@ try:
     from ..Utils.ImIf       import ImIf
     from ..String.Transform import getSwapper
 except ValueError:
-    from Replace            import ReplaceManyOldWithManyNew
+    from String.Replace     import ReplaceManyOldWithManyNew
     from Iter.AllVers       import iMap, lMap, iRange, lRange
     from Utils.ImIf         import ImIf
     from String.Transform   import getSwapper

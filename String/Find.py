@@ -29,16 +29,16 @@ from re                     import IGNORECASE, DOTALL, MULTILINE
 from six                    import print_ as print3
 
 try:
-    from .Dumpster          import getAlphaNumCleanNoSpaces, getAlphaNumDashNoSpaces
     from ..Collect.Query    import get1stThatMeets
     from ..Iter.AllVers     import iRange, getEnumerator, permutations
     from ..Iter.Get         import iRevRange
+    from .Dumpster          import getAlphaNumCleanNoSpaces, getAlphaNumDashNoSpaces
     from ..Utils.TimeTrial  import TimeTrial
 except ValueError:
-    from Dumpster           import getAlphaNumCleanNoSpaces, getAlphaNumDashNoSpaces
+    from Collect.Query      import get1stThatMeets
     from Iter.AllVers       import iRange, getEnumerator, permutations
     from Iter.Get           import iRevRange
-    from Collect.Query      import get1stThatMeets
+    from String.Dumpster    import getAlphaNumCleanNoSpaces, getAlphaNumDashNoSpaces
     from Utils.TimeTrial    import TimeTrial
 
 
@@ -233,9 +233,9 @@ def getRegEx4Chars( s,
             iWordBoundChrs  = 0 ):
     #
     try: # moving this to the top breaks this package!
-        from Replace        import ReplaceManyOldWithManyNew
-    except ValueError: # maybe circular import issue
         from .Replace       import ReplaceManyOldWithManyNew
+    except ValueError: # maybe circular import issue
+        from String.Replace import ReplaceManyOldWithManyNew
     #
     s = s.strip()
     #
@@ -400,11 +400,11 @@ def getRegExpress(
         bPluralize      = False ): # will also find plural version of word
     #
     try: # moving this to the top breaks this package!
-        from .Get       import getRawGotStr
-        from .Test      import hasAnyAlpha, hasAnyDigits, hasPunctOrSpace
+        from .Get        import getRawGotStr
+        from .Test       import hasAnyAlpha, hasAnyDigits, hasPunctOrSpace
     except ValueError: # maybe circular import issue
-        from Get        import getRawGotStr
-        from Test       import hasAnyAlpha, hasAnyDigits, hasPunctOrSpace
+        from String.Get  import getRawGotStr
+        from String.Test import hasAnyAlpha, hasAnyDigits, hasPunctOrSpace
     #
     sLook4Orig = sLook4
     #

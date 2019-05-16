@@ -386,9 +386,9 @@ def getCountryOffHost( sHost ): # just gets the country part of a host name
     # not used anywhere
     #
     try: # moving this to the top breaks this package!
-        from .Test import isDotQuad
+        from .Test    import isDotQuad
     except ValueError: # maybe circular import issue
-        from Test import isDotQuad
+        from Web.Test import isDotQuad
     #
     sCountry                    = ''
     #

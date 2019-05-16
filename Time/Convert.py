@@ -29,7 +29,7 @@ from time       import strftime, strptime, time, tzname, timezone
 
 
 try:
-    from ..Time          import ( 
+    from ..Time         import ( 
                 sFormatISOdateTime,
                 sFormatISOdate,
                 sFormatDateAm,
@@ -40,7 +40,7 @@ try:
     from ..Iter.AllVers import lMap, getEnumerator
     from ..String.Find  import getRegExObj
     from ..Utils.ImIf   import ImIf
-except ValueError:
+except ( ValueError, ImportError ):
     from Time           import ( 
                 sFormatISOdateTime,
                 sFormatISOdate,
@@ -163,11 +163,6 @@ def getDateTimeObjFromString(
             sFormat     = sFormatISOdateTime,
             bAdjust2UTC = False,
             oTimeZone   = None ):
-    #
-    try: # moving this to the top breaks this package!
-        from .Convert   import getDateTimeObjFromString
-    except ValueError: # maybe circular import issue
-        from Convert    import getDateTimeObjFromString
     #
     tDateTime       = getDateTimeTupleFromString( sDateTime, sFormat )
     #
@@ -318,11 +313,6 @@ def getDateTimeUSAfromISO( sTimeStamp, sFormat = sFormatUSAdateTime ):
 
 def getOtherDatefromISO( sDate, sFormat = sFormatISOdate ):
     #
-    try: # moving this to the top breaks this package!
-        from .Convert   import getDateTimeObjFromString
-    except ValueError: # maybe circular import issue
-        from Convert    import getDateTimeObjFromString
-    #
     oDateTime = getDateTimeObjFromString( sDate, sFormatISOdate )
     #
     return oDateTime.strftime( sFormat )
@@ -336,11 +326,6 @@ def getDateUSAfromISO( sDate, sFormat = sFormatDateAm ):
 
 def getIsoDateTimeFromOther( sDateTime, sFormat = sFormatUSAdateTime ):
     #
-    try: # moving this to the top breaks this package!
-        from .Convert   import getDateTimeObjFromString
-    except ValueError: # maybe circular import issue
-        from Convert    import getDateTimeObjFromString
-    #
     oDateTime = getDateTimeObjFromString( sDateTime, sFormat )
     #
     return getIsoDateTimeFromObj( oDateTime )
@@ -350,11 +335,6 @@ def getIsoDateTimeFromOther( sDateTime, sFormat = sFormatUSAdateTime ):
 
 
 def getIsoDateTimeFromOtherStr( sDate, sFormat = sFormatUSAdateTime ):
-    #
-    try: # moving this to the top breaks this package!
-        from .Convert   import getDateTimeObjFromString
-    except ValueError: # maybe circular import issue
-        from Convert    import getDateTimeObjFromString
     #
     oDateTime = getDateTimeObjFromString( sDate, sFormat )
     #

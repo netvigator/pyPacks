@@ -31,7 +31,7 @@ from six            import print_ as print3
 try:
     from .ImIf      import ImIf
 except ValueError:
-    from ImIf       import ImIf
+    from Utils.ImIf import ImIf
 
 
 def sayTestResult( lProblems ):

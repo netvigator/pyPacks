@@ -30,7 +30,7 @@ try:
     from ..String.Test  import isStringNotEmpty, getHasSubstringTester
     from ..String.Test  import isStringAndNotEmpty
 except ValueError:
-    from Test           import isEmpty
+    from Collect.Test   import isEmpty
     from Iter.AllVers   import iFilter, lFilter
     from Iter.Test      import isIterable
     from String.Test    import isStringNotEmpty, getHasSubstringTester

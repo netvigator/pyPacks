@@ -28,7 +28,7 @@ try:
     from ..Dict.Get     import getDictOffPairOfLists
     from ..Iter.AllVers import iFilter, lFilter, iMap
 except ValueError:
-    from Split          import SplitC, iterSplit, SplitRegular as _SplitRegular
+    from String.Split   import SplitC, iterSplit, SplitRegular as _SplitRegular
     from Dict.Get       import getDictOffPairOfLists
     from Iter.AllVers   import iFilter, lFilter, iMap
 
@@ -59,9 +59,9 @@ def _obsoleteGlobalReplacements( sText, lListofTuples ):
     """
     #
     try: # moving this to the top breaks this package!
-        from Transform      import getSwapper
+        from .Transform       import getSwapper
     except ValueError: # maybe circular import issue
-        from .Transform     import getSwapper
+        from String.Transform import getSwapper
     #
     dReplace            = dict( lListofTuples )
     #
@@ -118,9 +118,9 @@ def getManyOldWithManyNewSwapper( dReplace,
     #
     #
     try: # moving this to the top breaks this package!
-        from Transform      import getSwapper
+        from .Transform       import getSwapper
     except ValueError: # maybe circular import issue
-        from .Transform     import getSwapper
+        from String.Transform import getSwapper
     #
     Swapper = getSwapper( dReplace,
                     bEscape = bEscape, bMultiLine = bMultiLine )
@@ -141,9 +141,9 @@ def ReplaceManyOldWithManyNew( sText, dReplace, bEscape = True ):
 def getReplaceManyOldWithBlanksSwapper( lReplace, bJustRemove = False ):
     #
     try: # moving this to the top breaks this package!
-        from Transform      import getSwapper
+        from .Transform       import getSwapper
     except ValueError: # maybe circular import issue
-        from .Transform     import getSwapper
+        from String.Transform import getSwapper
     #
     #
     if bJustRemove:
@@ -272,9 +272,9 @@ def replaceLast( s, sOld, sNew, iHowMany = 1 ):
 def getGlobalReplaceReSplits( oFinder, sHaystack, sNewNeedle ):
     #
     try: # moving this to the top breaks this package!
-        from .Get   import getStripped
+        from .Get       import getStripped
     except ValueError: # maybe circular import issue
-        from Get    import getStripped    
+        from String.Get import getStripped    
     #
     lParts = oFinder.split( sHaystack )
     #

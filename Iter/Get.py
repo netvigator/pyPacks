@@ -30,7 +30,7 @@ try:
     from .AllVers       import iRange, iZipLongest
     from ..Utils.Get    import getTrue as _getTrue
 except ValueError:
-    from AllVers        import iRange, iZipLongest
+    from Iter.AllVers   import iRange, iZipLongest
     from Utils.Get      import getTrue as _getTrue
 
 

@@ -31,7 +31,7 @@ try:
     from ..File.Del     import DeleteIfExists
     from ..File.Test    import isFileThere
 except ValueError:
-    from Test           import isDirThere
+    from Dir.Test       import isDirThere
     from File.Del       import DeleteIfExists
     from File.Test      import isFileThere
 

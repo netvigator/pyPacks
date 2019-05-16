@@ -40,7 +40,7 @@ try:
     from ..Iter.AllVers     import iMap
     from ..String.Transform import getSwapper  as _getSwapper
 except ValueError:
-    from Get                import ( getRealEmail, getEmailListFromString,
+    from eMail.Get          import ( getRealEmail, getEmailListFromString,
                                      getAddresseeStrOffSeq, getHyphen )
     from Collect.Query      import get1stThatMeets
     from Collect.Test       import ContainsAll

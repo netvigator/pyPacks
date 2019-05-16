@@ -36,7 +36,7 @@ try:
     from ..Iter.AllVers     import iMap
     from ..String.Output    import ReadableNo
 except ValueError:
-    from Stats              import getPercent
+    from Numb.Stats         import getPercent
     from Iter.AllVers       import iMap
     from String.Output      import ReadableNo
 

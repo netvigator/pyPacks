@@ -45,8 +45,8 @@ try:
     from ..Utils.Both2n3    import PYTHON2, getEncoded, getStrGotBytes
     from ..Utils.ImIf       import ImIf
 except ValueError:
-    from Get                import getFileObject, getFileContent
-    from Spec               import getFullSpec, getFullSpecDefaultOrPassed
+    from File.Get           import getFileObject, getFileContent
+    from File.Spec          import getFullSpec, getFullSpecDefaultOrPassed
     from Collect.Output     import getPrintableTextFromSeq
     from Dir.Get            import sTempDir
     from Dir.Test           import isDirThere

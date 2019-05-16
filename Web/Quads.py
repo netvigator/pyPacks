@@ -42,9 +42,9 @@ StrPadZero  = getZeroPadder( 3 )
 def getQuadTuple( sQuad, bIsDotQuad = False, bIsHexQuad = False ):
     #
     try: # moving this to the top breaks this package!
-        from .Test          import isHexQuad
+        from .Test      import isHexQuad
     except ValueError: # maybe circular import issue
-        from Test           import isHexQuad
+        from Web.Test   import isHexQuad
     #
     if bIsDotQuad:
         #
@@ -119,9 +119,9 @@ def getQuadTuple( sQuad, bIsDotQuad = False, bIsHexQuad = False ):
 def getDotQuad( sMayBeDotQuad, bLocalDotQuadOK = True, bExtremesOK = True, bOverOK = False ):
     #
     try: # moving this to the top breaks this package!
-        from .Test  import isDotQuadValid
+        from .Test      import isDotQuadValid
     except ValueError: # maybe circular import issue
-        from Test   import isDotQuadValid
+        from Web.Test   import isDotQuadValid
     #
     if type( sMayBeDotQuad ) == type( () ): sMayBeDotQuad = sMayBeDotQuad[0:1]
     #
@@ -152,9 +152,9 @@ def getDotQuadStripPort( sDotQuadColonPort ):
 def gotDotQuadPortTupleFromString( sMayBeDotQuad ):
     #
     try: # moving this to the top breaks this package!
-        from .Test import isDotQuadWithPort
+        from .Test    import isDotQuadWithPort
     except ValueError: # maybe circular import issue
-        from Test  import isDotQuadWithPort
+        from Web.Test import isDotQuadWithPort
     #
     tReturn = ( '', -1 )
     #
@@ -192,9 +192,9 @@ def getDotQuadsWithPorts( sStuff ):
     # not used anywhere yet
     #
     try: # moving this to the top breaks this package!
-        from .Test import isDotQuadPortAfterCleanup
+        from .Test    import isDotQuadPortAfterCleanup
     except ValueError: # maybe circular import issue
-        from Test import isDotQuadPortAfterCleanup
+        from Web.Test import isDotQuadPortAfterCleanup
     #
     lFrags = sStuff.split()
     #
@@ -205,9 +205,9 @@ def getDotQuadsWithPorts( sStuff ):
 def getDomainNameOrDotQuadWithPort( sMayBe ):
     #
     try: # moving this to the top breaks this package!
-        from .Test import isDomainNameOrDotQuadWithPort
+        from .Test    import isDomainNameOrDotQuadWithPort
     except ValueError: # maybe circular import issue
-        from Test import isDomainNameOrDotQuadWithPort
+        from Web.Test import isDomainNameOrDotQuadWithPort
     #
     tReturn = ( '', -1 )
     #

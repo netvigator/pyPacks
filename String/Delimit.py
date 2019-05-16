@@ -42,20 +42,18 @@ try:
     from ..Utils.Combos     import All
     from ..Utils.TimeTrial  import TimeTrial
 except ValueError:
-    from Get                import getTextBeforeC
-    from Find               import getRegExObj
-    from Replace            import getBlanksForReMatchObj
-    from Split              import ( SplitC, getPartsListAndBothStarts,
+    from String.Get         import getTextBeforeC
+    from String.Find        import getRegExObj
+    from String.Replace     import getBlanksForReMatchObj
+    from String.Split       import ( SplitC, getPartsListAndBothStarts,
                                      getIterPartsAndBothStarts )
-    from Text4Tests         import ( sHTML, ttDelims, tWantBlanks,
+    from String.Text4Tests  import ( sHTML, ttDelims, tWantBlanks,
                                      sGoogleQuerResult_Chrome as sHTML )
     from Collect.Get        import getSeparateKeysValues
     from Iter.AllVers       import iMap, lMap, iZip, iZipLongest
     from Numb.Get           import getAdder
     from Utils.Combos       import All
     from Utils.TimeTrial    import TimeTrial
-
-    
 
 
 def _LopOffEnd( sOrig, sSplitOn, sSplitB4 ):

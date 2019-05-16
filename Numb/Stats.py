@@ -28,8 +28,8 @@ try:
     from .Test          import isNumber
     from ..Iter.AllVers import iFilter
 except ValueError:
-    from Get            import getSumOffList
-    from Test           import isNumber
+    from Numb.Get       import getSumOffList
+    from Numb.Test      import isNumber
     from Iter.AllVers   import iFilter
 
 

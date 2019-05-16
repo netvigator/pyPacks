@@ -48,14 +48,14 @@ try:
     from ..String.Dumpster  import KeepDotsDigitsClass
     from ..Utils.Both2n3    import translate
 except ValueError:
-    from Quads              import ( getDotQuadFromValue, getDotQuad4Sort,
+    from Web.Quads          import ( getDotQuadFromValue, getDotQuad4Sort,
                                      getClassCNetBegEnd, getQuadValue,
                                      getClassCNetRangeBegEnd, getDotQuad,
                                      getQuadTuple,
                                      getDotQuadFromValue as getQ )
-    from Address            import ( setTopLevelDomains, setMiniDomains,
+    from Web.Address        import ( setTopLevelDomains, setMiniDomains,
                                      UrlSplitMore )
-    from Country            import dCountryCodes
+    from Web.Country        import dCountryCodes
     from Collect.Get        import getValueIterOffItems as getValues
     from Collect.Query      import get1stThatMeets
     from Collect.Test       import AllMeet

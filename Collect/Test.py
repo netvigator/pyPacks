@@ -28,7 +28,7 @@ try:
     from .Query         import get1stTrue
     from ..Iter.AllVers import iMap
 except ValueError:
-    from Query          import get1stTrue
+    from Collect.Query  import get1stTrue
     from Iter.AllVers   import iMap
 
 def isListOrTuple( u ):

@@ -31,8 +31,8 @@ try:
                                  isPunctOrSpace, isNotDigit, isDigit, isSpace )
     from ..Collect.Get  import getListNoFalsies
 except ValueError:
-    from Get            import getTheseCharsOffOneEnd, getTextAfter
-    from Test           import ( isAsciiAlpha, isAsciiDigit, isPunctuation,
+    from String.Get     import getTheseCharsOffOneEnd, getTextAfter
+    from String.Test    import ( isAsciiAlpha, isAsciiDigit, isPunctuation,
                                  isPunctOrSpace, isNotDigit, isDigit, isSpace )
     from Collect.Get    import getListNoFalsies
 

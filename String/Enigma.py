@@ -62,10 +62,10 @@ try:
     from ..Numb.Test        import isEven, isOdd
     from ..Utils.Both2n3    import print3
 except ValueError:
-    from Find               import oFinderCRorLF
-    from Replace            import getTextReversed
-    from Stats              import AscStats
-    from Transform          import TranslatorFactory, getSwapper
+    from String.Find        import oFinderCRorLF
+    from String.Replace     import getTextReversed
+    from String.Stats       import AscStats
+    from String.Transform   import TranslatorFactory, getSwapper
     from Collect.Cards      import ShuffleAndCut, getCutPosition
     from File.Get           import getFileContent
     from File.Test          import isFileThere

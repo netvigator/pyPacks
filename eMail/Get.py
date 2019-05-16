@@ -64,9 +64,9 @@ def getHyphen( s ): return s.replace( '_', '-' )
 def getEmailAddsIter( s ):
     #
     try: # moving this to the top breaks this package!
-        from .Test import isEmailAddress
+        from .Test      import isEmailAddress
     except ValueError: # maybe circular import issue
-        from Test  import isEmailAddress
+        from eMail.Test import isEmailAddress
     #
     lParts = _oEmailBracketDumpster.Dump( s.lower() ).split()
     #
@@ -83,9 +83,9 @@ def getEmailAddsTuple( s ):
 def getEmailAdd( s ):
     #
     try: # moving this to the top breaks this package!
-        from .Test import isEmailAddress
+        from .Test      import isEmailAddress
     except ValueError: # maybe circular import issue
-        from Test  import isEmailAddress
+        from eMail.Test import isEmailAddress
     #
     lParts = _oEmailBracketDumpster.Dump( s ).split()
     #

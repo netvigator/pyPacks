@@ -48,13 +48,13 @@ try:
     from ..Utils.Combos     import Any_
     from ..Utils.TimeTrial  import TimeTrial
 except ValueError:
-    from Count              import CountSplit
-    from Dumpster           import ( DumpYouNameItClass, oKeepAlphaSpaces,
+    from String.Count       import CountSplit
+    from String.Dumpster    import ( DumpYouNameItClass, oKeepAlphaSpaces,
                                      oKeepAlphaDigitsSpacesHash,
                                      getDigitsOnly )
-    from Split              import ( SplitRegular, SplitRight, SplitC,
+    from String.Split       import ( SplitRegular, SplitRight, SplitC,
                                      SplitRightC, getWhiteCleaned )
-    from Test               import ( getItemFoundInString, isDigit,
+    from String.Test        import ( getItemFoundInString, isDigit,
                                      hasAlphaNumsOnly, isDigitOrDotOnly,
                                      isAlphaNumOrDot, isQuote, isPunctuation,
                                      isAsciiAlpha, getNumberPattern,

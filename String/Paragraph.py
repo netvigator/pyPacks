@@ -22,29 +22,28 @@
 #
 # Copyright 2004-2019 Rick Graves
 #
-from random         import randint
-
+from random                 import randint
 
 try:
-    from .Eat           import eatWhiteSpaceFront
-    from .Find          import getRegExObj
-    from .Get           import getCharsOffEnd
-    from .Test          import is1stCharAlpha
-    from .Transform     import getSpace4NewLine
-    from ..Collect.Test import AllMeet
-    from ..File.Get     import getFileContent, getContent
-    from ..File.Spec    import getFullSpecDefaultOrPassed
-    from ..Iter.AllVers import iMap, tFilter, iRange
+    from .Eat               import eatWhiteSpaceFront
+    from .Find              import getRegExObj
+    from .Get               import getCharsOffEnd
+    from .Test              import is1stCharAlpha
+    from .Transform         import getSpace4NewLine
+    from ..Collect.Test     import AllMeet
+    from ..File.Get         import getFileContent, getContent
+    from ..File.Spec        import getFullSpecDefaultOrPassed
+    from ..Iter.AllVers     import iMap, tFilter, iRange
 except ValueError:
-    from Eat            import eatWhiteSpaceFront
-    from Find           import getRegExObj
-    from Get            import getCharsOffEnd
-    from Test           import is1stCharAlpha
-    from Transform      import getSpace4NewLine
-    from Collect.Test   import AllMeet
-    from File.Get       import getFileContent, getContent
-    from File.Spec      import getFullSpecDefaultOrPassed
-    from Iter.AllVers   import iMap, tFilter, iRange
+    from String.Eat         import eatWhiteSpaceFront
+    from String.Find        import getRegExObj
+    from String.Get         import getCharsOffEnd
+    from String.Test        import is1stCharAlpha
+    from String.Transform   import getSpace4NewLine
+    from Collect.Test       import AllMeet
+    from File.Get           import getFileContent, getContent
+    from File.Spec          import getFullSpecDefaultOrPassed
+    from Iter.AllVers       import iMap, tFilter, iRange
 
 
 _oMultiLinesFinder = getRegExObj( '\n\n\n+',

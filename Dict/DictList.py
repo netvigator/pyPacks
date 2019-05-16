@@ -37,9 +37,9 @@ try:
     from ..Iter.AllVers import iMap, tZip
     from ..Utils.Get    import getTrue
 except ValueError:
-    from Get            import ( getDictOfListsOffItems, getItemList,
+    from Dict.Get       import ( getDictOfListsOffItems, getItemList,
                                  getKeyIter, getItemList )
-    from Numbs          import ( getDictOfCountsOffDictOfLists,
+    from Dict.Numbs     import ( getDictOfCountsOffDictOfLists,
                                  getDictOfAvgsOffDictOfLists )
     from Iter.AllVers   import iMap, tZip
     from Utils.Get      import getTrue

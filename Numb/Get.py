@@ -31,12 +31,12 @@ from six.moves              import reduce as Reduce
 
 try:
     from ..Collect.Test     import isListOrTuple, AnyMeet
-    from ..Numb.Test        import isFloat, hasIntegersOnly
+    from ..Test             import isFloat, hasIntegersOnly
     from ..Iter.AllVers     import iMap, iRange, iZipLongest
     from ..Utils.TimeTrial  import TimeTrial
 except ValueError:
     from Collect.Test       import isListOrTuple, AnyMeet
-    from Test               import isFloat, hasIntegersOnly
+    from Numb.Test          import isFloat, hasIntegersOnly
     from Iter.AllVers       import iMap, iRange, iZipLongest
     from Utils.TimeTrial    import TimeTrial
 

@@ -42,14 +42,14 @@ try:
     from ..Numb.Test        import isOdd
     from ..Utils.TimeTrial  import TimeTrial
 except ValueError:
-    from Find               import getRegExObj
+    from String.Find        import getRegExObj
+    from String.Text4Tests  import sGoogleQuerResult_Chrome as sHTML
     from Collect.Get        import unZip
     from Collect.Query      import get1stThatMeets
     from Iter.AllVers       import iFilter, iRange, iMap, lMap, tMap, iZip
     from Iter.Get           import getSequencePairsThisWithNext as getThisWithNext
     from Iter.Get           import iRevRange
     from Numb.Test          import isOdd
-    from Text4Tests         import sGoogleQuerResult_Chrome as sHTML
     from Utils.TimeTrial    import TimeTrial
 
 
@@ -927,9 +927,9 @@ except AttributeError:
 def getSplitAndStrip( s, uSplitOn = ',' ):
     #
     try: # moving this to the top breaks this package!
-        from .Get import getStripped
+        from .Get       import getStripped
     except ValueError: # maybe circular import issue
-        from Get  import getStripped
+        from String.Get import getStripped
     #
     if isinstance( uSplitOn, str ):
         if uSplitOn.upper() == uSplitOn.lower():

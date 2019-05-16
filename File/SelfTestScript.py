@@ -39,9 +39,9 @@ try:
     from ..Iter.AllVers import tFilter
     from ..String.Get   import getTextAfter, getTextAfterLast
 except ValueError:
-    from Get            import getFileObject
-    from Spec           import getFullSpec
-    from Test           import isFileThere
+    from File.Get       import getFileObject
+    from File.Spec      import getFullSpec
+    from File.Test      import isFileThere
     from Dict.Get       import getKeyIter
     from Iter.AllVers   import tFilter
     from String.Get     import getTextAfter, getTextAfterLast

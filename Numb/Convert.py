@@ -38,7 +38,7 @@ try:
     from ..String.Find      import getFinderFindAll, getRegExObj
     from ..Utils.TimeTrial  import TimeTrial
 except ValueError:
-    from Get                import getSum, pairMultiply
+    from Numb.Get           import getSum, pairMultiply
     from Dict.Get           import getKeyList, getKeyIter, getReverseDict
     from Dict.Get           import getReverseDictGotUniqueItems
     from Iter.AllVers       import iMap, lMap, tMap, iZip, iRange

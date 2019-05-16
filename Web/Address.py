@@ -38,8 +38,8 @@ try:
     from ..Iter.AllVers import iRange, iMap, lMap, iZip
     from ..String.Find  import getTextInQuotes
 except ValueError:
-    from Country        import dCountryCodes
-    from HTML           import oFindLinkStart # href=
+    from Web.Country    import dCountryCodes
+    from Web.HTML       import oFindLinkStart # href=
     from Collect.Get    import getDecoratedIter
     from Dict.Get       import getDictOfListsOffItems
     from Iter.AllVers   import iRange, iMap, lMap, iZip
@@ -113,9 +113,9 @@ setTopLevelDomains, setMiniDomains  = _getTopLevelDomainSets()
 def getServerDomainOffURL( sHost ):
     #
     try: # moving this to the top breaks this package!
-        from .Test  import isDotQuad
+        from .Test    import isDotQuad
     except ValueError: # maybe circular import issue
-        from Test   import isDotQuad
+        from Web.Test import isDotQuad
     #
     sScheme, sUser, sPassword, sHost, sPort, sPath, sQuery, sFragmentID = UrlSplitMore( sHost )
     #

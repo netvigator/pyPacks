@@ -26,16 +26,16 @@
 #from os.path import join, isfile, getmtime, split, splitext, exists, basename, isdir
 #from os      import stat, environ, getcwd, listdir, rename, remove
 
-from os         import remove
-from os.path    import isfile, isdir
+from os                 import remove
+from os.path            import isfile, isdir
 
 
 def isFileThere( *sFileSpec ):
     #
     try: # moving this to the top breaks this package!
-        from .Spec import getFullSpec
+        from .Spec      import getFullSpec
     except ValueError: # maybe circular import issue
-        from Spec  import getFullSpec
+        from File.Spec  import getFullSpec
     #
     sFullSpec   = getFullSpec( *sFileSpec )
     #

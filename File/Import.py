@@ -42,9 +42,9 @@ try:
     from ..String.Replace   import getBlanksForReMatchObj
     from ..String.Test      import isQuote
 except ValueError:
-    from Get           import getFileObject
-    from Test          import isFileThere
-    from Spec          import getFullSpec
+    from File.Get           import getFileObject
+    from File.Test          import isFileThere
+    from File.Spec          import getFullSpec
     from Dir.Get            import sTempDir
     from Iter.AllVers       import iFilter, iMap, tMap, iRange, iZip
     from String.Get         import ( getTextAfter, getCharNotIn,

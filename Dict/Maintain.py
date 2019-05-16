@@ -27,7 +27,7 @@ try:
     from ..Numb.Test        import isOdd
     from ..Utils.TimeTrial  import TimeTrial
 except ValueError:
-    from Get                import getKeyTuple
+    from Dict.Get           import getKeyTuple
     from Numb.Test          import isOdd
     from Utils.TimeTrial    import TimeTrial
 
