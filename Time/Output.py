@@ -37,9 +37,9 @@ try:
     from ..Numb.Output      import getSayLessThanOne
     from ..String.Eat       import eatCharsOffEnd
     from ..String.Output    import ReadableNo, Plural
-except ValueError:
-    from Clock              import getTupleGMT
-    from Convert            import getIsoDateTimeStrFromSecs, getNormalDateFromSecs
+except ( ValueError, ImportError ):
+    from Time.Clock         import getTupleGMT
+    from Time.Convert       import getIsoDateTimeStrFromSecs, getNormalDateFromSecs
     from Time               import ( iSecsPerDay,
                                      sFormatISOdateTime,
                                      sFormatISOdateTimeNoColon,
@@ -167,9 +167,9 @@ def getIsoDateTimeNowPlusNoSpaces(
     '''
     #
     try: # moving this to the top breaks this package!
-        from .Delta import getIsoDateTimeNowPlus
-    except ValueError: # maybe circular import issue
-        from Delta import getIsoDateTimeNowPlus
+        from .Delta     import getIsoDateTimeNowPlus
+    except ( ValueError, ImportError ): # maybe circular import issue
+        from Time.Delta import getIsoDateTimeNowPlus
     #
     sTime = getIsoDateTimeNowPlus(
         iDays       = iDays,
@@ -197,9 +197,9 @@ def getIsoDateTimeNoSpacesFromSecsFromNow( fSecsFromNow, bWantLocal = True ):
 def getSayDurationAsDecimal( nSince = 0, nNow = None ):
     #
     try: # moving this to the top breaks this package!
-        from .Delta import getDuration, getDurationUnits
-    except ValueError: # maybe circular import issue
-        from Delta  import getDuration, getDurationUnits
+        from .Delta     import getDuration, getDurationUnits
+    except ( ValueError, ImportError ): # maybe circular import issue
+        from Time.Delta import getDuration, getDurationUnits
     #
     nDuration           = getDuration( nSince, nNow )
     #
@@ -233,9 +233,9 @@ def getSayDurationAsDaysHrsMinsSecs( nSince = 0, nNow = None ):
     """
     #
     try: # moving this to the top breaks this package!
-        from .Delta import getDuration
-    except ValueError: # maybe circular import issue
-        from Delta  import getDuration
+        from .Delta     import getDuration
+    except ( ValueError, ImportError ): # maybe circular import issue
+        from Time.Delta import getDuration
     #
     nDuration           = getDuration( nSince, nNow )
     #
