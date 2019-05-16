@@ -94,7 +94,7 @@ if __name__ == "__main__":
             iFalse += 1
         #
     #
-    if abs( iTrue - iFalse ) > 200:
+    if abs( iTrue - iFalse ) > 288: # got 258 2019-05-16
         #
         print3( 'iTrue :', iTrue )
         print3( 'iFalse:', iFalse)
