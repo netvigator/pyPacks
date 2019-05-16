@@ -31,14 +31,14 @@ try:
     from .Clock         import getSecsSinceEpoch
     from .Convert       import getIsoDateTimeStrFromSecs, getDateTimeObjFromString
     from .Output        import getNowIsoDateTimeStr, sayIsoDateTimeLocal
-    from ..Time         import iSecsPerDay, sFormatISOdateTime # in __init__.py
     from ..Utils.ImIf   import ImIf
-except ValueError:
-    from Clock          import getSecsSinceEpoch
-    from Convert        import getIsoDateTimeStrFromSecs, getDateTimeObjFromString
-    from Output         import getNowIsoDateTimeStr, sayIsoDateTimeLocal
-    from Time           import iSecsPerDay, sFormatISOdateTime # in __init__.py
+    from ..Time         import iSecsPerDay, sFormatISOdateTime # in __init__.py
+except ( ValueError, ImportError ):
+    from Time.Clock     import getSecsSinceEpoch
+    from Time.Convert   import getIsoDateTimeStrFromSecs, getDateTimeObjFromString
+    from Time.Output    import getNowIsoDateTimeStr, sayIsoDateTimeLocal
     from Utils.ImIf     import ImIf
+    from Time           import iSecsPerDay, sFormatISOdateTime # in __init__.py
 
 
 
@@ -161,9 +161,9 @@ def getIsoDateTimeFromIsoDateTimePlus( sDateTime,
         bWantLocal  = True ):
     #
     try: # moving this to the top breaks this package!
-        from .Convert   import getSecsSinceEpochFromString
-    except ValueError: # maybe circular import issue
-        from Convert    import getSecsSinceEpochFromString
+        from .Convert     import getSecsSinceEpochFromString
+    except ( ValueError, ImportError ): # maybe circular import issue
+        from Time.Convert import getSecsSinceEpochFromString
     #
     if (    iHours == 0 and
             iMins  == 0 and
@@ -275,7 +275,7 @@ def getDeltaDaysFromStrings( sEarlier, sLater = None, iDigitsAfterDot = 0 ):
     #
     try: # moving this to the top breaks this package!
         from .Convert   import getSecsSinceEpochFromString
-    except ValueError: # maybe circular import issue
+    except ( ValueError, ImportError ): # maybe circular import issue
         from Convert    import getSecsSinceEpochFromString
     #
     if sLater is None:
