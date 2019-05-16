@@ -102,6 +102,5 @@ if __name__ == "__main__":
         #
         lProblems.append( 'getRandomTrueOrFalse()' )
         #
-    #
-        
+    #        
     sayTestResult( lProblems )
