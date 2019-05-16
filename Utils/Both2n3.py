@@ -224,7 +224,7 @@ try:
 except ImportError:
     try: # moving this to the top breaks this package!
         from ..Dict.Get import OrderedDictBackport as OrderedDict
-    except ValueError: # maybe circular import issue
+    except ( ValueError, ImportError ): # maybe circular import issue
         from Dict.Get   import OrderedDictBackport as OrderedDict
 
 

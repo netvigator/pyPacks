@@ -30,7 +30,7 @@ from six                import print_ as print3
 try:
     from ..Iter.AllVers import iRange, tFilter
     from ..Utils.ImIf   import ImIf
-except ValueError:
+except ( ValueError, ImportError ):
     from Iter.AllVers   import iRange, tFilter
     from Utils.ImIf     import ImIf
 
@@ -104,7 +104,7 @@ def _definedTrial( getNow, iCallsPerSet, iSets, TimeThis, args, kwargs ):
     try: # moving this to the top breaks this package!
         from ..String.Output    import ReadableNo
         from ..Time.Delta   import getDurationUnits
-    except ValueError: # maybe circular import issue
+    except ( ValueError, ImportError ): # maybe circular import issue
         from String.Output      import ReadableNo
         from Time.Delta     import getDurationUnits
     #

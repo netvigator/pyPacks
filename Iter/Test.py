@@ -27,7 +27,7 @@ try:
     from .Get               import iRevRange
     from ..Utils.Get        import getTrue
     from ..Utils.Version    import PYTHON3, PYTHON2
-except ValueError:
+except ( ValueError, ImportError ):
     from Iter.Get           import iRevRange
     from Utils.Get          import getTrue
     from Utils.Version      import PYTHON3, PYTHON2

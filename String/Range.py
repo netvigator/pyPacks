@@ -26,7 +26,7 @@
 try:
     from .Output        import getZeroPadder, StrPadZero
     from ..Iter.AllVers import iMap, tMap, iRange, tRange
-except ValueError:
+except ( ValueError, ImportError ):
     from String.Output  import getZeroPadder, StrPadZero
     from Iter.AllVers   import iMap, tMap, iRange, tRange
 

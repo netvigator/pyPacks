@@ -29,7 +29,7 @@ try:
     from ..Collect.Get  import getNewValuesIter4Items, unZip
     from ..Iter.AllVers import iZip, iFilter
     from ..Numb.Get     import getSumOffList
-except ValueError:
+except ( ValueError, ImportError ):
     from Dict.Get       import getItemIter, getKeyIter
     from Collect.Get    import getNewValuesIter4Items, unZip
     from Iter.AllVers   import iZip, iFilter

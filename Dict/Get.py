@@ -29,7 +29,7 @@ try:
     from ..Iter.Get         import getIterSwapValueKey as _getIterSwapValueKey
     from ..Object.Test      import isMutable
     from ..Utils.Version    import PYTHON3
-except ValueError:
+except ( ValueError, ImportError ):
     from Iter.AllVers       import iZip
     from Iter.Get           import getIterSwapValueKey as _getIterSwapValueKey
     from Object.Test        import isMutable

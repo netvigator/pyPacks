@@ -26,7 +26,7 @@ try:
     from .Get               import getKeyTuple
     from ..Numb.Test        import isOdd
     from ..Utils.TimeTrial  import TimeTrial
-except ValueError:
+except ( ValueError, ImportError ):
     from Dict.Get           import getKeyTuple
     from Numb.Test          import isOdd
     from Utils.TimeTrial    import TimeTrial

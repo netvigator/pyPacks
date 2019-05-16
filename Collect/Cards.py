@@ -35,7 +35,7 @@ try:
     from ..Numb.Get     import getSumOnlyIntegers
     from ..Numb.Test    import isOdd
     from ..Utils.ImIf   import ImIf
-except ValueError:
+except ( ValueError, ImportError ):
     from Iter.AllVers   import iRange, tRange, iMap
     from Numb.Crunch    import getIntegerDivisionRoundUp
     from Numb.Test      import isOdd

@@ -361,7 +361,7 @@ def getIsoDateFromUSAdate( sDate ):
         try:
             sISO = getIsoDateFromOtherStr( sDate, sFormatDateAm      )
             raise Finished
-        except ValueError:
+        except ( ValueError, ImportError ):
             sISO = getIsoDateFromOtherStr( sDate, sFormatDateAmShort )
     #
     except Finished: pass
@@ -380,19 +380,19 @@ def getIsoDateTimeFromUSAdateTime( sDateTime ):
         try:
             sISO = getIsoDateTimeFromOther( sDateTime, sFormatUSAdateTime )
             raise Finished
-        except ValueError:
+        except ( ValueError, ImportError ):
             pass
         try:
             # two digit year, drop seconds, no AM/PM
             sISO = getIsoDateTimeFromOther( sDateTime, '%m/%d/%y %H:%M' )
             raise Finished
-        except ValueError:
+        except ( ValueError, ImportError ):
             pass
         try:
             # try 4 digit year, no seconds, no AM/PM
             sISO = getIsoDateTimeFromOther( sDateTime, '%m/%d/%Y %H:%M' )
             raise Finished
-        except ValueError:
+        except ( ValueError, ImportError ):
             raise
     #
     except Finished: pass

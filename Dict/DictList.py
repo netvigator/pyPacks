@@ -36,7 +36,7 @@ try:
                                  getDictOfAvgsOffDictOfLists )
     from ..Iter.AllVers import iMap, tZip
     from ..Utils.Get    import getTrue
-except ValueError:
+except ( ValueError, ImportError ):
     from Dict.Get       import ( getDictOfListsOffItems, getItemList,
                                  getKeyIter, getItemList )
     from Dict.Numbs     import ( getDictOfCountsOffDictOfLists,

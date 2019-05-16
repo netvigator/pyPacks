@@ -453,7 +453,7 @@ class getPagesClass( ObserverClass ):
                     #
                     iSlot   = self.lDownLoading.index( None )
                     #
-                except ValueError:
+                except ( ValueError, ImportError ):
                     #
                     iSlot   = None
                     #

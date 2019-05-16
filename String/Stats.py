@@ -27,7 +27,7 @@ try:
     from ..Iter.AllVers import tMap
     from ..Numb.Stats   import getMeanMembers
     from ..Object.Get   import ValueContainer
-except ValueError:
+except ( ValueError, ImportError ):
     from Iter.AllVers   import tMap
     from Numb.Stats     import getMeanMembers
     from Object.Get     import ValueContainer

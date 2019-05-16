@@ -41,7 +41,7 @@ try:
     from ..String.Find      import getRegExObj
     from ..String.Replace   import getBlanksForReMatchObj
     from ..String.Test      import isQuote
-except ValueError:
+except ( ValueError, ImportError ):
     from File.Get           import getFileObject
     from File.Test          import isFileThere
     from File.Spec          import getFullSpec

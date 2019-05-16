@@ -33,7 +33,7 @@ from math                   import log
 #
 try:
     from ..String.Output    import ReadableNo
-except ValueError:
+except ( ValueError, ImportError ):
     from String.Output      import ReadableNo
 
 

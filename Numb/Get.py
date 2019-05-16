@@ -34,7 +34,7 @@ try:
     from ..Test             import isFloat, hasIntegersOnly
     from ..Iter.AllVers     import iMap, iRange, iZipLongest
     from ..Utils.TimeTrial  import TimeTrial
-except ValueError:
+except ( ValueError, ImportError ):
     from Collect.Test       import isListOrTuple, AnyMeet
     from Numb.Test          import isFloat, hasIntegersOnly
     from Iter.AllVers       import iMap, iRange, iZipLongest

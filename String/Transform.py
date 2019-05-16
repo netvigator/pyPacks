@@ -32,7 +32,7 @@ try:
     from ..Dict.Get         import getKeyIter, getItemIter, getValueIter
     from ..Iter.AllVers     import iMap, iZip
     from ..Utils.Both2n3    import maketrans, translate
-except ValueError:
+except ( ValueError, ImportError ):
     from String.Find        import getRegExObj
     from String.Replace     import ReplaceManyOldWithBlanks
     from Dict.Get           import getKeyIter, getItemIter, getValueIter
@@ -253,7 +253,7 @@ def getLinesTrimmed( sText, bKeepLen = False ):
     #
     try: # moving this to the top breaks this package!
         from .Eat       import eatEndSpaces
-    except ValueError: # maybe circular import issue
+    except ( ValueError, ImportError ): # maybe circular import issue
         from String.Eat import eatEndSpaces
     #
     # from time import clock

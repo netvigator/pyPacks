@@ -34,7 +34,7 @@ try:
     from ..File.Get         import getFileContent, getContent
     from ..File.Spec        import getFullSpecDefaultOrPassed
     from ..Iter.AllVers     import iMap, tFilter, iRange
-except ValueError:
+except ( ValueError, ImportError ):
     from String.Eat         import eatWhiteSpaceFront
     from String.Find        import getRegExObj
     from String.Get         import getCharsOffEnd

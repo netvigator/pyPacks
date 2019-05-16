@@ -27,7 +27,7 @@ from bisect import bisect_right
 try:
     from .Query         import get1stTrue
     from ..Iter.AllVers import iMap
-except ValueError:
+except ( ValueError, ImportError ):
     from Collect.Query  import get1stTrue
     from Iter.AllVers   import iMap
 

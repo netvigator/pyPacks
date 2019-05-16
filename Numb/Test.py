@@ -27,7 +27,7 @@ try:
     from ..Collect.Test     import isListOrTuple, AllMeet
     from ..Iter.AllVers     import iRange
     from ..Utils.Both2n3    import setNumberTypes
-except ValueError:
+except ( ValueError, ImportError ):
     from Collect.Test       import isListOrTuple, AllMeet
     from Iter.AllVers       import iRange
     from Utils.Both2n3      import setNumberTypes

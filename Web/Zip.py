@@ -132,7 +132,7 @@ def getCompressedOffChunks( sChunks ):
             #
             iLenChunk   = int( sHexBytes, 16 )
             #
-        except ValueError:  # that was not a Hex number after all
+        except ( ValueError, ImportError ):  # that was not a Hex number after all
             #
             error, msg, traceback = exc_info()
             #

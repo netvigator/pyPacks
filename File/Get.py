@@ -40,7 +40,7 @@ try:
     from ..Dir.Get          import sTempDir
     from ..Numb.Get         import getRandomDigits
     from ..Utils.Config     import getConfDict
-except ValueError:
+except ( ValueError, ImportError ):
     from File.Test          import isFileThere
     from File.Spec          import getFullSpec, getFullSpecDefaultOrPassed
     from Utils.Version      import PYTHON2
@@ -81,7 +81,7 @@ class LineParserObject( object ):
         #
         try: # moving this to the top breaks this package!
             from .Write     import QuickDump
-        except ValueError: # maybe circular import issue
+        except ( ValueError, ImportError ): # maybe circular import issue
             from File.Write import QuickDump
         #
         sTestContent = ( '\nnew row\nspam\n\nnext row\ntoast\n\n\n'

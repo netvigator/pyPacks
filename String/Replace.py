@@ -27,7 +27,7 @@ try:
     from .Split         import SplitC, iterSplit, SplitRegular as _SplitRegular
     from ..Dict.Get     import getDictOffPairOfLists
     from ..Iter.AllVers import iFilter, lFilter, iMap
-except ValueError:
+except ( ValueError, ImportError ):
     from String.Split   import SplitC, iterSplit, SplitRegular as _SplitRegular
     from Dict.Get       import getDictOffPairOfLists
     from Iter.AllVers   import iFilter, lFilter, iMap
@@ -60,7 +60,7 @@ def _obsoleteGlobalReplacements( sText, lListofTuples ):
     #
     try: # moving this to the top breaks this package!
         from .Transform       import getSwapper
-    except ValueError: # maybe circular import issue
+    except ( ValueError, ImportError ): # maybe circular import issue
         from String.Transform import getSwapper
     #
     dReplace            = dict( lListofTuples )
@@ -119,7 +119,7 @@ def getManyOldWithManyNewSwapper( dReplace,
     #
     try: # moving this to the top breaks this package!
         from .Transform       import getSwapper
-    except ValueError: # maybe circular import issue
+    except ( ValueError, ImportError ): # maybe circular import issue
         from String.Transform import getSwapper
     #
     Swapper = getSwapper( dReplace,
@@ -142,7 +142,7 @@ def getReplaceManyOldWithBlanksSwapper( lReplace, bJustRemove = False ):
     #
     try: # moving this to the top breaks this package!
         from .Transform       import getSwapper
-    except ValueError: # maybe circular import issue
+    except ( ValueError, ImportError ): # maybe circular import issue
         from String.Transform import getSwapper
     #
     #
@@ -273,7 +273,7 @@ def getGlobalReplaceReSplits( oFinder, sHaystack, sNewNeedle ):
     #
     try: # moving this to the top breaks this package!
         from .Get       import getStripped
-    except ValueError: # maybe circular import issue
+    except ( ValueError, ImportError ): # maybe circular import issue
         from String.Get import getStripped    
     #
     lParts = oFinder.split( sHaystack )

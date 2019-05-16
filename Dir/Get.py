@@ -30,7 +30,7 @@ try:
     from .Test          import isDirThere
     from ..File.Del     import DeleteIfExists
     from ..File.Test    import isFileThere
-except ValueError:
+except ( ValueError, ImportError ):
     from Dir.Test       import isDirThere
     from File.Del       import DeleteIfExists
     from File.Test      import isFileThere

@@ -30,7 +30,7 @@ from os.path import join, split, splitext, basename, isdir, join
 try:
     from ..Dir.Get      import sTempDir, sDurableTempDir
     from ..String.Test  import isStringLike
-except ValueError:
+except ( ValueError, ImportError ):
     from Dir.Get        import sTempDir, sDurableTempDir
     from String.Test    import isStringLike
 

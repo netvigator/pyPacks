@@ -36,7 +36,7 @@ from sys                    import exc_info
 try:
     from ..File.Get         import getFileContent
     from ..Utils.Version    import PYTHON3
-except ValueError:
+except ( ValueError, ImportError ):
     from File.Get           import getFileContent
     from Utils.Version      import PYTHON3
 
@@ -87,7 +87,7 @@ def _GetPID( sLockFile ):
         #
         iPID = int( sPID )
         #
-    except ValueError:
+    except ( ValueError, ImportError ):
         #
         iPID = None
     #

@@ -27,7 +27,7 @@ import bisect
 try:
     from .Get       import ( getItemIter, getValueList,
                              getReverseDictGotUniqueItems )
-except ValueError:
+except ( ValueError, ImportError ):
     from Dict.Get   import ( getItemIter, getValueList,
                              getReverseDictGotUniqueItems )
 

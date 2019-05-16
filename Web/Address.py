@@ -37,7 +37,7 @@ try:
     from ..Dict.Get     import getDictOfListsOffItems
     from ..Iter.AllVers import iRange, iMap, lMap, iZip
     from ..String.Find  import getTextInQuotes
-except ValueError:
+except ( ValueError, ImportError ):
     from Web.Country    import dCountryCodes
     from Web.HTML       import oFindLinkStart # href=
     from Collect.Get    import getDecoratedIter
@@ -114,7 +114,7 @@ def getServerDomainOffURL( sHost ):
     #
     try: # moving this to the top breaks this package!
         from .Test    import isDotQuad
-    except ValueError: # maybe circular import issue
+    except ( ValueError, ImportError ): # maybe circular import issue
         from Web.Test import isDotQuad
     #
     sScheme, sUser, sPassword, sHost, sPort, sPath, sQuery, sFragmentID = UrlSplitMore( sHost )

@@ -27,7 +27,7 @@ try:
     from ..Dict.Numbs   import getValuesAdded
     from ..Numb.Get     import getBooleanInt
     from ..Utils.Output import getSayYesOrBlank
-except ValueError:
+except ( ValueError, ImportError ):
     from Iter.AllVers   import lMap, tMap, iZip
     from Dict.Numbs     import getValuesAdded
     from Numb.Get       import getBooleanInt

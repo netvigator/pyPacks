@@ -41,7 +41,7 @@ try:
     from ..Utils.ImIf   import ImIf
     from ..Web.Address  import getDomainOffUrl
     from ..Web.Test     import isURL
-except ValueError:
+except ( ValueError, ImportError ):
     from File.Get       import FileNotThereError
     from File.Spec      import getFullSpec as _getFullSpec
     from File.Test      import isFileThere
@@ -152,7 +152,7 @@ def _getDomainsOffLine( s ):
     #
     try: # moving this to the top breaks this package!
         from ..Iter.AllVers import iFilter
-    except ValueError: # maybe circular import issue
+    except ( ValueError, ImportError ): # maybe circular import issue
         from Iter.AllVers   import iFilter
     #
     lParts = s.split()

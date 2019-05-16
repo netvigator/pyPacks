@@ -26,7 +26,7 @@
 try:
     from ..Iter.AllVers     import iMap    
     from ..Numb.Accumulate  import getCumulativeTotals
-except ValueError:
+except ( ValueError, ImportError ):
     from Iter.AllVers       import iMap
     from Numb.Accumulate    import getCumulativeTotals
 

@@ -44,7 +44,7 @@ try:
     from ..String.Paragraph import getTextMakeParagraphs
     from ..Utils.Both2n3    import PYTHON2, getEncoded, getStrGotBytes
     from ..Utils.ImIf       import ImIf
-except ValueError:
+except ( ValueError, ImportError ):
     from File.Get           import getFileObject, getFileContent
     from File.Spec          import getFullSpec, getFullSpecDefaultOrPassed
     from Collect.Output     import getPrintableTextFromSeq

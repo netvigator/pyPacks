@@ -30,7 +30,7 @@ from six            import print_ as print3
 
 try:
     from .ImIf      import ImIf
-except ValueError:
+except ( ValueError, ImportError ):
     from Utils.ImIf import ImIf
 
 

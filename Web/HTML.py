@@ -37,7 +37,7 @@ try:
     from ..String.Test      import isStringQuoted
     from ..String.Transform import getSwapper, getTranslatorStr
     from ..Utils.Both2n3    import translate
-except ValueError:
+except ( ValueError, ImportError ):
     from Dict.Get           import getDictOffPairOfLists, getItemIter
     from Iter.AllVers       import iMap, lMap, tMap, tRange
     from String.Find        import getRegExObj

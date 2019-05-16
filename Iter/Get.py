@@ -29,7 +29,7 @@ from six                import next as getNext
 try:
     from .AllVers       import iRange, iZipLongest
     from ..Utils.Get    import getTrue as _getTrue
-except ValueError:
+except ( ValueError, ImportError ):
     from Iter.AllVers   import iRange, iZipLongest
     from Utils.Get      import getTrue as _getTrue
 
@@ -60,7 +60,7 @@ def getItemIterWithKeysConsistentCase( lItems, bUpper = True ):
     try: # moving these to the top breaks this package!
         from ..Collect.Get  import unZip
         from ..Dict.Get     import getItemIter
-    except ValueError: # maybe circular import issue
+    except ( ValueError, ImportError ): # maybe circular import issue
         from Collect.Get    import unZip
         from Dict.Get       import getItemIter
     #
@@ -92,7 +92,7 @@ def getPairsOffIterable( iterable ):
     #
     try: # moving these to the top breaks this package!
         from ..Iter.Test    import isIterator
-    except ValueError: # maybe circular import issue
+    except ( ValueError, ImportError ): # maybe circular import issue
         from Iter.Test      import isIterator
     #
     bOddLen = False

@@ -39,7 +39,7 @@ try:
     from ..Iter.AllVers     import lRange, tFilter, tZip
     from ..Dict.Get         import getKeyList
     from ..Utils.Both2n3    import PYTHON3
-except ValueError:
+except ( ValueError, ImportError ):
     from Collect.Cards      import ShuffleAndCut
     from Dict.Get           import getKeyIter
     from Iter.AllVers       import lRange, tFilter, tZip

@@ -27,7 +27,7 @@ from six import print_ as print3
 
 try:
     from ..Iter.Test    import isIterable
-except ValueError:
+except ( ValueError, ImportError ):
     from Iter.Test      import isIterable
 
 class ObserverClass( object ):

@@ -27,7 +27,7 @@ from six                import next as getNext
 
 try:
     from ..Iter.AllVers import iFilter, iRange
-except ValueError:
+except ( ValueError, ImportError ):
     from Iter.AllVers   import iFilter, iRange
 
 

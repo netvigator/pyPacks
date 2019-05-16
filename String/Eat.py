@@ -30,7 +30,7 @@ try:
     from .Test          import ( isAsciiAlpha, isAsciiDigit, isPunctuation,
                                  isPunctOrSpace, isNotDigit, isDigit, isSpace )
     from ..Collect.Get  import getListNoFalsies
-except ValueError:
+except ( ValueError, ImportError ):
     from String.Get     import getTheseCharsOffOneEnd, getTextAfter
     from String.Test    import ( isAsciiAlpha, isAsciiDigit, isPunctuation,
                                  isPunctOrSpace, isNotDigit, isDigit, isSpace )

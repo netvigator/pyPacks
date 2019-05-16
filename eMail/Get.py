@@ -41,7 +41,7 @@ try:
     from ..String.Find      import getRegExObj        as _getRegExObj
     from ..String.Get       import getTitleizedIfNeeded, getTextWithin
     from ..String.Replace   import getSpaceForWhiteAlsoStrip
-except ValueError:
+except ( ValueError, ImportError ):
     from Collect.Query      import get1stThatMeets
     from Collect.Test       import isListOrTuple
     from Iter.AllVers       import iFilter, lFilter, iMap
@@ -65,7 +65,7 @@ def getEmailAddsIter( s ):
     #
     try: # moving this to the top breaks this package!
         from .Test      import isEmailAddress
-    except ValueError: # maybe circular import issue
+    except ( ValueError, ImportError ): # maybe circular import issue
         from eMail.Test import isEmailAddress
     #
     lParts = _oEmailBracketDumpster.Dump( s.lower() ).split()
@@ -84,7 +84,7 @@ def getEmailAdd( s ):
     #
     try: # moving this to the top breaks this package!
         from .Test      import isEmailAddress
-    except ValueError: # maybe circular import issue
+    except ( ValueError, ImportError ): # maybe circular import issue
         from eMail.Test import isEmailAddress
     #
     lParts = _oEmailBracketDumpster.Dump( s ).split()

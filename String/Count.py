@@ -27,7 +27,7 @@
 try:
     from ..String.Dumpster  import getDigitsOnly, getAlphaNumCleanNoSpaces
     from ..String.Split     import SplitRegular, SplitC
-except ValueError:
+except ( ValueError, ImportError ):
     from String.Dumpster    import getDigitsOnly, getAlphaNumCleanNoSpaces
     from String.Split       import SplitRegular, SplitC
 

@@ -32,7 +32,7 @@ that will work in all supported versions
 
 try:
     from ..Utils.Version    import PYTHON3, isVersAtLeast
-except ValueError:
+except ( ValueError, ImportError ):
     from Utils.Version      import PYTHON3, isVersAtLeast
 
 _bAtLeast2dot6 = isVersAtLeast( '2.6' )
@@ -281,7 +281,7 @@ def _getEnumeratorZipOrYield( seq, start = 0 ):
     #
     try: # moving these to the top breaks this package!
         from ..Collect.Test     import isSequence
-    except ValueError: # maybe circular import issue
+    except ( ValueError, ImportError ): # maybe circular import issue
         from Collect.Test       import isSequence
     #    
     if isSequence( seq ):

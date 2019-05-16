@@ -29,7 +29,7 @@ try:
     from ..Collect.Test     import getHasNotTester
     from ..Iter.AllVers     import iFilter, iMap, iRange
     from ..Utils.Both2n3    import maketrans, translate
-except ValueError:
+except ( ValueError, ImportError ):
     from Collect.Test       import getHasNotTester
     from Iter.AllVers       import iFilter, iMap, iRange
     from Utils.Both2n3      import maketrans, translate
@@ -171,7 +171,7 @@ def getAlphaNumClean( s ):
     #
     try: # moving this to the top breaks this package!
         from .Split       import getWhiteCleaned
-    except ValueError: # maybe circular import issue
+    except ( ValueError, ImportError ): # maybe circular import issue
         from String.Split import getWhiteCleaned
     #
     sAlphaNumSpaces = _oKeepAlphaDigitsOnly.Dump( s )
@@ -184,7 +184,7 @@ def getAlphaNumCleanNoSpaces( s ):
     #
     try: # moving this to the top breaks this package!
         from .Split       import getWhiteOut
-    except ValueError: # maybe circular import issue
+    except ( ValueError, ImportError ): # maybe circular import issue
         from String.Split import getWhiteOut
     #
     sAlphaNumSpaces = _oKeepAlphaDigitsOnly.Dump( s )
@@ -197,7 +197,7 @@ def getAlphaNumDashNoSpaces( s ):
     #
     try: # moving this to the top breaks this package!
         from .Split       import getWhiteOut
-    except ValueError: # maybe circular import issue
+    except ( ValueError, ImportError ): # maybe circular import issue
         from String.Split import getWhiteOut
     #
     sAlphaNumSpaces = _oKeepAlphaDigitsDashes.Dump( s )

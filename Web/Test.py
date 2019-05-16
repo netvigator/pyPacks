@@ -47,7 +47,7 @@ try:
     from ..String.Transform import getTranslatorStr, getSpacesForChars
     from ..String.Dumpster  import KeepDotsDigitsClass
     from ..Utils.Both2n3    import translate
-except ValueError:
+except ( ValueError, ImportError ):
     from Web.Quads          import ( getDotQuadFromValue, getDotQuad4Sort,
                                      getClassCNetBegEnd, getQuadValue,
                                      getClassCNetRangeBegEnd, getDotQuad,

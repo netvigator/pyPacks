@@ -34,7 +34,7 @@ try:
     from ..File.Write   import MakeTemp
     from ..Iter.AllVers import iMap, iZip, tFilter
     from ..String.Get   import getTextAfter, getTextWithin
-except ValueError:
+except ( ValueError, ImportError ):
     from Dict.Get       import getReverseDictGotUniqueItems
     from Dir.Get        import sDurableTempDir
     from Iter.Get       import getItemIterWithKeysConsistentCase
@@ -387,7 +387,7 @@ def getCountryOffHost( sHost ): # just gets the country part of a host name
     #
     try: # moving this to the top breaks this package!
         from .Test    import isDotQuad
-    except ValueError: # maybe circular import issue
+    except ( ValueError, ImportError ): # maybe circular import issue
         from Web.Test import isDotQuad
     #
     sCountry                    = ''

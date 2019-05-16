@@ -28,7 +28,7 @@ try:
     from ..Iter.Get     import getSequencePairsThisWithNext as getWithNext
     from ..Iter.Get     import getListSwapValueKey
     from ..Utils.Get    import getTrue as _getTrue    
-except ValueError:
+except ( ValueError, ImportError ):
     from Collect.Test   import isScaler, isListOrTuple
     from Iter.AllVers   import iMap, iFilter, iRange, tRange, iZip, lZip
     from Iter.Get       import getSequencePairsThisWithNext as getWithNext

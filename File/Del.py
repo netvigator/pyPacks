@@ -29,7 +29,7 @@ def DeleteIfExists( *sFileSpec ):
     #
     try: # moving this to the top breaks this package!
         from ..File.Spec    import getFullSpec
-    except ValueError: # maybe circular import issue
+    except ( ValueError, ImportError ): # maybe circular import issue
         from File.Spec      import getFullSpec
     #
     sFileSpec = getFullSpec( *sFileSpec )

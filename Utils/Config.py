@@ -54,7 +54,7 @@ try:
     from ..Iter.AllVers import iFilter, lMap
     from ..Object.Get   import ValueContainer
     from ..String.Get   import getTextAfter, getTextBefore
-except ValueError:
+except ( ValueError, ImportError ):
     from Collect.Filter import RemoveDupes
     from Collect.Test   import isListOrTuple
     from Dict.Get       import getItemIter, getDictOffPairOfLists, getKeyIter
@@ -211,7 +211,7 @@ def _getMainOptions( sConfigFile ):
     #
     try: # moving this to the top breaks this package!
         from ..File.Get import getContent
-    except ValueError: # maybe circular import issue
+    except ( ValueError, ImportError ): # maybe circular import issue
         from File.Get   import getContent
     #
     sConfigFile = _findConfFile( sConfigFile )

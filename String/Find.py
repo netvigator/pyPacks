@@ -34,7 +34,7 @@ try:
     from ..Iter.Get         import iRevRange
     from .Dumpster          import getAlphaNumCleanNoSpaces, getAlphaNumDashNoSpaces
     from ..Utils.TimeTrial  import TimeTrial
-except ValueError:
+except ( ValueError, ImportError ):
     from Collect.Query      import get1stThatMeets
     from Iter.AllVers       import iRange, getEnumerator, permutations
     from Iter.Get           import iRevRange
@@ -234,7 +234,7 @@ def getRegEx4Chars( s,
     #
     try: # moving this to the top breaks this package!
         from .Replace       import ReplaceManyOldWithManyNew
-    except ValueError: # maybe circular import issue
+    except ( ValueError, ImportError ): # maybe circular import issue
         from String.Replace import ReplaceManyOldWithManyNew
     #
     s = s.strip()
@@ -402,7 +402,7 @@ def getRegExpress(
     try: # moving this to the top breaks this package!
         from .Get        import getRawGotStr
         from .Test       import hasAnyAlpha, hasAnyDigits, hasPunctOrSpace
-    except ValueError: # maybe circular import issue
+    except ( ValueError, ImportError ): # maybe circular import issue
         from String.Get  import getRawGotStr
         from String.Test import hasAnyAlpha, hasAnyDigits, hasPunctOrSpace
     #

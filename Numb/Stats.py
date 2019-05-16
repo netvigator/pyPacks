@@ -27,7 +27,7 @@ try:
     from .Get           import getSumOffList
     from .Test          import isNumber
     from ..Iter.AllVers import iFilter
-except ValueError:
+except ( ValueError, ImportError ):
     from Numb.Get       import getSumOffList
     from Numb.Test      import isNumber
     from Iter.AllVers   import iFilter

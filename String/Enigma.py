@@ -61,7 +61,7 @@ try:
     from ..Iter.AllVers     import iMap, lMap, tMap, iZip, iRange
     from ..Numb.Test        import isEven, isOdd
     from ..Utils.Both2n3    import print3
-except ValueError:
+except ( ValueError, ImportError ):
     from String.Find        import oFinderCRorLF
     from String.Replace     import getTextReversed
     from String.Stats       import AscStats

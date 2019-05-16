@@ -41,7 +41,7 @@ try:
     from ..Numb.Get         import getAdder
     from ..Utils.Combos     import All
     from ..Utils.TimeTrial  import TimeTrial
-except ValueError:
+except ( ValueError, ImportError ):
     from String.Get         import getTextBeforeC
     from String.Find        import getRegExObj
     from String.Replace     import getBlanksForReMatchObj

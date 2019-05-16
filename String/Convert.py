@@ -33,7 +33,7 @@ try:
     from .Replace       import getSpaceForWhiteAlsoStrip
     from .Test          import isASCII_128, hasAscii_128_Only
     from ..Iter.AllVers import iRange
-except ValueError:
+except ( ValueError, ImportError ):
     from String.Replace import getSpaceForWhiteAlsoStrip
     from String.Test    import isASCII_128, hasAscii_128_Only
     from Iter.AllVers   import iRange

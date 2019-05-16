@@ -34,7 +34,7 @@ try:
     from .Transform         import TranslatorFactory
     from ..Collect.Query    import get1stThatMeets, get1stThatFails
     from ..Iter.AllVers     import iMap, iRange, iZip, lZip
-except ValueError:
+except ( ValueError, ImportError ):
     from String.Find        import getFinderFindAll
     from String.Transform   import TranslatorFactory
     from Collect.Query      import get1stThatMeets, get1stThatFails

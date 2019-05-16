@@ -29,7 +29,7 @@ try:
     from ..Dict.Get         import getItemIter
     from ..Object.Get       import ValueContainer
     from ..Utils.TimeTrial  import TimeTrial
-except ValueError:
+except ( ValueError, ImportError ):
     from Dict.Get           import getItemIter
     from Object.Get         import ValueContainer
     from Utils.TimeTrial    import TimeTrial

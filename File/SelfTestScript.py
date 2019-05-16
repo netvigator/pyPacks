@@ -38,7 +38,7 @@ try:
     from Dict.Get       import getKeyIter
     from ..Iter.AllVers import tFilter
     from ..String.Get   import getTextAfter, getTextAfterLast
-except ValueError:
+except ( ValueError, ImportError ):
     from File.Get       import getFileObject
     from File.Spec      import getFullSpec
     from File.Test      import isFileThere
@@ -50,7 +50,7 @@ def _getSelfTestScriptFiles( sTestFile = 'selftest.sh' ):
     #
     try: # moving this to the top breaks this package!
         from ..Dir.Get  import getParentDir
-    except ValueError: # maybe circular import issue
+    except ( ValueError, ImportError ): # maybe circular import issue
         from Dir.Get    import getParentDir
     #
     sParentDir      = getParentDir()

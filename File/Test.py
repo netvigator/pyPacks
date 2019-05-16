@@ -34,7 +34,7 @@ def isFileThere( *sFileSpec ):
     #
     try: # moving this to the top breaks this package!
         from .Spec      import getFullSpec
-    except ValueError: # maybe circular import issue
+    except ( ValueError, ImportError ): # maybe circular import issue
         from File.Spec  import getFullSpec
     #
     sFullSpec   = getFullSpec( *sFileSpec )
@@ -48,7 +48,7 @@ def hasWritePrivilege( sDir = None ):
     #
     try: # moving this to the top breaks this package!
         from ..File.Get import getTempFile
-    except ValueError: # maybe circular import issue
+    except ( ValueError, ImportError ): # maybe circular import issue
         from File.Get   import getTempFile
     #
     if not sDir: sDir = '.'

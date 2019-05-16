@@ -33,7 +33,7 @@ from six            import print_ as print3
 try:
     from ..Collect.Get    import getSeparateKeysValues
     from ..Iter.AllVers import tFilter, iMap, tMap, iZip
-except ValueError:
+except ( ValueError, ImportError ):
     from Collect.Get    import getSeparateKeysValues
     from Iter.AllVers   import tFilter, iMap, tMap, iZip
 
@@ -45,7 +45,7 @@ def _getEndDigits( s ):
     #
     try: # moving this to the top breaks this package!
         from ..Iter.AllVers import takewhile
-    except ValueError: # maybe circular import issue
+    except ( ValueError, ImportError ): # maybe circular import issue
         from Iter.AllVers   import takewhile
     #
     lChars = list( s )

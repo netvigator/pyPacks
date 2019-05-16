@@ -24,7 +24,7 @@
 try:
     from ..Time.Delta   import getIsoDateTimeNowPlus as getNowPlus
     from ..Time.Delta   import getDeltaDaysFromISOs  as getDeltaDays
-except ValueError:
+except ( ValueError, ImportError ):
     from Time.Delta     import getIsoDateTimeNowPlus as getNowPlus
     from Time.Delta     import getDeltaDaysFromISOs  as getDeltaDays
 

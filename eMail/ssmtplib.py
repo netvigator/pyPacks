@@ -100,7 +100,7 @@ class SMTP_SSL (smtplib.SMTP):
 			if i >= 0:
 				host, port = host[:i], host[i+1:]
 				try: port = int(port)
-				except ValueError:
+				except ( ValueError, ImportError ):
 					raise socket.error, "nonnumeric port"
 		if not port: port = SSMTP_PORT
 		if self.debuglevel > 0: print>>stderr, 'connect:', (host, port)

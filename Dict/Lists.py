@@ -26,7 +26,7 @@ try:
     from ..Collect.Get  import getListOfListsFromNestedLists
     from ..Dict.Get     import getItemIter, getItemTuple, getKeyList
     from ..Iter.AllVers import lMap
-except ValueError:
+except ( ValueError, ImportError ):
     from Collect.Get    import getListOfListsFromNestedLists
     from Dict.Get       import getItemIter, getItemTuple, getKeyList
     from Iter.AllVers   import lMap

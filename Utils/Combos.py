@@ -42,7 +42,7 @@ from six.moves              import reduce as Reduce
 try:
     from ..Collect.Query    import get1stTrue, get1stFalse, get1stThatMeets
     from ..Iter.AllVers     import iMap, tMap
-except ValueError:
+except ( ValueError, ImportError ):
     from Collect.Query      import get1stTrue, get1stFalse, get1stThatMeets
     from Iter.AllVers       import iMap, tMap
 

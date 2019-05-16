@@ -39,7 +39,7 @@ try:
     from ..Iter.Get         import getListSwapValueKey
     from ..Iter.AllVers     import iMap
     from ..String.Transform import getSwapper  as _getSwapper
-except ValueError:
+except ( ValueError, ImportError ):
     from eMail.Get          import ( getRealEmail, getEmailListFromString,
                                      getAddresseeStrOffSeq, getHyphen )
     from Collect.Query      import get1stThatMeets
@@ -89,7 +89,7 @@ def isEmailAddress( s, setExcludeDomains = None ):
     #
     try: # moving this to the top breaks this package!
         from ..Web.Test import isDomainName
-    except ValueError: # maybe circular import issue
+    except ( ValueError, ImportError ): # maybe circular import issue
         from Web.Test   import isDomainName
     #
     try:

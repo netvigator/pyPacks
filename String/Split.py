@@ -41,7 +41,7 @@ try:
     from ..Iter.Get         import iRevRange
     from ..Numb.Test        import isOdd
     from ..Utils.TimeTrial  import TimeTrial
-except ValueError:
+except ( ValueError, ImportError ):
     from String.Find        import getRegExObj
     from String.Text4Tests  import sGoogleQuerResult_Chrome as sHTML
     from Collect.Get        import unZip
@@ -928,7 +928,7 @@ def getSplitAndStrip( s, uSplitOn = ',' ):
     #
     try: # moving this to the top breaks this package!
         from .Get       import getStripped
-    except ValueError: # maybe circular import issue
+    except ( ValueError, ImportError ): # maybe circular import issue
         from String.Get import getStripped
     #
     if isinstance( uSplitOn, str ):

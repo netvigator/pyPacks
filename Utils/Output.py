@@ -34,7 +34,7 @@ try:
     from ..Iter.Test    import isIterable
     from ..Object.Get   import StreamNull
     from ..String.Test  import isString
-except ValueError:
+except ( ValueError, ImportError ):
     from Iter.AllVers   import iMap
     from Iter.Test      import isIterable
     from Object.Get     import StreamNull

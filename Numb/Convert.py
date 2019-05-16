@@ -37,7 +37,7 @@ try:
     from ..String.Test      import hasAnyDigits
     from ..String.Find      import getFinderFindAll, getRegExObj
     from ..Utils.TimeTrial  import TimeTrial
-except ValueError:
+except ( ValueError, ImportError ):
     from Numb.Get           import getSum, pairMultiply
     from Dict.Get           import getKeyList, getKeyIter, getReverseDict
     from Dict.Get           import getReverseDictGotUniqueItems

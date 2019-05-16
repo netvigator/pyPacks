@@ -47,7 +47,7 @@ try:
     from ..Iter.AllVers     import iMap, iRange, iFilter, lMap, tMap
     from ..Utils.Combos     import Any_
     from ..Utils.TimeTrial  import TimeTrial
-except ValueError:
+except ( ValueError, ImportError ):
     from String.Count       import CountSplit
     from String.Dumpster    import ( DumpYouNameItClass, oKeepAlphaSpaces,
                                      oKeepAlphaDigitsSpacesHash,

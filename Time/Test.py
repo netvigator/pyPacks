@@ -126,7 +126,7 @@ def isDateSomewhere( sDate, sFormat ):
                 #
                 bSomeDate = True
                 #
-            except ValueError:
+            except ( ValueError, ImportError ):
                 #
                 pass
                 #
@@ -156,7 +156,7 @@ def isDateTimeUSA( sDateTime ):
         #
         getDateTimeObjFromString( sDateTime, sFormatUSAdateTime )
         #
-    except ValueError:
+    except ( ValueError, ImportError ):
         #
         bDateTimeOK = False
         #

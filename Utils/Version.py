@@ -26,7 +26,7 @@ from sys import version
 
 try:
     from ..Utils.Both2n3    import sayYouNeedSix
-except ValueError:
+except ( ValueError, ImportError ):
     from Utils.Both2n3      import sayYouNeedSix
 
 
