@@ -23,21 +23,21 @@
 # Copyright 2004-2019 Rick Graves
 #
 
-from datetime       import datetime
-from time           import strptime
+from datetime           import datetime
+from time               import strptime
 
 try:
-    from .Convert   import ( getSecsSinceEpochFromString, sFormatDateAm,
-                             getDateTimeObjFromString, sFormatUSAdateTime )
+    from .Convert       import ( getSecsSinceEpochFromString, sFormatDateAm,
+                                 getDateTimeObjFromString, sFormatUSAdateTime )
     # __init__.py
-    from ..Time     import ( sFormatISOdateTime, sFormatISOdateTimeNoColon,
-                             sFormatDateEu )
+    from ..Time         import ( sFormatISOdateTime, sFormatISOdateTimeNoColon,
+                                 sFormatDateEu )
 except ( ValueError, ImportError ):
-    from Convert    import ( getSecsSinceEpochFromString, sFormatDateAm,
-                             getDateTimeObjFromString, sFormatUSAdateTime )
+    from Time.Convert   import ( getSecsSinceEpochFromString, sFormatDateAm,
+                                 getDateTimeObjFromString, sFormatUSAdateTime )
     # __init__.py
-    from Time       import ( sFormatISOdateTime, sFormatISOdateTimeNoColon,
-                             sFormatDateEu )
+    from Time           import ( sFormatISOdateTime, sFormatISOdateTimeNoColon,
+                                 sFormatDateEu )
 
 
 class Finished( Exception ): pass
