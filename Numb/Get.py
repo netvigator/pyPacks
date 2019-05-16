@@ -30,13 +30,13 @@ from six                    import print_ as print3
 from six.moves              import reduce as Reduce
 
 try:
+    from .Test              import isFloat, hasIntegersOnly
     from ..Collect.Test     import isListOrTuple, AnyMeet
-    from ..Test             import isFloat, hasIntegersOnly
     from ..Iter.AllVers     import iMap, iRange, iZipLongest
     from ..Utils.TimeTrial  import TimeTrial
 except ( ValueError, ImportError ):
-    from Collect.Test       import isListOrTuple, AnyMeet
     from Numb.Test          import isFloat, hasIntegersOnly
+    from Collect.Test       import isListOrTuple, AnyMeet
     from Iter.AllVers       import iMap, iRange, iZipLongest
     from Utils.TimeTrial    import TimeTrial
 
