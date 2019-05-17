@@ -122,7 +122,7 @@ cd ../Web
 ./Country.py
 ./Error.py
 # ./FTP.py
-# ./Get.py
+./Get.py
 # ./Get2n3.py
 # ./getGoogle.py
 # ./GetRaw.py
