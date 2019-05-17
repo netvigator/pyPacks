@@ -20,29 +20,63 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2017 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
 # self test needs internet connection and will access python.org
 
 
+from copy                       import deepcopy
+from socket                     import gethostbyname, gaierror, getfqdn
 from socket                     import error as SocketError
 from sys                        import exc_info
+from time                       import sleep
 
 from six                        import print_ as print3
-from six.moves.urllib.error     import HTTPError, URLError
-from six.moves.urllib.request   import urlopen, build_opener, install_opener
-from six.moves.urllib.parse     import urlencode
 from six.moves.http_client      import BadStatusLine
+from six.moves.http_cookiejar   import CookieJar
+from six.moves.urllib.error     import HTTPError, URLError
+from six.moves.urllib.parse     import urlencode
+from six.moves.urllib.request   import ( urlopen, build_opener, install_opener,
+                                         HTTPCookieProcessor, Request )
 
-#from Utils.Both2n3             import BadStatusLine, HTTPError, URLError
+
+try:
+    from ..Collect.Get      import getListFromNestedLists
+    from ..Iter.AllVers     import lMap, iRange, iZip
+    from ..String.Get       import getTextAfter, getUnZipped
+    from ..String.Test      import isGzipped
+    from ..Utils.TimeLimit  import TimeLimitWrap, TimeOverExcept
+    from .Address           import ( UrlJoinBrowserStyle, _getLinksMakeOver,
+                                     UrlMustHaveSchemeAndPath, getDomainOffURL,
+                                     getHostPortPathQuery )
+    from .HTML              import ( getBodyOnly, oFindFrameBeg,
+                                     oFindiFrameEnd, oFindiFrameBeg,
+                                     oFindFrameSpec )
+    from .Links             import getLinkOffHref
+    from .Test              import isDomainNameOrDotQuad, isPort
+    from .Zip               import getCompressedOffChunks
+except ( ValueError, ImportError ):
+    from Collect.Get        import getListFromNestedLists
+    from Iter.AllVers       import lMap, iRange, iZip
+    from String.Get         import getTextAfter, getUnZipped
+    from String.Test        import isGzipped
+    from Utils.TimeLimit    import TimeLimitWrap, TimeOverExcept
+    from Web.Address        import ( UrlJoinBrowserStyle, _getLinksMakeOver,
+                                     UrlMustHaveSchemeAndPath, getDomainOffURL,
+                                     getHostPortPathQuery )
+    from Web.HTML           import ( getBodyOnly, oFindFrameBeg,
+                                     oFindiFrameEnd, oFindiFrameBeg,
+                                     oFindFrameSpec )
+    from Web.Links          import getLinkOffHref
+    from Web.Test           import isDomainNameOrDotQuad, isPort
+    from Web.Zip            import getCompressedOffChunks
+    #
 
 
 def _getPageHandle( sURL ):
     #
     """Gets page HTML, but with synchronous (blocking) operation.
     If cannot get page, returns None."""
-    #
-    #from Utils.Both2n3 import urlopen
     #
     try:
         #
@@ -83,14 +117,6 @@ def getPageUrlOffURL( sURL ):
 def _getFrameText(
         sHTML, lFrameSpecs, sURL, dSendHeaders, sCookie, tProxy , oFindBeg, oFindEnd = None ):
     #
-    from copy           import deepcopy
-    #
-    from Collect.Get    import getListFromNestedLists
-    from Iter.AllVers   import lMap, iZip
-    from String.Get     import getTextAfter
-    from Web.Address    import UrlJoinBrowserStyle, _getLinksMakeOver
-    from Web.HTML       import getBodyOnly
-    from Web.Links      import getLinkOffHref
     #
     lFrameSpecs = [ getLinkOffHref( sFrame )            for sFrame in lFrameSpecs ]
     #
@@ -166,13 +192,10 @@ def getPageHTML2(
     If cannot get page, returns empty string.
     """
     #
-    from String.Get     import getUnZipped
-    from String.Test    import isGzipped
-   #from Utils.Both2n3  import Request, urlopen, build_opener, install_opener, URLError
-    from Web.Address    import UrlMustHaveSchemeAndPath
-    from Web.HTML       import oFindFrameBeg, oFindiFrameEnd, oFindiFrameBeg, \
-                            oFindFrameSpec
-    from Web.Zip        import getCompressedOffChunks
+    try:
+        from .Test    import isDotQuad
+    except ( ValueError, ImportError ): # maybe circular import issue
+        from Web.Test import isDotQuad
     #
     sURL                = UrlMustHaveSchemeAndPath( sURL )
     #
@@ -319,6 +342,11 @@ def getContentHeadersResult(
         sAccept         = "Accept: text/javascript, text/html, application/xml, text/xml */*",
         **dMoreLines ):
     #
+    try:
+        from .Test    import isDotQuad
+    except ( ValueError, ImportError ): # maybe circular import issue
+        from Web.Test import isDotQuad
+    #
     dHeaders = {
         'User-Agent'        :
             'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.19) Gecko/2010040119 Ubuntu/8.04 (hardy) Firefox/3.0.19',
@@ -423,7 +451,6 @@ def getPageContent(
 
 def getDotQuadFromDomain( sDomain ):
     #
-    from socket import gethostbyname, gaierror
     #
     sDotQuad     = ''
     #
@@ -446,7 +473,6 @@ def getDotQuadFromDomain( sDomain ):
 
 def getDotQuadFromURL( sURL ):
     #
-    from Web.Address import getDomainOffURL
     #
     sDomain     = getDomainOffURL( sURL )
     #
@@ -456,9 +482,10 @@ def getDotQuadFromURL( sURL ):
 
 def getDotQuadPortFromUrlPort( uShouldBeUrlPort ):
     #
-    from Web.Address    import getHostPortPathQuery
-    from Web.Test       import isDomainNameOrDotQuad, isDotQuad, \
-                           isDomainNameOrDotQuadWithPort, isPort
+    try:
+        from .Test    import isDotQuad
+    except ( ValueError, ImportError ): # maybe circular import issue
+        from Web.Test import isDotQuad
     #
     tDotQuadPort        = ( '', -1 )
     sDotQuadOrURL       = ''
@@ -499,7 +526,6 @@ def getDotQuadPortFromUrlPort( uShouldBeUrlPort ):
 
 def getHostFromDotQuad( sDotQuad, bWantBlankIfHostSameAsDotQuad = False ):
     #
-    from socket import getfqdn
     #
     try:
         #
@@ -535,16 +561,6 @@ def getPostResults(
             'rv:1.9.0.19) Gecko/2010040119 Ubuntu/8.04 (hardy) Firefox/3.0.19',
         sReferer   = '',
         bGetCookie = False ):
-    #
-    from time import sleep
-    #
-    from six.moves.http_cookiejar   import CookieJar
-    from six.moves.urllib.request   import HTTPCookieProcessor
-    #
-    from Iter.AllVers               import iRange
-   #from Utils.Both2n3      import build_opener, urlencode, CookieJar, \
-    #                            HTTPCookieProcessor
-    from Utils.TimeLimit            import TimeLimitWrap, TimeOverExcept
     #
     cj = CookieJar()
     #
@@ -914,9 +930,11 @@ if __name__ == "__main__":
     #
     sURL        = 'http://www.python.org/'
     #
-    if getPageUrlOffURL( 'http://www.python.org' ) != 'http://www.python.org':
+    sGot        = getPageUrlOffURL( 'http://www.python.org' )
+    #
+    if sGot not in ( sURL, 'https://www.python.org/' ):
         #
-        lProblems.append( 'getPageUrlOffURL()' )
+        lProblems.append( 'getPageUrlOffURL(%s)' % sGot )
         #
     #
     dHeaders = {
@@ -952,25 +970,33 @@ if __name__ == "__main__":
     #
     WriteText2File( sHTML, sOutFile )
     #
-    if getDotQuadFromDomain( 'python.org' ) != '82.94.164.162':
+    sGot = getDotQuadFromDomain( 'python.org' )
+    #
+    if sGot != '45.55.99.72':
         #
-        lProblems.append( 'getDotQuadFromDomain()' )
+        lProblems.append( 'getDotQuadFromDomain(%s)' % sGot )
         #
-    if getDotQuadFromURL( 'http://www.python.org' ) != \
-            '82.94.164.162':
+    sGot = getDotQuadFromURL( 'http://www.python.org' )
+    if sGot != '45.55.99.72':
         #
-        lProblems.append( 'getDotQuadFromURL()' )
-        #
-    if getDotQuadPortFromUrlPort(
-            'http://www.python.org:80/' ) != ('82.94.164.162', 80):
-        #
-        lProblems.append( 'getDotQuadPortFromUrlPort()' )
-        #
-    if getDomainOffURL( getHostFromDotQuad( '82.94.237.218' ) ) != 'python.org':
-        #
-        lProblems.append( 'getHostFromDotQuad()' )
+        lProblems.append( 'getDotQuadFromURL(%s)' % sGot )
         #
     #
+    tGot = getDotQuadPortFromUrlPort( 'http://www.python.org:80/' )
+    #
+    if tGot != ('151.101.8.223', 80):
+        #
+        lProblems.append( 'getDotQuadPortFromUrlPort( (%s, %s) )' % tGot )
+        #
+    #
+    sGot = getDomainOffURL( getHostFromDotQuad( '8.8.8.8' ) )
+    #
+    if sGot != 'google.com':
+        #
+        lProblems.append( 'getHostFromDotQuad(%s)' % sGot )
+        #
+    #
+    '''
     sReferer    = 'https://writerep.house.gov/writerep/welcome.shtml'
     sURL        = 'https://writerep.house.gov/htbin/wrep_findrep'
     #
@@ -1017,13 +1043,19 @@ if __name__ == "__main__":
             lProblems.append( '  HTML in %s' % sOutFile )
         #
     #
+    # from File.Write import QuickDump
+    #
     sURL = 'http://www.zip-codes.com/search.asp?%s'
     sReferer = 'http://www.zip-codes.com/zip-plus-4-database.asp'
     dParams = {
         'fld-address'   : '1231 n 48th st',
-        'fld-city2'     : 'seattle',
-        'fld-state2'    : 'wa',
-        'srch.x' : '0', 'srch.y' : '0' }
+        'fld-address2'  : '',
+        'fld-city'      : 'seattle',
+        'fld-state'     : 'wa',
+        'fld-zip'       : '',
+        'srch-type'     : 'address',
+        'selectTab'     : '1',
+        'Submit'        : 'Find ZIP Code of this U.S. Address' }
     #
     sHTML = getGetPageHtml(
         sURL, dParams, sReferer = sReferer, bGetCookie = True )
@@ -1036,8 +1068,13 @@ if __name__ == "__main__":
             #
             lProblems.append( sHTML )
             #
+        else:
+            #
+            pass # QuickDump( sHTML, 'error.html' )
+            #
         #
     #
+    '''
     #
     sayTestResult( lProblems )
     # self must access python.org and https://writerep.house.gov/
