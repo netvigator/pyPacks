@@ -195,7 +195,7 @@ def getIsoDateFromIsoDatePlus( sDate, iDays = 0 ):
     return sDateTimePlus[:10]
 
 
-def _getDeltaDaysFromObjs( oOlder, oNewer = None ):
+def getDeltaDaysFromObjs( oOlder, oNewer = None ):
     #
     #
     if oNewer is None: oNewer = datetime.now(tz=None)
@@ -236,12 +236,17 @@ def getDeltaDaysFromISOs( sOlder, sNewer = None ):
         print3( 'oNewer:', repr( oNewer ) )
         print3( 'oOlder:', repr( oOlder ) )
     #
-    return _getDeltaDaysFromObjs( oOlder, oNewer )
+    return getDeltaDaysFromObjs( oOlder, oNewer )
 
 
 
 def getDeltaDaysFromSecs( iOlder, iNewer = None ):
     #
+    '''
+    getDeltaDaysFromISOs      needs ISO date times
+    getDeltaDaysFromStrings   needs ISO date times and rounds the return
+    getDeltaDaysFromDates     needs ISO date w/o times
+    '''
     #
     if iNewer is None: iNewer = time()
     #
@@ -326,6 +331,12 @@ def getDeltaDaysFromDates( sEarlier, sLater = None ):
 
 
 def getDeltaYearsFromDates( sEarlier, sLater = None ):
+    #
+    '''
+    getDeltaDaysFromISOs      needs ISO date times
+    getDeltaDaysFromStrings   needs ISO date times and rounds the return
+    getDeltaDaysFromDates     needs ISO date w/o times
+    '''
     #
     return getDeltaDaysFromDates( sEarlier, sLater ) / 365.25
 
@@ -461,9 +472,9 @@ if __name__ == "__main__":
     #
     oOlder = datetime.fromtimestamp( iNow - iSecsPerDay )
     #
-    if _getDeltaDaysFromObjs( oOlder ) - 1 > 0.0001:
+    if getDeltaDaysFromObjs( oOlder ) - 1 > 0.0001:
         #
-        lProblems.append( '_getDeltaDaysFromObjs()' )
+        lProblems.append( 'getDeltaDaysFromObjs()' )
         #
     #
     sNow    = getIsoDateTimeStrFromSecs( iNow )
