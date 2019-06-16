@@ -600,6 +600,22 @@ def DecryptLiteNone( sThis ):
     #return fDecription( sFixed, sPassPhrase = None )
 
 
+def None2Enigma( sThis ):
+    #
+    sOrig = DecryptNone( sThis )
+    #
+    print3( 'original:', sOrig )
+    #
+    return Encrypt( sOrig )
+
+
+def None2EnigmaLite( sThis ):
+    #
+    sOrig = DecryptLiteNone( sThis )
+    #
+    print3( 'original:', sOrig )
+    #
+    return EncryptLite( sOrig )
 
 
 if __name__ == "__main__":
