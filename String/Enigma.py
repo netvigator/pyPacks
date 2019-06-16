@@ -604,9 +604,20 @@ def DecryptLiteNone( sThis ):
 
 def _printOut( sOrig, sEncrypted ):
     #
-    print3( 'original:  ', sOrig )
+    if "'" in sEncrypted and '"' in sEncrypted:
+        #
+        sQuote = ImIf( sEncrypted.endswith( "'" ), '"""', "'''" )
+        #
+        sSayOrig = 'original:    '
+        #
+    else:
+        #
+        sQuote = ImIf( "'" in sEncrypted, '"', "'" )
+        #
+        sSayOrig = 'original:  '
+        #
     #
-    sQuote = ImIf( "'" in sEncrypted, '"', "'" )
+    print3( sSayOrig, sOrig )
     #
     print3( 'encrypted: %s%s%s' % ( sQuote, sEncrypted, sQuote ) )
 
