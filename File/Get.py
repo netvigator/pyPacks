@@ -371,9 +371,10 @@ def getFileSpecHereOrThere( sFileName, tMaybeThere = ( '/tmp', ) ):
 
 
 def Touch( sFileSpec, times=None):
-    with open( sFileSpec, 'a' ):
-        utime( sFileSpec, times )
-
+    try:
+        utime(sFileSpec, None)
+    except OSError:
+        open(sFileSpec, 'a').close()
 
 
 if __name__ == "__main__":
@@ -578,5 +579,14 @@ if __name__ == "__main__":
         #
     #
     DeleteIfExists( sHoldTemp )
+    #
+    Touch( '/tmp/test.doc' )
+    #
+    if not isFileThere( '/tmp/test.doc' ):
+        #
+        lProblems.append( "Touch( '/tmp/test.doc' )" )
+        #
+    #
+    DeleteIfExists( '/tmp/test.doc' )
     #
     sayTestResult( lProblems )
