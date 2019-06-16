@@ -61,6 +61,7 @@ try:
     from ..Iter.AllVers     import iMap, lMap, tMap, iZip, iRange
     from ..Numb.Test        import isEven, isOdd
     from ..Utils.Both2n3    import print3
+    from ..Utils.ImIf       import ImIf
 except ( ValueError, ImportError ):
     from String.Find        import oFinderCRorLF
     from String.Replace     import getTextReversed
@@ -72,6 +73,7 @@ except ( ValueError, ImportError ):
     from Iter.AllVers       import iMap, lMap, tMap, iZip, iRange
     from Numb.Test          import isEven, isOdd
     from Utils.Both2n3      import print3
+    from Utils.ImIf         import ImIf
 
 sSafe   =  punctuation.replace( '\\', ' ' ) + digits
 
@@ -600,22 +602,31 @@ def DecryptLiteNone( sThis ):
     #return fDecription( sFixed, sPassPhrase = None )
 
 
+def _printOut( sOrig, sEncrypted ):
+    #
+    print3( 'original:  ', sOrig )
+    #
+    sQuote = ImIf( "'" in sEncrypted, '"', "'" )
+    #
+    print3( 'encrypted: %s%s%s' % ( sQuote, sEncrypted, sQuote ) )
+
+
 def None2Enigma( sThis ):
     #
     sOrig = DecryptNone( sThis )
     #
-    print3( 'original:', sOrig )
+    sEncrypted = Encrypt( sOrig )
     #
-    return Encrypt( sOrig )
+    _printOut( sOrig, sEncrypted )
 
 
 def None2EnigmaLite( sThis ):
     #
     sOrig = DecryptLiteNone( sThis )
     #
-    print3( 'original:', sOrig )
+    sEncrypted = EncryptLite( sOrig )
     #
-    return EncryptLite( sOrig )
+    _printOut( sOrig, sEncrypted )
 
 
 if __name__ == "__main__":
