@@ -443,13 +443,6 @@ def putCsvOut( lOutput, *sFileSpec, **kwargs ):
 
 
 
-def Touch(fname):
-    if isDirThere( fname ):
-        rmdir( fname )
-    try:
-        utime(fname, None)
-    except OSError:
-        open(fname, 'a').close()
 
 
 
@@ -638,13 +631,6 @@ if __name__ == "__main__":
     if getExcelCsvLine( tRange(9) ) != '"0","1","2","3","4","5","6","7","8"':
         #
         lProblems.append( 'getExcelCsvLine()' )
-        #
-    #
-    Touch( '/tmp/test' )
-    #
-    if not isFileThere( '/tmp/test' ):
-        #
-        lProblems.append( "Touch( '/tmp/test' )" )
         #
     #
     sayTestResult( lProblems )
