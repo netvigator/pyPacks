@@ -628,11 +628,11 @@ def _printOut( sOrig ):
     #
     if max( len( sQuoteH ), len( sQuoteL  ) ) == 1:
         #
-        sSayOrig = 'original:  '
+        sSayOrig = 'original:        '
         #
     else:
         #
-        sSayOrig = 'original:    '
+        sSayOrig = 'original:          '
         #
     #
     print3( sSayOrig, sOrig )
@@ -654,6 +654,12 @@ def None2EnigmaLite( sThis ):
     sOrig = DecryptLiteNone( sThis )
     #
     _printOut( sOrig )
+
+
+def EncryptBoth( sThis ):
+    #
+    _printOut( sThis )
+
 
 
 if __name__ == "__main__":
