@@ -602,42 +602,58 @@ def DecryptLiteNone( sThis ):
     #return fDecription( sFixed, sPassPhrase = None )
 
 
-def _printOut( sOrig, sEncrypted ):
+def _printOut( sOrig ):
     #
-    if "'" in sEncrypted and '"' in sEncrypted:
+    sEncryptedH = Encrypt(     sOrig )
+    #
+    sEncryptedL = EncryptLite( sOrig )
+    #
+    if "'" in sEncryptedH and '"' in sEncryptedH:
         #
-        sQuote = ImIf( sEncrypted.endswith( "'" ), '"""', "'''" )
-        #
-        sSayOrig = 'original:    '
+        sQuoteH = ImIf( sEncryptedH.endswith( "'" ), '"""', "'''" )
         #
     else:
         #
-        sQuote = ImIf( "'" in sEncrypted, '"', "'" )
+        sQuoteH = ImIf( "'" in sEncryptedH, '"', "'" )
+        #
+    #
+    if "'" in sEncryptedL and '"' in sEncryptedL:
+        #
+        sQuoteL = ImIf( sEncryptedL.endswith( "'" ), '"""', "'''" )
+        #
+    else:
+        #
+        sQuoteL = ImIf( "'" in sEncryptedL, '"', "'" )
+        #
+    #
+    if max( len( sQuoteH ), len( sQuoteL  ) ) == 1:
         #
         sSayOrig = 'original:  '
+        #
+    else:
+        #
+        sSayOrig = 'original:    '
         #
     #
     print3( sSayOrig, sOrig )
     #
-    print3( 'encrypted: %s%s%s' % ( sQuote, sEncrypted, sQuote ) )
+    print3( 'encrypted heavy: %s%s%s' % ( sQuoteH, sEncryptedH, sQuoteH ) )
+    #
+    print3( 'encrypted lite:  %s%s%s' % ( sQuoteL, sEncryptedL, sQuoteL ) )
 
 
 def None2Enigma( sThis ):
     #
     sOrig = DecryptNone( sThis )
     #
-    sEncrypted = Encrypt( sOrig )
-    #
-    _printOut( sOrig, sEncrypted )
+    _printOut( sOrig )
 
 
 def None2EnigmaLite( sThis ):
     #
     sOrig = DecryptLiteNone( sThis )
     #
-    sEncrypted = EncryptLite( sOrig )
-    #
-    _printOut( sOrig, sEncrypted )
+    _printOut( sOrig )
 
 
 if __name__ == "__main__":
