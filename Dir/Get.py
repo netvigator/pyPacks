@@ -81,7 +81,12 @@ def getMakeDir( *sDir ):
     #
     if not isdir( sDir ) or not exists( sDir ):
         #
-        makedirs( sDir )
+        # hit a FileExistsError 2019-08-11
+        #
+        try:
+            makedirs( sDir )
+        except FileExistsError::
+            pass
 
 
 def _getTempDir():
