@@ -85,7 +85,7 @@ def getMakeDir( *sDir ):
         #
         try:
             makedirs( sDir )
-        except FileExistsError::
+        except FileExistsError:
             pass
 
 
