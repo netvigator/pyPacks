@@ -331,6 +331,16 @@ def _getSplit( s, oSplitOn ):
 oFinderCRorLF = getRegExObj( '\r|\n' ) # finds carriage return or line feed
 
 
+# getting \\r from postgresql when there is a \r in the character column
+#
+oFinderCRorLFnMore = getRegExObj(
+                        '|'.join(
+                            ( r'\\\\r',
+                              r'\\\\n',
+                              '\r', 
+                              '\n' ) ) )
+
+
 
 def _getEscapedThenSplit( s, oSplitOn, bEscBegEndOfStr = True ):
     #
@@ -1615,6 +1625,16 @@ if __name__ == "__main__":
         #
         lProblems.append( 'oFinderCRorLF not working! repeated split chars' )
         #
+    #
+    sLook4More = r'\\r'.join( ( 'ab\rcd\nef\ngh', 'ijk\nlmn\ropq' ) )
+    #
+    l = oFinderCRorLFnMore.split( sLook4More )
+    #
+    if l != ['ab', 'cd', 'ef', 'gh', 'ijk', 'lmn', 'opq']:
+        #
+        lProblems.append( 'oFinderCRorLF not working! repeated split chars' )
+        #
+    #
     #
     sRegExpress = getRegExpress( sLook4 ) # order is not predictable
     #
