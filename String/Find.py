@@ -1626,13 +1626,22 @@ if __name__ == "__main__":
         lProblems.append( 'oFinderCRorLF not working! repeated split chars' )
         #
     #
-    sLook4More = r'\\r'.join( ( 'ab\rcd\nef\ngh', 'ijk\nlmn\ropq' ) )
+    sLook4More = ''.join( ( 'ab\rcd\nef', r'\\r', 'gh', r'\\n', 'ijk\nlmn\ropq' ) )
     #
     l = oFinderCRorLFnMore.split( sLook4More )
     #
     if l != ['ab', 'cd', 'ef', 'gh', 'ijk', 'lmn', 'opq']:
         #
         lProblems.append( 'oFinderCRorLF not working! repeated split chars' )
+        #
+    #
+    sLook4This = 'book shelf\rdigital'
+    #
+    l = oFinderCRorLFnMore.split( sLook4This )
+    #
+    if l != ['book shelf', 'digital']:
+        #
+        lProblems.append( 'oFinderCRorLF not working! book shelf / digital' )
         #
     #
     #
