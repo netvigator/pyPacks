@@ -402,7 +402,7 @@ def getRegExpress(
         dSub2nd         = dSub2nd,
         tSubLast        = tSubLast,
         fDoThisFirst    = None,
-        oSeparator      = oFinderCRorLF,
+        oSeparator      = oFinderCRorLFnMore,
         bPermutate      = False,
         bAddDash        = False,
         bSubModelsOK    = False,
@@ -629,6 +629,7 @@ def getRegExpress(
     #
     sRegEx = _getPartsBarred( frozenset( lRegEx ) )
     #
+    
     return sRegEx
 
 
@@ -639,7 +640,7 @@ def getRegExpObj(
         dSub2nd         = dSub2nd,
         tSubLast        = tSubLast,
         fDoThisFirst    = None,
-        oSeparator      = oFinderCRorLF,
+        oSeparator      = oFinderCRorLFnMore,
         bPermutate      = False,
         bAddDash        = False,
         bSubModelsOK    = False ):
@@ -1395,6 +1396,21 @@ if __name__ == "__main__":
     #
     sWant = 'Fuse *Holder|Pre[-/ ]*amplifier|Pre[-/ ]*amp|Capacitor|Table *Radio'
     #
+    if sRegExpress != sWant:
+        #
+        print3( 'got: ', sRegExpress )
+        print3( 'want:', sWant )
+        #
+        lProblems.append(
+            'getRegExpress(%s) testing "%s"' % ( sLook4, 'bSubModelsOK = True, bAddDash = True' ) )
+        #
+    #
+    sLook4 = 'Lot of 10\rLot of (10)\r^10'
+    #
+    sRegExpress = getRegExpress( sLook4, iWordBoundChrs = 5, bEscBegEndOfStr = False )
+    #
+    sWant = r'^10\b|Lot *of *\(10\)|Lot *of *10\b'
+    #    
     if sRegExpress != sWant:
         #
         print3( 'got: ', sRegExpress )
