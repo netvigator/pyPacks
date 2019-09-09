@@ -1738,12 +1738,25 @@ if __name__ == "__main__":
         #
     #
     #
-    sRegExpress = getRegExpress( sLook4 ) # order is not predictable
+    sLook4This = r'book shelf\\rdigital'
     #
-    setExpected = frozenset( ( 'ab', 'cd', 'ef', 'gh' ) )
-    setReturned = frozenset( sRegExpress.split( '|' ) )
+    l = oFinderCRorLFnMore.split( sLook4This )
     #
-    if setExpected != setReturned:
+    if l != ['book shelf', 'digital']:
+        #
+        lProblems.append( 'oFinderCRorLFnMore not working! book shelf / double slash psuedo r / digital' )
+        #
+    #
+    sLook4 = 'ab\rcd\nef\n\rgh'
+    #
+    sRegExpress = getRegExpress( sLook4 ) # order is now predictable -- same
+    #
+    sWant = 'ab|cd|ef|gh'
+    #
+    if sRegExpress != sWant:
+        #
+        print3( 'got: ', sRegExpress )
+        print3( 'want:', sWant )
         #
         lProblems.append(
             'getRegExpress(%s) testing "%s"' % ( sLook4, 'repeated split chars' ) )
@@ -1753,15 +1766,15 @@ if __name__ == "__main__":
     #
     sRegExpress = getRegExpress( sLook4, iWordBoundChrs  = 3 )
     #
-    # \bab\b|\bjk\b|cdefghi
+    sWant = r'\bab\b|cdefghi|\bjk\b'
     #
-    setExpected = frozenset( ( r'\bab\b', r'\bjk\b', 'cdefghi' ) )
-    setReturned = frozenset( sRegExpress.split( '|' ) )
-    #
-    if setExpected != setReturned:
+    if sRegExpress != sWant:
+        #
+        print3( 'got: ', sRegExpress )
+        print3( 'want:', sWant )
         #
         lProblems.append(
-            'getRegExpress(%s) testing "%s"' % ( sLook4, 'boundary chars' ) )
+            'getRegExpress(%s) testing "%s"' % ( sLook4, 'iWordBoundChrs  = 3' ) )
         #
     #
     #
@@ -1769,13 +1782,15 @@ if __name__ == "__main__":
     #
     sRegExpress = getRegExpress( sLook4, iWordBoundChrs  = 3 )
     #
-    setExpected = frozenset( ( r'Model *Two', r'Model *2\b' ) )
-    setReturned = frozenset( sRegExpress.split( '|' ) )
+    sWant = r'Model *2\b|Model *Two'
     #
-    if setExpected != setReturned:
+    if sRegExpress != sWant:
+        #
+        print3( 'got: ', sRegExpress )
+        print3( 'want:', sWant )
         #
         lProblems.append(
-            'getRegExpress(%s) testing "%s"' % ( sLook4, 'boundary chars' ) )
+            'getRegExpress(%s) testing "%s"' % ( sLook4, 'iWordBoundChrs  = 3' ) )
         #
     #
     #
