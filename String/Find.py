@@ -29,12 +29,14 @@ from re                     import IGNORECASE, DOTALL, MULTILINE
 from six                    import print_ as print3
 
 try:
+    from ..Collect.Get      import getRidOfDupesKeepOrder
     from ..Collect.Query    import get1stThatMeets
     from ..Iter.AllVers     import iRange, getEnumerator, permutations
     from ..Iter.Get         import iRevRange
     from .Dumpster          import getAlphaNumCleanNoSpaces, getAlphaNumDashNoSpaces
     from ..Utils.TimeTrial  import TimeTrial
 except ( ValueError, ImportError ):
+    from Collect.Get        import getRidOfDupesKeepOrder
     from Collect.Query      import get1stThatMeets
     from Iter.AllVers       import iRange, getEnumerator, permutations
     from Iter.Get           import iRevRange
@@ -252,7 +254,14 @@ def getRegEx4Chars( s,
         #
         l = [ sPart.strip() for sPart in l ]
         #
-        s = _getPartsBarred( frozenset( l ) )
+        if len( l ) == len( frozenset( l ) ):
+            #
+            s = _getPartsBarred( l )
+            #
+        else:
+            #
+            s = _getPartsBarred( getRidOfDupesKeepOrder( l ) )
+            #
         #
     #
     s = ReplaceManyOldWithManyNew( s, dSub1st )
@@ -486,7 +495,14 @@ def getRegExpress(
                 #
             #
         #
-        lRegEx = list( frozenset( lNewParts ) )
+        if len( lNewParts ) == frozenset( lNewParts ):
+            #
+            lRegEx = lNewParts
+            #
+        else:
+            #
+            lRegEx = getRidOfDupesKeepOrder( lNewParts )
+            #
         #
     else:
         #
@@ -627,9 +643,15 @@ def getRegExpress(
             #
         #
     #
-    sRegEx = _getPartsBarred( frozenset( lRegEx ) )
+    if len( lRegEx ) == len( frozenset( lRegEx ) ):
+        #
+        sRegEx = _getPartsBarred( lRegEx )
+        #
+    else:
+        #
+        sRegEx = _getPartsBarred( getRidOfDupesKeepOrder( lRegEx ) )
+        #
     #
-    
     return sRegEx
 
 
@@ -1394,31 +1416,57 @@ if __name__ == "__main__":
     #
     sRegExpress = getRegExpress( sLook4, iWordBoundChrs = 5, bEscBegEndOfStr = False )
     #
-    sWant = 'Fuse *Holder|Pre[-/ ]*amplifier|Pre[-/ ]*amp|Capacitor|Table *Radio'
+    setGot  = frozenset( sRegExpress.split( '|' ) )
     #
-    if sRegExpress != sWant:
+    setWant = frozenset( { 'Table *Radio', 'Pre[-/ ]*amplifier', 'Pre[-/ ]*amp', 'Fuse *Holder', 'Capacitor', } )
+    #
+    if setGot != setWant:
         #
-        print3( 'got: ', sRegExpress )
-        print3( 'want:', sWant )
+        print3( 'got: ', setGot  )
+        print3( 'want:', setWant )
         #
         lProblems.append(
-            'getRegExpress(%s) testing "%s"' % ( sLook4, 'bSubModelsOK = True, bAddDash = True' ) )
+            'getRegExpress(%s) testing "%s"' % ( sLook4, 'iWordBoundChrs = 5, bEscBegEndOfStr = False' ) )
         #
     #
     sLook4 = 'Lot of 10\rLot of (10)\r^10'
     #
     sRegExpress = getRegExpress( sLook4, iWordBoundChrs = 5, bEscBegEndOfStr = False )
     #
-    sWant = r'^10\b|Lot *of *\(10\)|Lot *of *10\b'
+    setGot  = frozenset( sRegExpress.split( '|' ) )
+    #
+    setWant = frozenset( { r'^10\b', 'Lot *of *\(10\)', r'Lot *of *10\b' } )
     #    
-    if sRegExpress != sWant:
+    if setGot != setWant:
         #
-        print3( 'got: ', sRegExpress )
-        print3( 'want:', sWant )
+        print3( 'got: ', setGot  )
+        print3( 'want:', setWant )
         #
         lProblems.append(
-            'getRegExpress(%s) testing "%s"' % ( sLook4, 'bSubModelsOK = True, bAddDash = True' ) )
+            'getRegExpress(%s) testing "%s"' % ( sLook4, 'iWordBoundChrs = 5, bEscBegEndOfStr = False' ) )
         #
+    #
+    #
+    sLook4 = 'Model Two\rModel 2'
+    #
+    sRegExpress = getRegExpress( sLook4, iWordBoundChrs = 5, bAddDash = True )
+    #
+    setGot  = frozenset( sRegExpress.split( '|' ) )
+    #
+    setWant = frozenset( { 'Model[-/ ]*Two', r'Model[-/ ]*2\b' } )
+    #
+    if setGot != setWant:
+        #
+        print3( 'got: ', setGot  )
+        print3( 'want:', setWant )
+        #
+        lProblems.append(
+            'getRegExpress(%s) testing "%s"' % ( sLook4, 'iWordBoundChrs = 5, bAddDash = True' ) )
+        #
+    #
+    #oRegExObj = getRegExObj( sRegExpress )
+    #
+    #print3( 'oRegExObj.pattern:', oRegExObj.pattern )
     #
     #
     sLook4 = 'Model 2'
@@ -1592,7 +1640,6 @@ if __name__ == "__main__":
                                  bSubModelsOK = True, iWordBoundChrs = 5 )
     #
     sWant = r'\b604[A-Z]{0,1}\b'
-
     #
     if sRegExpress != sWant:
         #
