@@ -505,17 +505,25 @@ def getRidOfDupesKeepOrder( seq ):
     #
     ''' returns a list '''
     #
-    setGot = set( [] )
+    if len( seq ) == len( frozenset( seq ) ): # got no dupes
+        #
+        lReturn = list( seq )
+        #
+    else:
+        #
+        setGot = set( [] )
+        #
+        def notGotYet( u ):
+            if u in setGot:
+                return False
+            else:
+                setGot.add( u )
+                return True
+        #
+        lReturn = [ u for u in seq if notGotYet( u ) ]
+        #
     #
-    def notGotYet( u ):
-        if u in setGot:
-            return False
-        else:
-            setGot.add( u )
-            return True
-    #
-    return [ u for u in seq if notGotYet( u ) ]
-
+    return lReturn
 
 
 
