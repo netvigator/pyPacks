@@ -337,6 +337,8 @@ oFinderCRorLFnMore = getRegExObj(
                         '|'.join(
                             ( r'\\\\r',
                               r'\\\\n',
+                              r'\\' '\r',
+                              r'\\' '\n',
                               '\r', 
                               '\n' ) ) )
 
@@ -1381,6 +1383,11 @@ if __name__ == "__main__":
             'getRegExpress(%s) testing "%s"' % ( sLook4, 'bSubModelsOK = True, bAddDash = True' ) )
         #
     #
+    sLook4 = 'Table Radio|Pre-amplifier|Pre-amp|Fuse Holder|Capacitor'
+    #
+    sRegExpress = getRegExpress( sLook4, iWordBoundChrs = 5,bEscBegEndOfStr = False )
+    #
+    print3( sRegExpress )
     #
     sLook4 = 'Model 2'
     #
@@ -1626,13 +1633,16 @@ if __name__ == "__main__":
         lProblems.append( 'oFinderCRorLF not working! repeated split chars' )
         #
     #
-    sLook4More = ''.join( ( 'ab\rcd\nef', r'\\r', 'gh', r'\\n', 'ijk\nlmn\ropq' ) )
+    sLook4More = ''.join( ( 'ab\rcd\nef', r'\\r', 'gh', r'\\n', 'ijk\\' '\nlmn\\' '\ropq' ) )
     #
     l = oFinderCRorLFnMore.split( sLook4More )
     #
     if l != ['ab', 'cd', 'ef', 'gh', 'ijk', 'lmn', 'opq']:
         #
-        lProblems.append( 'oFinderCRorLF not working! repeated split chars' )
+        print3('')
+        print3( sLook4More )
+        print3( l )
+        lProblems.append( 'oFinderCRorLF not working! different split chars' )
         #
     #
     sLook4This = 'book shelf\rdigital'
