@@ -348,6 +348,10 @@ oFinderCRorLFnMore = getRegExObj(
                               r'\\\\n',
                               r'\\' '\r',
                               r'\\' '\n',
+                              r'\\r',
+                              r'\\n',
+                              r'\r',
+                              r'\n',
                               '\r', 
                               '\n' ) ) )
 
@@ -439,14 +443,18 @@ def getRegExpress(
         return getRawGotStr( sLook4 ) # not sure we need getRawGotStr()
         #
     #
-    #if sLook4Orig == 'Table Radio|Pre-amplifier|Pre-amp|Fuse Holder|Capacitor':
-        #print3( 'sLook4 0:', sLook4 )
-    #
     lOrig = _getSplit( sLook4, oSeparator )
     #
     lLengths = [ len( getAlphaNumCleanNoSpaces( s ) )
                  for s
                  in lOrig ]
+    #
+    #if sLook4Orig == r'Model Two\rModel 2':
+        #print3( '' )
+        #print3( 'sLook4 0:', sLook4 )
+        #print3( 'lOrig:', lOrig )
+        #print3( 'lLengths:', lLengths )
+        #print3( 'bAddDash:', bAddDash )
     #
     if (        bAddDash and
                 hasAnyAlpha(  sLook4 ) and
@@ -461,7 +469,7 @@ def getRegExpress(
         sLook4 = '\r'.join( lParts )
         #
     #
-    #if sLook4Orig == 'Table Radio|Pre-amplifier|Pre-amp|Fuse Holder|Capacitor':
+    #if sLook4Orig == r'Model Two\rModel 2':
         #print3( 'sLook4 1:', sLook4 )
     #
     sRegEx = ''
@@ -472,13 +480,13 @@ def getRegExpress(
         #
     #
     #
-    #if sLook4Orig == 'Table Radio|Pre-amplifier|Pre-amp|Fuse Holder|Capacitor':
+    #if sLook4Orig == r'Model Two\rModel 2':
         #print3( 'sLook4 2:', sLook4 )
     #
     lDashed = _getEscapedThenSplit(
                     sLook4, oSeparator, bEscBegEndOfStr = bEscBegEndOfStr )
     #
-    #if sLook4Orig == 'Table Radio|Pre-amplifier|Pre-amp|Fuse Holder|Capacitor':
+    #if sLook4Orig == r'Model Two\rModel 2':
         #print3( 'lDashed:', lDashed )
     #
     if bPermutate:
@@ -512,7 +520,7 @@ def getRegExpress(
                         tSubLast       = tSubLast )
                     for s in lDashed ]
     #
-    #if sLook4Orig == 'Table Radio|Pre-amplifier|Pre-amp|Fuse Holder|Capacitor':
+    #if sLook4Orig == r'Model Two\rModel 2':
         #print3( 'lRegEx 1:', lRegEx )
     #
     if bSubModelsOK:
@@ -574,15 +582,16 @@ def getRegExpress(
             #
         #
     #
-    #if sLook4Orig == 'Table Radio|Pre-amplifier|Pre-amp|Fuse Holder|Capacitor':
+    #if sLook4Orig == r'Model Two\rModel 2':
         #print3( 'lRegEx 2:', lRegEx )
+        #print3( 'iWordBoundChrs:', iWordBoundChrs )
     #
     if iWordBoundChrs > 0:
         #
         lLengths = [ len( getAlphaNumCleanNoSpaces( s ) )
                      for s in lOrig ]
         #
-        #if sLook4Orig == 'CA-3':
+        #if sLook4Orig == r'Model Two\rModel 2':
             #print3( 'lLengths:', lLengths )
         #
         for i in iRange( len( lOrig ) ):
@@ -625,6 +634,9 @@ def getRegExpress(
                     #
                 #
             #
+            #if sLook4Orig == r'Model Two\rModel 2':
+                #print3( 'lRegEx[ %s ]:' % i, lRegEx[ i ] )
+            #
             while lRegEx[ i ].endswith( r'\b\b' ):
                 #
                 lRegEx[ i ] = lRegEx[ i ][ : -2 ]
@@ -635,6 +647,9 @@ def getRegExpress(
                 #
         #
     #
+    #if sLook4Orig == r'Model Two\rModel 2':
+        #print3( 'lRegEx 3:', lRegEx )
+    #
     for i in iRange( len( lOrig ) ):
         #
         while lRegEx[ i ].endswith( r'\b\b' ):
@@ -642,6 +657,9 @@ def getRegExpress(
             lRegEx[ i ] = lRegEx[ i ][ : -2 ]
             #
         #
+    #
+    #if sLook4Orig == r'Model Two\rModel 2':
+        #print3( 'lRegEx 4:', lRegEx )
     #
     if len( lRegEx ) == len( frozenset( lRegEx ) ):
         #
@@ -652,11 +670,14 @@ def getRegExpress(
         sRegEx = _getPartsBarred( getRidOfDupesKeepOrder( lRegEx ) )
         #
     #
+    #if sLook4Orig == r'Model Two\rModel 2':
+        #print3( 'sRegEx:', sRegEx )
+    #
     return sRegEx
 
 
 
-def getRegExpObj(
+def getRegExpObjGotStr(
         sLook4          = '',
         dSub1st         = dSub1st,
         dSub2nd         = dSub2nd,
@@ -1233,7 +1254,7 @@ if __name__ == "__main__":
     #
     sLook4  = '1217-1290'
     #
-    oFinder = getRegExpObj( sLook4 ).search
+    oFinder = getRegExpObjGotStr( sLook4 ).search
     #
     sTest   = 'VINTAGE JBL 175 driver with 1217/1290 HORNS!!'
     #
@@ -1244,13 +1265,13 @@ if __name__ == "__main__":
         print3( oGot )
         #
         lProblems.append(
-            'getRegExpObj(%s) testing "%s"' % ( sLook4, sTest ) )
+            'getRegExpObjGotStr(%s) testing "%s"' % ( sLook4, sTest ) )
         #
     #
     #
     sLook4  = 'Heintz&Kaufman'
     #
-    oFinder = getRegExpObj( sLook4 ).search
+    oFinder = getRegExpObjGotStr( sLook4 ).search
     #
     sTest   = '6DJ8 vacuum tube HEINTZ AND KAUFMAN "Made in England"'
     #
@@ -1261,12 +1282,12 @@ if __name__ == "__main__":
         print3( oGot )
         #
         lProblems.append(
-            'getRegExpObj(%s) testing "%s"' % ( sLook4, sTest ) )
+            'getRegExpObjGotStr(%s) testing "%s"' % ( sLook4, sTest ) )
         #
     #
     sLook4  = 'AX-235'
     #
-    oFinder = getRegExpObj( sLook4 ).search
+    oFinder = getRegExpObjGotStr( sLook4 ).search
     #
     sTest   = "Emerson \"Little Miracle\" Marbled Green White and Yellow Catalin Tube Radio AX235"
     #
@@ -1277,12 +1298,12 @@ if __name__ == "__main__":
         print3( oGot )
         #
         lProblems.append(
-            'getRegExpObj(%s) testing "%s"' % ( sLook4, sTest ) )
+            'getRegExpObjGotStr(%s) testing "%s"' % ( sLook4, sTest ) )
         #
     #
     sLook4  = 'Fada'
     #
-    oFinder = getRegExpObj( sLook4 ).search
+    oFinder = getRegExpObjGotStr( sLook4 ).search
     #
     sTest   = 'VINTAGE BEAUTIFUL 40s FADA BULLET ART DECO CATALIN BAKELITE ANTIQUE TUBE RADIO'
     #
@@ -1293,12 +1314,12 @@ if __name__ == "__main__":
         print3( oGot )
         #
         lProblems.append(
-            'getRegExpObj(%s) testing "%s"' % ( sLook4, sTest ) )
+            'getRegExpObjGotStr(%s) testing "%s"' % ( sLook4, sTest ) )
         #
     #    
     sLook4  = 'L-56'
     #
-    oFinder = getRegExpObj( sLook4 ).search
+    oFinder = getRegExpObjGotStr( sLook4 ).search
     #
     sTest   = 'Maroon Fada L-56 Catalin Radio'
     #
@@ -1309,12 +1330,12 @@ if __name__ == "__main__":
         print3( oGot )
         #
         lProblems.append(
-            'getRegExpObj(%s) testing "%s"' % ( sLook4, sTest ) )
+            'getRegExpObjGotStr(%s) testing "%s"' % ( sLook4, sTest ) )
         #
     #    
     sLook4  = 'Black & Decker'
     #
-    oFinder = getRegExpObj( sLook4 )
+    oFinder = getRegExpObjGotStr( sLook4 )
     #
     sTest   = 'abc BLACK AND DECKER efg'
     #
@@ -1326,12 +1347,12 @@ if __name__ == "__main__":
         print3( 'oFinder:', oFinder )
         #
         lProblems.append(
-            'getRegExpObj(%s) testing "%s"' % ( sLook4, sTest ) )
+            'getRegExpObjGotStr(%s) testing "%s"' % ( sLook4, sTest ) )
         #
     #
     sLook4  = 'BLACK AND DECKER'
     ##
-    oFinder = getRegExpObj( sLook4 ).search
+    oFinder = getRegExpObjGotStr( sLook4 ).search
     #
     sTest   = 'abc Black&Decker efg'
     #
@@ -1342,12 +1363,12 @@ if __name__ == "__main__":
         print3( oGot )
         #
         lProblems.append(
-            'getRegExpObj(%s) testing "%s"' % ( sLook4, sTest ) )
+            'getRegExpObjGotStr(%s) testing "%s"' % ( sLook4, sTest ) )
         #
     #
     sLook4 = 'How now brown cow'
     #
-    oFinder = getRegExpObj( sLook4, bPermutate = True ).search
+    oFinder = getRegExpObjGotStr( sLook4, bPermutate = True ).search
     #
     sTest   = 'Cow brown how now'
     #
@@ -1358,7 +1379,7 @@ if __name__ == "__main__":
         print3( oGot )
         #
         lProblems.append(
-            'getRegExpObj(%s) testing "%s"' % ( sLook4, sTest ) )
+            'getRegExpObjGotStr(%s) testing "%s"' % ( sLook4, sTest ) )
         #
     #
     sLook4  = 'BM258'
@@ -1416,14 +1437,12 @@ if __name__ == "__main__":
     #
     sRegExpress = getRegExpress( sLook4, iWordBoundChrs = 5, bEscBegEndOfStr = False )
     #
-    setGot  = frozenset( sRegExpress.split( '|' ) )
+    sWant = 'Table *Radio|Pre[-/ ]*amplifier|Pre[-/ ]*amp|Fuse *Holder|Capacitor'
     #
-    setWant = frozenset( { 'Table *Radio', 'Pre[-/ ]*amplifier', 'Pre[-/ ]*amp', 'Fuse *Holder', 'Capacitor', } )
-    #
-    if setGot != setWant:
+    if sRegExpress != sWant:
         #
-        print3( 'got: ', setGot  )
-        print3( 'want:', setWant )
+        print3( 'got: ', sRegExpress )
+        print3( 'want:', sWant )
         #
         lProblems.append(
             'getRegExpress(%s) testing "%s"' % ( sLook4, 'iWordBoundChrs = 5, bEscBegEndOfStr = False' ) )
@@ -1433,32 +1452,28 @@ if __name__ == "__main__":
     #
     sRegExpress = getRegExpress( sLook4, iWordBoundChrs = 5, bEscBegEndOfStr = False )
     #
-    setGot  = frozenset( sRegExpress.split( '|' ) )
+    sWant = r'Lot *of *10\b|Lot *of *\(10\)|^10\b'
     #
-    setWant = frozenset( { r'^10\b', 'Lot *of *\(10\)', r'Lot *of *10\b' } )
-    #    
-    if setGot != setWant:
+    if sRegExpress != sWant:
         #
-        print3( 'got: ', setGot  )
-        print3( 'want:', setWant )
+        print3( 'got: ', sRegExpress )
+        print3( 'want:', sWant )
         #
         lProblems.append(
             'getRegExpress(%s) testing "%s"' % ( sLook4, 'iWordBoundChrs = 5, bEscBegEndOfStr = False' ) )
         #
     #
     #
-    sLook4 = 'Model Two\rModel 2'
+    sLook4 = r'Model Two\rModel 2'
     #
     sRegExpress = getRegExpress( sLook4, iWordBoundChrs = 5, bAddDash = True )
     #
-    setGot  = frozenset( sRegExpress.split( '|' ) )
+    sWant = r'Model[-/ ]*Two|Model[-/ ]*2\b'
     #
-    setWant = frozenset( { 'Model[-/ ]*Two', r'Model[-/ ]*2\b' } )
-    #
-    if setGot != setWant:
+    if sRegExpress != sWant:
         #
-        print3( 'got: ', setGot  )
-        print3( 'want:', setWant )
+        print3( 'got: ', sRegExpress )
+        print3( 'want:', sWant )
         #
         lProblems.append(
             'getRegExpress(%s) testing "%s"' % ( sLook4, 'iWordBoundChrs = 5, bAddDash = True' ) )
@@ -1650,24 +1665,24 @@ if __name__ == "__main__":
             'getRegExpress(%s) testing "%s"' % ( sLook4, 'bSubModelsOK = True' ) )
         #
     #
-    oRegExpObj = getRegExpObj( sLook4, bSubModelsOK = True )
+    oRegExpObj = getRegExpObjGotStr( sLook4, bSubModelsOK = True )
     #
     if not oRegExpObj.search( '604D' ):
         #
-        print3( "oRegExpObj = getRegExpObj( '604C', bSubModelsOK = True )" )
+        print3( "oRegExpObj = getRegExpObjGotStr( '604C', bSubModelsOK = True )" )
         print3( "oRegExpObj.search( '604D' )", 'returned False' )
         #
         lProblems.append(
-            'getRegExpObj(%s) testing "%s"' % ( sLook4, 'bSubModelsOK = True' ) )
+            'getRegExpObjGotStr(%s) testing "%s"' % ( sLook4, 'bSubModelsOK = True' ) )
         #
     #
     if oRegExpObj.search( '605C' ):
         #
-        print3( "oRegExpObj = getRegExpObj( '604C', bSubModelsOK = True )" )
+        print3( "oRegExpObj = getRegExpObjGotStr( '604C', bSubModelsOK = True )" )
         print3( "oRegExpObj.search( '605C' )", 'returned True' )
         #
         lProblems.append(
-            'getRegExpObj(%s) testing "%s"' % ( sLook4, 'bSubModelsOK = True' ) )
+            'getRegExpObjGotStr(%s) testing "%s"' % ( sLook4, 'bSubModelsOK = True' ) )
         #
     #
     sRegExpress = getRegExpress( sLook4, bAddDash = True, bSubModelsOK = True )
@@ -1683,7 +1698,7 @@ if __name__ == "__main__":
             'getRegExpress(%s) testing "%s"' % ( sLook4, 'bAddDash & bSubModelsOK = True' ) )
         #
     #
-    oRegExpObj = getRegExpObj( sLook4, bAddDash = True, bSubModelsOK = True )
+    oRegExpObj = getRegExpObjGotStr( sLook4, bAddDash = True, bSubModelsOK = True )
     #
     if not oRegExpObj.search( '604D' ):
         #
@@ -1691,7 +1706,7 @@ if __name__ == "__main__":
         print3( "oRegExpObj.search( '604D' )", 'returned False' )
         #
         lProblems.append(
-            'getRegExpObj(%s) testing "%s"' % ( sLook4, 'bAddDash & bSubModelsOK = True' ) )
+            'getRegExpObjGotStr(%s) testing "%s"' % ( sLook4, 'bAddDash & bSubModelsOK = True' ) )
         #
     #
     if oRegExpObj.search( '605C' ):
@@ -1700,7 +1715,7 @@ if __name__ == "__main__":
         print3( "oRegExpObj.search( '605C' )", 'returned True' )
         #
         lProblems.append(
-            'getRegExpObj(%s) testing "%s"' % ( sLook4, 'bAddDash & bSubModelsOK = True' ) )
+            'getRegExpObjGotStr(%s) testing "%s"' % ( sLook4, 'bAddDash & bSubModelsOK = True' ) )
         #
     #
     sLook4 = 'ab\rcd\nef\n\rgh'
@@ -1721,7 +1736,7 @@ if __name__ == "__main__":
         print3('')
         print3( sLook4More )
         print3( l )
-        lProblems.append( 'oFinderCRorLF not working! different split chars' )
+        lProblems.append( 'oFinderCRorLFnMore not working! different split chars' )
         #
     #
     sLook4This = 'book shelf\rdigital'
@@ -1730,7 +1745,17 @@ if __name__ == "__main__":
     #
     if l != ['book shelf', 'digital']:
         #
-        lProblems.append( 'oFinderCRorLF not working! book shelf / digital' )
+        lProblems.append( 'oFinderCRorLFnMore not working! book shelf / digital' )
+        #
+    #
+    #
+    sLook4This = r'book shelf\rdigital'
+    #
+    l = oFinderCRorLFnMore.split( sLook4This )
+    #
+    if l != ['book shelf', 'digital']:
+        #
+        lProblems.append( 'oFinderCRorLFnMore not working! book shelf / psuedo r / digital' )
         #
     #
     #
