@@ -501,6 +501,27 @@ def getListNoFalsies( l ):
     return [ u for u in l if u ]
 
 
+def getRidOfDupesKeepOrder( seq ):
+    #
+    ''' returns a list '''
+    #
+    setGot = set( [] )
+    #
+    def notGotYet( u ):
+        if u in setGot:
+            return False
+        else:
+            setGot.add( u )
+            return True
+    #
+    return [ u for u in seq if notGotYet( u ) ]
+
+
+
+
+
+
+
 if __name__ == "__main__":
     #
     from string import ascii_lowercase as lowercase
@@ -736,5 +757,12 @@ if __name__ == "__main__":
         lProblems.append( 'getListNoFalsies() list w falsies' )
         #
     #
-    
+    t = ( 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6 )
+    #
+    if getRidOfDupesKeepOrder( t ) != [0, 1, 2, 3, 4, 5, 6]:
+        #
+        lProblems.append( 'getRidOfDupesKeepOrder()' )
+        #
+    #
+    #
     sayTestResult( lProblems )
