@@ -411,6 +411,9 @@ def getRegExpress(
         bEscBegEndOfStr = True,    # escape RegEx beg/end of string chars
         bPluralize      = False ): # will also find plural version of word
     #
+    '''
+    ### DO NOT COVERT \r's to |'s before passing sLook4 to this !!! ###
+    '''
     try: # moving this to the top breaks this package!
         from .Get        import getRawGotStr
         from .Test       import hasAnyAlpha, hasAnyDigits, hasPunctOrSpace
@@ -427,7 +430,7 @@ def getRegExpress(
         return getRawGotStr( sLook4 ) # not sure we need getRawGotStr()
         #
     #
-    #if sLook4Orig == '26A':
+    #if sLook4Orig == 'Table Radio|Pre-amplifier|Pre-amp|Fuse Holder|Capacitor':
         #print3( 'sLook4 0:', sLook4 )
     #
     lOrig = _getSplit( sLook4, oSeparator )
@@ -449,7 +452,7 @@ def getRegExpress(
         sLook4 = '\r'.join( lParts )
         #
     #
-    #if sLook4Orig == '26A':
+    #if sLook4Orig == 'Table Radio|Pre-amplifier|Pre-amp|Fuse Holder|Capacitor':
         #print3( 'sLook4 1:', sLook4 )
     #
     sRegEx = ''
@@ -460,11 +463,14 @@ def getRegExpress(
         #
     #
     #
-    #if sLook4Orig == '26A':
+    #if sLook4Orig == 'Table Radio|Pre-amplifier|Pre-amp|Fuse Holder|Capacitor':
         #print3( 'sLook4 2:', sLook4 )
     #
     lDashed = _getEscapedThenSplit(
                     sLook4, oSeparator, bEscBegEndOfStr = bEscBegEndOfStr )
+    #
+    #if sLook4Orig == 'Table Radio|Pre-amplifier|Pre-amp|Fuse Holder|Capacitor':
+        #print3( 'lDashed:', lDashed )
     #
     if bPermutate:
         #
@@ -490,7 +496,7 @@ def getRegExpress(
                         tSubLast       = tSubLast )
                     for s in lDashed ]
     #
-    #if sLook4Orig == '26A':
+    #if sLook4Orig == 'Table Radio|Pre-amplifier|Pre-amp|Fuse Holder|Capacitor':
         #print3( 'lRegEx 1:', lRegEx )
     #
     if bSubModelsOK:
@@ -552,7 +558,7 @@ def getRegExpress(
             #
         #
     #
-    #if sLook4Orig == '26A':
+    #if sLook4Orig == 'Table Radio|Pre-amplifier|Pre-amp|Fuse Holder|Capacitor':
         #print3( 'lRegEx 2:', lRegEx )
     #
     if iWordBoundChrs > 0:
@@ -1383,11 +1389,21 @@ if __name__ == "__main__":
             'getRegExpress(%s) testing "%s"' % ( sLook4, 'bSubModelsOK = True, bAddDash = True' ) )
         #
     #
-    sLook4 = 'Table Radio|Pre-amplifier|Pre-amp|Fuse Holder|Capacitor'
+    sLook4 = 'Table Radio\rPre-amplifier\rPre-amp\rFuse Holder\rCapacitor'
     #
-    sRegExpress = getRegExpress( sLook4, iWordBoundChrs = 5,bEscBegEndOfStr = False )
+    sRegExpress = getRegExpress( sLook4, iWordBoundChrs = 5, bEscBegEndOfStr = False )
     #
-    print3( sRegExpress )
+    sWant = 'Fuse *Holder|Pre[-/ ]*amplifier|Pre[-/ ]*amp|Capacitor|Table *Radio'
+    #
+    if sRegExpress != sWant:
+        #
+        print3( 'got: ', sRegExpress )
+        print3( 'want:', sWant )
+        #
+        lProblems.append(
+            'getRegExpress(%s) testing "%s"' % ( sLook4, 'bSubModelsOK = True, bAddDash = True' ) )
+        #
+    #
     #
     sLook4 = 'Model 2'
     #
