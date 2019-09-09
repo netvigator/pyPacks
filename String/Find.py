@@ -252,16 +252,9 @@ def getRegEx4Chars( s,
     #
     if len( l ) > 1: # handle OR via |
         #
-        l = [ sPart.strip() for sPart in l ]
-        #
-        if len( l ) == len( frozenset( l ) ):
-            #
-            s = _getPartsBarred( l )
-            #
-        else:
-            #
-            s = _getPartsBarred( getRidOfDupesKeepOrder( l ) )
-            #
+        s = _getPartsBarred(
+                getRidOfDupesKeepOrder(
+                    [ sPart.strip() for sPart in l ] ) )
         #
     #
     s = ReplaceManyOldWithManyNew( s, dSub1st )
@@ -503,14 +496,7 @@ def getRegExpress(
                 #
             #
         #
-        if len( lNewParts ) == frozenset( lNewParts ):
-            #
-            lRegEx = lNewParts
-            #
-        else:
-            #
-            lRegEx = getRidOfDupesKeepOrder( lNewParts )
-            #
+        lRegEx = getRidOfDupesKeepOrder( lNewParts )
         #
     else:
         #
@@ -661,17 +647,10 @@ def getRegExpress(
     #if sLook4Orig == r'Model Two\rModel 2':
         #print3( 'lRegEx 4:', lRegEx )
     #
-    if len( lRegEx ) == len( frozenset( lRegEx ) ):
-        #
-        sRegEx = _getPartsBarred( lRegEx )
-        #
-    else:
-        #
-        sRegEx = _getPartsBarred( getRidOfDupesKeepOrder( lRegEx ) )
-        #
+    sRegEx = _getPartsBarred( getRidOfDupesKeepOrder( lRegEx ) )
     #
     #if sLook4Orig == r'Model Two\rModel 2':
-        #print3( 'sRegEx:', sRegEx )
+        #print3( 'sRegEx 5:', sRegEx )
     #
     return sRegEx
 
