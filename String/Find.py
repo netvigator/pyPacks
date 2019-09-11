@@ -690,7 +690,7 @@ from Mastering Regular Expressions by Jeffrey E.F. Friedl
 
 use non-capturing parens (?:  )
 do not add superfluous parens
-do not use usperfluous character classes
+do not use superfluous character classes
 use leading anchors
 expose literal text
 expose anchors
