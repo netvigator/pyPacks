@@ -30,25 +30,25 @@ from time       import strftime, strptime, time, tzname, timezone
 
 try:
     from ..Time         import ( 
-                sFormatISOdateTime,
-                sFormatISOdate,
-                sFormatDateAm,
-                sFormatDateAmShort,
-                sFormatISONoSpace,
-                sFormatNatureUSA,
-                sFormatUSAdateTime ) # explicit imports better than implicit
+                _sFormatISOdateTime,
+                _sFormatISOdate,
+                _sFormatDateAm,
+                _sFormatDateAmShort,
+                _sFormatISONoSpace,
+                _sFormatNatureUSA,
+                _sFormatUSAdateTime ) # explicit imports better than implicit
     from ..Iter.AllVers import lMap, getEnumerator
     from ..String.Find  import getRegExObj
     from ..Utils.ImIf   import ImIf
 except ( ValueError, ImportError ):
     from Time           import ( 
-                sFormatISOdateTime,
-                sFormatISOdate,
-                sFormatDateAm,
-                sFormatDateAmShort,
-                sFormatISONoSpace,
-                sFormatNatureUSA,
-                sFormatUSAdateTime ) # explicit imports better than implicit
+                _sFormatISOdateTime,
+                _sFormatISOdate,
+                _sFormatDateAm,
+                _sFormatDateAmShort,
+                _sFormatISONoSpace,
+                _sFormatNatureUSA,
+                _sFormatUSAdateTime ) # explicit imports better than implicit
     from Iter.AllVers   import lMap, getEnumerator
     from String.Find    import getRegExObj
     from Utils.ImIf     import ImIf
@@ -94,11 +94,11 @@ def getMonthNumOffName( sMonth ):
 
 def getIsoDateTimeFromObj( oDateTime ):
     #
-    return oDateTime.strftime( sFormatISOdateTime )
+    return oDateTime.strftime( _sFormatISOdateTime )
 
 
 def getIsoDateTimeStrFromSecs(
-        fSecsSinceEpoch = None, bWantLocal = True, sFormat = sFormatISOdateTime ):
+        fSecsSinceEpoch = None, bWantLocal = True, sFormat = _sFormatISOdateTime ):
     #
     #
     getTime             = ImIf( bWantLocal, localtime, gmtime )
@@ -112,7 +112,7 @@ def getIsoDateTimeStrFromSecs(
 
 
 def getIsoDateTimeStrFromSecsNoSpace(
-        fSecsSinceEpoch = None, bWantLocal = True, sFormat = sFormatISONoSpace ):
+        fSecsSinceEpoch = None, bWantLocal = True, sFormat = _sFormatISONoSpace ):
     #
     return getIsoDateTimeStrFromSecs( fSecsSinceEpoch, bWantLocal, sFormat  )
 
@@ -128,7 +128,7 @@ def getNormalDateFromSecs( fSecsSinceEpoch = None, bWantLocal = True ):
 
 
 
-def getDateTimeTupleFromString( sDateTime, sFormat = sFormatISOdateTime ):
+def getDateTimeTupleFromString( sDateTime, sFormat = _sFormatISOdateTime ):
     #
     #
     if '_' in sDateTime: sDateTime = sDateTime.replace( '_', ' ' )
@@ -145,7 +145,7 @@ def getDateTimeTupleFromString( sDateTime, sFormat = sFormatISOdateTime ):
 
 def getSecsSinceEpochFromString(
             sDateTime,
-            sFormat     = sFormatISOdateTime,
+            sFormat     = _sFormatISOdateTime,
             bAdjust2UTC = False ):
     #
     #
@@ -160,7 +160,7 @@ def getSecsSinceEpochFromString(
 
 def getDateTimeObjFromString(
             sDateTime,
-            sFormat     = sFormatISOdateTime,
+            sFormat     = _sFormatISOdateTime,
             bAdjust2UTC = False,
             oTimeZone   = None ):
     #
@@ -250,7 +250,7 @@ def getIsoOffApacheDate( sDate ):
 
 
 def getIsoDateFromOther( sDate,
-        sFormatIn = sFormatNatureUSA, sFormatWant = sFormatISOdateTime ):
+        sFormatIn = _sFormatNatureUSA, sFormatWant = _sFormatISOdateTime ):
     #
     '''
     handles coversions from formats such as 17 Jan 2014
@@ -266,7 +266,7 @@ def getIsoDateFromOther( sDate,
         #
         raise FormatMismatchError
         #
-    elif sFormatIn == sFormatNatureUSA:
+    elif sFormatIn == _sFormatNatureUSA:
         #
         # strip leading / trailing blanks
         #
@@ -297,7 +297,7 @@ def getIsoDateFromOther( sDate,
 
 
 
-def getOtherTimeDatefromISO( sTimeStamp, sFormat = sFormatUSAdateTime ):
+def getOtherTimeDatefromISO( sTimeStamp, sFormat = _sFormatUSAdateTime ):
     #
     #
     oDateTime = getDateTimeObjFromString( sTimeStamp )
@@ -306,25 +306,25 @@ def getOtherTimeDatefromISO( sTimeStamp, sFormat = sFormatUSAdateTime ):
 
 
 
-def getDateTimeUSAfromISO( sTimeStamp, sFormat = sFormatUSAdateTime ):
+def getDateTimeUSAfromISO( sTimeStamp, sFormat = _sFormatUSAdateTime ):
     #
     return getOtherTimeDatefromISO( sTimeStamp, sFormat )
 
 
-def getOtherDatefromISO( sDate, sFormat = sFormatISOdate ):
+def getOtherDatefromISO( sDate, sFormat = _sFormatISOdate ):
     #
-    oDateTime = getDateTimeObjFromString( sDate, sFormatISOdate )
+    oDateTime = getDateTimeObjFromString( sDate, _sFormatISOdate )
     #
     return oDateTime.strftime( sFormat )
 
 
-def getDateUSAfromISO( sDate, sFormat = sFormatDateAm ):
+def getDateUSAfromISO( sDate, sFormat = _sFormatDateAm ):
     #
     return getOtherDatefromISO( sDate, sFormat )
 
 
 
-def getIsoDateTimeFromOther( sDateTime, sFormat = sFormatUSAdateTime ):
+def getIsoDateTimeFromOther( sDateTime, sFormat = _sFormatUSAdateTime ):
     #
     oDateTime = getDateTimeObjFromString( sDateTime, sFormat )
     #
@@ -334,7 +334,7 @@ def getIsoDateTimeFromOther( sDateTime, sFormat = sFormatUSAdateTime ):
 
 
 
-def getIsoDateTimeFromOtherStr( sDate, sFormat = sFormatUSAdateTime ):
+def getIsoDateTimeFromOtherStr( sDate, sFormat = _sFormatUSAdateTime ):
     #
     oDateTime = getDateTimeObjFromString( sDate, sFormat )
     #
@@ -344,7 +344,7 @@ def getIsoDateTimeFromOtherStr( sDate, sFormat = sFormatUSAdateTime ):
 
 
 
-def getIsoDateFromOtherStr( sDate, sFormat = sFormatDateAmShort ):
+def getIsoDateFromOtherStr( sDate, sFormat = _sFormatDateAmShort ):
     #
     sISO = getIsoDateTimeFromOtherStr( sDate, sFormat )
     #
@@ -359,10 +359,10 @@ def getIsoDateFromUSAdate( sDate ):
             sISO = ''
             raise Finished
         try:
-            sISO = getIsoDateFromOtherStr( sDate, sFormatDateAm      )
+            sISO = getIsoDateFromOtherStr( sDate, _sFormatDateAm      )
             raise Finished
         except ( ValueError, ImportError ):
-            sISO = getIsoDateFromOtherStr( sDate, sFormatDateAmShort )
+            sISO = getIsoDateFromOtherStr( sDate, _sFormatDateAmShort )
     #
     except Finished: pass
     #
@@ -378,7 +378,7 @@ def getIsoDateTimeFromUSAdateTime( sDateTime ):
             sISO = ''
             raise Finished
         try:
-            sISO = getIsoDateTimeFromOther( sDateTime, sFormatUSAdateTime )
+            sISO = getIsoDateTimeFromOther( sDateTime, _sFormatUSAdateTime )
             raise Finished
         except ( ValueError, ImportError ):
             pass
