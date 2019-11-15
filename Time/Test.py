@@ -27,17 +27,17 @@ from datetime           import datetime
 from time               import strptime
 
 try:
-    from .Convert       import ( getSecsSinceEpochFromString, sFormatDateAm,
-                                 getDateTimeObjFromString, sFormatUSAdateTime )
+    from .Convert       import ( getSecsSinceEpochFromString, _sFormatDateAm,
+                                 getDateTimeObjFromString, _sFormatUSAdateTime )
     # __init__.py
-    from ..Time         import ( sFormatISOdateTime, sFormatISOdateTimeNoColon,
-                                 sFormatDateEu )
+    from ..Time         import ( _sFormatISOdateTime, _sFormatISOdateTimeNoColon,
+                                 _sFormatDateEu )
 except ( ValueError, ImportError ):
-    from Time.Convert   import ( getSecsSinceEpochFromString, sFormatDateAm,
-                                 getDateTimeObjFromString, sFormatUSAdateTime )
+    from Time.Convert   import ( getSecsSinceEpochFromString, _sFormatDateAm,
+                                 getDateTimeObjFromString, _sFormatUSAdateTime )
     # __init__.py
-    from Time           import ( sFormatISOdateTime, sFormatISOdateTimeNoColon,
-                                 sFormatDateEu )
+    from Time           import ( _sFormatISOdateTime, _sFormatISOdateTimeNoColon,
+                                 _sFormatDateEu )
 
 
 class Finished( Exception ): pass
@@ -46,7 +46,7 @@ class Finished( Exception ): pass
 def isDateTimeObj( uTest ): return isinstance( uTest, datetime )
 
 
-def isISOdatetime( sDateTime, sFormat = sFormatISOdateTime ):
+def isISOdatetime( sDateTime, sFormat = _sFormatISOdateTime ):
     #
     # '2005-07-24 11:28:34'
     #
@@ -81,7 +81,7 @@ def isISOdatetime( sDateTime, sFormat = sFormatISOdateTime ):
 
 def isISOdatetimeFileNameSafe( sDateTime ):
     #
-    return isISOdatetime( sDateTime, sFormat = sFormatISOdateTimeNoColon )
+    return isISOdatetime( sDateTime, sFormat = _sFormatISOdateTimeNoColon )
 
 
 def isISOdate( sDate ):
@@ -143,7 +143,7 @@ def isDateSomewhere( sDate, sFormat ):
 def isDateUSA( sDate ):
     #
     #
-    return isDateSomewhere( sDate, sFormatDateAm )
+    return isDateSomewhere( sDate, _sFormatDateAm )
 
 
 
@@ -154,7 +154,7 @@ def isDateTimeUSA( sDateTime ):
     #
     try:
         #
-        getDateTimeObjFromString( sDateTime, sFormatUSAdateTime )
+        getDateTimeObjFromString( sDateTime, _sFormatUSAdateTime )
         #
     except ( ValueError, ImportError ):
         #
@@ -168,7 +168,7 @@ def isDateTimeUSA( sDateTime ):
 def isDateEuro( sDate ):
     #
     #
-    return isDateSomewhere( sDate, sFormatDateEu )
+    return isDateSomewhere( sDate, _sFormatDateEu )
 
 
 
@@ -209,7 +209,7 @@ if __name__ == "__main__":
         lProblems.append( 'isISOdatetime() integer time' )
         #
     #
-    if not isISOdatetime( getNowIsoDateTimeFileNameSafe(), sFormatISOdateTimeNoColon ):
+    if not isISOdatetime( getNowIsoDateTimeFileNameSafe(), _sFormatISOdateTimeNoColon ):
         #
         lProblems.append( 'isISOdatetime() getNowIsoDateTimeFileNameSafe' )
         #

@@ -32,18 +32,18 @@ try:
     from .Convert       import getIsoDateTimeStrFromSecs, getDateTimeObjFromString
     from .Output        import getNowIsoDateTimeStr, sayIsoDateTimeLocal
     from ..Utils.ImIf   import ImIf
-    from ..Time         import iSecsPerDay, sFormatISOdateTime # in __init__.py
+    from ..Time         import _iSecsPerDay, _sFormatISOdateTime # in __init__.py
 except ( ValueError, ImportError ):
     from Time.Clock     import getSecsSinceEpoch
     from Time.Convert   import getIsoDateTimeStrFromSecs, getDateTimeObjFromString
     from Time.Output    import getNowIsoDateTimeStr, sayIsoDateTimeLocal
     from Utils.ImIf     import ImIf
-    from Time           import iSecsPerDay, sFormatISOdateTime # in __init__.py
+    from Time           import _iSecsPerDay, _sFormatISOdateTime # in __init__.py
 
 
 
-_tMagnitudes    = ( 1e-3, 1,  60,     3600, iSecsPerDay, iSecsPerDay * 24  )
-_tMultiplyBy    = ( 1e6,  1e3, 1, 1.0 / 60,  1.0 / 3600, 1.0 / iSecsPerDay )
+_tMagnitudes    = ( 1e-3, 1,  60,     3600, _iSecsPerDay, _iSecsPerDay * 24 )
+_tMultiplyBy    = ( 1e6,  1e3, 1, 1.0 / 60,  1.0 / 3600, 1.0 / _iSecsPerDay )
 _tSayIncrement  = ( 'microseconds',
                     'milliseconds',
                     'seconds',
@@ -51,8 +51,8 @@ _tSayIncrement  = ( 'microseconds',
                     'hours',
                     'days' )
 
-bDebugPrint         = False
-bTurnOnDebugPrint   = False
+_bDebugPrint        = False
+_bTurnOnDebugPrint  = False
 
 def getDurationUnits( nSayTime ):
     #
@@ -108,7 +108,7 @@ def getSecsNowPlusDHMS(
         bWantLocal  = True ):
     #
     #
-    getTime             = ImIf( bWantLocal, time, getSecsSinceEpoch )
+    getTime         = ImIf( bWantLocal, time, getSecsSinceEpoch )
     #
     return _getSecsPlusDHMS( getTime(), iDays, iHours, iMins, iSecs )
 
@@ -138,7 +138,7 @@ def _getIsoDateTimeSecsPlus( fSecs,
         bWantLocal  = True ):
     #
     #
-    iWhen       = _getSecsPlusDHMS( fSecs, iDays, iHours, iMins, iSecs )
+    iWhen           = _getSecsPlusDHMS( fSecs, iDays, iHours, iMins, iSecs )
     #
     return getIsoDateTimeStrFromSecs( iWhen, bWantLocal = 1 )
 
@@ -203,12 +203,12 @@ def getDeltaDaysFromObjs( oOlder, oNewer = None ):
     oDelta      = oNewer - oOlder
     #
     fDeltaSecs  = (
-        oDelta.days * iSecsPerDay +
+        oDelta.days * _iSecsPerDay +
         oDelta.seconds +
         round( oDelta.microseconds / 1000000.0 ) )
     #
     #
-    return float( fDeltaSecs ) / iSecsPerDay
+    return float( fDeltaSecs ) / _iSecsPerDay
 
 
 
@@ -232,7 +232,7 @@ def getDeltaDaysFromISOs( sOlder, sNewer = None ):
     oNewer  = getDateTimeObjFromString( sNewer )
     oOlder  = getDateTimeObjFromString( sOlder )
     #
-    if bDebugPrint:
+    if _bDebugPrint:
         print3( 'oNewer:', repr( oNewer ) )
         print3( 'oOlder:', repr( oOlder ) )
     #
@@ -257,12 +257,12 @@ def getDeltaDaysFromSecs( iOlder, iNewer = None ):
     oDelta      = oNewer - oOlder
     #
     fDeltaSecs  = (
-        oDelta.days * iSecsPerDay +
+        oDelta.days * _iSecsPerDay +
         oDelta.seconds +
         round( oDelta.microseconds / 1000000.0 ) )
     #
     #
-    return float( fDeltaSecs ) / iSecsPerDay
+    return float( fDeltaSecs ) / _iSecsPerDay
 
 
 
@@ -361,7 +361,7 @@ if __name__ == "__main__":
     #
     if args and args[0] == 'debug':
         #
-        bTurnOnDebugPrint = True
+        _bTurnOnDebugPrint = True
         #
     #
     lProblems = []
@@ -422,13 +422,13 @@ if __name__ == "__main__":
     sYesterday = getIsoDateTimeNowPlus( -1 )
     sTomorrow  = getIsoDateTimeNowPlus(  1 )
     #
-    bDebugPrint = bTurnOnDebugPrint
+    _bDebugPrint = _bTurnOnDebugPrint
     #
     fYesterday2Tomorrow = getDeltaDaysFromISOs( sYesterday, sTomorrow )
     #
     if abs( 2.0 - fYesterday2Tomorrow ) == 2.0 - 1.9583333333333333:
         #
-        if bDebugPrint:
+        if _bDebugPrint:
             print3( 'daylight savings change? bWantLocal = True' )
         #
     elif fYesterday2Tomorrow != 2.0:
@@ -445,7 +445,7 @@ if __name__ == "__main__":
     #
     if abs( 2.0 - fYesterday2Tomorrow ) == 2.0 - 1.9583333333333333:
         #
-        if bDebugPrint:
+        if _bDebugPrint:
             print3( 'daylight savings change? bWantLocal = False' )
         #
     elif fYesterday2Tomorrow != 2.0:
@@ -470,7 +470,7 @@ if __name__ == "__main__":
     #
     iNow        = int( time() )
     #
-    oOlder = datetime.fromtimestamp( iNow - iSecsPerDay )
+    oOlder = datetime.fromtimestamp( iNow - _iSecsPerDay )
     #
     if getDeltaDaysFromObjs( oOlder ) - 1 > 0.0001:
         #
@@ -500,7 +500,7 @@ if __name__ == "__main__":
     #
     if abs( 1.0423726851851851 - fNowLessOlder ) == fDelta:
         #
-        if bDebugPrint:
+        if _bDebugPrint:
             print3( 'daylight savings change? getDeltaDaysFromISOs()' )
         #
     elif fNowLessOlder != 1.0423726851851851:
@@ -514,11 +514,11 @@ if __name__ == "__main__":
     fDelta = 8.5 - 8.458333333333334
     
     fEightPlusDaysAgo = getDeltaDaysFromSecs(
-                                iNow - ( 8.5 * iSecsPerDay ), iNow )
+                                iNow - ( 8.5 * _iSecsPerDay ), iNow )
     #
     if abs( 8.5 - fEightPlusDaysAgo ) == fDelta:
         #
-        if bDebugPrint:
+        if _bDebugPrint:
             print3( 'daylight savings change? 8.5 days of seconds ago' )
         #
     elif fEightPlusDaysAgo != 8.5:
@@ -531,7 +531,7 @@ if __name__ == "__main__":
     fNowLessOlder = getDeltaDaysFromStrings( sOlder, sNow, 2 )
     #
     #print3( 1.04 - fNowLessOlder )
-    if bDebugPrint and abs( 1.04 - fNowLessOlder ) - 0.04 < .00001:
+    if _bDebugPrint and abs( 1.04 - fNowLessOlder ) - 0.04 < .00001:
         #
         print3( 'daylight savings change? getDeltaDaysFromStrings()' )
         #
@@ -550,7 +550,7 @@ if __name__ == "__main__":
         lProblems.append( 'getDeltaDaysFromStrings(iDigitsAfterDot = 0)' )
         #
     #
-    bDebugPrint = False
+    _bDebugPrint = False
     #
     if getDeltaDaysFromDates( '2008-10-18', '2008-11-02' ) != 15:
         #

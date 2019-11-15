@@ -29,10 +29,10 @@ from time   import time, mktime, strftime, localtime, tzname
 try:
     from .Clock             import getTupleGMT
     from .Convert           import getIsoDateTimeStrFromSecs, getNormalDateFromSecs
-    from ..Time             import ( iSecsPerDay,
-                                     sFormatISOdateTime,
-                                     sFormatISOdateTimeNoColon,
-                                     sFormatISOdateTimeNoSpace ) # in __init__.py
+    from ..Time             import ( _iSecsPerDay,
+                                     _sFormatISOdateTime,
+                                     _sFormatISOdateTimeNoColon,
+                                     _sFormatISOdateTimeNoSpace ) # in __init__.py
     from ..Iter.AllVers     import tMap
     from ..Numb.Output      import getSayLessThanOne
     from ..String.Eat       import eatCharsOffEnd
@@ -40,21 +40,21 @@ try:
 except ( ValueError, ImportError ):
     from Time.Clock         import getTupleGMT
     from Time.Convert       import getIsoDateTimeStrFromSecs, getNormalDateFromSecs
-    from Time               import ( iSecsPerDay,
-                                     sFormatISOdateTime,
-                                     sFormatISOdateTimeNoColon,
-                                     sFormatISOdateTimeNoSpace ) # in __init__.py
+    from Time               import ( _iSecsPerDay,
+                                     _sFormatISOdateTime,
+                                     _sFormatISOdateTimeNoColon,
+                                     _sFormatISOdateTimeNoSpace ) # in __init__.py
     from Iter.AllVers       import tMap
     from Numb.Output        import getSayLessThanOne
     from String.Eat         import eatCharsOffEnd
     from String.Output      import ReadableNo, Plural
 
 
-bDebugPrint         = False
-bTurnOnDebugPrint   = False
+_bDebugPrint        = False
+_bTurnOnDebugPrint  = False
 
 
-def sayGMT( tNowGMT = None, sFormat = sFormatISOdateTime, sBetween = ' ' ):
+def sayGMT( tNowGMT = None, sFormat = _sFormatISOdateTime, sBetween = ' ' ):
     #
     #
     if tNowGMT is None:
@@ -92,7 +92,7 @@ def sayLocalTime( tNowGMT = None, sFormat = '%a, %d %b %Y, %H:%M:%S' ):
 
 def sayIsoDateTimeLocal( tNowGMT = None ):
     #
-    return sayLocalTime( sFormat = sFormatISOdateTime, tNowGMT = tNowGMT )
+    return sayLocalTime( sFormat = _sFormatISOdateTime, tNowGMT = tNowGMT )
 
 
 
@@ -114,7 +114,7 @@ def sayLocalDateNoTime( tNowGMT = None ):
 
 
 
-def getNowIsoDateTimeStr( bWantLocal = True, sFormat = sFormatISOdateTime ):
+def getNowIsoDateTimeStr( bWantLocal = True, sFormat = _sFormatISOdateTime ):
     #
     #
     return getIsoDateTimeStrFromSecs(
@@ -134,14 +134,14 @@ def getNowIsoDateOnly( bWantLocal = True ):
 
 
 
-def getNowIsoDateTimeFileNameSafe( bWantLocal = True, sFormat = sFormatISOdateTimeNoColon ):
+def getNowIsoDateTimeFileNameSafe( bWantLocal = True, sFormat = _sFormatISOdateTimeNoColon ):
     #
     return getNowIsoDateTimeStr( bWantLocal, sFormat = sFormat )
 
 
 
 
-def getNowIsoDateTimeNoSpaces( bWantLocal = True, sFormat = sFormatISOdateTimeNoSpace ):
+def getNowIsoDateTimeNoSpaces( bWantLocal = True, sFormat = _sFormatISOdateTimeNoSpace ):
     #
     return getNowIsoDateTimeStr( bWantLocal, sFormat = sFormat )
 
@@ -239,7 +239,7 @@ def getSayDurationAsDaysHrsMinsSecs( nSince = 0, nNow = None ):
     #
     nDuration           = getDuration( nSince, nNow )
     #
-    tConstants          = ( iSecsPerDay, 3600, 60, 1 )
+    tConstants          = ( _iSecsPerDay, 3600, 60, 1 )
     #
     lDurationParts      = []
     #
@@ -367,7 +367,7 @@ def getTextDowOffIntDow( iDOW ):
     return nl_langinfo( _tDaysOfWeek[ iDOW ] )
 
 
-def getIsoDateTimeFromDateTime( oDateTime, sFormat = sFormatISOdateTime ):
+def getIsoDateTimeFromDateTime( oDateTime, sFormat = _sFormatISOdateTime ):
     #
     '''get a date time string off a python date time object'''
     #
@@ -404,7 +404,7 @@ if __name__ == "__main__":
     #
     if args and args[0] == 'debug':
         #
-        bTurnOnDebugPrint = True
+        _bTurnOnDebugPrint = True
         #
     #
     if sayGMT( tNineZeros ) != '2001-09-09 01:46:40':
@@ -470,11 +470,11 @@ if __name__ == "__main__":
     #
     fYesterday2Tomorrow = getDeltaDaysFromISOs( sYesterday, sTomorrow )
     #
-    bDebugPrint = bTurnOnDebugPrint
+    _bDebugPrint = _bTurnOnDebugPrint
     #
     if abs( 2.0 - fYesterday2Tomorrow ) == 2.0 - 1.9583333333333333:
         #
-        if bDebugPrint:
+        if _bDebugPrint:
             print3( 'daylight savings change? bWantLocal = True' )
         #
     elif fYesterday2Tomorrow != 2.0:
@@ -482,7 +482,7 @@ if __name__ == "__main__":
         lProblems.append( 'getIsoDateTimeNoSpacesFromSecsFromNow()' )
         #
     #
-    bDebugPrint = False
+    _bDebugPrint = False
     #
     tHistory = [ iNow - 10, iNow - 100, iNow - 1000, iNow - 10000, iNow - 100000 ]
     #
