@@ -1808,5 +1808,19 @@ if __name__ == "__main__":
         lProblems.append( 'getRegExpress(%s)' % sLook4 )
         #
     #
+    sLook4 = 'H.S. Martin'
+    #
+    sRegExpress = getRegExpress( sLook4, iWordBoundChrs  = 3 )
+    #
+    sWant = 'H[. ]*S[. ]* *Martin'
+    #
+    if sRegExpress != sWant:
+        #
+        print3( 'got: ', sRegExpress )
+        print3( 'want:', sWant )
+        #
+        lProblems.append( 'getRegExpress(%s)' % sLook4 )
+        #
+    #
     #
     sayTestResult( lProblems )
