@@ -316,7 +316,7 @@ def getSayDurationAsDaysHrsMinsSecsFromObjs( oSince, oNow = None ):
     #
     nNow = None
     #
-    if oNow is not None:
+    if oNow:
         #
         nNow = mktime( oNow.timetuple() )
         #
