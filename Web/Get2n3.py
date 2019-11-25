@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2017 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
 # self test needs internet connection and will access python.org
 
@@ -238,7 +238,7 @@ class getPage( object ):
 
     def _saveCookie( self ):
         #
-        if self.bUseCookie and self.oCookieJar is not None:
+        if self.bUseCookie and self.oCookieJar:
             #
             self.oCookieJar.save( self.sCookieFileSpec )
 
