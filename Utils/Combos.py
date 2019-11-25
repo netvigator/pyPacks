@@ -107,7 +107,7 @@ def Both_( f, g ): return All_( f, g )
 # and_ = lambda f, g: lambda x, f=f, g=g: f(x) and g(x)
 
 
-def _any(iterable): return get1stTrue( iterable ) is not None
+def _any(iterable): return get1stTrue( iterable )
 
 try:
     any( ( 1, 1, 1 ) ) # new in 2.5
@@ -139,7 +139,7 @@ __either = lambda f, g: __some( ( f, g ) )
 
 def _Disjoin( lFuncs, lArgs = [] ):
     #
-    return get1stTrue( _applyEach( lFuncs, lArgs ) ) is not None
+    return get1stTrue( _applyEach( lFuncs, lArgs ) )
 
 #Any_ = lambda *fns: lambda arg, fns=fns: _Disjoin( fns, (arg,) )
 
@@ -394,7 +394,7 @@ if __name__ == "__main__":
     isTest, Msg = getComboMeetsAll(
                     dTests, ( 'spam', 'toast', 'eggs' ) )
     #
-    if isTest is not None:
+    if isTest:
         #
         lProblems.append( 'getComboMeetsAll() no valid tests in list' )
         #
@@ -402,7 +402,7 @@ if __name__ == "__main__":
     isTest, Msg = getComboMeetsAll(
                     dTests, ( 'spam', 'SmallerThan9', 'Odd' ) )
     #
-    if isTest is not None:
+    if isTest:
         #
         lProblems.append( 'getComboMeetsAll() one valid test in list' )
         #
