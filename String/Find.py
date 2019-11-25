@@ -467,9 +467,9 @@ def getRegExpress(
     #
     sRegEx = ''
     #
-    if fDoThisFirst is not None:
+    if fDoThisFirst:
         #
-        sLook4       = fDoThisFirst( sLook4 )
+        sLook4 = fDoThisFirst( sLook4 )
         #
     #
     #
