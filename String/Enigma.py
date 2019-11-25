@@ -123,7 +123,7 @@ if not isFileThere( sPassPhraseFileSpec ) and sMsg is None:
            % ( sPassPhraseFileName, sThisLocation ) )
     #
 
-if sMsg is not None:
+if sMsg:
     #
     print3('')
     print3( sMsg )
