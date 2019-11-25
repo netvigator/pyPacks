@@ -325,7 +325,7 @@ def _dumpThisOne( sSubject, oSubjDone, d, getMsgInfo ):
     #
     bDumpThis = True
     #
-    if oSubjDone is not None:
+    if oSubjDone:
         #
         if '%(' in sSubject:
             #
@@ -385,7 +385,7 @@ def dumpEmailBodies2Temp( l, getMsgInfo,
             #
             dEmails[ sThisSubject ] = sShowEmail
             #
-            if oSubjDone is not None: oSubjDone.add( sThisSubject )
+            if oSubjDone: oSubjDone.add( sThisSubject )
             #
         #
         lSubjects = getKeyList( dEmails )
@@ -414,7 +414,7 @@ def dumpEmailBodies2Temp( l, getMsgInfo,
     #
     QuietDump( sDivide.join( lEmails ), 'temp.html' )
     #
-    if oSubjDone is not None:
+    if oSubjDone:
         #
         lCounts = getListSwapValueKey( _getItemIter( oSubjDone ) )
         #
