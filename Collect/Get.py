@@ -598,7 +598,7 @@ if __name__ == "__main__":
         #
     #
     if      getElement( t, 1 ) != 1 or \
-            getElement( t, 10 ) is not None:
+            getElement( t, 10 ):
         #
         lProblems.append( 'getElement()' )
         #
