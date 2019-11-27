@@ -627,6 +627,9 @@ def _getPairsNeedSpaceMaybe( t ): return t in setPairsNeedSpaceMaybe
 
 def putSpacesInMixed( s ):
     #
+    '''
+    putSpacesInMixed( '4045CumerladAve#88' ) returns '4045 Cumerlad Ave #88'
+    '''
     #
     lWhat = iMap( getWhatIs, s )
     #
