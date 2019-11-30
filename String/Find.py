@@ -449,13 +449,16 @@ def getRegExpress(
         #print3( 'lLengths:', lLengths )
         #print3( 'bAddDash:', bAddDash )
     #
-    if (        bAddDash and
-                hasAnyAlpha(  sLook4 ) and
-                hasAnyDigits( sLook4 ) ):
+    bHasAlphaNum = hasAnyAlpha(  sLook4 ) and hasAnyDigits( sLook4 )
+    #
+    if bAddDash and ( bHasAlphaNum or ' ' in sLook4 ):
         #
         lParts = _getSplit( sLook4, oSeparator )
         #
-        lParts = [ _gotAlphaNumPutSeparator( s ) for s in lParts ]
+        if bHasAlphaNum:
+            lParts = [ _gotAlphaNumPutSeparator( s ) for s in lParts ]
+        else:
+            lParts = [ s.split() for s in lParts ]
         #
         lParts = [ '-'.join( lChars ) for lChars in lParts ]
         #
@@ -1821,6 +1824,34 @@ if __name__ == "__main__":
         #
         lProblems.append( 'getRegExpress(%s)' % sLook4 )
         #
+    #
+    sLook4 = 'Groove Tubes'
+    #
+    sRegExpress = getRegExpress( sLook4, bAddDash = True )
+    #
+    sWant = 'Groove[-/ ]*Tubes'
+    #
+    if sRegExpress != sWant:
+        #
+        print3( 'got: ', sRegExpress )
+        print3( 'want:', sWant )
+        #
+        lProblems.append( 'getRegExpress(%s)' % sLook4 )
+        #
+    #
+    #
+    sLook4 = 'Groove-Tubes'
+    #
+    sRegExpress = getRegExpress( sLook4, bAddDash = True )
+    #
+    if sRegExpress != sWant:
+        #
+        print3( 'got: ', sRegExpress )
+        print3( 'want:', sWant )
+        #
+        lProblems.append( 'getRegExpress(%s)' % sLook4 )
+        #
+    #
     #
     #
     sayTestResult( lProblems )
