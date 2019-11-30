@@ -271,11 +271,11 @@ def getTempFile( suffix = None, dir = None ):
     #
     kwargs = {}
     #
-    if suffix is not None:
+    if suffix:
         #
         kwargs[ 'suffix' ] = suffix
         #
-    if dir is not None:
+    if dir:
         #
         kwargs[ 'dir'    ] = dir
         #
@@ -496,7 +496,7 @@ if __name__ == "__main__":
     #
     DeleteIfExists( sTemp )
     #
-    if getFileSpecHereOrThere( sNameNoPath ) is not None:
+    if getFileSpecHereOrThere( sNameNoPath ):
         #
         print3( sNameNoPath )
         lProblems.append( 'getFileSpecHereOrThere() file not there' )

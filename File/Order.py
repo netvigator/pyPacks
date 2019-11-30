@@ -80,7 +80,7 @@ def OrderFileNames( sDir = '', iWantDigits = None, sSeparator = '_' ):
         iWantDigits = int( iWantDigits )
         #
     #
-    if iWantDigits is not None and type( iWantDigits ) != int:
+    if iWantDigits and type( iWantDigits ) != int:
         #
         print3( 'must pass integer as iWantDigits' )
         print3( 'instead got', iWantDigits )

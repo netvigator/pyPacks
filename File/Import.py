@@ -186,7 +186,7 @@ def getDictIterOffCSV( *sFileSpec, **kwargs ):
         #
         if sLineOrig:
             #
-            if fLineTreatment is not None:
+            if fLineTreatment:
                 #
                 sLineOrig   = fLineTreatment( sLineOrig )
                 #

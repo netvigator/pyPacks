@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2017 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
 # self test actually tries to send email, so need working internet
 
@@ -184,7 +184,7 @@ def _getMIMEmessage(
     oMsg[ 'To' ]            = getAddresseeStrOffSeq( uTo )
     oMsg[ 'From' ]          = sFrom
     #
-    if uCC is not None:
+    if uCC:
         #
         oMsg[ 'CC' ]        = getAddresseeStrOffSeq( uCC )
         #
@@ -319,7 +319,7 @@ def _putSentLog( uTo, sSendFile ):
     from Collect.Test   import isListOrTuple
     from File.Write     import openAppendClose
     #
-    if sSendFile is not None:
+    if sSendFile:
         #
         if not isListOrTuple( uTo ): uTo = [ uTo ]
         #
@@ -382,12 +382,12 @@ def SendOneMessage( sServerOut, sFrom, uTo, sSubject, sBody,
     from Utils.TimeLimit    import TimeLimitWrap, TimeOverExcept
     from Web.Address        import getToplessHost
     #
-    if '%(' in sSubject and oRecipient is not None:
+    if '%(' in sSubject and oRecipient:
         #
         sSubject    = sSubject % oRecipient
         #
     #
-    if '%(' in sFrom and oRecipient is not None:
+    if '%(' in sFrom and oRecipient:
         #
         sFrom       = sFrom % oRecipient
         #
@@ -482,7 +482,7 @@ def SendOneMessage( sServerOut, sFrom, uTo, sSubject, sBody,
             #
             iSent   = 1
             #
-            if sSendFile is not None:
+            if sSendFile:
                 #
                 _putSentLog( lRecipients, sSendFile )
                 #

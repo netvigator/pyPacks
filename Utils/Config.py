@@ -525,7 +525,7 @@ def getConfMainIsDefaultHostnameVaries(
         raise MissingHostnameSectionHeaderError( sMsg )
         #
     #
-    if tWantSections is not None:
+    if tWantSections:
         #
         for sSection in tWantSections:
             #

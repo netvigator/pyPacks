@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2010-2016 Rick Graves
+# Copyright 2010-2019 Rick Graves
 #
 # example applications in sMail.GetInfo
 #
@@ -72,7 +72,7 @@ class ScraperClass( object ):
         #
         from time import sleep
         #
-        if self.Sequencer is not None:
+        if self.Sequencer:
             #
             self.iSequence = self.Sequencer.getNextInSeq()
         #

@@ -244,7 +244,7 @@ def main( sDirFrom = None, sDirTo = None, lWantExtensions = '' ):
     #
     sDirFrom, sDirTo, lWantExtensions = getArgs( sDirFrom, sDirTo, lWantExtensions )
     #
-    if sDirFrom is not None and sDirTo is not None:
+    if sDirFrom and sDirTo:
         #
         print3( 'Copying ...' )
         #

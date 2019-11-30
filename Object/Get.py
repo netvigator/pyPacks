@@ -62,8 +62,21 @@ class QuickObject( object ):
     pass
 
 
+class PrintValuesObject( object ):
 
-class ValueContainer( object ):
+    def __str__( self ):
+        #
+        lValues = [ '  %s: %s' % ( k, v )
+                    for k, v in self.__dict__.items()
+                    if not k.startswith( '__' ) ]
+        #
+        lValues.sort()
+        #
+        return '\n'.join( lValues )
+    #
+
+
+class ValueContainer( PrintValuesObject ):
     #
     """No need for self.foo = foo, self.bar = bar, etc.
     From "Collecting a Bunch of Named Items" in Python Cookbook."""
@@ -72,6 +85,7 @@ class ValueContainer( object ):
         #
         self.__dict__.update( kwargs )
 
+    #
 
 class BufferClass( object ):
     """
@@ -512,6 +526,14 @@ if __name__ == "__main__":
         #
         lProblems.append( 'getAttributesFromDict & ValueContainer not same' )
         #
+    #
+    sExpect = '  a: 1\n  b: 2\n  c: 3'
+    #
+    if str( oValueCont ) != sExpect:
+        #
+        lProblems.append( 'str( oValueContainer )' )
+        #
+    #
     #
     #
     oTest = RandomFeederClass( letters )

@@ -110,8 +110,8 @@ def getBegAndEndIfInOrder( seq1, seq2 ):
     #
     returnSeq = seq1[ 0 : 0 ]
     #
-    if iBegMatch is not None: returnSeq  = seq1[ : iBegMatch   ]
-    if iEndMatch is not None: returnSeq += seq1[   iEndMatch : ]
+    if iBegMatch: returnSeq  = seq1[ : iBegMatch   ]
+    if iEndMatch: returnSeq += seq1[   iEndMatch : ]
     #
     return returnSeq
 
@@ -168,7 +168,7 @@ if __name__ == "__main__":
     #    
     tSomeDigits = tRange( 8 )[ 1 : ]
     #
-    if get1stFalse( tSomeDigits ) is not None:
+    if get1stFalse( tSomeDigits ):
         #
         lProblems.append( 'get1stFalse() no False among non-zero digits' )
         #

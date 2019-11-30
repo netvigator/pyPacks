@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2016 Rick Graves
+# Copyright 2004-2019 Rick Graves
 #
 
 '''
@@ -198,7 +198,7 @@ def main( sChopDir ):
     #
     sChopDir = getArgs( sChopDir )
     #
-    if sChopDir is not None:
+    if sChopDir:
         #
         print3( 'Chopping file names...' )
         #
