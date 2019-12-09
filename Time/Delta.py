@@ -317,7 +317,7 @@ def getDeltaDaysFromDates( sEarlier, sLater = None ):
     """
     #
     #
-    sTime       = '  12:00:00'
+    sTime       = ' 12:00:00'
     #
     if sLater is None: sLater = sayIsoDateTimeLocal()[:10]
     #
