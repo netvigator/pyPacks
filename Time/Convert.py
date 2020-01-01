@@ -344,6 +344,26 @@ def getIsoDateTimeFromOtherStr( sDate, sFormat = _sFormatUSAdateTime ):
 
 
 
+def getDateTimeObjFromIsoDateStr(
+            sDate,
+            sFormat     = _sFormatISOdateTime,
+            bAdjust2UTC = False,
+            oTimeZone   = None ):
+    #
+    if len( sDate ) == 10:
+        #
+        sDateTime = '%s 00:00:00' % sDate
+        #
+    else:
+        #
+        sDateTime = sDate
+        #
+    #
+    return getDateTimeObjFromString(
+            sDateTime, sFormat, bAdjust2UTC, oTimeZone )
+
+
+
 def getIsoDateFromOtherStr( sDate, sFormat = _sFormatDateAmShort ):
     #
     sISO = getIsoDateTimeFromOtherStr( sDate, sFormat )
@@ -462,6 +482,12 @@ if __name__ == "__main__":
     if repr( getDateTimeObjFromString( sNow ) ) != 'datetime.datetime' + repr( tNow[ : 6 ] ):
         #
         lProblems.append( 'getDateTimeObjFromString()' )
+        #
+    #
+    if (    repr( getDateTimeObjFromIsoDateStr( sNow[:10] ) ) !=
+            'datetime.datetime' + repr( tNow[ : 6 ] )[:13] + '0, 0)' ):
+        #
+        lProblems.append( 'getDateTimeObjFromIsoDateStr()' )
         #
     #
     if getSecsFromDuration( '01:01:01' ) != 3661:
