@@ -87,6 +87,8 @@ class ValueContainer( PrintValuesObject ):
 
     #
 
+
+
 class BufferClass( object ):
     """
     email.Generator.Generator() requires an output file as argument,
@@ -532,6 +534,15 @@ if __name__ == "__main__":
     if str( oValueCont ) != sExpect:
         #
         lProblems.append( 'str( oValueContainer )' )
+        #
+    #
+    sExpect = '\n'.join(  [ '  %s: %s' % t 
+                            for t 
+                            in ( ('a', 1), ('b', 2), ('c', 3) ) ] )
+    #
+    if str( oValueCont ) != sExpect:
+        #
+        lProblems.append( 'str( oValueCont ) not coming out right' )
         #
     #
     #
