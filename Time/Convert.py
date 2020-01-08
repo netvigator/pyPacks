@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2019 Rick Graves
+# Copyright 2004-2020 Rick Graves
 #
 
 from datetime   import datetime, timedelta
