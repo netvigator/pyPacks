@@ -60,6 +60,8 @@ def print3_n_2( *args, **kwargs ):
     #
     if kwargs: raise TypeError( 'extra keywords: %s' % kwargs )
     #
+    if isinstance( beg, int ): beg = ' ' * beg
+    #
     # here, must use built in map -- cannot import iMap
     #
     file.write( '%s%s%s' % ( beg, sep.join( map( str, args ) ), end ) )
@@ -230,6 +232,8 @@ except ImportError:
 
 if __name__ == "__main__":
     #
+    from io             import StringIO
+    #
     from Utils.Result   import sayTestResult
     #
     lProblems = []
@@ -310,5 +314,20 @@ if __name__ == "__main__":
     #
     getEncoded( uText )
     #
+    result = StringIO()
+    print3_n_2( 'abc', file = result )
+    #
+    if result.getvalue() != 'abc\n':
+        #
+        lProblems.append( 'print3_n_2() StringIO instance as file param' )
+        #
+    #
+    result = StringIO()
+    print3_n_2( 'abc', beg = 3, file = result )
+    #
+    if result.getvalue() != '   abc\n':
+        #
+        lProblems.append( 'print3_n_2() StringIO instance as file param' )
+        #
     #
     sayTestResult( lProblems )
