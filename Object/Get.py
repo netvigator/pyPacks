@@ -29,6 +29,7 @@
 # note getObjFromFileContent() and PutReprInTemp() are in File.Get & File.Write
 
 import inspect
+from pprint                 import pprint, pformat
 from random                 import shuffle
 from string                 import digits
 from string                 import ascii_letters as letters
@@ -86,6 +87,10 @@ class ValueContainerCanPrint( ValueContainer ):
         #
         return '\n'.join( lValues )
     #
+
+    def __repr__(self):
+        #
+        return '\n%s' % pformat( vars(self), indent=4, width=1 )
 
 
 class BufferClass( object ):
