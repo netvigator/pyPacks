@@ -26,11 +26,12 @@
 import pprint
 
 try:
-    from ..Object.Get   import ValueContainerCanPrint as ValueContainer
+    from ..Object.Get       import ValueContainerCanPrint as ValueContainer
+    from ..Utils.Both2n3    import PYTHON3
 except ( ValueError, ImportError ):
-    from   Object.Get   import ValueContainerCanPrint as ValueContainer
+    from   Object.Get       import ValueContainerCanPrint as ValueContainer
+    from   Utils.Both2n3    import PYTHON3
 
-from Utils.Both2n3      import PYTHON3
 
 if PYTHON3:
     
