@@ -52,6 +52,8 @@ if PYTHON3:
         _dispatch[ValueContainer.__repr__] = _pprint_ValueContainer
 
 
+CustomPPrint = pprint
+
 if __name__ == "__main__":
     #
     from Utils.Result   import sayTestResult
@@ -63,7 +65,7 @@ if __name__ == "__main__":
     #
     oComplex = dict( xyz = [oTest1,oTest1], abc = [] )
     #
-    sOut = pprint.pformat( oComplex )
+    sOut = CustomPPrint.pformat( oComplex )
     sExpect = '''{'abc': [],
  'xyz': [
 {   'a': 1,
