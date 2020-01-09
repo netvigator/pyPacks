@@ -22,44 +22,34 @@
 #
 # Copyright 2020 Rick Graves
 #
-from io                     import StringIO
 
-from pyPacks.Utils.Both2n3  import print3_n_2
+import pprint
 
+try:
+    from ..Object.Get   import ValueContainerCanPrint as ValueContainer
+except ( ValueError, ImportError ):
+    from   Object.Get   import ValueContainerCanPrint as ValueContainer
 
+from Utils.Both2n3      import PYTHON3
 
-def _getLinesForPrinting( uPrintThis, iLeft = 0, sBegEnd = '', lLines = [] ):
-    #
-    if isinstance( uPrintThis, dict ):
-        #
-        for k, v in uPrintThis.items():
-            #
-            oString = StringIO()
-            #
-            print3_n_2( '%s: %s' % ( k, v ),
-                        beg = iLeft + 2,
-                        file = oString )
-            #
-        #
-        sLines = str( oString )
-        #
-        lLines = sLines.split( '\n' )
-        #
-        lLines[  0 ] = '{ ' + lLines[  0 ][  2 : ]
-        lLines[ -1 ] =        lLines[ -1 ][ : -1 ] + ' }'
-        #
-        return lLines
+if PYTHON3:
+    
+    # python 2 pprint does not have _dispatch
+    # this implementation only works in python 3
 
+    class ValueContainerPrettyPrinter( pprint.PrettyPrinter ):
 
+        _dispatch = pprint.PrettyPrinter._dispatch.copy()
 
+        def _pprint_ValueContainer(self, object, stream, indent, allowance, context, level):
+            stream.write('ValueContainer(')
+            self._format(object.foo, stream, indent, allowance + 1,
+                        context, level)
+            self._format(object.bar, stream, indent, allowance + 1,
+                        context, level)
+            stream.write(')')
 
-def ObjectPrint( uPrintThis ):
-    #
-    lLines = _getLinesForPrinting(
-                    uPrintThis, iLeft = 0, sBegEnd = '', lLines = [] )
-    #
-    #
-    print( '\n'.join( lLines )
+        _dispatch[ValueContainer.__repr__] = _pprint_ValueContainer
 
 
 if __name__ == "__main__":
@@ -68,6 +58,25 @@ if __name__ == "__main__":
     #
     lProblems = []
     #
-    dTest = dict( a = 1, b = 2, c = 3 )
+    oTest1 = ValueContainer( a = 1, b = 2, c = 3 )
+    oTest2 = ValueContainer( a = 7, b = 8, c = 9 )
+    #
+    oComplex = dict( xyz = [oTest1,oTest1], abc = [] )
+    #
+    sOut = pprint.pformat( oComplex )
+    sExpect = '''{'abc': [],
+ 'xyz': [
+{   'a': 1,
+    'b': 2,
+    'c': 3},
+         
+{   'a': 1,
+    'b': 2,
+    'c': 3}]}'''
+    #
+    if PYTHON3 and sOut != sExpect:
+        #
+        lProblems.append( 'pprint( ValueContainer )' )
+        #
     #
     sayTestResult( lProblems )
