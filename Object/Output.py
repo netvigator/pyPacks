@@ -27,10 +27,10 @@ import pprint
 
 try:
     from ..Object.Get       import ValueContainerCanPrint as ValueContainer
-    from ..Utils.Both2n3    import PYTHON3
+    from ..Utils.Both2n3    import PYTHON3, print3
 except ( ValueError, ImportError ):
     from   Object.Get       import ValueContainerCanPrint as ValueContainer
-    from   Utils.Both2n3    import PYTHON3
+    from   Utils.Both2n3    import PYTHON3, print3
 
 
 if PYTHON3:
@@ -44,16 +44,21 @@ if PYTHON3:
 
         def _pprint_ValueContainer(self, object, stream, indent, allowance, context, level):
             stream.write('ValueContainer(')
-            self._format(object.foo, stream, indent, allowance + 1,
-                        context, level)
-            self._format(object.bar, stream, indent, allowance + 1,
-                        context, level)
-            stream.write(')')
+            for s in vars(object):
+                stream.write( '\n%s: ' % s )
+                self._format( object.__dict__[s],
+                              stream, indent, allowance + 1, context, level )
+            stream.write( ')' )
 
         _dispatch[ValueContainer.__repr__] = _pprint_ValueContainer
 
 
-CustomPPrint = pprint
+    CustomPPrint = ValueContainerPrettyPrinter()
+
+else:
+
+    CustomPPrint = pprint.PrettyPrinter()
+
 
 if __name__ == "__main__":
     #
@@ -77,8 +82,27 @@ if __name__ == "__main__":
     'b': 2,
     'c': 3}]}'''
     #
-    if PYTHON3 and sOut != sExpect:
+    if sOut != sExpect:
         #
+        lProblems.append( 'pprint( complex object with ValueContainer inside)' )
+        #
+    #
+    oTest = ValueContainer( a = 'one two three four five six seven eight',
+                            b = 'alpha beta gamma delta epsilon zeta eta' )
+    #
+    if PYTHON3:
+        sExpect = '''ValueContainer(
+a: 'one two three four five six seven eight'
+b: 'alpha beta gamma delta epsilon zeta eta')'''
+    else:
+        sExpect = '''\n{   'a': 'one two three four five six seven eight',
+    'b': 'alpha beta gamma delta epsilon zeta eta'}'''
+    #
+    sOut = CustomPPrint.pformat( oTest )
+    #
+    if sOut != sExpect:
+        #
+        print(sOut)
         lProblems.append( 'pprint( ValueContainer )' )
         #
     #
