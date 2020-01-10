@@ -77,18 +77,18 @@ class ValueContainer( object ):
 
 class ValueContainerCanPrint( ValueContainer ):
     #
-    def __str__( self ):
+    def __str__( self ): # print() calls this
         #
-        lValues = [ '  %s: %s' % ( k, v )
+        lItems = [  ( k, v )
                     for k, v in self.__dict__.items()
                     if not k.startswith( '__' ) ]
         #
-        lValues.sort()
+        lItems.sort()
         #
-        return '\n'.join( lValues )
+        return '\n'.join( '  %s: %s' % t for t in lItems )
     #
 
-    def __repr__(self):
+    def __repr__(self): # pprint() calls this
         #
         return '\n%s' % pformat( vars(self), indent=4, width=1 )
 
@@ -552,7 +552,17 @@ if __name__ == "__main__":
         lProblems.append( 'str( oValueCont ) not coming out right' )
         #
     #
+    sOut = oValueCont.__repr__()
     #
+    sExpect = '''
+{   'a': 1,
+    'b': 2,
+    'c': 3}'''
+    #
+    if sOut != sExpect:
+        #
+        lProblems.append( 'oValueCont.__repr__() not coming out right' )
+        #
     #
     oTest = RandomFeederClass( letters )
     #
