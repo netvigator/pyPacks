@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/gpl.html
 #
-# Copyright 2004-2019 Rick Graves
+# Copyright 2004-2020 Rick Graves
 #
 
 from string                 import digits, punctuation
@@ -149,6 +149,11 @@ def isPunctOrSpace( sChar ):
 def hasPunctOrSpace( sString ):
     #
     return get1stThatMeets( sString, isPunctOrSpace )
+    
+
+def hasPunctuation( sString ):
+    #
+    return get1stThatMeets( sString, isPunctuation )
     
 
 def hasNoLower(   sText ): return sText and sText == sText.upper()
@@ -1113,6 +1118,23 @@ if __name__ == "__main__":
     if hasPunctOrSpace( digits ):
         #
         lProblems.append( 'hasPunctOrSpace( digits )' )
+        #
+    #
+    if hasPunctuation( lowercase ):
+        #
+        lProblems.append( 'hasPunctuation( lowercase )' )
+        #
+    #
+    if hasPunctuation( digits ):
+        #
+        lProblems.append( 'hasPunctuation( digits )' )
+        #
+    #
+    s = '15" SILVER'
+    #
+    if not hasPunctuation( s ):
+        #
+        lProblems.append( 'hasPunctuation( "15" SILVER" )' )
         #
     #
     
