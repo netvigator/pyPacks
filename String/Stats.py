@@ -245,6 +245,8 @@ def getSubStrLocationsBegAndEnd( dWordLocations, tLocations ):
             #
         #
     #
+    lTowardFront = [ s for s in lTowardFront if s not in lOnEnd ]
+    #
     return tuple( lTowardFront ), tuple( lOnEnd )
 
 
@@ -404,7 +406,7 @@ if __name__ == "__main__":
     #
     #
     if ( getSubStrLocationsBegAndEnd( dWordLocations, tLocations ) !=
-         ((2,), (12, 11, 10, 9, 8, 7, 6)) ):
+         ( (2,), (12, 11, 10, 9, 8, 7, 6) ) ):
         #
         lProblems.append(
                 'getSubStrLocationsBegAndEnd( "E88CC CCa 6DJ8 6922 etc." )' )
