@@ -390,5 +390,25 @@ if __name__ == "__main__":
                 'getSubStrLocationsBegAndEnd( "6SN7GTB, L65, GRF" )' )
         #
     #
-    
+    sBig = ( "Valvo Heerlen E88CC NOS Grey Shield "
+             "CCa 6DJ8 6922 CV2492 CV2493 CV5358 CV5472" )
+    #
+    dWordLocations = getLocationsDict( sBig )
+    #
+    def getLocationForSub( s ):
+        return getSubStringLocation( s, dWordLocations )
+    #
+    tTubeTypes = tuple( "E88CC CCa 6DJ8 6922 CV2492 CV2493 CV5358 CV5472".split() )
+    #
+    tLocations = tuple( map( getLocationForSub, ( tTubeTypes ) ) )
+    #
+    #
+    if ( getSubStrLocationsBegAndEnd( dWordLocations, tLocations ) !=
+         ((2,), (12, 11, 10, 9, 8, 7, 6)) ):
+        #
+        lProblems.append(
+                'getSubStrLocationsBegAndEnd( "E88CC CCa 6DJ8 6922 etc." )' )
+        #
+    #
+    #
     sayTestResult( lProblems )
