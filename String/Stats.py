@@ -393,20 +393,21 @@ if __name__ == "__main__":
         #
     #
     sBig = ( "Valvo Heerlen E88CC NOS Grey Shield "
-             "CCa 6DJ8 6922 CV2492 CV2493 CV5358 CV5472" )
+             "CCa 6DJ8 6922 CV2492 CV2493 CV5358 CV5472 6N23P 6N11 ECC88 PCC88 7DJ8" )
     #
     dWordLocations = getLocationsDict( sBig )
     #
     def getLocationForSub( s ):
         return getSubStringLocation( s, dWordLocations )
     #
-    tTubeTypes = tuple( "E88CC CCa 6DJ8 6922 CV2492 CV2493 CV5358 CV5472".split() )
+    tTubeTypes = tuple( "E88CC CCa 6DJ8 6922 CV2492 CV2493 CV5358 CV5472 "
+                        "6N23P 6N11 ECC88 PCC88 7DJ8".split() )
     #
     tLocations = tuple( map( getLocationForSub, ( tTubeTypes ) ) )
     #
     #
     if ( getSubStrLocationsBegAndEnd( dWordLocations, tLocations ) !=
-         ( (2,), (12, 11, 10, 9, 8, 7, 6) ) ):
+         ( (2,), (17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6) ) ):
         #
         lProblems.append(
                 'getSubStrLocationsBegAndEnd( "E88CC CCa 6DJ8 6922 etc." )' )
