@@ -123,6 +123,8 @@ def _isShorterSubstringOK( sLookForThis, dWordLocations, iShorterByOK ):
 
 
 
+
+
 def getSubStringLocation(
             sSubStr, dWordLocations, iShorterByOK = 0, bRecordSteps = False):
     #
@@ -198,6 +200,54 @@ def getSubStringLocation(
         #
     #
     return iInTitleLocation
+
+
+def getSubStrLocationsBegAndEnd( dWordLocations, tLocations ):
+    #
+    lLocations = list( dWordLocations.values() )
+    #
+    # if a word is repeated, the prior position number will be missing
+    #
+    iMax = max( lLocations )
+    #
+    dLocations = dict.fromkeys( range( iMax + 1 ) ) # values are None
+    #
+    lLocations.sort()    # make sure they are listed low to high
+    #
+    for i in tLocations:
+        #
+        dLocations[ i ] = True
+        #
+    #
+    lTowardFront = []
+    #
+    for i in range( len( lLocations ) // 2 ):
+        #
+        if dLocations[ i ]:
+            #
+            lTowardFront.append( i )
+            #
+        #
+    #
+    lLocations.reverse() # make sure they are listed high to low
+    #
+    lOnEnd = []
+    #
+    for i in lLocations:
+        #
+        if dLocations[ i ]:
+            #
+            lOnEnd.append( i )
+            #
+        else:
+            #
+            break
+            #
+        #
+    #
+    return tuple( lTowardFront ), tuple( lOnEnd )
+
+
 
 
 
@@ -313,6 +363,32 @@ if __name__ == "__main__":
     #
     #print3( dWordLocations )
     #print3( getSubStringLocation( sSub, dWordLocations, iShorterByOK = 1 ) )
-    #  
     #
+    sBig = ( "Amperex 6922 gold pin tube military edition "
+             "audio grade gold pins 6DJ8 E88CC" )
+    #
+    dWordLocations = getLocationsDict( sBig )
+    #
+    def getLocationForSub( s ):
+        return getSubStringLocation( s, dWordLocations )
+    #
+    tLocations = tuple( map( getLocationForSub, ( "6922", "6DJ8", "E88CC" ) ) )
+    #
+    if getSubStrLocationsBegAndEnd(
+            dWordLocations, tLocations ) != ((1,), (12, 11)):
+        #
+        lProblems.append(
+                'getSubStrLocationsBegAndEnd( "Amperex 6922 gold" )' )
+        #
+    #
+    tLocations = tuple( map( getLocationForSub, ( "6SN7GTB", "L65", "GRF" ) ) )
+    #
+    if getSubStrLocationsBegAndEnd(
+            dWordLocations, tLocations ) != ((), ()):
+        #
+        lProblems.append(
+                'getSubStrLocationsBegAndEnd( "6SN7GTB, L65, GRF" )' )
+        #
+    #
+    
     sayTestResult( lProblems )
