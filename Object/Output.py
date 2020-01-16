@@ -42,7 +42,8 @@ if PYTHON3:
 
         _dispatch = pprint.PrettyPrinter._dispatch.copy()
 
-        def _pprint_ValueContainer(self, object, stream, indent, allowance, context, level):
+        def _pprint_ValueContainer(
+                self, object, stream, indent, allowance, context, level ):
             stream.write('ValueContainer(')
             for s in vars(object):
                 stream.write( '\n%s: ' % s )
