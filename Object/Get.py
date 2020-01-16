@@ -73,9 +73,9 @@ class ValueContainer( object ):
         #
         self.__dict__.update( kwargs )
 
-    #
 
-class ValueContainerCanPrint( ValueContainer ):
+
+class ObjectCanPrint( object ):
     #
     def __str__( self ): # print() calls this
         #
@@ -91,6 +91,11 @@ class ValueContainerCanPrint( ValueContainer ):
     def __repr__(self): # pprint() calls this
         #
         return '\n%s' % pformat( vars(self), indent=4, width=1 )
+
+
+class ValueContainerCanPrint( ObjectCanPrint, ValueContainer ):
+
+    pass
 
 
 class BufferClass( object ):
