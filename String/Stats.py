@@ -78,24 +78,24 @@ def getLocationsDict( s ):
     #
     lWords = s.split()
     #
-    dWordLocations = {}
+    dAllWordLocations = {}
     #
     for i in range( len( lWords ) ):
         #
         sThisWord = eatPunctuationBegAndEnd( lWords[ i ] )
         #
-        dWordLocations[ sThisWord ] = i
+        dAllWordLocations[ sThisWord ] = i
         #
     #
-    return dWordLocations
+    return dAllWordLocations
 
 
 
-def _isShorterSubstringOK( sLookForThis, dWordLocations, iShorterByOK ):
+def _isShorterSubstringOK( sLookForThis, dAllWordLocations, iShorterByOK ):
     #
     iLookAtThis = iInTitleLocation = None
     #
-    for sWord in dWordLocations.keys():
+    for sWord in dAllWordLocations.keys():
         #
         if len( sWord ) < len( sLookForThis ) + 1: continue
         #
@@ -113,7 +113,7 @@ def _isShorterSubstringOK( sLookForThis, dWordLocations, iShorterByOK ):
                ( iShorterByOK and
                  len( sWord ) == len( sLookForThis ) + iShorterByOK ) ) ):
             #
-            iInTitleLocation = dWordLocations[ sWord ]
+            iInTitleLocation = dAllWordLocations[ sWord ]
             #
             break
             #
@@ -125,33 +125,23 @@ def _isShorterSubstringOK( sLookForThis, dWordLocations, iShorterByOK ):
 
 
 
-def getSubStringLocation(
-            sSubStr, dWordLocations, iShorterByOK = 0, bRecordSteps = False):
+def getSubStringLocation( sSubStr, dAllWordLocations, iShorterByOK = 0 ):
     #
     iInTitleLocation = None
     #
-    if bRecordSteps and sSubStr == '15" SILVER':
+    if sSubStr in dAllWordLocations:
         #
-        print()
-        print( 'dWordLocations.keys():')
-        pprint(dWordLocations.keys())
-        #
-    if sSubStr in dWordLocations:
-        #
-        iInTitleLocation = dWordLocations[ sSubStr ]
+        iInTitleLocation = dAllWordLocations[ sSubStr ]
         #
     elif len( sSubStr ) > 2:
         #
         iInTitleLocation = _isShorterSubstringOK(
-                sSubStr, dWordLocations, iShorterByOK )
+                sSubStr, dAllWordLocations, iShorterByOK )
         #
     #
     if iInTitleLocation is None:
         #
         tParts = tuple( map( eatPunctuationBegAndEnd, sSubStr.split() ) )
-        #
-        if bRecordSteps and sSubStr == '15" SILVER':
-            print( 'tParts:', tParts )
         #
         if len( tParts ) > 1:
             #
@@ -159,12 +149,9 @@ def getSubStringLocation(
             #
             for i, s in enumerate( tParts ):
                 #
-                if s in dWordLocations:
+                if s in dAllWordLocations:
                     #
-                    iThisPart = dWordLocations[ s ]
-                    #
-                    if bRecordSteps and sSubStr == '15" SILVER':
-                        print( 's, iThisPart:', s, iThisPart )
+                    iThisPart = dAllWordLocations[ s ]
                     #
                     if  i + 1 < len( tParts ):
                         #
@@ -176,7 +163,7 @@ def getSubStringLocation(
                     elif i + 2 >= len( tParts ) and i > 0:
                         #
                         iInTitleLocation = _isShorterSubstringOK(
-                                tParts[i], dWordLocations, iShorterByOK )
+                                tParts[i], dAllWordLocations, iShorterByOK )
 
                         #
                     else:
@@ -202,9 +189,9 @@ def getSubStringLocation(
     return iInTitleLocation
 
 
-def getSubStrLocationsBegAndEnd( dWordLocations, tLocations ):
+def getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest ):
     #
-    lLocations = list( dWordLocations.values() )
+    lLocations = list( dAllWordLocations.values() )
     #
     # if a word is repeated, the prior position number will be missing
     #
@@ -214,7 +201,7 @@ def getSubStrLocationsBegAndEnd( dWordLocations, tLocations ):
     #
     lLocations.sort()    # make sure they are listed low to high
     #
-    for i in tLocations:
+    for i in tLocationsOfInterest:
         #
         dLocations[ i ] = True
         #
@@ -282,7 +269,7 @@ if __name__ == "__main__":
     sSub = 'Le5'
     sBig = 'Jbl L65 Jubal Le5-12 Mids Pair Working Nice! See Pictures'
     #
-    dWordLocations = getLocationsDict( sBig )
+    dAllWordLocations = getLocationsDict( sBig )
     #
     dExpect = { 'Jbl'       : 0,
                 'L65'       : 1,
@@ -296,12 +283,12 @@ if __name__ == "__main__":
                 'Pictures'  : 9 }
     #
     #
-    if dWordLocations != dExpect:
+    if dAllWordLocations != dExpect:
         #
         lProblems.append( 'getLocationsDict( "JBL L65" )' )
         #
     #
-    if getSubStringLocation( sSub, dWordLocations ) != 3:
+    if getSubStringLocation( sSub, dAllWordLocations ) != 3:
         #
         lProblems.append( 'getSubStringLocation( "JBL L65" )' )
         #
@@ -309,7 +296,7 @@ if __name__ == "__main__":
     sSub = '15" SILVER'
     sBig = 'VINTAGE TANNOY GRF CORNER CABINET w. 15" SILVER DUAL CONCENTRIC DRIVER LSU/HF/15'
     #
-    dWordLocations = getLocationsDict( sBig )
+    dAllWordLocations = getLocationsDict( sBig )
     #
     dExpect = { 'VINTAGE'   :  0,
                 'TANNOY'    :  1,
@@ -325,13 +312,13 @@ if __name__ == "__main__":
                 'LSU/HF/15' : 11 }
     #
     #
-    if dWordLocations != dExpect:
+    if dAllWordLocations != dExpect:
         #
         lProblems.append( 'getLocationsDict( "VINTAGE TANNOY GRF" )' )
         #
     #
     #
-    if getSubStringLocation( sSub, dWordLocations ) != 6:
+    if getSubStringLocation( sSub, dAllWordLocations ) != 6:
         #
         lProblems.append( 'getSubStringLocation( "VINTAGE TANNOY" )' )
         #
@@ -339,7 +326,7 @@ if __name__ == "__main__":
     sSub = "6SN7GT"
     sBig = "VINTAGE RCA 6SN7GTB ELECTRON TUBE NOS"
     #
-    dWordLocations = getLocationsDict( sBig )
+    dAllWordLocations = getLocationsDict( sBig )
     #
     dExpect = { 'VINTAGE': 0,
                 'RCA': 1,
@@ -349,44 +336,46 @@ if __name__ == "__main__":
                 'NOS': 5}
     #
     #
-    if dWordLocations != dExpect:
+    if dAllWordLocations != dExpect:
         #
         lProblems.append( 'getLocationsDict( "VINTAGE RCA 6SN7GTB" )' )
         #
     #
     #
-    if getSubStringLocation( sSub, dWordLocations, iShorterByOK = 1 ) != 2:
+    if getSubStringLocation( sSub, dAllWordLocations, iShorterByOK = 1 ) != 2:
         #
-        print3( getSubStringLocation( sSub, dWordLocations ) )
+        print3( getSubStringLocation( sSub, dAllWordLocations ) )
         lProblems.append( 'getSubStringLocation( "VINTAGE RCA" )' )
         #
     #
     # "A7" not in "Altec Lansing Magnificent A7-500-II Speakers pair"
     #
-    #print3( dWordLocations )
-    #print3( getSubStringLocation( sSub, dWordLocations, iShorterByOK = 1 ) )
+    #print3( dAllWordLocations )
+    #print3( getSubStringLocation( sSub, dAllWordLocations, iShorterByOK = 1 ) )
     #
     sBig = ( "Amperex 6922 gold pin tube military edition "
              "audio grade gold pins 6DJ8 E88CC" )
     #
-    dWordLocations = getLocationsDict( sBig )
+    dAllWordLocations = getLocationsDict( sBig )
     #
     def getLocationForSub( s ):
-        return getSubStringLocation( s, dWordLocations )
+        return getSubStringLocation( s, dAllWordLocations )
     #
-    tLocations = tuple( map( getLocationForSub, ( "6922", "6DJ8", "E88CC" ) ) )
+    tLocationsOfInterest = tuple(
+            map( getLocationForSub, ( "6922", "6DJ8", "E88CC" ) ) )
     #
     if getSubStrLocationsBegAndEnd(
-            dWordLocations, tLocations ) != ((1,), (12, 11)):
+            dAllWordLocations, tLocationsOfInterest ) != ((1,), (12, 11)):
         #
         lProblems.append(
                 'getSubStrLocationsBegAndEnd( "Amperex 6922 gold" )' )
         #
     #
-    tLocations = tuple( map( getLocationForSub, ( "6SN7GTB", "L65", "GRF" ) ) )
+    tLocationsOfInterest = tuple(
+            map( getLocationForSub, ( "6SN7GTB", "L65", "GRF" ) ) )
     #
     if getSubStrLocationsBegAndEnd(
-            dWordLocations, tLocations ) != ((), ()):
+            dAllWordLocations, tLocationsOfInterest ) != ((), ()):
         #
         lProblems.append(
                 'getSubStrLocationsBegAndEnd( "6SN7GTB, L65, GRF" )' )
@@ -395,18 +384,19 @@ if __name__ == "__main__":
     sBig = ( "Valvo Heerlen E88CC NOS Grey Shield "
              "CCa 6DJ8 6922 CV2492 CV2493 CV5358 CV5472 6N23P 6N11 ECC88 PCC88 7DJ8" )
     #
-    dWordLocations = getLocationsDict( sBig )
+    dAllWordLocations = getLocationsDict( sBig )
     #
     def getLocationForSub( s ):
-        return getSubStringLocation( s, dWordLocations )
+        return getSubStringLocation( s, dAllWordLocations )
     #
     tTubeTypes = tuple( "E88CC CCa 6DJ8 6922 CV2492 CV2493 CV5358 CV5472 "
                         "6N23P 6N11 ECC88 PCC88 7DJ8".split() )
     #
-    tLocations = tuple( map( getLocationForSub, ( tTubeTypes ) ) )
+    tLocationsOfInterest = tuple( map( getLocationForSub, ( tTubeTypes ) ) )
     #
     #
-    if ( getSubStrLocationsBegAndEnd( dWordLocations, tLocations ) !=
+    if ( getSubStrLocationsBegAndEnd(
+            dAllWordLocations, tLocationsOfInterest ) !=
          ( (2,), (17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6) ) ):
         #
         lProblems.append(
