@@ -1000,6 +1000,18 @@ def _chopTimeTrial():
 # implemented by getChoppedOff in String.Dumpster
 
 
+_oWordSplitter = getRegExObj( r"[\w']+|[.,!?;]" )
+
+def getWordsInSentence( sSentence ):
+    #
+    '''alternative to s.split()
+    s = 'Hewlett-Packhard calculator'
+    s.split() returns ['Hewlett-Packhard', 'calculator']
+    getWordsInSentence( s ) returns ['Hewlett', 'Packhard', 'calculator']
+    '''
+    #
+    return _oWordSplitter.findall( sSentence )
+
 
 def _PartsAndStartsTimeTrial():
     #
@@ -1756,6 +1768,11 @@ if __name__ == "__main__":
     if getWhiteOut( sLook4 ) != 'Black&Decker':
         #
         lProblems.append( 'getWhiteOut(%s)' % sLook4 )
+        #
+    #
+    if getWordsInSentence( "How are you?" ) != ['How', 'are', 'you', '?']:
+        #
+        lProblems.append( 'getWordsInSentence( s )' )
         #
     #
     #

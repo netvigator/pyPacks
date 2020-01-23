@@ -76,13 +76,23 @@ def AscStats( sString ):
 
 def getLocationsDict( s ):
     #
+    '''pass a string with spaces between "words"
+    returns a dictionary
+    keys are the words
+    values are integers, the positions of the words
+    leftmost word is position 0 (python style)
+    '''
+    #
     lWords = s.split()
     #
     dAllWordLocations = {}
     #
     for i in range( len( lWords ) ):
         #
-        sThisWord = eatPunctuationBegAndEnd( lWords[ i ] )
+        # if a word begins or ends with punctuation, strip the punctuation
+        # if the "word" is punctuation only, keep it
+        #
+        sThisWord = eatPunctuationBegAndEnd( lWords[ i ] ) or lWords[ i ]
         #
         dAllWordLocations[ sThisWord ] = i
         #
@@ -232,9 +242,28 @@ def getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest ):
             #
         #
     #
-    lTowardFront = [ s for s in lTowardFront if s not in lOnEnd ]
+    setIgnoreThese = set( lOnEnd )
     #
-    return tuple( lTowardFront ), tuple( lOnEnd )
+    tInParens = ()
+    #
+    if '(' in dAllWordLocations and ')' in dAllWordLocations:
+        #
+        iParenOpen  = dAllWordLocations[ '(' ]
+        iParenClose = dAllWordLocations[ ')' ]
+        #
+        lInParens = [ dAllWordLocations[k] for k in dAllWordLocations
+                      if dAllWordLocations[k] > iParenOpen  and
+                         dAllWordLocations[k] < iParenClose and
+                         not isPunctuation(k) ]
+        #
+        tInParens = tuple( lInParens )
+        #
+        setIgnoreThese.update( tInParens )
+        #
+    #
+    lTowardFront = [ s for s in lTowardFront if s not in setIgnoreThese ]
+    #
+    return tuple( lTowardFront ), tuple( lOnEnd ), tInParens
 
 
 
@@ -242,6 +271,7 @@ def getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest ):
 
 if __name__ == "__main__":
     #
+    from pprint import pprint
     from string import digits
     from string import ascii_letters   as letters
     from string import ascii_uppercase as uppercase
@@ -285,6 +315,7 @@ if __name__ == "__main__":
     #
     if dAllWordLocations != dExpect:
         #
+        pprint( dAllWordLocations )
         lProblems.append( 'getLocationsDict( "JBL L65" )' )
         #
     #
@@ -364,9 +395,12 @@ if __name__ == "__main__":
     tLocationsOfInterest = tuple(
             map( getLocationForSub, ( "6922", "6DJ8", "E88CC" ) ) )
     #
-    if getSubStrLocationsBegAndEnd(
-            dAllWordLocations, tLocationsOfInterest ) != ((1,), (12, 11)):
+    tGot = getSubStrLocationsBegAndEnd(
+                    dAllWordLocations, tLocationsOfInterest )
+    #
+    if tGot != ((1,), (12, 11), ()):
         #
+        print3( tGot )
         lProblems.append(
                 'getSubStrLocationsBegAndEnd( "Amperex 6922 gold" )' )
         #
@@ -375,7 +409,7 @@ if __name__ == "__main__":
             map( getLocationForSub, ( "6SN7GTB", "L65", "GRF" ) ) )
     #
     if getSubStrLocationsBegAndEnd(
-            dAllWordLocations, tLocationsOfInterest ) != ((), ()):
+            dAllWordLocations, tLocationsOfInterest ) != ((), (), ()):
         #
         lProblems.append(
                 'getSubStrLocationsBegAndEnd( "6SN7GTB, L65, GRF" )' )
@@ -397,10 +431,29 @@ if __name__ == "__main__":
     #
     if ( getSubStrLocationsBegAndEnd(
             dAllWordLocations, tLocationsOfInterest ) !=
-         ( (2,), (17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6) ) ):
+         ( (2,), (17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6), () ) ):
         #
         lProblems.append(
                 'getSubStrLocationsBegAndEnd( "E88CC CCa 6DJ8 6922 etc." )' )
+        #
+    #
+    sBig = ( "2x  ECC88 / 6DJ8   TELEFUNKEN  <> tubes  - NOS  "
+             "-  ( ~  7DJ8 / PCC88 )  MILITARY" )
+    #
+    dAllWordLocations = getLocationsDict( sBig )
+    #
+    def getLocationForSub( s ):
+        return getSubStringLocation( s, dAllWordLocations )
+    #
+    tLocationsOfInterest = tuple( map( getLocationForSub, ( tTubeTypes ) ) )
+    #
+    tGot = getSubStrLocationsBegAndEnd(
+                    dAllWordLocations, tLocationsOfInterest )
+    #
+    if tGot != ((1, 3), (), (12, 14)):
+        #
+        lProblems.append(
+                'getSubStrLocationsBegAndEnd( "ECC88 / 6DJ8 (7DJ8/PCC88)" )' )
         #
     #
     #
