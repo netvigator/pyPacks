@@ -24,28 +24,11 @@
 #
 # here, must use built in map -- cannot import iMap
 
-from sys import getdefaultencoding
+from os.path    import join, basename
+from sys        import getdefaultencoding
 
 sDefaultEncoding = getdefaultencoding()
 
-
-def sayYouNeedSix():
-    #
-    print3_n_2( "************************" )
-    print3_n_2( "************************" )
-    print3_n_2( 'You need to install six!' )
-    print3_n_2( "## 'pip install six'  ##" )
-    print3_n_2( "************************" )
-    print3_n_2( "************************" )
-
-
-try:
-    from six import print_ as print3
-except ImportError:
-    #
-    sayYouNeedSix()
-    #
-    raise
 
 
 def print3_n_2( *args, **kwargs ):
@@ -67,6 +50,27 @@ def print3_n_2( *args, **kwargs ):
     file.write( '%s%s%s' % ( beg, sep.join( map( str, args ) ), end ) )
 
 
+def sayYouNeedSix():
+    #
+    print3_n_2( "************************" )
+    print3_n_2( "************************" )
+    print3_n_2( 'You need to install six!' )
+    print3_n_2( "## 'pip install six'  ##" )
+    print3_n_2( "************************" )
+    print3_n_2( "************************" )
+    #
+
+try:
+    #
+    from six import print_ as print3
+    #
+except ImportError:
+    #
+    sayYouNeedSix()
+    #
+    raise
+
+
 '''
 
 This comment is so I can find it!
@@ -76,6 +80,8 @@ def getNext( o ):
     from six import next
     #
     return next( o )
+
+also iRange and the like are in Iter.AllVers
 
 '''
 
@@ -102,9 +108,29 @@ else:
     from string import zfill as getZeroFilled
 
 
+if PYTHON3:
+    #
+    from pathlib import Path
+    #
+    def getThisFileSpec( sFileName ):
+        #
+        return join( Path( sFileName ).parent.absolute(),
+                     basename( sFileName ) )
+    #
+else:
+    #
+    from os.path import dirname, abspath
+    #
+    def getThisFileSpec( sFileName ):
+        #
+        return join( dirname( os.path.abspath( sFileName ) ),
+                     basename( sFileName ) )
+        #
+    #
+#
+
+
 from six import integer_types
-
-
 
 setNumberTypes = frozenset( [ float, bool ] + list( integer_types ) )
 
