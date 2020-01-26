@@ -24,19 +24,21 @@
 #
 
 try:
-    from ..Iter.AllVers import tMap, iRange
+    from ..Collect.Get  import getListFromNestedLists
+    from ..Iter.AllVers import tMap, iRange, tZip
     from ..Numb.Stats   import getMeanMembers
     from ..Object.Get   import ValueContainer
     from ..String.Eat   import eatPunctuationBegAndEnd
     from ..String.Find  import getRegExObj
-    from ..String.Test  import isPunctuation
+    from ..String.Test  import isPunctuation, isNotPunctuation
 except ( ValueError, ImportError ):
-    from Iter.AllVers   import tMap, iRange
+    from Collect.Get    import getListFromNestedLists
+    from Iter.AllVers   import tMap, iRange, tZip
     from Numb.Stats     import getMeanMembers
     from Object.Get     import ValueContainer
     from String.Eat     import eatPunctuationBegAndEnd
     from String.Find    import getRegExObj
-    from String.Test    import isPunctuation
+    from String.Test    import isPunctuation, isNotPunctuation
 
 def AscStats( sString ):
     #
@@ -83,7 +85,8 @@ def getLocationsDict( s, bCarefulWithParens = True ):
     '''pass a string with spaces between "words"
     returns a dictionary
     keys are the words
-    values are integers, the positions of the words
+    values are tuples, inside each are
+    integers, the positions of the words
     leftmost word is position 0 (python style)
     '''
     #
@@ -123,11 +126,12 @@ def getLocationsDict( s, bCarefulWithParens = True ):
         #
         sThisWord = eatPunctuationBegAndEnd( lWords[ i ] ) or lWords[ i ]
         #
-        if sThisWord not in dAllWordLocations:
-            #
-            # keep the 1st location if word is repeated
-            #
-            dAllWordLocations[ sThisWord ] = i
+        dAllWordLocations.setdefault( sThisWord, [] ).append( i )
+        #
+    #
+    for k, v in dAllWordLocations.items():
+        #
+        dAllWordLocations[ k ] = tuple( v )
         #
     #
     return dAllWordLocations
@@ -156,7 +160,7 @@ def _isShorterSubstringOK( sLookForThis, dAllWordLocations, iShorterByOK ):
                ( iShorterByOK and
                  len( sWord ) == len( sLookForThis ) + iShorterByOK ) ) ):
             #
-            iInTitleLocation = dAllWordLocations[ sWord ]
+            iInTitleLocation = dAllWordLocations[ sWord ][ 0 ]
             #
             break
             #
@@ -174,7 +178,7 @@ def getSubStringLocation( sSubStr, dAllWordLocations, iShorterByOK = 0 ):
     #
     if sSubStr in dAllWordLocations:
         #
-        iInTitleLocation = dAllWordLocations[ sSubStr ]
+        iInTitleLocation = dAllWordLocations[ sSubStr ][ 0 ] # first location
         #
     elif len( sSubStr ) > 2:
         #
@@ -194,7 +198,7 @@ def getSubStringLocation( sSubStr, dAllWordLocations, iShorterByOK = 0 ):
                 #
                 if s in dAllWordLocations:
                     #
-                    iThisPart = dAllWordLocations[ s ]
+                    iThisPart = dAllWordLocations[ s ][ 0 ]
                     #
                     if  i + 1 < len( tParts ):
                         #
@@ -234,7 +238,7 @@ def getSubStringLocation( sSubStr, dAllWordLocations, iShorterByOK = 0 ):
 
 def getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest, s ):
     #
-    lLocations = list( dAllWordLocations.values() )
+    lLocations = getListFromNestedLists( dAllWordLocations.values() )
     #
     # if a word is repeated, the prior position number will be missing
     #
@@ -279,15 +283,53 @@ def getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest, s ):
     #
     tInParens = ()
     #
-    if '(' in s and ')' in s:
+    if '(' in dAllWordLocations and ')' in dAllWordLocations:
         #
-        iParenOpen  = dAllWordLocations[ '(' ]
-        iParenClose = dAllWordLocations[ ')' ]
+        def _isLocationInParens( iLocation, iParenOpen, iParenClose ):
+            #
+            return iLocation > iParenOpen and iLocation < iParenClose
+            #
         #
-        lInParens = [ dAllWordLocations[k] for k in dAllWordLocations
-                      if dAllWordLocations[k] > iParenOpen  and
-                         dAllWordLocations[k] < iParenClose and
-                         not isPunctuation(k) ]
+        tParenOpen  = dAllWordLocations[ '(' ]
+        tParenClose = dAllWordLocations[ ')' ]
+        #
+        if len( tParenOpen ) == 1 or len( tParenClose ) == 1:
+            #
+            iParenOpen  = tParenOpen [  0 ]
+            iParenClose = tParenClose[ -1 ]
+            #
+            def isWordInParens( s ):
+                #
+                iLocation = dAllWordLocations[ s ][ 0 ]
+                #
+                return _isLocationInParens( iLocation, iParenOpen, iParenClose )
+                #
+            #
+        else:
+            #
+            tParenPairs = tZip( dAllWordLocations[ '(' ],
+                                dAllWordLocations[ ')' ] )
+            #
+            def isWordInParens( s ):
+                #
+                iLocation = dAllWordLocations[ s ][ 0 ]
+                #
+                for tBegEnd in tParenPairs:
+                    #
+                    if _isLocationInParens(
+                            iLocation, tBegEnd[0], tBegEnd[1] ):
+                        #
+                        return True
+                        #
+                    #
+                # returns None if no location is within parens,
+                # and None evaluates as False
+                #
+            #
+        #
+        lInParens = [ dAllWordLocations[k][0]
+                      for k in dAllWordLocations
+                      if isWordInParens( k ) and isNotPunctuation( k ) ]
         #
         tInParens = tuple( lInParens )
         #
@@ -334,16 +376,16 @@ if __name__ == "__main__":
     #
     dAllWordLocations = getLocationsDict( sBig )
     #
-    dExpect = { 'Jbl'       : 0,
-                'L65'       : 1,
-                'Jubal'     : 2,
-                'Le5-12'    : 3,
-                'Mids'      : 4,
-                'Pair'      : 5,
-                'Working'   : 6,
-                'Nice'      : 7,
-                'See'       : 8,
-                'Pictures'  : 9 }
+    dExpect = { 'Jbl'       : ( 0, ),
+                'L65'       : ( 1, ),
+                'Jubal'     : ( 2, ),
+                'Le5-12'    : ( 3, ),
+                'Mids'      : ( 4, ),
+                'Pair'      : ( 5, ),
+                'Working'   : ( 6, ),
+                'Nice'      : ( 7, ),
+                'See'       : ( 8, ),
+                'Pictures'  : ( 9, ) }
     #
     #
     if dAllWordLocations != dExpect:
@@ -362,18 +404,18 @@ if __name__ == "__main__":
     #
     dAllWordLocations = getLocationsDict( sBig )
     #
-    dExpect = { 'VINTAGE'   :  0,
-                'TANNOY'    :  1,
-                'GRF'       :  2,
-                'CORNER'    :  3,
-                'CABINET'   :  4,
-                'w'         :  5,
-                '15'        :  6,
-                'SILVER'    :  7,
-                'DUAL'      :  8,
-                'CONCENTRIC':  9,
-                'DRIVER'    : 10,
-                'LSU/HF/15' : 11 }
+    dExpect = { 'VINTAGE'   : (  0, ),
+                'TANNOY'    : (  1, ),
+                'GRF'       : (  2, ),
+                'CORNER'    : (  3, ),
+                'CABINET'   : (  4, ),
+                'w'         : (  5, ),
+                '15'        : (  6, ),
+                'SILVER'    : (  7, ),
+                'DUAL'      : (  8, ),
+                'CONCENTRIC': (  9, ),
+                'DRIVER'    : ( 10, ),
+                'LSU/HF/15' : ( 11, ) }
     #
     #
     if dAllWordLocations != dExpect:
@@ -392,12 +434,12 @@ if __name__ == "__main__":
     #
     dAllWordLocations = getLocationsDict( sBig )
     #
-    dExpect = { 'VINTAGE': 0,
-                'RCA': 1,
-                '6SN7GTB': 2,
-                'ELECTRON': 3,
-                'TUBE': 4,
-                'NOS': 5}
+    dExpect = { 'VINTAGE'   : ( 0, ),
+                'RCA'       : ( 1, ),
+                '6SN7GTB'   : ( 2, ),
+                'ELECTRON'  : ( 3, ),
+                'TUBE'      : ( 4, ),
+                'NOS'       : ( 5, ) }
     #
     #
     if dAllWordLocations != dExpect:
@@ -485,6 +527,7 @@ if __name__ == "__main__":
     #
     if tGot != ((1, 3), (), (12, 14)):
         #
+        print3( tGot )
         lProblems.append(
                 'getSubStrLocationsBegAndEnd( "ECC88 / 6DJ8 (7DJ8/PCC88)" )' )
         #
@@ -493,7 +536,25 @@ if __name__ == "__main__":
     #
     dAllWordLocations = getLocationsDict( sBig )
     #
-    pprint( dAllWordLocations )
+    dExpect = { '('         : ( 4, 10),
+                ')'         : ( 7, 13),
+                'DYNACO'    : ( 0,),
+                'ST-70'     : ( 1,),
+                'ORIGINAL'  : ( 2,),
+                'CAGE'      : ( 3,),
+                'with'      : ( 5,),
+                'meter'     : ( 6,),
+                'VG'        : ( 8,),
+                'SHAPE'     : ( 9,),
+                '1'         : (11,),
+                'EA'        : (12,) }
+    #
+    if dAllWordLocations != dExpect:
+        #
+        lProblems.append(
+                'dAllWordLocations( "DYNACO ST-70 ORIGINAL CAGE" )' )
+        #
+    #
     #
     def getLocationForSub( s ):
         return getSubStringLocation( s, dAllWordLocations )
@@ -503,6 +564,12 @@ if __name__ == "__main__":
     tGot = getSubStrLocationsBegAndEnd(
                     dAllWordLocations, tLocationsOfInterest, sBig )
     #
-    print3( tGot )
+    if tGot != ((), (), (5, 6, 11, 12)):
+        #
+        print3( tGot )
+        lProblems.append(
+                'getSubStrLocationsBegAndEnd( "DYNACO ST-70 ORIGINAL CAGE" )' )
+        #
+    #
     #
     sayTestResult( lProblems )
