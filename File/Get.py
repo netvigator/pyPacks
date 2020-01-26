@@ -36,17 +36,19 @@ from tempfile               import mkstemp
 try:
     from .Test              import isFileThere
     from .Spec              import getFullSpec, getFullSpecDefaultOrPassed
-    from ..Utils.Version    import PYTHON2
     from ..Dir.Get          import sTempDir
+    from ..Iter.AllVers     import iRange
     from ..Numb.Get         import getRandomDigits
     from ..Utils.Config     import getConfDict
+    from ..Utils.Version    import PYTHON2
 except ( ValueError, ImportError ):
     from File.Test          import isFileThere
     from File.Spec          import getFullSpec, getFullSpecDefaultOrPassed
-    from Utils.Version      import PYTHON2
     from Dir.Get            import sTempDir
+    from Iter.AllVers       import iRange
     from Numb.Get           import getRandomDigits
     from Utils.Config       import getConfDict
+    from Utils.Version      import PYTHON2
 
 class FileNotThereError( Exception ): pass
 
@@ -114,7 +116,9 @@ def getFileObject( *sFileSpec, **kwargs ):
     #
     f       = None
     #
-    if not isFileThere( sFileSpec ): raise FileNotThereError( sFileSpec )
+    if not isFileThere( sFileSpec ):
+        print3( 'not finding %s!' % sFileSpec )
+        raise FileNotThereError( sFileSpec )
     #
     try:
         #
@@ -393,10 +397,12 @@ if __name__ == "__main__":
     from File.Write     import PutReprInTemp, QuietDump
     from Time.ReadWrite import putTimeInFile
     from Time.Test      import isISOdatetime
+    from Utils.Both2n3  import getThisFileSpec
     from Utils.Result   import sayTestResult
     #
+    sThisFile = getThisFileSpec(__file__)
     #
-    fThisFile = getFileObject( 'Get.py' )
+    fThisFile = getFileObject( sThisFile )
     #
     def isStartsWithThis( s ): return s.startswith( 'def getFileObject' )
     #
@@ -407,7 +413,7 @@ if __name__ == "__main__":
     #
     fThisFile.close()
     #
-    sContent = getContent( 'Get.py' )
+    sContent = getContent( sThisFile )
     #
     lLines  = sContent.split( '\n' )
     #
@@ -433,7 +439,7 @@ if __name__ == "__main__":
         lProblems.append( 'getRandomFileName()' )
         #
     #
-    lLines = getListFromFileLines( 'Get.py' )
+    lLines = getListFromFileLines( sThisFile )
     #
     if get1stThatMeets( lLines, isStartsWithThis ) is None:
         #
@@ -523,7 +529,7 @@ if __name__ == "__main__":
     #
     sTemp = 'test_file_%s_.txt'
     #
-    for i in range(9):
+    for i in iRange(9):
         #
         sTempFile = sTemp % str( i )
         #
@@ -549,7 +555,7 @@ if __name__ == "__main__":
         lProblems.append( 'getFilesMatchingPattern()' )
         #
     #
-    for i in range(9):
+    for i in iRange(9):
         #
         DeleteIfExists( '/tmp', sTemp % str( i ) )
         #
