@@ -24,16 +24,18 @@
 #
 
 try:
-    from ..Iter.AllVers import tMap
+    from ..Iter.AllVers import tMap, iRange
     from ..Numb.Stats   import getMeanMembers
     from ..Object.Get   import ValueContainer
     from ..String.Eat   import eatPunctuationBegAndEnd
+    from ..String.Find  import getRegExObj
     from ..String.Test  import isPunctuation
 except ( ValueError, ImportError ):
-    from Iter.AllVers   import tMap
+    from Iter.AllVers   import tMap, iRange
     from Numb.Stats     import getMeanMembers
     from Object.Get     import ValueContainer
     from String.Eat     import eatPunctuationBegAndEnd
+    from String.Find    import getRegExObj
     from String.Test    import isPunctuation
 
 def AscStats( sString ):
@@ -72,9 +74,11 @@ def AscStats( sString ):
     return oReturn
 
 
+_oFindParens = getRegExObj( '[()]' )
+    
 
 
-def getLocationsDict( s ):
+def getLocationsDict( s, bCarefulWithParens = True ):
     #
     '''pass a string with spaces between "words"
     returns a dictionary
@@ -83,18 +87,47 @@ def getLocationsDict( s ):
     leftmost word is position 0 (python style)
     '''
     #
-    lWords = s.split()
+    sCareful = s
+    #
+    if bCarefulWithParens:
+        #
+        lParens = _oFindParens.findall( s )
+        #
+        if lParens:
+            #
+            lParts = _oFindParens.split( s )
+            #
+            lNewParts = []
+            #
+            for i in iRange( len( lParens ) ):
+                #
+                lNewParts.append( lParts[ i] )
+                lNewParts.append( lParens[i])
+                #
+            #
+            lNewParts.append( lParts[ -1 ] )
+            #
+            sCareful = ' '.join( lNewParts )
+            #
+        #
+    #
+    lWords = sCareful.split()
+    #
     #
     dAllWordLocations = {}
     #
-    for i in range( len( lWords ) ):
+    for i in iRange( len( lWords ) ):
         #
         # if a word begins or ends with punctuation, strip the punctuation
         # if the "word" is punctuation only, keep it
         #
         sThisWord = eatPunctuationBegAndEnd( lWords[ i ] ) or lWords[ i ]
         #
-        dAllWordLocations[ sThisWord ] = i
+        if sThisWord not in dAllWordLocations:
+            #
+            # keep the 1st location if word is repeated
+            #
+            dAllWordLocations[ sThisWord ] = i
         #
     #
     return dAllWordLocations
@@ -199,7 +232,7 @@ def getSubStringLocation( sSubStr, dAllWordLocations, iShorterByOK = 0 ):
     return iInTitleLocation
 
 
-def getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest ):
+def getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest, s ):
     #
     lLocations = list( dAllWordLocations.values() )
     #
@@ -207,7 +240,7 @@ def getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest ):
     #
     iMax = max( lLocations )
     #
-    dLocations = dict.fromkeys( range( iMax + 1 ) ) # values are None
+    dLocations = dict.fromkeys( iRange( iMax + 1 ) ) # values are None
     #
     lLocations.sort()    # make sure they are listed low to high
     #
@@ -218,7 +251,7 @@ def getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest ):
     #
     lTowardFront = []
     #
-    for i in range( len( lLocations ) // 2 ):
+    for i in iRange( len( lLocations ) // 2 ):
         #
         if dLocations[ i ]:
             #
@@ -246,7 +279,7 @@ def getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest ):
     #
     tInParens = ()
     #
-    if '(' in dAllWordLocations and ')' in dAllWordLocations:
+    if '(' in s and ')' in s:
         #
         iParenOpen  = dAllWordLocations[ '(' ]
         iParenClose = dAllWordLocations[ ')' ]
@@ -396,7 +429,7 @@ if __name__ == "__main__":
             map( getLocationForSub, ( "6922", "6DJ8", "E88CC" ) ) )
     #
     tGot = getSubStrLocationsBegAndEnd(
-                    dAllWordLocations, tLocationsOfInterest )
+                    dAllWordLocations, tLocationsOfInterest, sBig )
     #
     if tGot != ((1,), (12, 11), ()):
         #
@@ -409,7 +442,7 @@ if __name__ == "__main__":
             map( getLocationForSub, ( "6SN7GTB", "L65", "GRF" ) ) )
     #
     if getSubStrLocationsBegAndEnd(
-            dAllWordLocations, tLocationsOfInterest ) != ((), (), ()):
+            dAllWordLocations, tLocationsOfInterest, sBig ) != ((), (), ()):
         #
         lProblems.append(
                 'getSubStrLocationsBegAndEnd( "6SN7GTB, L65, GRF" )' )
@@ -430,7 +463,7 @@ if __name__ == "__main__":
     #
     #
     if ( getSubStrLocationsBegAndEnd(
-            dAllWordLocations, tLocationsOfInterest ) !=
+            dAllWordLocations, tLocationsOfInterest, sBig ) !=
          ( (2,), (17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6), () ) ):
         #
         lProblems.append(
@@ -448,7 +481,7 @@ if __name__ == "__main__":
     tLocationsOfInterest = tuple( map( getLocationForSub, ( tTubeTypes ) ) )
     #
     tGot = getSubStrLocationsBegAndEnd(
-                    dAllWordLocations, tLocationsOfInterest )
+                    dAllWordLocations, tLocationsOfInterest, sBig )
     #
     if tGot != ((1, 3), (), (12, 14)):
         #
@@ -456,5 +489,20 @@ if __name__ == "__main__":
                 'getSubStrLocationsBegAndEnd( "ECC88 / 6DJ8 (7DJ8/PCC88)" )' )
         #
     #
+    sBig = "DYNACO ST-70 ORIGINAL CAGE (with meter) VG SHAPE ( 1 EA )"
+    #
+    dAllWordLocations = getLocationsDict( sBig )
+    #
+    pprint( dAllWordLocations )
+    #
+    def getLocationForSub( s ):
+        return getSubStringLocation( s, dAllWordLocations )
+    #
+    tLocationsOfInterest = tuple( map( getLocationForSub, ( tTubeTypes ) ) )
+    #
+    tGot = getSubStrLocationsBegAndEnd(
+                    dAllWordLocations, tLocationsOfInterest, sBig )
+    #
+    print3( tGot )
     #
     sayTestResult( lProblems )
