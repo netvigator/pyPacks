@@ -243,7 +243,7 @@ def _isLocationInParens( iLocation, iParenOpen, iParenClose ):
 
 
 
-def getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest, s ):
+def getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest ):
     #
     lLocations = getListFromNestedLists( dAllWordLocations.values() )
     #
@@ -473,7 +473,7 @@ if __name__ == "__main__":
             map( getLocationForSub, ( "6922", "6DJ8", "E88CC" ) ) )
     #
     tGot = getSubStrLocationsBegAndEnd(
-                    dAllWordLocations, tLocationsOfInterest, sBig )
+                    dAllWordLocations, tLocationsOfInterest )
     #
     if tGot != ((1,), (12, 11), ()):
         #
@@ -486,7 +486,7 @@ if __name__ == "__main__":
             map( getLocationForSub, ( "6SN7GTB", "L65", "GRF" ) ) )
     #
     if getSubStrLocationsBegAndEnd(
-            dAllWordLocations, tLocationsOfInterest, sBig ) != ((), (), ()):
+            dAllWordLocations, tLocationsOfInterest ) != ((), (), ()):
         #
         lProblems.append(
                 'getSubStrLocationsBegAndEnd( "6SN7GTB, L65, GRF" )' )
@@ -507,7 +507,7 @@ if __name__ == "__main__":
     #
     #
     if ( getSubStrLocationsBegAndEnd(
-            dAllWordLocations, tLocationsOfInterest, sBig ) !=
+            dAllWordLocations, tLocationsOfInterest ) !=
          ( (2,), (17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6), () ) ):
         #
         lProblems.append(
@@ -525,7 +525,7 @@ if __name__ == "__main__":
     tLocationsOfInterest = tuple( map( getLocationForSub, ( tTubeTypes ) ) )
     #
     tGot = getSubStrLocationsBegAndEnd(
-                    dAllWordLocations, tLocationsOfInterest, sBig )
+                    dAllWordLocations, tLocationsOfInterest )
     #
     if tGot != ((1, 3), (), (12, 14)):
         #
@@ -564,7 +564,7 @@ if __name__ == "__main__":
     tLocationsOfInterest = tuple( map( getLocationForSub, ( tTubeTypes ) ) )
     #
     tGot = getSubStrLocationsBegAndEnd(
-                    dAllWordLocations, tLocationsOfInterest, sBig )
+                    dAllWordLocations, tLocationsOfInterest )
     #
     if tGot != ((), (), (5, 6, 11, 12)):
         #
