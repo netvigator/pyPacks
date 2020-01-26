@@ -236,6 +236,13 @@ def getSubStringLocation( sSubStr, dAllWordLocations, iShorterByOK = 0 ):
     return iInTitleLocation
 
 
+
+def _isLocationInParens( iLocation, iParenOpen, iParenClose ):
+    #
+    return iLocation > iParenOpen and iLocation < iParenClose
+
+
+
 def getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest, s ):
     #
     lLocations = getListFromNestedLists( dAllWordLocations.values() )
@@ -284,11 +291,6 @@ def getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest, s ):
     tInParens = ()
     #
     if '(' in dAllWordLocations and ')' in dAllWordLocations:
-        #
-        def _isLocationInParens( iLocation, iParenOpen, iParenClose ):
-            #
-            return iLocation > iParenOpen and iLocation < iParenClose
-            #
         #
         tParenOpen  = dAllWordLocations[ '(' ]
         tParenClose = dAllWordLocations[ ')' ]
