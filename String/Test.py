@@ -141,10 +141,14 @@ def isPunctuation( sChar ):
     #
     return sChar in setPunctuation
 
+def isNotPunctuation( sChar ):
+    #
+    return sChar not in setPunctuation
+
+
 def isPunctOrSpace( sChar ):
     #
     return sChar in setPuncAndSpace
-
 
 def hasPunctOrSpace( sString ):
     #
@@ -794,6 +798,11 @@ if __name__ == "__main__":
     if not( isPunctuation( ';' ) and not isPunctuation( 'a' ) ):
         #
         lProblems.append( 'isPunctuation()' )
+        #
+    #
+    if isNotPunctuation( ';' ) and not isNotPunctuation( 'a' ):
+        #
+        lProblems.append( 'isNotPunctuation()' )
         #
     #
     if not( isPunctOrSpace( ';' ) and not isPunctOrSpace( 'a' ) ):
