@@ -123,7 +123,7 @@ else:
     #
     def getThisFileSpec( sFileName ):
         #
-        return join( dirname( os.path.abspath( sFileName ) ),
+        return join( dirname( abspath( sFileName ) ),
                      basename( sFileName ) )
         #
     #
@@ -258,7 +258,10 @@ except ImportError:
 
 if __name__ == "__main__":
     #
-    from io             import StringIO
+    if PYTHON2:
+        from cStringIO  import StringIO
+    else:
+        from io         import StringIO
     #
     from Utils.Result   import sayTestResult
     #
