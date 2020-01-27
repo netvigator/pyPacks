@@ -45,6 +45,7 @@ try:
     from ..Iter.AllVers     import lMap, iRange, iZip
     from ..String.Get       import getTextAfter, getUnZipped
     from ..String.Test      import isGzipped
+    from ..Utils.Both2n3    import getStrGotBytes, PYTHON3
     from ..Utils.TimeLimit  import TimeLimitWrap, TimeOverExcept
     from .Address           import ( UrlJoinBrowserStyle, _getLinksMakeOver,
                                      UrlMustHaveSchemeAndPath, getDomainOffURL,
@@ -61,6 +62,7 @@ except ( ValueError, ImportError ):
     from String.Get         import getTextAfter, getUnZipped
     from String.Test        import isGzipped
     from Utils.TimeLimit    import TimeLimitWrap, TimeOverExcept
+    from Utils.Both2n3      import getStrGotBytes, PYTHON3
     from Web.Address        import ( UrlJoinBrowserStyle, _getLinksMakeOver,
                                      UrlMustHaveSchemeAndPath, getDomainOffURL,
                                      getHostPortPathQuery )
@@ -261,6 +263,11 @@ def getPageHTML2(
             error, msg, traceback = exc_info()
             sComment        = 'We hit a socket error on read.'
             sReason         = str( msg )
+        #
+    #
+    if PYTHON3 and isinstance( sHTML, bytes ):
+        #
+        sHTML = getStrGotBytes( sHTML )
         #
     #
     dResult = dict(
@@ -991,8 +998,9 @@ if __name__ == "__main__":
     #
     sGot = getDomainOffURL( getHostFromDotQuad( '8.8.8.8' ) )
     #
-    if sGot != 'google.com':
+    if sGot not in( 'google.com', 'dns.google' ):
         #
+        print3( sGot )
         lProblems.append( 'getHostFromDotQuad(%s)' % sGot )
         #
     #
