@@ -1,4 +1,4 @@
-#!/usr/bin/pythonTest
+#!/home/rick/bin/pythonTest
 # -*- coding: utf-8 -*-
 #
 # String Names
@@ -18,9 +18,9 @@
 #   51 Franklin Street, Fifth Floor
 #   Boston MA 02110-1301 USA
 #
-#   http://www.gnu.org/licenses/gpl.html
+#   http://www.gnu.org/licenses/
 #
-# Copyright 2007-2019 Rick Graves
+# Copyright 2007-2020 Rick Graves
 #
 
 from six            import print_ as print3

@@ -1,4 +1,4 @@
-#!/usr/bin/pythonTest
+#!/home/rick/bin/pythonTest
 #
 # Shape tuples get shapefiles as tuples
 #
@@ -17,9 +17,9 @@
 #   51 Franklin Street, Fifth Floor
 #   Boston MA 02110-1301 USA
 #
-#   http://www.gnu.org/licenses/gpl.html
+#   http://www.gnu.org/licenses/
 #
-# Copyright 2012 Rick Graves
+# Copyright 2012-2020 Rick Graves
 #
 # depends on python-pyshp
 

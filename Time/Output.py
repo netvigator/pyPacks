@@ -1,4 +1,4 @@
-#!/usr/bin/pythonTest
+#!/home/rick/bin/pythonTest
 # -*- coding: utf-8 -*-
 #
 # time functions Output
@@ -18,9 +18,9 @@
 #   51 Franklin Street, Fifth Floor
 #   Boston MA 02110-1301 USA
 #
-#   http://www.gnu.org/licenses/gpl.html
+#   http://www.gnu.org/licenses/
 #
-# Copyright 2004-2019 Rick Graves
+# Copyright 2004-2020 Rick Graves
 #
 
 from locale import DAY_1, DAY_2, DAY_3, DAY_4, DAY_5, DAY_6, DAY_7, nl_langinfo

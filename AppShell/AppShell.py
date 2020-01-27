@@ -1,4 +1,4 @@
-#! /usr/bin/pythonTest
+#! /home/rick/bin/pythonTest
 # -*- coding: utf-8 -*-
 
 """

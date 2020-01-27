@@ -1,4 +1,4 @@
-#!/usr/bin/pythonTest
+#!/home/rick/bin/pythonTest
 # -*- coding: utf-8 -*-
 #
 # Web functions Scraper web scrapers
@@ -18,9 +18,9 @@
 #   51 Franklin Street, Fifth Floor
 #   Boston MA 02110-1301 USA
 #
-#   http://www.gnu.org/licenses/gpl.html
+#   http://www.gnu.org/licenses/
 #
-# Copyright 2010-2019 Rick Graves
+# Copyright 2010-2020 Rick Graves
 #
 # example applications in sMail.GetInfo
 #

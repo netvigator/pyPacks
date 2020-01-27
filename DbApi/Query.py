@@ -1,4 +1,4 @@
-#!/usr/bin/pythonTest
+#!/home/rick/bin/pythonTest
 # -*- coding: utf-8 -*-
 #
 # DbApi functions Query
@@ -18,9 +18,9 @@
 #   51 Franklin Street, Fifth Floor
 #   Boston MA 02110-1301 USA
 #
-#   http://www.gnu.org/licenses/gpl.html
+#   http://www.gnu.org/licenses/
 #
-# Copyright 2004-2011 Rick Graves
+# Copyright 2004-2020 Rick Graves
 #
 
 from String.Transform   import getSwapper

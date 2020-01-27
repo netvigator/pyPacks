@@ -1,4 +1,4 @@
-#!/usr/bin/pythonTest
+#!/home/rick/bin/pythonTest
 # -*- coding: utf-8 -*-
 #
 # exec for python 3, solve incompatibility with version 2
@@ -18,9 +18,9 @@
 #   51 Franklin Street, Fifth Floor
 #   Boston MA 02110-1301 USA
 #
-#   http://www.gnu.org/licenses/gpl.html
+#   http://www.gnu.org/licenses/
 #
-# Copyright 2014 Rick Graves
+# Copyright 2014-2020 Rick Graves
 #
 
 

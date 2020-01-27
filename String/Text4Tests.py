@@ -1,4 +1,4 @@
-#!/usr/bin/pythonTest
+#!/home/rick/bin/pythonTest
 # -*- coding: utf-8 -*-
 #
 # string functions Text4Tests.py
@@ -18,9 +18,9 @@
 #   51 Franklin Street, Fifth Floor
 #   Boston MA 02110-1301 USA
 #
-#   http://www.gnu.org/licenses/gpl.html
+#   http://www.gnu.org/licenses/
 #
-# Copyright 2011-2016 Rick Graves
+# Copyright 2011-2020 Rick Graves
 #
 
 sHTML =  (
@@ -1315,7 +1315,7 @@ _c&&(_c.className+=_n);_s&&(_s.className+=_n);}catch(e){}})();</script>
 <div class="esc slp" id="poS140" style="display:none">You +1'd this publicly.&nbsp;
 <a href="#" class="fl">Undo</a></div>
 <span class="f">15+ items &ndash; </span>
-<span class="st"><b>...</b> (HostName): crawl-66-249-72-83.<em>googlebot.com</em>. Проверить <b>...</b>
+<span class="st"><b>...</b> (HostName): crawl-66-249-72-83.<em>googlebot.com</em>. Пров <b>...</b>
 <br></span>
 <table class="tsnip">
 <tbody>
@@ -1366,7 +1366,7 @@ _c&&(_c.className+=_n);_s&&(_s.className+=_n);}catch(e){}})();</script>
 <table class="tsnip">
 <thead>
 <tr>
-<th>環境変数名
+<th>境数
 <th>値
 <tbody>
 <tr>

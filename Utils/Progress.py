@@ -1,4 +1,4 @@
-#!/usr/bin/pythonTest
+#!/home/rick/bin/pythonTest
 # -*- coding: utf-8 -*-
 #
 # Utility Progress text progress meter
@@ -23,7 +23,7 @@
 # a part of urlgrabber, a high-level cross-protocol url-grabber
 # urlgrabber is Copyright 2002-2004 Michael D. Stenner, Ryan Tomayko
 #
-# Copyright 2008-2019 Rick Graves
+# Copyright 2008-2020 Rick Graves
 #
 #
 

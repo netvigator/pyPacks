@@ -1,4 +1,4 @@
-#!/usr/bin/pythonTest
+#!/home/rick/bin/pythonTest
 #
 # Shape projections / point transformations
 #
@@ -17,9 +17,9 @@
 #   51 Franklin Street, Fifth Floor
 #   Boston MA 02110-1301 USA
 #
-#   http://www.gnu.org/licenses/gpl.html
+#   http://www.gnu.org/licenses/
 #
-# Copyright 2012-2016 Rick Graves
+# Copyright 2012-2020 Rick Graves
 #
 # depends on python-pyproj
 

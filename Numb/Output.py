@@ -18,9 +18,9 @@
 #   51 Franklin Street, Fifth Floor
 #   Boston MA 02110-1301 USA
 #
-#   http://www.gnu.org/licenses/gpl.html
+#   http://www.gnu.org/licenses/
 #
-# Copyright 2004-2019 Rick Graves
+# Copyright 2004-2020 Rick Graves
 #
 # ### ### ### ### ### ### ### ### ### ### ###
 # ### ### ### ### ### ### ### ### ### ### ###
