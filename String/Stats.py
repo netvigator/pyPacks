@@ -334,6 +334,8 @@ def getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest ):
                       for k in dAllWordLocations
                       if isWordInParens( k ) and isNotPunctuation( k ) ]
         #
+        lInParens.sort() # order not same python 2 vs 3, so need this
+        #
         tInParens = tuple( lInParens )
         #
         setIgnoreThese.update( tInParens )
