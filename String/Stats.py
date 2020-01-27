@@ -239,7 +239,8 @@ def getSubStringLocation( sSubStr, dAllWordLocations, iShorterByOK = 0 ):
 
 def _isLocationInParens( iLocation, iParenOpen, iParenClose ):
     #
-    return iLocation > iParenOpen and iLocation < iParenClose
+    return iParenOpen < iLocation < iParenClose
+
 
 
 
