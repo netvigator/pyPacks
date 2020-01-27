@@ -485,7 +485,13 @@ if __name__ == "__main__":
         #
     #
     if (    repr( getDateTimeObjFromIsoDateStr( sNow[:10] ) ) !=
-            'datetime.datetime' + repr( tNow[ : 6 ] )[:13] + '0, 0)' ):
+            'datetime.datetime' + repr( tNow[ : 6 ] )[:13] + ' 0, 0)' ):
+        #
+        print3( 'sNow:', sNow )
+        print3( 'repr( getDateTimeObjFromIsoDateStr( sNow[:10] ) ):',
+                 repr( getDateTimeObjFromIsoDateStr( sNow[:10] ) ) )
+        print3( "'datetime.datetime' + repr( tNow[ : 6 ] )[:13] + ' 0, 0)':",
+                 'datetime.datetime' + repr( tNow[ : 6 ] )[:13] +  '0, 0)' )
         #
         lProblems.append( 'getDateTimeObjFromIsoDateStr()' )
         #
