@@ -248,11 +248,11 @@ def getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest ):
     #
     # if a word is repeated, the prior position number will be missing
     #
-    iMax = max( lLocations )
-    #
     dLocations = dict.fromkeys( iRange( iMax + 1 ) ) # values are None
     #
     lLocations.sort()    # make sure they are listed low to high
+    #
+    iMax = max( lLocations )
     #
     for i in tLocationsOfInterest:
         #
