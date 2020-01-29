@@ -246,8 +246,6 @@ def _isLocationInParens( iLocation, iParenOpen, iParenClose ):
 
 def getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest ):
     #
-    lLocations = getListFromNestedLists( dAllWordLocations.values() )
-    #
     # if a word is repeated, the prior position number will be missing
     #
     iMax = max( lLocations )
@@ -261,13 +259,13 @@ def getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest ):
         dLocations[ i ] = True
         #
     #
-    lTowardFront = []
+    lNearFront = []
     #
-    for i in iRange( len( lLocations ) // 2 ):
+    for i in iRange( len( lLocations ) // 3 ):
         #
         if dLocations[ i ]:
             #
-            lTowardFront.append( i )
+            lNearFront.append( i )
             #
         #
     #
@@ -288,6 +286,20 @@ def getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest ):
         #
     #
     setIgnoreThese = set( lOnEnd )
+    #
+    lOnEnd.reverse() # now low to high
+    #
+    lNearEnd = []
+    #
+    for i in iRange( len( lLocations ) // 3 ):
+        #
+        if dLocations[ lLocations[ i ] ]:
+            #
+            lNearEnd.append( lLocations[ i ] )
+            #
+        #
+    #
+    lNearEnd.reverse() # now low to high
     #
     tInParens = ()
     #
@@ -341,9 +353,9 @@ def getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest ):
         setIgnoreThese.update( tInParens )
         #
     #
-    lTowardFront = [ s for s in lTowardFront if s not in setIgnoreThese ]
+    lNearFront = [ s for s in lNearFront if s not in setIgnoreThese ]
     #
-    return tuple( lTowardFront ), tuple( lOnEnd ), tInParens
+    return tuple( lNearFront ), tuple( lOnEnd ), tuple( lNearEnd ), tInParens
 
 
 
@@ -478,7 +490,7 @@ if __name__ == "__main__":
     tGot = getSubStrLocationsBegAndEnd(
                     dAllWordLocations, tLocationsOfInterest )
     #
-    if tGot != ((1,), (12, 11), ()):
+    if tGot != ((1,), (11, 12), (11, 12), ()):
         #
         print3( tGot )
         lProblems.append(
@@ -489,14 +501,14 @@ if __name__ == "__main__":
             map( getLocationForSub, ( "6SN7GTB", "L65", "GRF" ) ) )
     #
     if getSubStrLocationsBegAndEnd(
-            dAllWordLocations, tLocationsOfInterest ) != ((), (), ()):
+            dAllWordLocations, tLocationsOfInterest ) != ((), (), (), ()):
         #
         lProblems.append(
                 'getSubStrLocationsBegAndEnd( "6SN7GTB, L65, GRF" )' )
         #
     #
-    sBig = ( "Valvo Heerlen E88CC NOS Grey Shield "
-             "CCa 6DJ8 6922 CV2492 CV2493 CV5358 CV5472 6N23P 6N11 ECC88 PCC88 7DJ8" )
+    sBig = ( "Valvo Heerlen E88CC NOS Grey Shield CCa 6DJ8 6922 "
+             "CV2492 CV2493 CV5358 CV5472 6N23P 6N11 ECC88 PCC88 7DJ8" )
     #
     dAllWordLocations = getLocationsDict( sBig )
     #
@@ -508,11 +520,18 @@ if __name__ == "__main__":
     #
     tLocationsOfInterest = tuple( map( getLocationForSub, ( tTubeTypes ) ) )
     #
+    # print3( 'tLocationsOfInterest:', tLocationsOfInterest )
     #
-    if ( getSubStrLocationsBegAndEnd(
-            dAllWordLocations, tLocationsOfInterest ) !=
-         ( (2,), (17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6), () ) ):
+    tGot = getSubStrLocationsBegAndEnd(
+            dAllWordLocations, tLocationsOfInterest )
+    #
+    if ( tGot !=
+         (  (2,),
+            (6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17),
+            (12, 13, 14, 15, 16, 17),
+            () ) ):
         #
+        print3( "E88CC CCa 6DJ8 6922 etc.:", tGot )
         lProblems.append(
                 'getSubStrLocationsBegAndEnd( "E88CC CCa 6DJ8 6922 etc." )' )
         #
@@ -530,9 +549,9 @@ if __name__ == "__main__":
     tGot = getSubStrLocationsBegAndEnd(
                     dAllWordLocations, tLocationsOfInterest )
     #
-    if tGot != ((1, 3), (), (12, 14)):
+    if tGot != ((1, 3), (), (12, 14), (12, 14)):
         #
-        print3( tGot )
+        print3( "ECC88 / 6DJ8 (7DJ8/PCC88):", tGot )
         lProblems.append(
                 'getSubStrLocationsBegAndEnd( "ECC88 / 6DJ8 (7DJ8/PCC88)" )' )
         #
@@ -569,12 +588,65 @@ if __name__ == "__main__":
     tGot = getSubStrLocationsBegAndEnd(
                     dAllWordLocations, tLocationsOfInterest )
     #
-    if tGot != ((), (), (5, 6, 11, 12)):
+    if tGot != ((), (), (), (5, 6, 11, 12)):
         #
         print3( tGot )
         lProblems.append(
                 'getSubStrLocationsBegAndEnd( "DYNACO ST-70 ORIGINAL CAGE" )' )
         #
     #
+    sBig = ( "AZ1 Valvo Pair! Mesh Plate Tube Valve Röhre "
+             "Big Ballon Klangfilm AD1 Tested Good" )
+    #
+    dAllWordLocations = getLocationsDict( sBig )
+    #
+    dExpect = { 'AZ1':          ( 0,),
+                'Valvo':        ( 1,),
+                'Pair':         ( 2,),
+                'Mesh':         ( 3,),
+                'Plate':        ( 4,),
+                'Tube':         ( 5,),
+                'Valve':        ( 6,),
+                'Röhre':        ( 7,),
+                'Big':          ( 8,),
+                'Ballon':       ( 9,),
+                'Klangfilm':    (10,),
+                'AD1':          (11,),
+                'Tested':       (12,),
+                'Good':         (13,),
+                }
+    
+    if dAllWordLocations != dExpect:
+        #
+        lKeys = [ (v, k) for k, v in dAllWordLocations.items() ]
+        lKeys.sort()
+        #
+        for v,k in lKeys:
+            print3( k.ljust( 12), v )
+        lProblems.append(
+                'dAllWordLocations( "AZ1 Valvo Pair!" )' )
+        #
+    #
+    def getLocationForSub( s ):
+        return getSubStringLocation( s, dAllWordLocations )
+    #
+    #
+    tTubeTypes = tuple( "AD1 AZ1".split() )
+    #
+    tLocationsOfInterest = tuple( map( getLocationForSub, tTubeTypes ) )
+    #
+    tGot = getSubStrLocationsBegAndEnd(
+                    dAllWordLocations, tLocationsOfInterest )
+    #
+    if tGot != ((0,), (), (11,), ()):
+        #
+        print3( tGot )
+        lProblems.append(
+                'getSubStrLocationsBegAndEnd( "AZ1 Valvo Pair!" )' )
+        #
+    #
+    '''
+    #
+    '''
     #
     sayTestResult( lProblems )
