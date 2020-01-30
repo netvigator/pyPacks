@@ -787,6 +787,6 @@ if __name__ == "__main__":
     #
     # o.tNearFront, o.tOnEnd, o.tNearEnd, o.tInParens
     #
-    pprint( tGot )
+    # pprint( tGot )
     #
     sayTestResult( lProblems )
