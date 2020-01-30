@@ -386,10 +386,11 @@ def getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest ):
         iNearFront  = len( lNearFront )
         iNearEnd    = len( lNearEnd )
         iSpacing    = iMax // iOfInterest
+        iBetween    = lNearEnd[-1] - lNearEnd[0]
         #
         if (    iNearFront == iNearEnd and
                 ( iNearFront + iNearEnd ) == iOfInterest and
-                lNearEnd[-1] - lNearEnd[0] <= iSpacing ):
+                iSpacing <= iBetween < 2 * iSpacing ):
             #
             # evenly spaced models, some on front and some on end
             #
