@@ -198,6 +198,18 @@ def getSubStringLocation( sSubStr, dAllWordLocations, iShorterByOK = 0 ):
     #
     if iInTitleLocation is None:
         #
+        for sWord, tLocations in dAllWordLocations.items():
+            #
+            if sSubStr in sWord:
+                #
+                iInTitleLocation = tLocations[ 0 ]
+                #
+                break
+                #
+        #
+    #
+    if iInTitleLocation is None:
+        #
         tParts = tuple( map( eatPunctuationBegAndEnd, sSubStr.split() ) )
         #
         if len( tParts ) > 1:
@@ -733,8 +745,48 @@ if __name__ == "__main__":
                 'getSubStrLocationsBegAndEnd( "Stark 8-77 Tube Tester" )' )
         #
     #
-    '''
+    sBig = ( "Altec A5 Customized with sound nice "
+             "so more than the original (515/288/2405)" )
     #
-    '''
+    dAllWordLocations = getLocationsDict( sBig )
+    #
+    dExpect = { 
+        'Altec':        ( 0,),
+        'A5':           ( 1,),
+        'Customized':   ( 2,),
+        'with':         ( 3,),
+        'sound':        ( 4,),
+        'nice':         ( 5,),
+        'so':           ( 6,),
+        'more':         ( 7,),
+        'than':         ( 8,),
+        'the':          ( 9,),
+        'original':     (10,),
+        '(':            (11,),
+        '515/288/2405': (12,),
+        ')':            (13,) }
+    #
+    if dAllWordLocations != dExpect:
+        #
+        lProblems.append(
+                'dAllWordLocations( "Altec A5 Customized" )' )
+        #
+    #
+    def getLocationForSub( s ):
+        return getSubStringLocation( s, dAllWordLocations )
+    #
+    #
+    tTesterModels = tuple( "A5 515 288 2405".split() )
+    #
+    tLocationsOfInterest = tuple( map( getLocationForSub, tTesterModels ) )
+    #
+    o = getSubStrLocationsBegAndEnd(
+                    dAllWordLocations, tLocationsOfInterest )
+    #
+    tGot = getTupleOffObj( o )
+    #
+    # o.tNearFront, o.tOnEnd, o.tNearEnd, o.tInParens
+    #
+    pprint( tGot )
     #
     sayTestResult( lProblems )
