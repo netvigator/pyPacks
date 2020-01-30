@@ -379,6 +379,25 @@ def getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest ):
     #
     lNearFront = [ s for s in lNearFront if s not in setIgnoreThese ]
     #
+    iOfInterest = len( tLocationsOfInterest )
+    #
+    if lNearEnd and iOfInterest > 2:
+        #
+        iNearFront  = len( lNearFront )
+        iNearEnd    = len( lNearEnd )
+        iSpacing    = iMax // iOfInterest
+        #
+        if (    iNearFront == iNearEnd and
+                ( iNearFront + iNearEnd ) == iOfInterest and
+                lNearEnd[-1] - lNearEnd[0] <= iSpacing ):
+            #
+            # evenly spaced models, some on front and some on end
+            #
+            lNearEnd = []
+            #
+        #
+    #
+    #
     return ValueContainer(
             tNearFront  = tuple( lNearFront ),
             tOnEnd      = tuple( lOnEnd ),
@@ -787,6 +806,60 @@ if __name__ == "__main__":
     #
     # o.tNearFront, o.tOnEnd, o.tNearEnd, o.tInParens
     #
-    # pprint( tGot )
+    if tGot != ((1,), (), (12,), (12,)):
+        #
+        print3( tGot )
+        lProblems.append(
+                'getSubStrLocationsBegAndEnd( "Altec A5 Customized" )' )
+        #
+    #
+    sBig = ( "JBL L220 Oracle Speakers 076 Cat Eye Tweeters, "
+             "LE14A Woofer, LE5-9 midrange" )
+    #
+    dAllWordLocations = getLocationsDict( sBig )
+    #
+    dExpect = {
+        'JBL':      ( 0,),
+        'Oracle':   ( 2,),
+        'L220':     ( 1,),
+        'Speakers': ( 3,),
+        '076':      ( 4,),
+        'Cat':      ( 5,),
+        'Eye':      ( 6,),
+        'Tweeters': ( 7,),
+        'LE14A':    ( 8,),
+        'Woofer':   ( 9,),
+        'LE5-9':    (10,),
+        'midrange': (11,) }
+    #
+    if dAllWordLocations != dExpect:
+        #
+        lProblems.append(
+                'dAllWordLocations( "JBL L220 Oracle Speakers" )' )
+        #
+    #
+    def getLocationForSub( s ):
+        return getSubStringLocation( s, dAllWordLocations )
+    #
+    #
+    tTesterModels = tuple( "L220 076 LE14A LE5-9".split() )
+    #
+    tLocationsOfInterest = tuple( map( getLocationForSub, tTesterModels ) )
+    #
+    o = getSubStrLocationsBegAndEnd(
+                    dAllWordLocations, tLocationsOfInterest )
+    #
+    tGot = getTupleOffObj( o )
+    #
+    # o.tNearFront, o.tOnEnd, o.tNearEnd, o.tInParens
+    #
+    if tGot != ((1, 4), (), (), ()):
+        #
+        print3( tGot )
+        lProblems.append(
+                'getSubStrLocationsBegAndEnd( "JBL L220 Oracle Speakers" )' )
+        #
+    #
+    #
     #
     sayTestResult( lProblems )
