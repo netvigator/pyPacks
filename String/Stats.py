@@ -40,6 +40,16 @@ except ( ValueError, ImportError ):
     from String.Find    import getRegExObj
     from String.Test    import isPunctuation, isNotPunctuation
 
+if __name__ == "__main__":
+    #
+    try:
+        from ..Object.Get   import ValueContainerCanPrint as ValueContainer
+    except ( ValueError, ImportError ):
+        from Object.Get     import ValueContainerCanPrint as ValueContainer
+
+
+
+
 def AscStats( sString ):
     #
     #
@@ -263,7 +273,7 @@ def getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest ):
     #
     lNearFront = []
     #
-    for i in iRange( len( lLocations ) // 3 ):
+    for i in iRange( len( lLocations ) // 2 ):
         #
         if dLocations[ i ]:
             #
@@ -357,7 +367,11 @@ def getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest ):
     #
     lNearFront = [ s for s in lNearFront if s not in setIgnoreThese ]
     #
-    return tuple( lNearFront ), tuple( lOnEnd ), tuple( lNearEnd ), tInParens
+    return ValueContainer(
+            tNearFront  = tuple( lNearFront ),
+            tOnEnd      = tuple( lOnEnd ),
+            tNearEnd    = tuple( lNearEnd ),
+            tInParens   = tInParens )
 
 
 
@@ -489,8 +503,19 @@ if __name__ == "__main__":
     tLocationsOfInterest = tuple(
             map( getLocationForSub, ( "6922", "6DJ8", "E88CC" ) ) )
     #
-    tGot = getSubStrLocationsBegAndEnd(
+    def getTupleOffObj( o ):
+        #
+        return ( o.tNearFront,
+                 o.tOnEnd,
+                 o.tNearEnd,
+                 o.tInParens )
+    #
+    o = getSubStrLocationsBegAndEnd(
                     dAllWordLocations, tLocationsOfInterest )
+    #
+    tGot = getTupleOffObj( o )
+    #
+    # o.tNearFront, o.tOnEnd, o.tNearEnd, o.tInParens
     #
     if tGot != ((1,), (11, 12), (11, 12), ()):
         #
@@ -502,8 +527,14 @@ if __name__ == "__main__":
     tLocationsOfInterest = tuple(
             map( getLocationForSub, ( "6SN7GTB", "L65", "GRF" ) ) )
     #
-    if getSubStrLocationsBegAndEnd(
-            dAllWordLocations, tLocationsOfInterest ) != ((), (), (), ()):
+    o = getSubStrLocationsBegAndEnd(
+            dAllWordLocations, tLocationsOfInterest )
+    #
+    tGot = getTupleOffObj( o )
+    #
+    # o.tNearFront, o.tOnEnd, o.tNearEnd, o.tInParens
+    #
+    if tGot != ((), (), (), ()):
         #
         lProblems.append(
                 'getSubStrLocationsBegAndEnd( "6SN7GTB, L65, GRF" )' )
@@ -524,8 +555,12 @@ if __name__ == "__main__":
     #
     # print3( 'tLocationsOfInterest:', tLocationsOfInterest )
     #
-    tGot = getSubStrLocationsBegAndEnd(
+    o = getSubStrLocationsBegAndEnd(
             dAllWordLocations, tLocationsOfInterest )
+    #
+    tGot = getTupleOffObj( o )
+    #
+    # o.tNearFront, o.tOnEnd, o.tNearEnd, o.tInParens
     #
     if ( tGot !=
          (  (2,),
@@ -548,8 +583,12 @@ if __name__ == "__main__":
     #
     tLocationsOfInterest = tuple( map( getLocationForSub, ( tTubeTypes ) ) )
     #
-    tGot = getSubStrLocationsBegAndEnd(
+    o = getSubStrLocationsBegAndEnd(
                     dAllWordLocations, tLocationsOfInterest )
+    #
+    tGot = getTupleOffObj( o )
+    #
+    # o.tNearFront, o.tOnEnd, o.tNearEnd, o.tInParens
     #
     if tGot != ((1, 3), (), (12, 14), (12, 14)):
         #
@@ -587,8 +626,12 @@ if __name__ == "__main__":
     #
     tLocationsOfInterest = tuple( map( getLocationForSub, ( tTubeTypes ) ) )
     #
-    tGot = getSubStrLocationsBegAndEnd(
+    o = getSubStrLocationsBegAndEnd(
                     dAllWordLocations, tLocationsOfInterest )
+    #
+    tGot = getTupleOffObj( o )
+    #
+    # o.tNearFront, o.tOnEnd, o.tNearEnd, o.tInParens
     #
     if tGot != ((), (), (), (5, 6, 11, 12)):
         #
@@ -637,14 +680,57 @@ if __name__ == "__main__":
     #
     tLocationsOfInterest = tuple( map( getLocationForSub, tTubeTypes ) )
     #
-    tGot = getSubStrLocationsBegAndEnd(
+    o = getSubStrLocationsBegAndEnd(
                     dAllWordLocations, tLocationsOfInterest )
+    #
+    tGot = getTupleOffObj( o )
+    #
+    # o.tNearFront, o.tOnEnd, o.tNearEnd, o.tInParens
     #
     if tGot != ((0,), (), (11,), ()):
         #
         print3( tGot )
         lProblems.append(
                 'getSubStrLocationsBegAndEnd( "AZ1 Valvo Pair!" )' )
+        #
+    #
+    sBig = ( "Vintage Stark 8-77 Tube Tester Hickok 6000" )
+    #
+    dAllWordLocations = getLocationsDict( sBig )
+    #
+    dExpect = { 
+        'Vintage': (0,),
+        'Stark': (1,),
+        '8-77': (2,),
+        'Tube': (3,),
+        'Tester': (4,),
+        'Hickok': (5,),
+        '6000': (6,) }
+    #
+    if dAllWordLocations != dExpect:
+        #
+        lProblems.append(
+                'dAllWordLocations( "Stark 8-77 Tube Tester" )' )
+        #
+    #
+    def getLocationForSub( s ):
+        return getSubStringLocation( s, dAllWordLocations )
+    #
+    #
+    tTesterModels = tuple( "8-77 6000".split() )
+    #
+    tLocationsOfInterest = tuple( map( getLocationForSub, tTesterModels ) )
+    #
+    o = getSubStrLocationsBegAndEnd(
+                    dAllWordLocations, tLocationsOfInterest )
+    #
+    tGot = getTupleOffObj( o )
+    #
+    if tGot != ((2,), (6,), (6,), ()):
+        #
+        print3( tGot )
+        lProblems.append(
+                'getSubStrLocationsBegAndEnd( "Stark 8-77 Tube Tester" )' )
         #
     #
     '''
