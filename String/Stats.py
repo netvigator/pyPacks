@@ -23,22 +23,29 @@
 # Copyright 2004-2020 Rick Graves
 #
 
+from collections            import OrderedDict
+from string                 import digits, ascii_letters as letters
+
 try:
-    from ..Collect.Get  import getListFromNestedLists
-    from ..Iter.AllVers import tMap, iRange, tZip
-    from ..Numb.Stats   import getMeanMembers
-    from ..Object.Get   import ValueContainer
-    from ..String.Eat   import eatPunctuationBegAndEnd
-    from ..String.Find  import getRegExObj
-    from ..String.Test  import isPunctuation, isNotPunctuation
+    from ..Collect.Get      import getListFromNestedLists
+    from ..Iter.AllVers     import tMap, iRange, tZip
+    from ..Numb.Stats       import getMeanMembers
+    from ..Object.Get       import ValueContainer, RandomFeeder
+    from ..String.Eat       import eatPunctuationBegAndEnd
+    from ..String.Find      import getRegExObj, oFinderPunctuation
+    from ..String.Replace   import ReplaceManyOldWithManyNew
+    from ..String.Test      import isPunctuation, isNotPunctuation
+    from ..Utils.TimeTrial  import TimeTrial
 except ( ValueError, ImportError ):
-    from Collect.Get    import getListFromNestedLists
-    from Iter.AllVers   import tMap, iRange, tZip
-    from Numb.Stats     import getMeanMembers
-    from Object.Get     import ValueContainer
-    from String.Eat     import eatPunctuationBegAndEnd
-    from String.Find    import getRegExObj
-    from String.Test    import isPunctuation, isNotPunctuation
+    from Collect.Get        import getListFromNestedLists
+    from Iter.AllVers       import tMap, iRange, tZip
+    from Numb.Stats         import getMeanMembers
+    from Object.Get         import ValueContainer, RandomFeeder
+    from String.Eat         import eatPunctuationBegAndEnd
+    from String.Find        import getRegExObj, oFinderPunctuation
+    from String.Replace     import ReplaceManyOldWithManyNew
+    from String.Test        import isPunctuation, isNotPunctuation
+    from Utils.TimeTrial    import TimeTrial
 
 if __name__ == "__main__":
     #
@@ -86,11 +93,12 @@ def AscStats( sString ):
     return oReturn
 
 
-_oFindParens = getRegExObj( '[()]' )
-    
+
+_oFindParens = getRegExObj( '([()])' )
 
 
-def getLocationsDict( s, bCarefulWithParens = True ):
+
+def getLocationsDict( s, bCarefulWithParens = False ):
     #
     '''pass a string with spaces between "words"
     returns a dictionary
@@ -104,24 +112,7 @@ def getLocationsDict( s, bCarefulWithParens = True ):
     #
     if bCarefulWithParens:
         #
-        lParens = _oFindParens.findall( s )
-        #
-        if lParens:
-            #
-            lParts = _oFindParens.split( s )
-            #
-            lNewParts = []
-            #
-            for i in iRange( len( lParens ) ):
-                #
-                lNewParts.append( lParts[ i] )
-                lNewParts.append( lParens[i])
-                #
-            #
-            lNewParts.append( lParts[ -1 ] )
-            #
-            sCareful = ' '.join( lNewParts )
-            #
+        sCareful = _oFindParens.sub( ' \\1 ', s )
         #
     #
     lWords = sCareful.split()
@@ -145,6 +136,15 @@ def getLocationsDict( s, bCarefulWithParens = True ):
         #
     #
     return dAllWordLocations
+
+
+
+def getLocationsDictOrig( s ):
+    #
+    return getLocationsDict( s, bCarefulWithParens = True )
+
+
+
 
 
 
@@ -266,7 +266,8 @@ def _isLocationInParens( iLocation, iParenOpen, iParenClose ):
 
 
 
-def getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest ):
+def _getSubStrLocationsBegAndEnd(
+        dAllWordLocations, tLocationsOfInterest, bTrouble = False ):
     #
     # if a word is repeated, the prior position number will be missing
     #
@@ -282,6 +283,10 @@ def getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest ):
         #
         dLocations[ i ] = True
         #
+    #
+    if bTrouble:
+        print3( 'dLocations:' )
+        pprint( dLocations )
     #
     lNearFront = []
     #
@@ -334,6 +339,8 @@ def getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest ):
         #
         if len( tParenOpen ) == 1 or len( tParenClose ) == 1:
             #
+            # single pair of parens
+            #
             iParenOpen  = tParenOpen [  0 ]
             iParenClose = tParenClose[ -1 ]
             #
@@ -345,6 +352,8 @@ def getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest ):
                 #
             #
         else:
+            #
+            # more parens than just one pair of parens
             #
             tParenPairs = tZip( dAllWordLocations[ '(' ],
                                 dAllWordLocations[ ')' ] )
@@ -368,7 +377,9 @@ def getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest ):
         #
         lInParens = [ dAllWordLocations[k][0]
                       for k in dAllWordLocations
-                      if isWordInParens( k ) and isNotPunctuation( k ) ]
+                      if isWordInParens( k ) and
+                         isNotPunctuation( k ) and
+                         dAllWordLocations[k][0] in tLocationsOfInterest ]
         #
         lInParens.sort() # order not same python 2 vs 3, so need this
         #
@@ -406,8 +417,220 @@ def getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest ):
             tInParens   = tInParens )
 
 
+_setAlphaNums = frozenset( list( letters ) + list( digits ) )
 
 
+def _getStrLocationsBegAndEnd(
+        sWhole, tStringsOfInterest, bUseSwapper = False, bTrouble = False ):
+    #
+    # swapper is slower, takes more than twice as long as using replace
+    #
+    setUseChars = _setAlphaNums.difference( frozenset( sWhole ) )
+    #
+    lLensStrings = [ ( len(s), s ) for s in tStringsOfInterest ]
+    #
+    if len( setUseChars ) <= max( [ t[0] for t in lLensStrings ] ):
+        #
+        setUseChars = _setAlphaNums
+        #
+    #
+    oRandoms = RandomFeeder(
+                    setUseChars,
+                    bRecycle          = True,
+                    bShuffleOnRecycle = True )
+    #
+    dSubstitutes = OrderedDict()
+    #
+    sSubstitute = None
+    #
+    dReverseSubs= {}
+    #
+    dReverseSubs[ None ] = None
+    #
+    lLensStrings.sort()
+    lLensStrings.reverse() # longest on top
+    #
+    lStringsOfInterest = [ t[1] for t in lLensStrings ]
+    #
+    if len( _oFindParens.findall( sWhole ) ) > 1:
+        #
+        lStringsOfInterest.extend(
+            list( frozenset( oFinderPunctuation.findall( sWhole ) ) ) )
+        #
+    #
+    if bTrouble:
+        print3( 'lStringsOfInterest:', lStringsOfInterest )
+    for sStr in lStringsOfInterest:
+        #
+        while sSubstitute in dReverseSubs:
+            #
+            iGetLen = len( sStr )
+            #
+            if iGetLen == 1: iGetLen = 2
+            #
+            lRandoms = oRandoms.getNextSome( iGetLen )
+            #
+            sSubstitute = ''.join( lRandoms )
+            #
+            lRandoms[0:0] = [ " " ]
+            #
+            lRandoms.append( " " )
+            #
+            sPadSubstitute = ''.join( lRandoms )
+            #
+        #
+        dSubstitutes[ sStr ] = sPadSubstitute
+        #
+        dReverseSubs[ sSubstitute ] = sStr
+        #
+    #
+    del dReverseSubs[ None ]
+    #
+    if bTrouble:
+        print3( 'dSubstitutes:' )
+        pprint( dSubstitutes )
+        print3( 'dReverseSubs:' )
+        pprint( dReverseSubs )
+        print3( 'sWhole before:', sWhole )
+    if bUseSwapper:
+        #
+        sWhole = ReplaceManyOldWithManyNew( sWhole, dSubstitutes )
+        #
+    else:
+        #
+        for s in lStringsOfInterest:
+            #
+            sWhole = sWhole.replace( s, dSubstitutes[s] )
+            #
+        #
+    #
+    dAllWordLocations = getLocationsDict( sWhole )
+    #
+    if bTrouble:
+        print3( 'sWhole after:', sWhole )
+        print3( 'tStringsOfInterest before:', tStringsOfInterest )
+        print3( 'dAllWordLocations:' )
+        pprint( dAllWordLocations )
+    #
+    tStringsOfInterest = tuple(
+            [ s for s in tStringsOfInterest
+              if dSubstitutes[s].strip() in dAllWordLocations ] )
+    #
+    if bTrouble:
+        print3( 'tStringsOfInterest after:', tStringsOfInterest )
+    if tStringsOfInterest:
+        #
+        for k, v in dReverseSubs.items():
+            #
+            if k in dAllWordLocations:
+                #
+                dAllWordLocations[ v ] = dAllWordLocations[ k ]
+                #
+                del dAllWordLocations[ k ]
+                #
+            #
+        #
+        tLocationsOfInterest = tuple( getListFromNestedLists(
+                [ dAllWordLocations[ s ] for s in tStringsOfInterest ] ) )
+        #
+    else:
+        #
+        tLocationsOfInterest = ()
+        #
+    #
+    o = _getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest )
+    #
+    o.dAllWordLocations = dAllWordLocations
+    #
+    return o
+
+
+def getStrLocationsBegAndEnd( sWhole, tStrsOfInterest, bTrouble = False ):
+    #
+    lStingsGotSpace = [ s for s in tStrsOfInterest if ' ' in s ]
+    #
+    dChanges    = {}
+    dChangeBack = {}
+    #
+    if lStingsGotSpace:
+        #
+        for sOrig in lStingsGotSpace:
+            #
+            sNew = sOrig.replace( ' ', '_' )
+            #
+            sWhole = sWhole.replace( sOrig, sNew )
+            #
+            dChanges[ sOrig ] = sNew
+            #
+            dChangeBack[ sNew ] = sOrig
+            #
+        #
+        lStrsOfInterest = [ dChanges.get( s, s ) for s in tStrsOfInterest ]
+        #
+    else:
+        #
+        lStrsOfInterest = tStrsOfInterest
+        #
+    #
+    if False: # TimeTrial shows this takes more time
+        #
+        lStrsOfInterestAndMore = list( lStrsOfInterest )
+        #
+        lStrsOfInterestAndMore.append( '[()]' )
+        #
+        oFindInterests = getRegExObj( '(%s)' % '|'.join( lStrsOfInterestAndMore ) )
+        #
+        sWhole = oFindInterests.sub( ' \\1 ', sWhole )
+        #
+    else:
+        #
+        lStrsOfInterestAndMore = list( lStrsOfInterest )
+        #
+        lStrsOfInterestAndMore.extend( [ '(', ')' ] )
+        #
+        for s in lStrsOfInterestAndMore:
+            #
+            sWhole = sWhole.replace( s, ' %s ' % s )
+            #
+        #
+    if bTrouble:
+        #
+        print3( 'sWhole:', sWhole )
+        print3( 'lStrsOfInterest:', lStrsOfInterest )
+        #
+    #
+    dAllWordLocations = getLocationsDict( sWhole )
+    #
+    lStrsOfInterest = [ s for s in lStrsOfInterest if s in dAllWordLocations ]
+    #
+    if lStrsOfInterest:
+        #
+        tLocationsOfInterest = tuple( getListFromNestedLists(
+                [ dAllWordLocations[ s ] for s in lStrsOfInterest ] ) )
+        #
+    else:
+        #
+        tLocationsOfInterest = ()
+        #
+    #
+    o = _getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest )
+    #
+    for k, v in dChangeBack.items():
+        #
+        if k in dAllWordLocations:
+            #
+            dAllWordLocations[ v ] = dAllWordLocations[ k ]
+            #
+            del dAllWordLocations[ k ]
+            #
+        #
+    #
+    # o.dAllWordLocations = dAllWordLocations
+    #
+    return o
+    
+    
+    
 
 if __name__ == "__main__":
     #
@@ -436,10 +659,19 @@ if __name__ == "__main__":
         lProblems.append( 'AscStats()' )
         #
     #
+    def getTupleOffObj( o ):
+        #
+        return ( o.tNearFront,
+                 o.tOnEnd,
+                 o.tNearEnd,
+                 o.tInParens )
+    #
+    lTestItems = []
+    #
     sSub = 'Le5'
     sBig = 'Jbl L65 Jubal Le5-12 Mids Pair Working Nice! See Pictures'
     #
-    dAllWordLocations = getLocationsDict( sBig )
+    dAllWordLocations = getLocationsDictOrig( sBig )
     #
     dExpect = { 'Jbl'       : ( 0, ),
                 'L65'       : ( 1, ),
@@ -456,7 +688,7 @@ if __name__ == "__main__":
     if dAllWordLocations != dExpect:
         #
         pprint( dAllWordLocations )
-        lProblems.append( 'getLocationsDict( "JBL L65" )' )
+        lProblems.append( 'getLocationsDictOrig( "JBL L65" )' )
         #
     #
     if getSubStringLocation( sSub, dAllWordLocations ) != 3:
@@ -467,7 +699,7 @@ if __name__ == "__main__":
     sSub = '15" SILVER'
     sBig = 'VINTAGE TANNOY GRF CORNER CABINET w. 15" SILVER DUAL CONCENTRIC DRIVER LSU/HF/15'
     #
-    dAllWordLocations = getLocationsDict( sBig )
+    dAllWordLocations = getLocationsDictOrig( sBig )
     #
     dExpect = { 'VINTAGE'   : (  0, ),
                 'TANNOY'    : (  1, ),
@@ -485,7 +717,7 @@ if __name__ == "__main__":
     #
     if dAllWordLocations != dExpect:
         #
-        lProblems.append( 'getLocationsDict( "VINTAGE TANNOY GRF" )' )
+        lProblems.append( 'getLocationsDictOrig( "VINTAGE TANNOY GRF" )' )
         #
     #
     #
@@ -497,7 +729,7 @@ if __name__ == "__main__":
     sSub = "6SN7GT"
     sBig = "VINTAGE RCA 6SN7GTB ELECTRON TUBE NOS"
     #
-    dAllWordLocations = getLocationsDict( sBig )
+    dAllWordLocations = getLocationsDictOrig( sBig )
     #
     dExpect = { 'VINTAGE'   : ( 0, ),
                 'RCA'       : ( 1, ),
@@ -509,8 +741,27 @@ if __name__ == "__main__":
     #
     if dAllWordLocations != dExpect:
         #
-        lProblems.append( 'getLocationsDict( "VINTAGE RCA 6SN7GTB" )' )
+        lProblems.append( 'getLocationsDictOrig( "VINTAGE RCA 6SN7GTB" )' )
         #
+    #
+    tLook4Models = ( sSub, )
+    #
+    def getLocationForSub( s ):
+        return getSubStringLocation( s, dAllWordLocations )
+    #
+    tLocationsOfInterest = tuple( map( getLocationForSub, tLook4Models ) )
+    #
+    o = _getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest )
+    #
+    tGot = getTupleOffObj( o )
+    #
+    # o.tNearFront, o.tOnEnd, o.tNearEnd, o.tInParens
+    #
+    tExpect = ((2,), (), (), ())
+    #
+    lTestItems.append(
+            ( sBig, tLook4Models, tExpect,
+                    "VINTAGE RCA 6SN7GTB" ) )
     #
     #
     if getSubStringLocation( sSub, dAllWordLocations, iShorterByOK = 1 ) != 2:
@@ -527,111 +778,127 @@ if __name__ == "__main__":
     sBig = ( "Amperex 6922 gold pin tube military edition "
              "audio grade gold pins 6DJ8 E88CC" )
     #
-    dAllWordLocations = getLocationsDict( sBig )
+    dAllWordLocations = getLocationsDictOrig( sBig )
     #
     def getLocationForSub( s ):
         return getSubStringLocation( s, dAllWordLocations )
     #
-    tLocationsOfInterest = tuple(
-            map( getLocationForSub, ( "6922", "6DJ8", "E88CC" ) ) )
+    tLook4Models = ( "6922", "6DJ8", "E88CC" )
     #
-    def getTupleOffObj( o ):
-        #
-        return ( o.tNearFront,
-                 o.tOnEnd,
-                 o.tNearEnd,
-                 o.tInParens )
+    tLocationsOfInterest = tuple( map( getLocationForSub, tLook4Models ) )
     #
-    o = getSubStrLocationsBegAndEnd(
-                    dAllWordLocations, tLocationsOfInterest )
+    o = _getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest )
     #
     tGot = getTupleOffObj( o )
     #
     # o.tNearFront, o.tOnEnd, o.tNearEnd, o.tInParens
     #
-    if tGot != ((1,), (11, 12), (11, 12), ()):
+    tExpect = ((1,), (11, 12), (11, 12), ())
+    #
+    lTestItems.append(
+            ( sBig, tLook4Models, tExpect, "Amperex 6922 gold" ) )
+    #
+    if tGot != tExpect:
         #
         print3( tGot )
         lProblems.append(
-                'getSubStrLocationsBegAndEnd( "Amperex 6922 gold" )' )
+                '_getSubStrLocationsBegAndEnd( "Amperex 6922 gold" )' )
         #
     #
-    tLocationsOfInterest = tuple(
-            map( getLocationForSub, ( "6SN7GTB", "L65", "GRF" ) ) )
+    tLook4Models = ( "6SN7GTB", "L65", "GRF" )
     #
-    o = getSubStrLocationsBegAndEnd(
-            dAllWordLocations, tLocationsOfInterest )
+    tLocationsOfInterest = tuple( map( getLocationForSub, tLook4Models ) )
+    #
+    o = _getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest )
     #
     tGot = getTupleOffObj( o )
     #
     # o.tNearFront, o.tOnEnd, o.tNearEnd, o.tInParens
     #
-    if tGot != ((), (), (), ()):
+    tExpect = ((), (), (), ())
+    #
+    lTestItems.append(
+            ( sBig, tLook4Models, tExpect,
+                    "Amperex 6922 gold (wrong models)" ) )
+    #
+    if tGot != tExpect:
         #
         lProblems.append(
-                'getSubStrLocationsBegAndEnd( "6SN7GTB, L65, GRF" )' )
+                '_getSubStrLocationsBegAndEnd( "6SN7GTB, L65, GRF" )' )
         #
     #
     sBig = ( "Valvo Heerlen E88CC NOS Grey Shield CCa 6DJ8 6922 "
              "CV2492 CV2493 CV5358 CV5472 6N23P 6N11 ECC88 PCC88 7DJ8" )
     #
-    dAllWordLocations = getLocationsDict( sBig )
+    dAllWordLocations = getLocationsDictOrig( sBig )
     #
     def getLocationForSub( s ):
         return getSubStringLocation( s, dAllWordLocations )
     #
-    tTubeTypes = tuple( "E88CC CCa 6DJ8 6922 CV2492 CV2493 CV5358 CV5472 "
-                        "6N23P 6N11 ECC88 PCC88 7DJ8".split() )
+    tLook4Models = tuple( "E88CC CCa 6DJ8 6922 CV2492 CV2493 CV5358 "
+                             "CV5472 6N23P 6N11 ECC88 PCC88 7DJ8".split() )
     #
-    tLocationsOfInterest = tuple( map( getLocationForSub, ( tTubeTypes ) ) )
+    tLocationsOfInterest = tuple(
+                            map( getLocationForSub, ( tLook4Models ) ) )
     #
     # print3( 'tLocationsOfInterest:', tLocationsOfInterest )
     #
-    o = getSubStrLocationsBegAndEnd(
-            dAllWordLocations, tLocationsOfInterest )
+    o = _getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest )
     #
     tGot = getTupleOffObj( o )
     #
-    # o.tNearFront, o.tOnEnd, o.tNearEnd, o.tInParens
-    #
-    if ( tGot !=
-         (  (2,),
+    tExpect = (  (2,),
             (6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17),
             (12, 13, 14, 15, 16, 17),
-            () ) ):
+            () )
+    #
+    lTestItems.append(
+            ( sBig, tLook4Models, tExpect,
+                    "E88CC CCa 6DJ8 6922 etc." ) )
+    #
+    # o.tNearFront, o.tOnEnd, o.tNearEnd, o.tInParens
+    #
+    if tGot != tExpect:
         #
         print3( "E88CC CCa 6DJ8 6922 etc.:", tGot )
         lProblems.append(
-                'getSubStrLocationsBegAndEnd( "E88CC CCa 6DJ8 6922 etc." )' )
+                '_getSubStrLocationsBegAndEnd( "E88CC CCa 6DJ8 6922 etc." )' )
         #
     #
     sBig = ( "2x  ECC88 / 6DJ8   TELEFUNKEN  <> tubes  - NOS  "
              "-  ( ~  7DJ8 / PCC88 )  MILITARY" )
     #
-    dAllWordLocations = getLocationsDict( sBig )
+    dAllWordLocations = getLocationsDictOrig( sBig )
     #
     def getLocationForSub( s ):
         return getSubStringLocation( s, dAllWordLocations )
     #
-    tLocationsOfInterest = tuple( map( getLocationForSub, ( tTubeTypes ) ) )
+    tLocationsOfInterest = tuple(
+                            map( getLocationForSub, ( tLook4Models ) ) )
     #
-    o = getSubStrLocationsBegAndEnd(
-                    dAllWordLocations, tLocationsOfInterest )
+    o = _getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest )
     #
     tGot = getTupleOffObj( o )
     #
     # o.tNearFront, o.tOnEnd, o.tNearEnd, o.tInParens
     #
-    if tGot != ((1, 3), (), (12, 14), (12, 14)):
+    tExpectOne = ( ((1, 3), (), (12, 14), (12, 14)),
+                   ((1, 3), (), (13, 15), (13, 15)) )
+    #
+    lTestItems.append(
+            ( sBig, tLook4Models, tExpectOne,
+                    "ECC88 / 6DJ8 (7DJ8/PCC88)" ) )
+    #
+    if tGot not in tExpectOne:
         #
         print3( "ECC88 / 6DJ8 (7DJ8/PCC88):", tGot )
         lProblems.append(
-                'getSubStrLocationsBegAndEnd( "ECC88 / 6DJ8 (7DJ8/PCC88)" )' )
+                '_getSubStrLocationsBegAndEnd( "ECC88 / 6DJ8 (7DJ8/PCC88)" )' )
         #
     #
     sBig = "DYNACO ST-70 ORIGINAL CAGE (with meter) VG SHAPE ( 1 EA )"
     #
-    dAllWordLocations = getLocationsDict( sBig )
+    dAllWordLocations = getLocationsDictOrig( sBig )
     #
     dExpect = { '('         : ( 4, 10),
                 ')'         : ( 7, 13),
@@ -652,30 +919,37 @@ if __name__ == "__main__":
                 'dAllWordLocations( "DYNACO ST-70 ORIGINAL CAGE" )' )
         #
     #
+    tLook4Models = ( 'ST-70', '1', )
     #
     def getLocationForSub( s ):
         return getSubStringLocation( s, dAllWordLocations )
     #
-    tLocationsOfInterest = tuple( map( getLocationForSub, ( tTubeTypes ) ) )
+    tLocationsOfInterest = tuple(
+                            map( getLocationForSub, ( tLook4Models ) ) )
     #
-    o = getSubStrLocationsBegAndEnd(
-                    dAllWordLocations, tLocationsOfInterest )
+    o = _getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest )
     #
     tGot = getTupleOffObj( o )
     #
     # o.tNearFront, o.tOnEnd, o.tNearEnd, o.tInParens
     #
-    if tGot != ((), (), (), (5, 6, 11, 12)):
+    tExpect = ((1,), (), (11,), (11,))
+    #
+    lTestItems.append(
+            ( sBig, tLook4Models, tExpect,
+                    "DYNACO ST-70 ORIGINAL CAGE" ) )
+    #
+    if tGot != tExpect:
         #
         print3( tGot )
         lProblems.append(
-                'getSubStrLocationsBegAndEnd( "DYNACO ST-70 ORIGINAL CAGE" )' )
+                '_getSubStrLocationsBegAndEnd( "DYNACO ST-70 ORIGINAL CAGE" )' )
         #
     #
     sBig = ( "AZ1 Valvo Pair! Mesh Plate Tube Valve Röhre "
              "Big Ballon Klangfilm AD1 Tested Good" )
     #
-    dAllWordLocations = getLocationsDict( sBig )
+    dAllWordLocations = getLocationsDictOrig( sBig )
     #
     dExpect = { 'AZ1':          ( 0,),
                 'Valvo':        ( 1,),
@@ -708,27 +982,31 @@ if __name__ == "__main__":
         return getSubStringLocation( s, dAllWordLocations )
     #
     #
-    tTubeTypes = tuple( "AD1 AZ1".split() )
+    tLook4Models = tuple( "AD1 AZ1".split() )
     #
-    tLocationsOfInterest = tuple( map( getLocationForSub, tTubeTypes ) )
+    tLocationsOfInterest = tuple( map( getLocationForSub, tLook4Models ) )
     #
-    o = getSubStrLocationsBegAndEnd(
-                    dAllWordLocations, tLocationsOfInterest )
+    o = _getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest )
     #
     tGot = getTupleOffObj( o )
     #
     # o.tNearFront, o.tOnEnd, o.tNearEnd, o.tInParens
     #
-    if tGot != ((0,), (), (11,), ()):
+    tExpect = ((0,), (), (11,), ())
+    #
+    lTestItems.append(
+            ( sBig, tLook4Models, tExpect, "AZ1 Valvo Pair!" ) )
+    #
+    if tGot != tExpect:
         #
         print3( tGot )
         lProblems.append(
-                'getSubStrLocationsBegAndEnd( "AZ1 Valvo Pair!" )' )
+                '_getSubStrLocationsBegAndEnd( "AZ1 Valvo Pair!" )' )
         #
     #
     sBig = ( "Vintage Stark 8-77 Tube Tester Hickok 6000" )
     #
-    dAllWordLocations = getLocationsDict( sBig )
+    dAllWordLocations = getLocationsDictOrig( sBig )
     #
     dExpect = { 
         'Vintage': (0,),
@@ -749,26 +1027,30 @@ if __name__ == "__main__":
         return getSubStringLocation( s, dAllWordLocations )
     #
     #
-    tTesterModels = tuple( "8-77 6000".split() )
+    tLook4Models = tuple( "8-77 6000".split() )
     #
-    tLocationsOfInterest = tuple( map( getLocationForSub, tTesterModels ) )
+    tLocationsOfInterest = tuple( map( getLocationForSub, tLook4Models ) )
     #
-    o = getSubStrLocationsBegAndEnd(
-                    dAllWordLocations, tLocationsOfInterest )
+    o = _getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest )
     #
     tGot = getTupleOffObj( o )
     #
-    if tGot != ((2,), (6,), (6,), ()):
+    tExpect = ((2,), (6,), (6,), ())
+    #
+    lTestItems.append(
+            ( sBig, tLook4Models, tExpect, "Stark 8-77 Tube Tester" ) )
+    #
+    if tGot != tExpect:
         #
         print3( tGot )
         lProblems.append(
-                'getSubStrLocationsBegAndEnd( "Stark 8-77 Tube Tester" )' )
+                '_getSubStrLocationsBegAndEnd( "Stark 8-77 Tube Tester" )' )
         #
     #
     sBig = ( "Altec A5 Customized with sound nice "
              "so more than the original (515/288/2405)" )
     #
-    dAllWordLocations = getLocationsDict( sBig )
+    dAllWordLocations = getLocationsDictOrig( sBig )
     #
     dExpect = { 
         'Altec':        ( 0,),
@@ -796,28 +1078,33 @@ if __name__ == "__main__":
         return getSubStringLocation( s, dAllWordLocations )
     #
     #
-    tTesterModels = tuple( "A5 515 288 2405".split() )
+    tLook4Models = tuple( "A5 515 288 2405".split() )
     #
-    tLocationsOfInterest = tuple( map( getLocationForSub, tTesterModels ) )
+    tLocationsOfInterest = tuple( map( getLocationForSub, tLook4Models ) )
     #
-    o = getSubStrLocationsBegAndEnd(
-                    dAllWordLocations, tLocationsOfInterest )
+    o = _getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest )
     #
     tGot = getTupleOffObj( o )
     #
     # o.tNearFront, o.tOnEnd, o.tNearEnd, o.tInParens
     #
-    if tGot != ((1,), (), (12,), (12,)):
+    tExpectOne = ( ((1,), (), (12,), (12,)),
+                   ((1,), (), (12, 14, 16), (12, 14, 16)) )
+    #
+    lTestItems.append(
+            ( sBig, tLook4Models, tExpectOne, "Altec A5 Customized" ) )
+    #
+    if tGot not in tExpectOne:
         #
         print3( tGot )
         lProblems.append(
-                'getSubStrLocationsBegAndEnd( "Altec A5 Customized" )' )
+                '_getSubStrLocationsBegAndEnd( "Altec A5 Customized" )' )
         #
     #
     sBig = ( "JBL L220 Oracle Speakers 076 Cat Eye Tweeters, "
              "LE14A Woofer, LE5-9 midrange" )
     #
-    dAllWordLocations = getLocationsDict( sBig )
+    dAllWordLocations = getLocationsDictOrig( sBig )
     #
     dExpect = {
         'JBL':      ( 0,),
@@ -843,24 +1130,152 @@ if __name__ == "__main__":
         return getSubStringLocation( s, dAllWordLocations )
     #
     #
-    tTesterModels = tuple( "L220 076 LE14A LE5-9".split() )
+    tLook4Models = tuple( "L220 076 LE14A LE5-9".split() )
     #
-    tLocationsOfInterest = tuple( map( getLocationForSub, tTesterModels ) )
+    tLocationsOfInterest = tuple( map( getLocationForSub, tLook4Models ) )
     #
-    o = getSubStrLocationsBegAndEnd(
-                    dAllWordLocations, tLocationsOfInterest )
+    o = _getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest )
     #
     tGot = getTupleOffObj( o )
     #
     # o.tNearFront, o.tOnEnd, o.tNearEnd, o.tInParens
     #
-    if tGot != ((1, 4), (), (), ()):
+    tExpect = ((1, 4), (), (), ())
+    #
+    lTestItems.append(
+            ( sBig, tLook4Models, tExpect, "JBL L220 Oracle Speakers" ) )
+    #
+    if tGot != tExpect:
         #
         print3( tGot )
         lProblems.append(
-                'getSubStrLocationsBegAndEnd( "JBL L220 Oracle Speakers" )' )
+                '_getSubStrLocationsBegAndEnd( "JBL L220 Oracle Speakers" )' )
         #
     #
+    oTest = _getStrLocationsBegAndEnd( sBig, tLook4Models )
     #
+    if oTest.dAllWordLocations != dExpect:
+        #
+        print3( 'oTest.dAllWordLocations:' )
+        pprint( oTest.dAllWordLocations )
+        lProblems.append(
+                '_getStrLocationsBegAndEnd dAllWordLocations'
+                '( "JBL L220 Oracle Speakers" )' )
+        #
+    #
+    tGot = getTupleOffObj( oTest )
+    #
+    if tGot != tExpect:
+        #
+        print3( tGot )
+        lProblems.append(
+                '_getStrLocationsBegAndEnd( "JBL L220 Oracle Speakers" )' )
+        #
+    #
+    for t in lTestItems:
+        #
+        bTrouble = False and ( t[3] == "Altec A5 Customized" )
+        #
+        if True or bTrouble:
+            #
+            # print3( t[3] )
+            oTest = _getStrLocationsBegAndEnd( t[0], t[1], bTrouble = False )
+            #
+            tGot = getTupleOffObj( oTest )
+            #
+            if not ( tGot == t[2] or tGot in t[2] ):
+                #
+                print3()
+                print3( 'tGot   :', tGot )
+                print3( 'tExpect:', t[2] )
+                #
+                lProblems.append(
+                        '_getStrLocationsBegAndEnd( "%s", bUseSwapper = True )' % t[3] )
+                #
+            #
+            oTest = _getStrLocationsBegAndEnd( t[0], t[1], bUseSwapper = False, bTrouble = bTrouble )
+            #
+            tGot = getTupleOffObj( oTest )
+            #
+            if not ( tGot == t[2] or tGot in t[2] ):
+                #
+                print3()
+                print3( 'tGot   :', tGot )
+                print3( 'tExpect:', t[2] )
+                #
+                lProblems.append(
+                        '_getStrLocationsBegAndEnd( "%s", bUseSwapper = False )' % t[3] )
+                #
+            #
+            oTest = getStrLocationsBegAndEnd( t[0], t[1] )
+            #
+            tGot = getTupleOffObj( oTest )
+            #
+            if not ( tGot == t[2] or tGot in t[2] ):
+                #
+                print3()
+                print3( 'tGot   :', tGot )
+                print3( 'tExpect:', t[2] )
+                #
+                lProblems.append(
+                        'getStrLocationsBegAndEnd( "%s" )' % t[3] )
+                #
+            #
+        #
+        #break
+    #
+    def testSwapper():
+        #
+        for t in lTestItems:
+            #
+            oTest = _getStrLocationsBegAndEnd( t[0], t[1], bUseSwapper = True )
+            #
+    #
+    def testReplace():
+        #
+        for t in lTestItems:
+            #
+            oTest = _getStrLocationsBegAndEnd( t[0], t[1], bUseSwapper = False )
+            #
+    #
+    def testOriginal():
+        #
+        for t in lTestItems:
+            #
+            dAllWordLocations = getLocationsDict( t[0] )
+            #
+            def getLocationForSub( s ):
+                return getSubStringLocation( s, dAllWordLocations )
+            #
+            tLocationsOfInterest = tuple( map( getLocationForSub, t[1] ) )
+            #
+            o = _getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest )
+    
+    #
+    def testNewImproved():
+        #
+        for t in lTestItems:
+            #
+            oTest = getStrLocationsBegAndEnd( t[0], t[1] )
+            #
+    #
+    #print3( '\ndoing _getStrLocationsBegAndEnd() w swapper ...\n' )
+    #
+    #TimeTrial( testSwapper )
+    #
+    #
+    #print3( '\ndoing _getStrLocationsBegAndEnd() w replace ...\n' )
+    #
+    #TimeTrial( testReplace )
+    #
+    '''
+    print3( '\ndoing _getSubStrLocationsBegAndEnd() ...\n' )
+    #
+    TimeTrial( testOriginal )
+    #
+    print3( '\ndoing getStrLocationsBegAndEnd() ...\n' )
+    #
+    TimeTrial( testNewImproved )
+    '''
     #
     sayTestResult( lProblems )
