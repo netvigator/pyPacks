@@ -663,7 +663,8 @@ def EncryptBoth( sThis ):
 
 
 E, D, EB = Encrypt, Decrypt, EncryptBoth
-
+EL, DL = EncryptLite, DecryptLite
+DN , DLN = DecryptNone, DecryptLiteNone
 
 
 if __name__ == "__main__":
