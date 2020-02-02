@@ -29,6 +29,7 @@
 # note getObjFromFileContent() and PutReprInTemp() are in File.Get & File.Write
 
 import inspect
+
 from pprint                 import pprint, pformat
 from random                 import shuffle
 from string                 import digits
@@ -143,7 +144,7 @@ class SequencerClass( object ):
 
 
 
-class RandomFeederClass( object ):
+class RandomFeeder( object ):
     #
     def __init__ ( self,
                    uListDict,
@@ -343,16 +344,15 @@ class RandomFeederClass( object ):
         return len( self.lList ) - self.iNext
 
 
-class _RandomLettersAndNumbers( RandomFeederClass ):
+class _RandomLettersAndNumbers( RandomFeeder ):
     #
     # only called here
     #
     def __init__( self ):
         #
-        #
         sLettersNumbers = digits + letters + digits
         #
-        RandomFeederClass.__init__(
+        RandomFeeder.__init__(
                 self, sLettersNumbers,
                 bRecycle          = True,
                 bShuffleOnRecycle = True )
@@ -360,7 +360,7 @@ class _RandomLettersAndNumbers( RandomFeederClass ):
 
     def getNextSome( self, iHowMany ):
         #
-        lLettersNumbers = RandomFeederClass.getNextSome( self, iHowMany )
+        lLettersNumbers = RandomFeeder.getNextSome( self, iHowMany )
         #
         return ''.join( lLettersNumbers )
 
@@ -499,7 +499,7 @@ if __name__ == "__main__":
     from Collect.Test   import isSeq1SubsetOfSeq2
     from Iter.AllVers   import iRange, lRange
     from Object.Set     import _getsAttributesFromKWArgs
-   #from Utils.Both2n3  import getNext
+    from Utils.Both2n3  import print3
     from Utils.Result   import sayTestResult
     #
     lProblems = []
@@ -569,26 +569,62 @@ if __name__ == "__main__":
         lProblems.append( 'oValueCont.__repr__() not coming out right' )
         #
     #
-    oTest = RandomFeederClass( letters )
+    oTest = RandomFeeder( letters )
     #
     s2chars = oTest.getNextSome( 2 )
     lRandom = oTest.getWholeList()
     lAll    = oTest.ListDump()
     #
-    if (        getNext( oTest ) not in letters         or
-                s2chars[0]       not in letters         or
-                s2chars[1]       not in letters         or
-            not isSeq1SubsetOfSeq2( lAll,    letters )  or
-            not isSeq1SubsetOfSeq2( lRandom, letters )  or
-                oTest.append( '$' )                     or
-                oTest.extend( digits )                  or
-                oTest.__len__() != 63                   or
-            not oTest.hasMoreToDo()                     or
-                oTest.getHowManyhasMoreToDo() != 60     or
-                oTest.Reset() ):
+    if getNext( oTest ) not in letters:
         #
-        lProblems.append( 'RandomFeederClass()' )
+        lProblems.append( 'RandomFeeder() getNext( oTest ) not in letters' )
         #
+    #
+    if s2chars[0] not in letters:
+        #
+        lProblems.append( 'RandomFeeder() s2chars[0] not in letters' )
+        #
+    #
+    if s2chars[1] not in letters:
+        #
+        lProblems.append( 'RandomFeeder() s2chars[1] not in letters' )
+        #
+    #
+    if not isSeq1SubsetOfSeq2( lAll, letters ):
+        #
+        lProblems.append( 'RandomFeeder() isSeq1SubsetOfSeq2( lAll, letters )' )
+        #
+    #
+    if not isSeq1SubsetOfSeq2( lRandom, letters ):
+        #
+        lProblems.append( 'RandomFeeder() isSeq1SubsetOfSeq2( lRandom, letters' )
+        #
+    #
+    #
+    oTest.append( '$' )
+    oTest.extend( digits )
+    #
+    if oTest.__len__() != 63:
+        #
+        print3( 'oTest.__len__():', oTest.__len__() )
+        lProblems.append( 'RandomFeeder() oTest.__len__() != 63' )
+        #
+    #
+    if not oTest.hasMoreToDo():
+        #
+        lProblems.append( 'RandomFeeder() not oTest.hasMoreToDo()' )
+        #
+    #
+    if oTest.getHowManyhasMoreToDo() != 60:
+        #
+        lProblems.append( 'RandomFeeder() oTest.getHowManyhasMoreToDo() != 60' )
+        #
+    #
+    if oTest.Reset():
+        #
+        lProblems.append( 'RandomFeeder() oTest.Reset()' )
+        #
+    #
     #
     oRandomAlphaNum = _RandomLettersAndNumbers()
     #
@@ -623,8 +659,8 @@ if __name__ == "__main__":
         #
     #
     lReturned = list( _getObjProperties( oRandomAlphaNum ) )
-    lExpected = [ 'iSequence', 'bRecycle', 'lList',
-                  'iNext', 'lSeq', 'bShuffleOnRecycle' ]
+    lExpected = ['bRecycle', 'bShuffleOnRecycle',
+                 'iNext', 'iSequence', 'lList', 'lSeq']
     #
     lReturned.sort()
     lExpected.sort()
