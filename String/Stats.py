@@ -625,7 +625,7 @@ def getStrLocationsBegAndEnd( sWhole, tStrsOfInterest, bTrouble = False ):
             #
         #
     #
-    # o.dAllWordLocations = dAllWordLocations
+    o.dAllWordLocations = dAllWordLocations
     #
     return o
     
@@ -753,9 +753,9 @@ if __name__ == "__main__":
     #
     o = _getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest )
     #
-    tGot = getTupleOffObj( o )
+    # tNearFront, tOnEnd, tNearEnd, tInParens, dAllWordLocations
     #
-    # o.tNearFront, o.tOnEnd, o.tNearEnd, o.tInParens
+    tGot = getTupleOffObj( o )
     #
     tExpect = ((2,), (), (), ())
     #
@@ -789,9 +789,9 @@ if __name__ == "__main__":
     #
     o = _getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest )
     #
-    tGot = getTupleOffObj( o )
+    # tNearFront, tOnEnd, tNearEnd, tInParens, dAllWordLocations
     #
-    # o.tNearFront, o.tOnEnd, o.tNearEnd, o.tInParens
+    tGot = getTupleOffObj( o )
     #
     tExpect = ((1,), (11, 12), (11, 12), ())
     #
@@ -811,9 +811,9 @@ if __name__ == "__main__":
     #
     o = _getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest )
     #
-    tGot = getTupleOffObj( o )
+    # tNearFront, tOnEnd, tNearEnd, tInParens, dAllWordLocations
     #
-    # o.tNearFront, o.tOnEnd, o.tNearEnd, o.tInParens
+    tGot = getTupleOffObj( o )
     #
     tExpect = ((), (), (), ())
     #
@@ -845,6 +845,8 @@ if __name__ == "__main__":
     #
     o = _getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest )
     #
+    # tNearFront, tOnEnd, tNearEnd, tInParens, dAllWordLocations
+    #
     tGot = getTupleOffObj( o )
     #
     tExpect = (  (2,),
@@ -856,7 +858,7 @@ if __name__ == "__main__":
             ( sBig, tLook4Models, tExpect,
                     "E88CC CCa 6DJ8 6922 etc." ) )
     #
-    # o.tNearFront, o.tOnEnd, o.tNearEnd, o.tInParens
+    # tNearFront, tOnEnd, tNearEnd, tInParens, dAllWordLocations
     #
     if tGot != tExpect:
         #
@@ -878,9 +880,9 @@ if __name__ == "__main__":
     #
     o = _getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest )
     #
-    tGot = getTupleOffObj( o )
+    # tNearFront, tOnEnd, tNearEnd, tInParens, dAllWordLocations
     #
-    # o.tNearFront, o.tOnEnd, o.tNearEnd, o.tInParens
+    tGot = getTupleOffObj( o )
     #
     tExpectOne = ( ((1, 3), (), (12, 14), (12, 14)),
                    ((1, 3), (), (13, 15), (13, 15)) )
@@ -929,9 +931,9 @@ if __name__ == "__main__":
     #
     o = _getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest )
     #
-    tGot = getTupleOffObj( o )
+    # tNearFront, tOnEnd, tNearEnd, tInParens, dAllWordLocations
     #
-    # o.tNearFront, o.tOnEnd, o.tNearEnd, o.tInParens
+    tGot = getTupleOffObj( o )
     #
     tExpect = ((1,), (), (11,), (11,))
     #
@@ -988,9 +990,9 @@ if __name__ == "__main__":
     #
     o = _getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest )
     #
-    tGot = getTupleOffObj( o )
+    # tNearFront, tOnEnd, tNearEnd, tInParens, dAllWordLocations
     #
-    # o.tNearFront, o.tOnEnd, o.tNearEnd, o.tInParens
+    tGot = getTupleOffObj( o )
     #
     tExpect = ((0,), (), (11,), ())
     #
@@ -1032,6 +1034,8 @@ if __name__ == "__main__":
     tLocationsOfInterest = tuple( map( getLocationForSub, tLook4Models ) )
     #
     o = _getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest )
+    #
+    # tNearFront, tOnEnd, tNearEnd, tInParens, dAllWordLocations
     #
     tGot = getTupleOffObj( o )
     #
@@ -1084,9 +1088,9 @@ if __name__ == "__main__":
     #
     o = _getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest )
     #
-    tGot = getTupleOffObj( o )
+    # tNearFront, tOnEnd, tNearEnd, tInParens, dAllWordLocations
     #
-    # o.tNearFront, o.tOnEnd, o.tNearEnd, o.tInParens
+    tGot = getTupleOffObj( o )
     #
     tExpectOne = ( ((1,), (), (12,), (12,)),
                    ((1,), (), (12, 14, 16), (12, 14, 16)) )
@@ -1136,9 +1140,9 @@ if __name__ == "__main__":
     #
     o = _getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest )
     #
-    tGot = getTupleOffObj( o )
+    # tNearFront, tOnEnd, tNearEnd, tInParens, dAllWordLocations
     #
-    # o.tNearFront, o.tOnEnd, o.tNearEnd, o.tInParens
+    tGot = getTupleOffObj( o )
     #
     tExpect = ((1, 4), (), (), ())
     #
@@ -1153,6 +1157,8 @@ if __name__ == "__main__":
         #
     #
     oTest = _getStrLocationsBegAndEnd( sBig, tLook4Models )
+    #
+    # tNearFront, tOnEnd, tNearEnd, tInParens, dAllWordLocations
     #
     if oTest.dAllWordLocations != dExpect:
         #
@@ -1179,7 +1185,10 @@ if __name__ == "__main__":
         if True or bTrouble:
             #
             # print3( t[3] )
-            oTest = _getStrLocationsBegAndEnd( t[0], t[1], bTrouble = False )
+            oTest = _getStrLocationsBegAndEnd(
+                        t[0], t[1], bUseSwapper = True, bTrouble = bTrouble )
+            #
+            # tNearFront, tOnEnd, tNearEnd, tInParens, dAllWordLocations
             #
             tGot = getTupleOffObj( oTest )
             #
@@ -1190,10 +1199,14 @@ if __name__ == "__main__":
                 print3( 'tExpect:', t[2] )
                 #
                 lProblems.append(
-                        '_getStrLocationsBegAndEnd( "%s", bUseSwapper = True )' % t[3] )
+                        '_getStrLocationsBegAndEnd( "%s", '
+                        'bUseSwapper = True )' % t[3] )
                 #
             #
-            oTest = _getStrLocationsBegAndEnd( t[0], t[1], bUseSwapper = False, bTrouble = bTrouble )
+            oTest = _getStrLocationsBegAndEnd(
+                        t[0], t[1], bUseSwapper = False, bTrouble = bTrouble )
+            #
+            # tNearFront, tOnEnd, tNearEnd, tInParens, dAllWordLocations
             #
             tGot = getTupleOffObj( oTest )
             #
@@ -1204,10 +1217,13 @@ if __name__ == "__main__":
                 print3( 'tExpect:', t[2] )
                 #
                 lProblems.append(
-                        '_getStrLocationsBegAndEnd( "%s", bUseSwapper = False )' % t[3] )
+                        '_getStrLocationsBegAndEnd( "%s", '
+                        'bUseSwapper = False )' % t[3] )
                 #
             #
             oTest = getStrLocationsBegAndEnd( t[0], t[1] )
+            #
+            # tNearFront, tOnEnd, tNearEnd, tInParens, dAllWordLocations
             #
             tGot = getTupleOffObj( oTest )
             #
@@ -1250,7 +1266,7 @@ if __name__ == "__main__":
             tLocationsOfInterest = tuple( map( getLocationForSub, t[1] ) )
             #
             o = _getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest )
-    
+        #
     #
     def testNewImproved():
         #
@@ -1268,7 +1284,6 @@ if __name__ == "__main__":
     #
     #TimeTrial( testReplace )
     #
-    '''
     print3( '\ndoing _getSubStrLocationsBegAndEnd() ...\n' )
     #
     TimeTrial( testOriginal )
@@ -1276,6 +1291,7 @@ if __name__ == "__main__":
     print3( '\ndoing getStrLocationsBegAndEnd() ...\n' )
     #
     TimeTrial( testNewImproved )
+    '''
     '''
     #
     sayTestResult( lProblems )
