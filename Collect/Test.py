@@ -424,10 +424,12 @@ if __name__ == "__main__":
         lProblems.append( 'getHasNotTester()' )
         #
     if          isSeq1SubsetOfSeq2( letters, uppercase ) or \
-            not isSeq1SubsetOfSeq2( uppercase, letters ):
+            not isSeq1SubsetOfSeq2( uppercase, letters ) or \
+            not isSeq1SubsetOfSeq2( letters, letters ):
         #
         lProblems.append( 'isSeq1SubsetOfSeq2()' )
         #
+    #
     #
     if      not ContainsAll( letters, uppercase ) or \
                 ContainsAll( uppercase, letters ):
