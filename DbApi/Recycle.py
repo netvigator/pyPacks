@@ -60,7 +60,7 @@ def getRecycle(
     from six             import print_ as print3
     #
     from DbApi.Query     import NoListBackQuery, getSelection
-    from Object.Get      import RandomFeederClass
+    from Object.Get      import RandomFeeder
     from String.Output   import ReadableNo
     from Time.Delta      import getSecsNowPlusDHMS
     from Time.Output     import sayLocalTimeOnly
@@ -111,7 +111,7 @@ def getRecycle(
             #
         else:
             #
-            oRecycleFeeder      = RandomFeederClass( lRecycleables )
+            oRecycleFeeder      = RandomFeeder( lRecycleables )
             #
             if iVerbosity > 4:
                 print3( sayLocalTimeOnly(), "got", len( oRecycleFeeder ), sTable, "records to recycle"
