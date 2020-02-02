@@ -25,6 +25,7 @@
 from collections            import OrderedDict
 from re                     import compile as REcompile
 from re                     import IGNORECASE, DOTALL, MULTILINE
+from string                 import punctuation
 
 from six                    import print_ as print3
 
@@ -348,6 +349,8 @@ oFinderCRorLFnMore = getRegExObj(
                               '\r', 
                               '\n' ) ) )
 
+
+oFinderPunctuation = getRegExObj( '[%s]' % punctuation )
 
 
 def _getEscapedThenSplit( s, oSplitOn, bEscBegEndOfStr = True ):
@@ -1010,7 +1013,12 @@ if __name__ == "__main__":
         #
         lProblems.append( 'getRegExObj() title has target' )
         #
-    #        
+    #
+    if oFinderPunctuation.findall( sThis ) != ['-', '-']:
+        #
+        lProblems.append( 'oFinderPunctuation( "%s" )' % sThis )
+        #
+    #
     #
     oFind = getFinderFindAll( 'mnop' )
     #
@@ -1148,6 +1156,12 @@ if __name__ == "__main__":
         lProblems.append(  'getRegEx4Chars(Heintz&Kaufman)' )
         #
     #
+    if oFinderPunctuation.findall( sGot ) != ['*', '(', '&', '|', ')', '*']:
+        #
+        print3( oFinderPunctuation.findall( sGot ) )
+        lProblems.append( 'oFinderPunctuation( "%s" )' % sGot )
+        #
+    #
     sGot = getRegEx4Chars( 'Heintz and Kaufman' )
     #
     if sGot != 'Heintz *(&|and) *Kaufman':
@@ -1188,6 +1202,12 @@ if __name__ == "__main__":
         lProblems.append( 'getRegEx4Chars(%s)' % sLook4 )
         #
     #
+    if oFinderPunctuation.findall( sGot ) != ['"', '*', '*']:
+        #
+        print3( oFinderPunctuation.findall( sGot ) )
+        lProblems.append( 'oFinderPunctuation( "%s" )' % sGot )
+        #
+    #
     sLook4  = "TR-10 'Tri-ette'"
     #
     sGot    = getRegEx4Chars( sLook4 )
@@ -1197,6 +1217,15 @@ if __name__ == "__main__":
         print3( sGot )
         #
         lProblems.append( 'getRegEx4Chars(%s)' % sLook4 )
+        #
+    #
+    tExpect = ['[', '-', '/', ']', '*', '*', "'", '*', '[',
+            '-', '/', ']', '*', "'", '*']
+    #
+    if oFinderPunctuation.findall( sGot ) != tExpect:
+        #
+        print3( oFinderPunctuation.findall( sGot ) )
+        lProblems.append( 'oFinderPunctuation( "%s" )' % sGot )
         #
     #
     sLook4  = 'TV-2/U'
