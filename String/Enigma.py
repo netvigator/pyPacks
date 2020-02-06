@@ -602,11 +602,15 @@ def DecryptLiteNone( sThis ):
     #return fDecription( sFixed, sPassPhrase = None )
 
 
+
 def _printOut( sOrig ):
     #
-    sEncryptedH = Encrypt(     sOrig )
+    sBackSlash  = chr( 92 )
+    sDoubleBack = sBackSlash * 2
     #
-    sEncryptedL = EncryptLite( sOrig )
+    sEncryptedH = Encrypt(     sOrig ).replace( sBackSlash, sDoubleBack )
+    #
+    sEncryptedL = EncryptLite( sOrig ).replace( sBackSlash, sDoubleBack )
     #
     if "'" in sEncryptedH and '"' in sEncryptedH:
         #
