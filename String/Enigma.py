@@ -603,14 +603,71 @@ def DecryptLiteNone( sThis ):
 
 
 
+def _getSayMore( bGotSingleQuote, bGotDoubleQuote, bGotBackSlash ):
+    #
+    sSayMore = ''
+    lSayMore = []
+    #
+    if bGotSingleQuote and bGotDoubleQuote:
+        #
+        lSayMore.append( 'has both single and double quotes' )
+        #
+    elif bGotSingleQuote:
+        #
+        lSayMore.append( 'has single quote' )
+        #
+    elif bGotDoubleQuote:
+        #
+        lSayMore.append( 'has double quote' )
+        #
+    #
+    if bGotBackSlash:
+        #
+        lSayMore.append( 'has backslash character, must test, might not work' )
+        #
+    #
+    if lSayMore:
+        #
+        sSayMore = ' *AND* '.join( lSayMore )
+        #
+    #
+    if sSayMore:
+        #
+        sSayMore = ' -- ' + sSayMore
+        #
+    #
+    return sSayMore
+
+
 def _printOut( sOrig ):
     #
-    sBackSlash  = chr( 92 )
-    sDoubleBack = sBackSlash * 2
+    sBackSlash      = chr( 92 )
+    sDoubleBack     = sBackSlash * 2
     #
-    sEncryptedH = Encrypt(     sOrig ).replace( sBackSlash, sDoubleBack )
+    sEncryptedH     = Encrypt(     sOrig )
+    sEncryptedL     = EncryptLite( sOrig )
     #
-    sEncryptedL = EncryptLite( sOrig ).replace( sBackSlash, sDoubleBack )
+    bGotSingleH     = "'" in sEncryptedH
+    bGotDoubleH     = '"' in sEncryptedH
+    #
+    bGotSingleL     = "'" in sEncryptedL
+    bGotDoubleL     = '"' in sEncryptedL
+    #
+    bGotBackSlashH  = sBackSlash in sEncryptedH
+    bGotBackSlashL  = sBackSlash in sEncryptedL
+    #
+    sSayMoreH       = _getSayMore( bGotSingleH, bGotDoubleH, bGotBackSlashH )
+    sSayMoreL       = _getSayMore( bGotSingleL, bGotDoubleL, bGotBackSlashL )
+    #
+    if bGotBackSlashH:
+        #
+        sEncryptedH = sEncryptedH.replace( sBackSlash, sDoubleBack )
+        #
+    #
+    if bGotBackSlashL:
+        #
+        sEncryptedL = sEncryptedL.replace( sBackSlash, sDoubleBack )
+        #
     #
     if "'" in sEncryptedH and '"' in sEncryptedH:
         #
@@ -641,9 +698,11 @@ def _printOut( sOrig ):
     #
     print3( sSayOrig, sOrig )
     #
-    print3( 'encrypted heavy: %s%s%s' % ( sQuoteH, sEncryptedH, sQuoteH ) )
+    print3( 'encrypted heavy: %s%s%s%s' %
+                ( sQuoteH, sEncryptedH, sQuoteH, sSayMoreH ) )
     #
-    print3( 'encrypted lite:  %s%s%s' % ( sQuoteL, sEncryptedL, sQuoteL ) )
+    print3( 'encrypted lite:  %s%s%s%s' %
+                ( sQuoteL, sEncryptedL, sQuoteL, sSayMoreL ) )
 
 
 def None2Enigma( sThis ):
@@ -904,6 +963,46 @@ if __name__ == "__main__":
         #
         lProblems.append(
             'encrypt lite /decrypt lite great password short passphrase' )
+        #
+    #
+    tAll = (( True, True, True ),
+            ( True, True, False),
+            ( True, False,True ),
+            ( False,True, True ),
+            ( True, False,False),
+            ( False,True, False),
+            ( False,False,True ),
+            ( False,False,False) )
+    #
+    lResults = [ _getSayMore( *t ) for t in tAll ]
+    #
+    lExpect = [
+        'has both single and double quotes *AND* has backslash character, must test, might not work',
+        'has both single and double quotes',
+        'has single quote *AND* has backslash character, must test, might not work',
+        'has double quote *AND* has backslash character, must test, might not work',
+        'has single quote',
+        'has double quote',
+        'has backslash character, must test, might not work',
+        '' ]
+    #
+    if lResults != lExpect:
+        #
+        sSayProblem = '_getSayMore()'
+        #
+        if len( lResults ) == len( lExpect ):
+            #
+            for i in range( len( lResults ) ):
+                if lResults[i] != lExpect[i]:
+                    print3( 'lResults[%s]:' % i, lResults[i] )
+                    print3( 'lExpect [%s]:' % i, lExpect [i] )
+            #
+        else:
+            #
+            sSayProblem = '_getSayMore(): lengths of lResults & lExpect differ'
+            #
+        #
+        lProblems.append( sSayProblem )
         #
     #
     sayTestResult( lProblems )
