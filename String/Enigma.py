@@ -639,13 +639,13 @@ def _getSayMore( bGotSingleQuote, bGotDoubleQuote, bGotBackSlash ):
     return sSayMore
 
 
-def _printOut( sOrig ):
+def _printOut( sOrig, sPassPhrase = sFilePhrase ):
     #
     sBackSlash      = chr( 92 )
     sDoubleBack     = sBackSlash * 2
     #
-    sEncryptedH     = Encrypt(     sOrig )
-    sEncryptedL     = EncryptLite( sOrig )
+    sEncryptedH     = Encrypt(     sOrig, sPassPhrase )
+    sEncryptedL     = EncryptLite( sOrig, sPassPhrase )
     #
     bGotSingleH     = "'" in sEncryptedH
     bGotDoubleH     = '"' in sEncryptedH
@@ -659,14 +659,21 @@ def _printOut( sOrig ):
     sSayMoreH       = _getSayMore( bGotSingleH, bGotDoubleH, bGotBackSlashH )
     sSayMoreL       = _getSayMore( bGotSingleL, bGotDoubleL, bGotBackSlashL )
     #
+    sEncryptedH2 = sEncryptedL2 = ''
+    sRawH = sRawL = ' '
+    #
     if bGotBackSlashH:
         #
-        sEncryptedH = sEncryptedH.replace( sBackSlash, sDoubleBack )
+        sEncryptedH2 = sEncryptedH.replace( sBackSlash, sDoubleBack )
+        #
+        sRawH = 'r'
         #
     #
     if bGotBackSlashL:
         #
-        sEncryptedL = sEncryptedL.replace( sBackSlash, sDoubleBack )
+        sEncryptedL2 = sEncryptedL.replace( sBackSlash, sDoubleBack )
+        #
+        sRawL = 'r'
         #
     #
     if "'" in sEncryptedH and '"' in sEncryptedH:
@@ -689,20 +696,33 @@ def _printOut( sOrig ):
     #
     if max( len( sQuoteH ), len( sQuoteL  ) ) == 1:
         #
-        sSayOrig = 'original:        '
+        sSayOrig = 'original:           '
         #
     else:
         #
-        sSayOrig = 'original:          '
+        sSayOrig = 'original:             '
         #
     #
     print3( sSayOrig, sOrig )
     #
-    print3( 'encrypted heavy: %s%s%s%s' %
-                ( sQuoteH, sEncryptedH, sQuoteH, sSayMoreH ) )
+    print3( 'encrypted heavy:   %s%s%s%s%s' %
+                ( sRawH, sQuoteH, sEncryptedH, sQuoteH, sSayMoreH ) )
     #
-    print3( 'encrypted lite:  %s%s%s%s' %
-                ( sQuoteL, sEncryptedL, sQuoteL, sSayMoreL ) )
+    if sEncryptedH2:
+        #
+        print3( 'backslash doubled:  %s%s%s' %
+                ( sQuoteH, sEncryptedH2, sQuoteH ) )
+        #
+    #
+    print3( 'encrypted lite:    %s%s%s%s%s' %
+                ( sRawL, sQuoteL, sEncryptedL, sQuoteL, sSayMoreL ) )
+    #
+    if sEncryptedL2:
+        #
+        print3( 'backslash doubled:  %s%s%s' %
+                ( sQuoteL, sEncryptedL2, sQuoteL ) )
+        #
+    #
 
 
 def None2Enigma( sThis ):
@@ -719,9 +739,9 @@ def None2EnigmaLite( sThis ):
     _printOut( sOrig )
 
 
-def EncryptBoth( sThis ):
+def EncryptBoth( sThis, sPassPhrase = sFilePhrase ):
     #
-    _printOut( sThis )
+    _printOut( sThis, sPassPhrase )
 
 
 
@@ -977,13 +997,16 @@ if __name__ == "__main__":
     lResults = [ _getSayMore( *t ) for t in tAll ]
     #
     lExpect = [
-        'has both single and double quotes *AND* has backslash character, must test, might not work',
-        'has both single and double quotes',
-        'has single quote *AND* has backslash character, must test, might not work',
-        'has double quote *AND* has backslash character, must test, might not work',
-        'has single quote',
-        'has double quote',
-        'has backslash character, must test, might not work',
+        ' -- has both single and double quotes *AND* has backslash character, '
+            'must test, might not work',
+        ' -- has both single and double quotes',
+        ' -- has single quote *AND* has backslash character, '
+            'must test, might not work',
+        ' -- has double quote *AND* has backslash character, '
+            'must test, might not work',
+        ' -- has single quote',
+        ' -- has double quote',
+        ' -- has backslash character, must test, might not work',
         '' ]
     #
     if lResults != lExpect:
