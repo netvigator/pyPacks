@@ -24,6 +24,20 @@
 #
 
 
+try:
+    from .AllVers       import iZip, lFilter, tFilter
+    from ..Address      import getDomainOffURL
+    from ..HTML         import oSeparatorFinder
+    from ..HTML         import oFindLinkStart # href=
+    from ..Test         import hasAt
+except ( ValueError, ImportError ):
+    from Iter.AllVers   import iZip, lFilter, tFilter
+    from Web.Address    import getDomainOffURL
+    from Web.HTML       import oSeparatorFinder
+    from Web.HTML       import oFindLinkStart # href=
+    from Web.Test       import hasAt
+
+
 def getLinkOffHref( sHref ):
     #
     """
@@ -32,7 +46,6 @@ def getLinkOffHref( sHref ):
     returns text up to '>' if no quotes in there.
     """
     #
-    from Web.HTML   import oSeparatorFinder
     #
     sLink           = ''
     #
@@ -61,7 +74,6 @@ def getLinkOffHref( sHref ):
 
 def getLinkFromHTML(sHTML):
     #
-    from HTML       import oFindLinkStart # href=
     #
     sLink       = ''
     #
@@ -77,7 +89,6 @@ def getLinkFromHTML(sHTML):
 
 def _getLinksAndStarts( sHTML ):
     #
-    from HTML   import oFindLinkStart # href=
     #
     lMaybe      = oFindLinkStart.split( sHTML )
     #
@@ -112,7 +123,6 @@ def _getLinksAndStarts( sHTML ):
 
 def getStartsAndLinksIter( sHTML ):
     #
-    from Iter.AllVers import iZip
     #
     lLinks, lLinkStart  = _getLinksAndStarts( sHTML )
     #
@@ -122,8 +132,6 @@ def getStartsAndLinksIter( sHTML ):
 
 def getLinksOffHTML( sHTML, sURL = None, bKeepUrlDomains = 1 ):
     #
-    from Iter.AllVers import lFilter
-    from Web.Address import getDomainOffURL
     #
     lLinks, lLinkStart = _getLinksAndStarts( sHTML )
     #
@@ -144,9 +152,6 @@ def getLinksOffHTML( sHTML, sURL = None, bKeepUrlDomains = 1 ):
 
 def getEmailAddress( sLine ):
     #
-    from Iter.AllVers   import tFilter
-    from Web.Test       import hasAt
-    from Web.Address    import getDomainOffURL
     #
     sEmailAdd   = ''
     #
