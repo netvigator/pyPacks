@@ -23,6 +23,7 @@
 # Copyright 2015-2020 Rick Graves
 #
 
+import requests
 
 def getUniqueLinks( sReadFile, sOutFile ):
     #
@@ -47,6 +48,25 @@ def getUniqueLinks( sReadFile, sOutFile ):
     #
     QuickDumpLines( lLinks, sOutFile )
 
+
+def _getPageHTML( sLink ):
+    #
+    oPage = requests.get( sLink )
+    #
+    return r.text
+
+
+def _getLinksOffHTML( sHTML ):
+    #
+    from String.Get import getContentOutOfQuotes
+    from Web.HTML   import oFindLinkStart # href=
+    #
+    lMaybe      = oFindLinkStart.split( sHTML )
+    #
+    del lMaybe[0]
+    #
+    lLinks = [ getContentOutOfQuotes(s ) for s in lMaybe ]
+    #
 
 
 
