@@ -33,6 +33,8 @@ from os.path                import join, isfile, isdir
 from glob                   import glob
 from tempfile               import mkstemp
 
+from six                    import print_ as print3
+
 try:
     from .Test              import isFileThere
     from .Spec              import getFullSpec, getFullSpecDefaultOrPassed
@@ -387,8 +389,6 @@ if __name__ == "__main__":
     #
     from os.path        import getmtime
     from time           import sleep
-    #
-    from six            import print_ as print3
     #
     from Collect.Query  import get1stThatMeets
     from File.Del       import DeleteIfExists
