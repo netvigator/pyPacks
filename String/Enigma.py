@@ -748,7 +748,7 @@ def EncryptBoth( sThis, sPassPhrase = sFilePhrase ):
 E, D, EB = Encrypt, Decrypt, EncryptBoth
 EL, DL = EncryptLite, DecryptLite
 DN , DLN = DecryptNone, DecryptLiteNone
-
+EN, ELN = EncryptNone, EncryptLiteNone
 
 if __name__ == "__main__":
     #
