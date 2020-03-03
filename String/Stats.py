@@ -1178,6 +1178,12 @@ if __name__ == "__main__":
                 '_getStrLocationsBegAndEnd( "JBL L220 Oracle Speakers" )' )
         #
     #
+    # "15 x EL84 Telefunken Valvo Siemens Lorenz 6BQ5 old version Made in West Germany"
+    # should find EL84 not 6BQ5
+    #
+    # "BROOK 10C Tube Amplifier   Western Electric Fairchild 620 300B 2A3   Tested 10C3"
+    # should find 10C not the rest
+    #
     for t in lTestItems:
         #
         bTrouble = False and ( t[3] == "Altec A5 Customized" )
