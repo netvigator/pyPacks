@@ -25,11 +25,11 @@
 
 
 try:
-    from .AllVers       import iZip, lFilter, tFilter
-    from ..Address      import getDomainOffURL
-    from ..HTML         import oSeparatorFinder
-    from ..HTML         import oFindLinkStart # href=
-    from ..Test         import hasAt
+    from ..Iter.AllVers import iZip, lFilter, tFilter
+    from .Address       import getDomainOffURL
+    from .HTML          import oSeparatorFinder
+    from .HTML          import oFindLinkStart # href=
+    from .Test          import hasAt
 except ( ValueError, ImportError ):
     from Iter.AllVers   import iZip, lFilter, tFilter
     from Web.Address    import getDomainOffURL
