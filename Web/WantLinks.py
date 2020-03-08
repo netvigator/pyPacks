@@ -25,13 +25,35 @@
 
 import requests
 
+from time import sleep
+
+try:
+    from ..Collect.Query    import get1stThatMeets
+    from ..File.Get         import getListFromFileLines
+    from ..File.Write       import ( QuickDumpLines, putListInTemp,
+                                     PutPrettyPrintInTemp )
+    from ..String.Get       import getContentOutOfQuotes, getTextBeforeLast
+    from ..String.Test      import isDigit
+    from ..Iter.AllVers     import iRange
+    from ..Utils.Both2n3    import print3
+    from .Address           import getHostPathTuple, getDomainOffURL
+    from .HTML              import oFindLinkStart # href=
+    from .Test              import isURL
+except ( ValueError, ImportError ):
+    from Collect.Query      import get1stThatMeets
+    from File.Get           import getListFromFileLines
+    from File.Write         import ( QuickDumpLines, putListInTemp,
+                                     PutPrettyPrintInTemp )
+    from Iter.AllVers       import iRange
+    from String.Get         import getContentOutOfQuotes, getTextBeforeLast
+    from String.Test        import isDigit
+    from Utils.Both2n3      import print3
+    from Web.Address        import getHostPathTuple, getDomainOffURL
+    from Web.HTML           import oFindLinkStart # href=
+    from Web.Test           import isURL
+
+
 def getUniqueLinks( sReadFile, sOutFile ):
-    #
-    from File.Get       import getListFromFileLines
-    from File.Write     import QuickDumpLines
-    #
-    from Web.Address    import getHostPathTuple, getDomainOffURL
-    from Web.Test       import isURL
     #
     lLines  = getListFromFileLines( sReadFile )
     #
@@ -53,20 +75,89 @@ def _getPageHTML( sLink ):
     #
     oPage = requests.get( sLink )
     #
-    return r.text
+    return oPage.text
 
 
-def _getLinksOffHTML( sHTML ):
+def _getLinksOffHTML( sHTML, tWantDomains = None, sEndsWith = None ):
     #
-    from String.Get import getContentOutOfQuotes
-    from Web.HTML   import oFindLinkStart # href=
     #
     lMaybe      = oFindLinkStart.split( sHTML )
     #
     del lMaybe[0]
     #
-    lLinks = [ getContentOutOfQuotes(s ) for s in lMaybe ]
+    lLinks = [ getContentOutOfQuotes( s ) for s in lMaybe ]
     #
+    if sEndsWith is not None:
+        #
+        lLinks = [  getTextBeforeLast( s, sEndsWith )
+                    for s in lLinks
+                    if s.endswith( sEndsWith ) ]
+        #
+    #
+    if tWantDomains is not None:
+        #
+        lLinks = [ ( getDomainOffURL( s ).lower(), s ) for s in lLinks ]
+        #
+        lLinks = [ t[1] for t in lLinks if t[0] in tWantDomains ]
+        #
+    #
+    return lLinks
+
+
+def _getLinksOffURL( sLink, tWantDomains = None, sEndsWith = None ):
+    #
+    sHTML = _getPageHTML( sLink )
+    #
+    lLinks = _getLinksOffHTML( sHTML, tWantDomains, sEndsWith )
+    #
+    return lLinks
+
+
+
+
+def getLinksDict(
+        sLinkStart, iUntilPage,
+        tWantDomains    = None,
+        sEndsWith       = None,
+        iPagePause      = 2 ):
+    #
+    lLinkParts = sLinkStart.split( '/' )
+    #
+    lLinkParts.reverse()
+    #
+    iStartPage = int( get1stThatMeets( lLinkParts, isDigit ) )
+    #
+    sLinkPattern = sLinkStart.replace( '/%s' % str( iStartPage ), '/%s' )
+    #
+    dLinks = {}
+    #
+    for iGetPage in iRange( iStartPage, iUntilPage + 1 ):
+        #
+        sNumberURL  = sLinkPattern % iGetPage
+        #
+        print3( 'getting %s ...' % sNumberURL )
+        #
+        if iGetPage > iStartPage: sleep( iPagePause )
+        #
+        lLinksOuter = _getLinksOffURL( sNumberURL, sEndsWith = sEndsWith )
+        #
+        for sLinkOuter in lLinksOuter:
+            #
+            print3( '    getting %s ...' % sLinkOuter )
+            #
+            sleep( iPagePause )
+            #
+            lLinksInner = _getLinksOffURL(
+                                sLinkOuter, tWantDomains = tWantDomains )
+            #
+            if lLinksInner:
+                #
+                dLinks[ sLinkOuter ] = lLinksInner
+                #
+            #
+        #
+    #
+    PutPrettyPrintInTemp( dLinks )
 
 
 
