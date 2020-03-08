@@ -27,6 +27,7 @@
 
 import              io
 
+from pprint         import pprint
 from os             import utime, rmdir, sep as cSep
 from os.path        import join
 
@@ -443,7 +444,14 @@ def putCsvOut( lOutput, *sFileSpec, **kwargs ):
 
 
 
-
+def PutPrettyPrintInTemp( o ):
+    #
+    oFile = open( '/tmp/temp.txt', 'w+' )
+    #
+    pprint( o, stream = oFile )
+    #
+    oFile.close()
+    
 
 
 
@@ -576,6 +584,16 @@ if __name__ == "__main__":
         #
         lProblems.append( 'PutReprInTemp()' )
         #
+    #
+    PutPrettyPrintInTemp( d )
+    #
+    sContent = getContent()
+    #
+    if sContent != "{'Fischbach': ['Corcoran', 'Ching Wu']}\n":
+        #
+        lProblems.append( 'PutPrettyPrintInTemp()' )
+        #
+    #
     #
     sFileSpec = getRandomFileName( sTempDir )
     #
