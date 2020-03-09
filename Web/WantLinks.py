@@ -29,23 +29,25 @@ from time import sleep
 
 try:
     from ..Collect.Query    import get1stThatMeets
+    from ..Dict.Get         import OrderedDict
     from ..File.Get         import getListFromFileLines
-    from ..File.Write       import ( QuickDumpLines, putListInTemp,
-                                     PutPrettyPrintInTemp )
-    from ..String.Get       import getContentOutOfQuotes, getTextBeforeLast
+    from ..File.Write       import QuickDumpLines, putListInTemp
+    from ..String.Get       import ( getContentOutOfQuotes, getTextBeforeLast,
+                                     getTextBefore )
     from ..String.Test      import isDigit
-    from ..Iter.AllVers     import iRange
+    from ..Iter.AllVers     import iRange, iMap
     from ..Utils.Both2n3    import print3
     from .Address           import getHostPathTuple, getDomainOffURL
     from .HTML              import oFindLinkStart # href=
     from .Test              import isURL
 except ( ValueError, ImportError ):
     from Collect.Query      import get1stThatMeets
+    from Dict.Get           import OrderedDict
     from File.Get           import getListFromFileLines
-    from File.Write         import ( QuickDumpLines, putListInTemp,
-                                     PutPrettyPrintInTemp )
-    from Iter.AllVers       import iRange
-    from String.Get         import getContentOutOfQuotes, getTextBeforeLast
+    from File.Write         import QuickDumpLines, putListInTemp
+    from Iter.AllVers       import iRange, iMap
+    from String.Get         import ( getContentOutOfQuotes, getTextBeforeLast,
+                                     getTextBefore )
     from String.Test        import isDigit
     from Utils.Both2n3      import print3
     from Web.Address        import getHostPathTuple, getDomainOffURL
@@ -78,14 +80,38 @@ def _getPageHTML( sLink ):
     return oPage.text
 
 
-def _getLinksOffHTML( sHTML, tWantDomains = None, sEndsWith = None ):
-    #
+def _getAllLinksOffHTML( sHTML ):
     #
     lMaybe      = oFindLinkStart.split( sHTML )
     #
     del lMaybe[0]
     #
-    lLinks = [ getContentOutOfQuotes( s ) for s in lMaybe ]
+    lAllLinks = [ getContentOutOfQuotes( s ) for s in lMaybe ]
+    #
+    return lAllLinks
+
+
+def _getFileName( sURL ):
+    #
+    lParts = sURL.split( '/' )
+    #
+    s = lParts[ -1 ]
+    #
+    if s.endswith( '.html' ):
+        #
+        return getTextBefore( s, '.html' )
+        #
+    else:
+        #
+        return s
+        #
+
+
+def _getSelectLinks( lLinks,
+                     tWantDomains   = None,
+                     sEndsWith      = None,
+                     setEndsWith    = None ):
+    #
     #
     if sEndsWith is not None:
         #
@@ -101,6 +127,11 @@ def _getLinksOffHTML( sHTML, tWantDomains = None, sEndsWith = None ):
         lLinks = [ t[1] for t in lLinks if t[0] in tWantDomains ]
         #
     #
+    if setEndsWith is not None:
+        #
+        lLinks = [ s for s in lLinks
+                   if _getFileName( s ) in setEndsWith ]
+        #
     return lLinks
 
 
@@ -108,11 +139,11 @@ def _getLinksOffURL( sLink, tWantDomains = None, sEndsWith = None ):
     #
     sHTML = _getPageHTML( sLink )
     #
-    lLinks = _getLinksOffHTML( sHTML, tWantDomains, sEndsWith )
+    lAllLinks = _getAllLinksOffHTML( sHTML )
+    #
+    lLinks = _getSelectLinks( lAllLinks, tWantDomains, sEndsWith )
     #
     return lLinks
-
-
 
 
 def getLinksDict(
@@ -129,7 +160,7 @@ def getLinksDict(
     #
     sLinkPattern = sLinkStart.replace( '/%s' % str( iStartPage ), '/%s' )
     #
-    dLinks = {}
+    dLinks = OrderedDict()
     #
     for iGetPage in iRange( iStartPage, iUntilPage + 1 ):
         #
@@ -147,17 +178,37 @@ def getLinksDict(
             #
             sleep( iPagePause )
             #
-            lLinksInner = _getLinksOffURL(
-                                sLinkOuter, tWantDomains = tWantDomains )
+            sHTML = _getPageHTML( sLinkOuter )
+            #
+            lAllLinks = _getAllLinksOffHTML( sHTML )
+            #
+            lLinksInner = _getSelectLinks( lAllLinks, tWantDomains = tWantDomains )
             #
             if lLinksInner:
                 #
                 dLinks[ sLinkOuter ] = lLinksInner
                 #
+                setFiles = frozenset( iMap( _getFileName, lLinksInner ) )
+                #
+                lMoreLinks = _getSelectLinks( lAllLinks, setEndsWith = setFiles )
+                #
             #
         #
     #
-    PutPrettyPrintInTemp( dLinks )
+    lOut = []
+    #
+    for sLinkOuter in dLinks.keys():
+        #
+        lOut.append( sLinkOuter )
+        #
+        for sLinkInner in dLinks[ sLinkOuter ]:
+            #
+            lOut.append( '    %s' % sLinkInner )
+            #
+        #
+    #
+    putListInTemp( lOut )
+
 
 
 
