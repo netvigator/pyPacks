@@ -114,9 +114,7 @@ else:
     #
     
 
-
 def getDictOffPairOfLists( lKeys, lValues ): # getDictOffTwoLists, getDictOff2Lists
-    #
     #
     return dict( iZip( lKeys, lValues ) ) # dict() new in 2.2
 
@@ -588,6 +586,12 @@ class OrderedDictBackport(dict):
     def viewitems(self):
         "od.viewitems() -> a set-like object providing a view on od's items"
         return ItemsView(self)
+
+
+try:
+    from collections import OrderedDict
+except ImportError:
+    OrderedDict = OrderedDictBackport
 
 
 if __name__ == "__main__":
