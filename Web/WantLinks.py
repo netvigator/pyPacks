@@ -186,11 +186,11 @@ def getLinksDict(
             #
             if lLinksInner:
                 #
-                dLinks[ sLinkOuter ] = lLinksInner
-                #
                 setFiles = frozenset( iMap( _getFileName, lLinksInner ) )
                 #
                 lMoreLinks = _getSelectLinks( lAllLinks, setEndsWith = setFiles )
+                #
+                dLinks[ sLinkOuter ] = lMoreLinks
                 #
             #
         #
