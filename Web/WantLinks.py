@@ -31,7 +31,7 @@ try:
     from ..Collect.Query    import get1stThatMeets
     from ..Dict.Get         import OrderedDict
     from ..File.Get         import getListFromFileLines
-    from ..File.Write       import QuickDumpLines, putListInTemp
+    from ..File.Write       import QuickDumpLines, putListInTemp, MakeTemp
     from ..String.Get       import ( getContentOutOfQuotes, getTextBeforeLast,
                                      getTextBefore )
     from ..String.Test      import isDigit
@@ -44,7 +44,7 @@ except ( ValueError, ImportError ):
     from Collect.Query      import get1stThatMeets
     from Dict.Get           import OrderedDict
     from File.Get           import getListFromFileLines
-    from File.Write         import QuickDumpLines, putListInTemp
+    from File.Write         import QuickDumpLines, putListInTemp, MakeTemp
     from Iter.AllVers       import iRange, iMap
     from String.Get         import ( getContentOutOfQuotes, getTextBeforeLast,
                                      getTextBefore )
@@ -78,6 +78,13 @@ def _getPageHTML( sLink ):
     oPage = requests.get( sLink )
     #
     return oPage.text
+
+
+
+def putPageHTMLinTemp( sLink ):
+    #
+    MakeTemp( _getPageHTML( sLink ) )
+
 
 
 def _getAllLinksOffHTML( sHTML ):
