@@ -29,7 +29,6 @@ from time import sleep
 
 try:
     from ..Collect.Query    import get1stThatMeets
-    from ..Dict.Get         import OrderedDict
     from ..File.Get         import getListFromFileLines
     from ..File.Write       import QuickDumpLines, MakeTemp, openAppendClose
     from ..Iter.AllVers     import iRange, iMap
@@ -42,7 +41,6 @@ try:
     from .Test              import isURL
 except ( ValueError, ImportError ):
     from Collect.Query      import get1stThatMeets
-    from Dict.Get           import OrderedDict
     from File.Get           import getListFromFileLines
     from File.Write         import QuickDumpLines, MakeTemp, openAppendClose
     from Iter.AllVers       import iRange, iMap
