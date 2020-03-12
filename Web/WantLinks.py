@@ -31,11 +31,11 @@ try:
     from ..Collect.Query    import get1stThatMeets
     from ..Dict.Get         import OrderedDict
     from ..File.Get         import getListFromFileLines
-    from ..File.Write       import QuickDumpLines, putListInTemp, MakeTemp
+    from ..File.Write       import QuickDumpLines, MakeTemp, openAppendClose
+    from ..Iter.AllVers     import iRange, iMap
     from ..String.Get       import ( getContentOutOfQuotes, getTextBeforeLast,
                                      getTextBefore )
     from ..String.Test      import isDigit
-    from ..Iter.AllVers     import iRange, iMap
     from ..Utils.Both2n3    import print3
     from .Address           import getHostPathTuple, getDomainOffURL
     from .HTML              import oFindLinkStart # href=
@@ -44,7 +44,7 @@ except ( ValueError, ImportError ):
     from Collect.Query      import get1stThatMeets
     from Dict.Get           import OrderedDict
     from File.Get           import getListFromFileLines
-    from File.Write         import QuickDumpLines, putListInTemp, MakeTemp
+    from File.Write         import QuickDumpLines, MakeTemp, openAppendClose
     from Iter.AllVers       import iRange, iMap
     from String.Get         import ( getContentOutOfQuotes, getTextBeforeLast,
                                      getTextBefore )
@@ -102,7 +102,13 @@ def _getFileName( sURL ):
     #
     lParts = sURL.split( '/' )
     #
-    s = lParts[ -1 ]
+    s = ''
+    #
+    while not s:
+        #
+        s = lParts[ -1 ]
+        del lParts[ -1 ]
+        #
     #
     if s.endswith( '.html' ):
         #
@@ -153,6 +159,15 @@ def _getLinksOffURL( sLink, tWantDomains = None, sEndsWith = None ):
     return lLinks
 
 
+def _getReadableLinkPart( sLink ):
+    #
+    sFile = _getFileName( sLink )
+    #
+    lParts = sFile.split( '-' )
+    #
+    return ' '.join( lParts )
+
+
 def getLinksDict(
         sLinkStart, iUntilPage,
         tWantDomains    = None,
@@ -165,11 +180,15 @@ def getLinksDict(
     #
     iStartPage = int( get1stThatMeets( lLinkParts, isDigit ) )
     #
+    if iUntilPage < iStartPage: iUntilPage = iUntilPage + iStartPage
+    #
+    sFileName = 'Pages_%s_to_%s.txt' % ( iStartPage, iUntilPage )
+    #
     sLinkPattern = sLinkStart.replace( '/%s' % str( iStartPage ), '/%s' )
     #
-    dLinks = OrderedDict()
-    #
     for iGetPage in iRange( iStartPage, iUntilPage + 1 ):
+        #
+        lPage = [ 'Page %s' % iGetPage, '' ]
         #
         sNumberURL  = sLinkPattern % iGetPage
         #
@@ -193,28 +212,22 @@ def getLinksDict(
             #
             if lLinksInner:
                 #
+                lPage.append( sLinkOuter )
+                #
+                lPage.append( _getReadableLinkPart( sLinkOuter ) )
+                #
                 setFiles = frozenset( iMap( _getFileName, lLinksInner ) )
                 #
                 lMoreLinks = _getSelectLinks( lAllLinks, setEndsWith = setFiles )
                 #
-                dLinks[ sLinkOuter ] = lMoreLinks
+                lPage.extend( lMoreLinks )
                 #
+                lPage.extend( ['','',''] )
             #
         #
-    #
-    lOut = []
-    #
-    for sLinkOuter in dLinks.keys():
-        #
-        lOut.append( sLinkOuter )
-        #
-        for sLinkInner in dLinks[ sLinkOuter ]:
-            #
-            lOut.append( '    %s' % sLinkInner )
-            #
+        openAppendClose( '\n'.join( lPage ), '/tmp', sFileName )
         #
     #
-    putListInTemp( lOut )
 
 
 
