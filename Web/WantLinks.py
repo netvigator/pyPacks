@@ -178,7 +178,7 @@ def getLinksDict(
     #
     iStartPage = int( get1stThatMeets( lLinkParts, isDigit ) )
     #
-    if iUntilPage < iStartPage: iUntilPage = iUntilPage + iStartPage
+    if iUntilPage < iStartPage: iUntilPage = iUntilPage + iStartPage - 1
     #
     sFileName = 'Pages_%s_to_%s.txt' % ( iStartPage, iUntilPage )
     #
