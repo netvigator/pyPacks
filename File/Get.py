@@ -383,6 +383,25 @@ def Touch( sFileSpec, times=None):
         open(sFileSpec, 'a').close()
 
 
+def getSetFromLines( sFileSpec, sFoundIn = None ):
+    #
+    setLines = set( [] )
+    #
+    with open( sFileSpec ) as oFile:
+        #
+        for sLine in oFile:
+            #
+            if sFoundIn is None or sFoundIn in sLine:
+                #
+                setLines.add( sLine.strip() )
+                #
+            #
+        #
+    #
+    return setLines
+
+                
+
 if __name__ == "__main__":
     #
     lProblems = []
