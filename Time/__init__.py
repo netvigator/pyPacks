@@ -15,3 +15,18 @@ _sFormatISOdateTimeNoSpace  = '%Y-%m-%d_%H:%M:%S'
 
 _sFormatNatureUSA           = '%d %m %Y'
 _sFormatUSAdateTime         = '%m/%d/%Y %I:%M:%S %p'
+
+
+_dMonthsNamesShort = dict(
+    Jan =  1,
+    Feb =  2,
+    Mar =  3,
+    Apr =  4,
+    May =  5,
+    Jun =  6,
+    Jul =  7,
+    Aug =  8,
+    Sep =  9,
+    Oct = 10,
+    Nov = 11,
+    Dec = 12 )
