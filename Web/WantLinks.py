@@ -35,6 +35,7 @@ try:
     from ..String.Get       import ( getContentOutOfQuotes, getTextBeforeLast,
                                      getTextBefore )
     from ..String.Test      import isDigit
+    from ..Time.Output      import getNowIsoDateTimeStr
     from ..Utils.Both2n3    import print3
     from .Address           import getHostPathTuple, getDomainOffURL
     from .HTML              import oFindLinkStart # href=
@@ -47,6 +48,7 @@ except ( ValueError, ImportError ):
     from String.Get         import ( getContentOutOfQuotes, getTextBeforeLast,
                                      getTextBefore )
     from String.Test        import isDigit
+    from Time.Output        import getNowIsoDateTimeStr
     from Utils.Both2n3      import print3
     from Web.Address        import getHostPathTuple, getDomainOffURL
     from Web.HTML           import oFindLinkStart # href=
@@ -94,6 +96,30 @@ def _getAllLinksOffHTML( sHTML ):
     lAllLinks = [ getContentOutOfQuotes( s ) for s in lMaybe ]
     #
     return lAllLinks
+
+
+def _getLinksAndRestOffHTML( sHTML ):
+    #
+    lMaybe      = oFindLinkStart.split( sHTML )
+    #
+    lRest = [ None ] * len( lMaybe )
+    #
+    lRest[ 0 ] = lMaybe[0]
+    #
+    del lMaybe[0]
+    #
+    lAllLinks = [ getContentOutOfQuotes( s ) for s in lMaybe ]
+    #
+    dLinks = {}
+    #
+    for i, sLink in enumerate( lAllLinks ):
+        #
+        lRest[ i + 1 ] = lMaybe[ i ][ len( lAllLinks[ i ] ) + 2 : ]
+        #
+        dLinks[ lAllLinks[ i ] ] = i
+        #
+    #
+    return lAllLinks, lRest, dLinks
 
 
 def _getFileName( sURL ):
@@ -157,6 +183,18 @@ def _getLinksOffURL( sLink, tWantDomains = None, sEndsWith = None ):
     return lLinks
 
 
+def _getLinksAndMoreOffURL( sLink, tWantDomains = None, sEndsWith = None ):
+    #
+    sHTML = _getPageHTML( sLink )
+    #
+    lAllLinks, lRest, dLinks = _getLinksAndRestOffHTML( sHTML )
+    #
+    lLinks = _getSelectLinks( lAllLinks, tWantDomains, sEndsWith )
+    #
+    return lLinks, lRest, dLinks
+
+
+
 def _getReadableLinkPart( sLink ):
     #
     sFile = _getFileName( sLink )
@@ -170,7 +208,9 @@ def getLinksDict(
         sLinkStart, iUntilPage,
         tWantDomains    = None,
         sEndsWith       = None,
-        setIgnorePages  = [],
+        setIgnorePages  = None,
+        sLogFile        = None,
+        fExtractDate    = None,
         iPagePause      = 2 ):
     #
     lLinkParts = sLinkStart.split( '/' )
@@ -195,11 +235,12 @@ def getLinksDict(
         #
         if iGetPage > iStartPage: sleep( iPagePause )
         #
-        lLinksOuter = _getLinksOffURL( sNumberURL, sEndsWith = sEndsWith )
+        lLinksOuter, lRest, dLinks = _getLinksAndMoreOffURL(
+                                        sNumberURL, sEndsWith = sEndsWith )
         #
         for sLinkOuter in lLinksOuter:
             #
-            if sLinkOuter in setIgnorePages:
+            if setIgnorePages is not None and sLinkOuter in setIgnorePages:
                 #
                 print3( '    ignoring %s ...' % sLinkOuter )
                 #
@@ -229,6 +270,27 @@ def getLinksDict(
                 lPage.extend( lMoreLinks )
                 #
                 lPage.extend( ['','',''] )
+                #
+            #
+            if sLogFile is not None:
+                #
+                if fExtractDate is not None:
+                    #
+                    iLink = dLinks[ sLinkOuter ]
+                    #
+                    sTimeStamp = fExtractDate( iLink, lRest )
+                    #
+                else:
+                    #
+                    sTimeStamp = getNowIsoDateTimeStr()
+                    #
+                #
+                sAddLine = '%s %s' % ( sTimeStamp, sLinkOuter )
+                #
+                openAppendClose( sAddLine, sLogFile )
+                #
+            #
+            setIgnorePages.add( sLinkOuter )
             #
         #
         openAppendClose( '\n'.join( lPage ), '/tmp', sFileName )
