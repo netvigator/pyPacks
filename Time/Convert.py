@@ -29,29 +29,31 @@ from time       import strftime, strptime, time, tzname, timezone
 
 
 try:
-    from ..Time         import ( 
-                _sFormatISOdateTime,
-                _sFormatISOdate,
-                _sFormatDateAm,
-                _sFormatDateAmShort,
-                _sFormatISONoSpace,
-                _sFormatNatureUSA,
-                _sFormatUSAdateTime ) # explicit imports better than implicit
     from ..Iter.AllVers import lMap, getEnumerator
     from ..String.Find  import getRegExObj
     from ..Utils.ImIf   import ImIf
+    from ..Time         import ( 
+            _sFormatISOdateTime,
+            _sFormatISOdate,
+            _sFormatDateAm,
+            _sFormatDateAmShort,
+            _sFormatISONoSpace,
+            _sFormatNatureUSA,
+            _sFormatUSAdateTime,
+            _dMonthsNamesShort ) # explicit imports better than implicit
 except ( ValueError, ImportError ):
-    from Time           import ( 
-                _sFormatISOdateTime,
-                _sFormatISOdate,
-                _sFormatDateAm,
-                _sFormatDateAmShort,
-                _sFormatISONoSpace,
-                _sFormatNatureUSA,
-                _sFormatUSAdateTime ) # explicit imports better than implicit
     from Iter.AllVers   import lMap, getEnumerator
     from String.Find    import getRegExObj
     from Utils.ImIf     import ImIf
+    from Time           import ( 
+            _sFormatISOdateTime,
+            _sFormatISOdate,
+            _sFormatDateAm,
+            _sFormatDateAmShort,
+            _sFormatISONoSpace,
+            _sFormatNatureUSA,
+            _sFormatUSAdateTime,
+            _dMonthsNamesShort ) # explicit imports better than implicit
 
 
 
@@ -63,26 +65,12 @@ class Finished( Exception ): pass
 
 _oApacheDelimiters = getRegExObj( '[/: ]' )
 
-_dMonthNames = dict(
-    Jan =  1,
-    Feb =  2,
-    Mar =  3,
-    Apr =  4,
-    May =  5,
-    Jun =  6,
-    Jul =  7,
-    Aug =  8,
-    Sep =  9,
-    Oct = 10,
-    Nov = 11,
-    Dec = 12 )
-
 
 def getMonthNumOffName( sMonth ):
     #
     sNumb = ''
     #
-    iMonth = _dMonthNames.get( sMonth[:3].title() )
+    iMonth = _dMonthsNamesShort.get( sMonth[:3].title() )
     #
     if iMonth:
         #
@@ -276,9 +264,9 @@ def getIsoDateFromOther( sDate,
             #
             sPartTitlized = sPart[:3].title()
             #
-            if sPartTitlized in _dMonthNames:
+            if sPartTitlized in _dMonthsNamesShort:
                 #
-                lParts[ i ] = str( _dMonthNames[ sPartTitlized ] )
+                lParts[ i ] = str( _dMonthsNamesShort[ sPartTitlized ] )
                 #
                 break
                 #

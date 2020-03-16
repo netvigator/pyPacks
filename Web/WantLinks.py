@@ -170,6 +170,7 @@ def getLinksDict(
         sLinkStart, iUntilPage,
         tWantDomains    = None,
         sEndsWith       = None,
+        setIgnorePages  = [],
         iPagePause      = 2 ):
     #
     lLinkParts = sLinkStart.split( '/' )
@@ -197,6 +198,13 @@ def getLinksDict(
         lLinksOuter = _getLinksOffURL( sNumberURL, sEndsWith = sEndsWith )
         #
         for sLinkOuter in lLinksOuter:
+            #
+            if sLinkOuter in setIgnorePages:
+                #
+                print3( '    ignoring %s ...' % sLinkOuter )
+                #
+                continue
+                #
             #
             print3( '    getting %s ...' % sLinkOuter )
             #
