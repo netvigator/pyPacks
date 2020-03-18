@@ -244,32 +244,34 @@ def getLinksDict(
                 #
                 print3( '    ignoring %s ...' % sLinkOuter )
                 #
-                continue
+                # continue
                 #
-            #
-            print3( '    getting %s ...' % sLinkOuter )
-            #
-            sleep( iPagePause )
-            #
-            sHTML = _getPageHTML( sLinkOuter )
-            #
-            lAllLinks = _getAllLinksOffHTML( sHTML )
-            #
-            lLinksInner = _getSelectLinks( lAllLinks, tWantDomains = tWantDomains )
-            #
-            if lLinksInner:
+            else:
                 #
-                lPage.append( sLinkOuter )
+                print3( '    getting %s ...' % sLinkOuter )
                 #
-                lPage.append( _getReadableLinkPart( sLinkOuter ) )
+                sleep( iPagePause )
                 #
-                setFiles = frozenset( iMap( _getFileName, lLinksInner ) )
+                sHTML = _getPageHTML( sLinkOuter )
                 #
-                lMoreLinks = _getSelectLinks( lAllLinks, setEndsWith = setFiles )
+                lAllLinks = _getAllLinksOffHTML( sHTML )
                 #
-                lPage.extend( lMoreLinks )
+                lLinksInner = _getSelectLinks( lAllLinks, tWantDomains = tWantDomains )
                 #
-                lPage.extend( ['','',''] )
+                if lLinksInner:
+                    #
+                    lPage.append( sLinkOuter )
+                    #
+                    lPage.append( _getReadableLinkPart( sLinkOuter ) )
+                    #
+                    setFiles = frozenset( iMap( _getFileName, lLinksInner ) )
+                    #
+                    lMoreLinks = _getSelectLinks( lAllLinks, setEndsWith = setFiles )
+                    #
+                    lPage.extend( lMoreLinks )
+                    #
+                    lPage.extend( ['','',''] )
+                    #
                 #
             #
             if sLogFile is not None:
