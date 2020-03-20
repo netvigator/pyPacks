@@ -25,10 +25,12 @@
 
 import requests
 
-from time import sleep
+from os     import rename
+from time   import sleep
 
 try:
     from ..Collect.Query    import get1stThatMeets
+    from ..File.Del         import DeleteIfExists
     from ..File.Get         import getListFromFileLines
     from ..File.Write       import QuickDumpLines, MakeTemp, openAppendClose
     from ..Iter.AllVers     import iRange, iMap
@@ -42,6 +44,7 @@ try:
     from .Test              import isURL
 except ( ValueError, ImportError ):
     from Collect.Query      import get1stThatMeets
+    from File.Del           import DeleteIfExists
     from File.Get           import getListFromFileLines
     from File.Write         import QuickDumpLines, MakeTemp, openAppendClose
     from Iter.AllVers       import iRange, iMap
@@ -202,6 +205,82 @@ def _getReadableLinkPart( sLink ):
     lParts = sFile.split( '-' )
     #
     return ' '.join( lParts )
+
+
+
+def getPostDateOffOther( iLink, lRest ):
+    #
+    from time           import gmtime
+    #
+    from String.Get     import getTextWithin
+    from Time.Convert   import getMonthNumOffName
+    #
+    oNow = gmtime()
+    #
+    iCurrentYear  = oNow.tm_year
+    iCurrentMonth = oNow.tm_mon
+    #
+    lBefore = lRest[ : iLink + 1 ]
+    #
+    lBefore.reverse()
+    #
+    sGotDate = sPostNumb = sDay = sMon = sPostDate = ''
+    #
+    for s in lBefore:
+        #
+        sGotDate = getTextWithin( s, '<ul class="date">', '</ul>' )
+        #
+        if sGotDate:
+            #
+            sPostNumb = getTextWithin( s, '<div class="post" id="post-', '">' )
+            #
+            break
+            #
+        #
+    #
+    if sGotDate:
+        #
+        sDay = getTextWithin( sGotDate, '<li class="day">',   '</li>' ).strip()
+        sMon = getTextWithin( sGotDate, '<li class="month">', '</li>' ).strip()
+        sMon = getMonthNumOffName( sMon )
+        #
+        iMon = int( sMon )
+        #
+        iYear = iCurrentYear
+        #
+        if iMon > iCurrentMonth:
+            #
+            iYear = iCurrentYear - 1
+            #
+        #
+        sPostDate = ( '%s-%s-%s %s' %
+            ( iYear, sMon, sDay, sPostNumb ) )
+    #
+    return sPostDate
+
+
+def _getLogFileSorted( sLogFile ):
+    #
+    lLines = getListFromFileLines( sLogFile )
+    #
+    setLines = frozenset( lLines )
+    #
+    lLines = list( setLines )
+    #
+    lLines.sort()
+    #
+    lParts = sLogFile.split( '.' )
+    #
+    lParts[ -1 ] = 'bak'
+    #
+    sBackFile = '.'.join( lParts )
+    #
+    DeleteIfExists( sBackFile )
+    #
+    rename( sLogFile, sBackFile )
+    #
+    QuickDumpLines( lLines, sLogFile )
+
 
 
 def getLinksDict(
