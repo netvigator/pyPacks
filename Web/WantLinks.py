@@ -256,7 +256,7 @@ def getPostDateOffOther( iLink, lRest ):
         sPostDate = ( '%s-%s-%s %s' %
             ( iYear, sMon, sDay, sPostNumb ) )
     #
-    return sPostDate
+    return sPostDate, sPostNumb
 
 
 def _getLogFileSorted( sLogFile ):
@@ -292,6 +292,25 @@ def getLinksDict(
         fExtractDate    = None,
         iPagePause      = 2 ):
     #
+    setPageIDs = set( [] )
+    #
+    if sLogFile:
+        #
+        oFile = open( sLogFile )
+        #
+        for sLine in oFile:
+            #
+            lParts = sLine.split()
+            #
+            if lParts and len( lParts ) > 1 and lParts[1].isdigit():
+                #
+                setPageIDs.add( lParts[1] )
+                #
+            #
+        #
+        oFile.close()
+        #
+    #
     lLinkParts = sLinkStart.split( '/' )
     #
     lLinkParts.reverse()
@@ -319,11 +338,39 @@ def getLinksDict(
         #
         for sLinkOuter in lLinksOuter:
             #
+            sPostNumb = ''
+            #
+            if sLogFile is not None:
+                #
+                if fExtractDate is not None:
+                    #
+                    iLink = dLinks[ sLinkOuter ]
+                    #
+                    sTimeStamp, sPostNumb = fExtractDate( iLink, lRest )
+                    #
+                else:
+                    #
+                    sTimeStamp = getNowIsoDateTimeStr()
+                    #
+                #
+                sAddLine = '%s %s' % ( sTimeStamp, sLinkOuter )
+                #
+                openAppendClose( sAddLine, sLogFile )
+                #
+            #
+            # setIgnorePages.add( sLinkOuter )
+            #
+            #
             if setIgnorePages is not None and sLinkOuter in setIgnorePages:
                 #
                 print3( '    ignoring %s ...' % sLinkOuter )
                 #
                 # continue
+                #
+            elif sPostNumb.isdigit() and sPostNumb in setPageIDs:
+                #
+                print3( '    ignoring ID %s %s ...' %
+                                        ( sPostNumb, sLinkOuter ) )
                 #
             else:
                 #
@@ -352,26 +399,10 @@ def getLinksDict(
                     lPage.extend( ['','',''] )
                     #
                 #
-            #
-            if sLogFile is not None:
+            if sPostNumb.isdigit():
                 #
-                if fExtractDate is not None:
-                    #
-                    iLink = dLinks[ sLinkOuter ]
-                    #
-                    sTimeStamp = fExtractDate( iLink, lRest )
-                    #
-                else:
-                    #
-                    sTimeStamp = getNowIsoDateTimeStr()
-                    #
+                
                 #
-                sAddLine = '%s %s' % ( sTimeStamp, sLinkOuter )
-                #
-                openAppendClose( sAddLine, sLogFile )
-                #
-            #
-            setIgnorePages.add( sLinkOuter )
             #
         #
         openAppendClose( '\n'.join( lPage ), '/tmp', sFileName )
