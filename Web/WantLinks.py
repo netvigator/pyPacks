@@ -395,9 +395,9 @@ def getLinksDict(
                 #
                 if lLinksInner:
                     #
-                    lPage.append( sLinkOuter )
-                    #
                     lPage.append( _getReadableLinkPart( sLinkOuter ) )
+                    #
+                    lPage.append( sLinkOuter )
                     #
                     setFiles = frozenset( iMap( _getFileName, lLinksInner ) )
                     #
@@ -416,6 +416,8 @@ def getLinksDict(
         #
         openAppendClose( '\n'.join( lPage ), '/tmp', sFileName )
         #
+    #
+    _getLogFileSorted( sLogFile )
     #
 
 
