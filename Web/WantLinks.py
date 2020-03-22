@@ -283,6 +283,27 @@ def _getLogFileSorted( sLogFile ):
 
 
 
+def _getPageIDset( sLogFile ):
+    #
+    setPageIDs = set( () )
+    #
+    oFile = open( sLogFile )
+    #
+    for sLine in oFile:
+        #
+        lParts = sLine.split()
+        #
+        if lParts and len( lParts ) > 1 and lParts[1].isdigit():
+            #
+            setPageIDs.add( lParts[1] )
+            #
+        #
+    #
+    oFile.close()
+    #
+    return setPageIDs
+
+
 def getLinksDict(
         sLinkStart, iUntilPage,
         tWantDomains    = None,
@@ -292,23 +313,11 @@ def getLinksDict(
         fExtractDate    = None,
         iPagePause      = 2 ):
     #
-    setPageIDs = set( [] )
+    setPageIDs = ()
     #
     if sLogFile:
         #
-        oFile = open( sLogFile )
-        #
-        for sLine in oFile:
-            #
-            lParts = sLine.split()
-            #
-            if lParts and len( lParts ) > 1 and lParts[1].isdigit():
-                #
-                setPageIDs.add( lParts[1] )
-                #
-            #
-        #
-        oFile.close()
+        setPageIDs = _getPageIDset( sLogFile )
         #
     #
     lLinkParts = sLinkStart.split( '/' )
@@ -350,7 +359,7 @@ def getLinksDict(
                     #
                 else:
                     #
-                    sTimeStamp = getNowIsoDateTimeStr()
+                    sTimeStamp = '%s %s' % ( getNowIsoDateTimeStr(), '00000' )
                     #
                 #
                 sAddLine = '%s %s' % ( sTimeStamp, sLinkOuter )
@@ -401,7 +410,7 @@ def getLinksDict(
                 #
             if sPostNumb.isdigit():
                 #
-                
+                setPageIDs.add( sPostNumb )
                 #
             #
         #
