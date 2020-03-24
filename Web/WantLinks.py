@@ -39,6 +39,7 @@ try:
     from ..String.Test      import isDigit
     from ..Time.Output      import getNowIsoDateTimeStr
     from ..Utils.Both2n3    import print3
+    from ..Utils.Output     import getOutputFromExternalCommand
     from .Address           import getHostPathTuple, getDomainOffURL
     from .HTML              import oFindLinkStart # href=
     from .Test              import isURL
@@ -53,9 +54,11 @@ except ( ValueError, ImportError ):
     from String.Test        import isDigit
     from Time.Output        import getNowIsoDateTimeStr
     from Utils.Both2n3      import print3
+    from Utils.Output       import getOutputFromExternalCommand
     from Web.Address        import getHostPathTuple, getDomainOffURL
     from Web.HTML           import oFindLinkStart # href=
     from Web.Test           import isURL
+
 
 
 def getUniqueLinks( sReadFile, sOutFile ):
@@ -81,7 +84,6 @@ def _getPageHTML( sLink ):
     oPage = requests.get( sLink )
     #
     return oPage.text
-
 
 
 def putPageHTMLinTemp( sLink ):
@@ -304,6 +306,33 @@ def _getPageIDset( sLogFile ):
     return setPageIDs
 
 
+def getMoreTester( sScript, nMaxLinks ):
+    #
+    def getMoreTests( lLinksInner, sLinkOuter ):
+        #
+        sLines = sReadableLinkMore = ''
+        #
+        if len( lLinksInner ) > nMaxLinks:
+            #
+            pass
+            #
+        else:
+            #
+            sReadableLinkMore = _getReadableLinkPart( sLinkOuter )
+            #
+            lParts = sReadableLinkMore.split()
+            #
+            if lParts[ -1 ].isdigit(): del lParts[ -1 ]
+            #
+            sReadableLinkLess = ' '.join( lParts )
+            #
+            sLines, sError = getOutputFromExternalCommand(
+                                '%s %s' % ( sScript, sReadableLinkLess ) )
+            #
+        #
+        return sReadableLinkMore, sLines
+
+
 def getLinksDict(
         sLinkStart, iUntilPage,
         tWantDomains    = None,
@@ -311,6 +340,7 @@ def getLinksDict(
         setIgnorePages  = None,
         sLogFile        = None,
         fExtractDate    = None,
+        fMoreTests      = None,
         iPagePause      = 2 ):
     #
     setPageIDs = ()
@@ -391,17 +421,44 @@ def getLinksDict(
                 #
                 lAllLinks = _getAllLinksOffHTML( sHTML )
                 #
-                lLinksInner = _getSelectLinks( lAllLinks, tWantDomains = tWantDomains )
+                lLinksInner = _getSelectLinks(
+                                    lAllLinks, tWantDomains = tWantDomains )
                 #
-                if lLinksInner:
+                bWriteLinks = False
+                #
+                sLines = ''
+                #
+                if lLinksInner and fMoreTests is not None:
                     #
-                    lPage.append( _getReadableLinkPart( sLinkOuter ) )
+                    sReadableLinkPart, sLines = fMoreTests(
+                                                    lLinksInner, sLinkOuter )
                     #
-                    lPage.append( sLinkOuter )
+                    bWriteLinks = bool( sLines )
+                    #
+                elif lLinksInner:
+                    #
+                    bWriteLinks = True
+                    #
+                    sReadableLinkPart = _getReadableLinkPart( sLinkOuter )
+                    #
+                #
+                if bWriteLinks:
+                    #
+                    if sLines:
+                        #
+                        lPage.extend(
+                                [ sReadableLinkPart, sLines, '', sLinkOuter ] )
+                        #
+                    else:
+                        #
+                        lPage.extend(
+                                [ sReadableLinkPart, sLinkOuter ] )
+                        #
                     #
                     setFiles = frozenset( iMap( _getFileName, lLinksInner ) )
                     #
-                    lMoreLinks = _getSelectLinks( lAllLinks, setEndsWith = setFiles )
+                    lMoreLinks = _getSelectLinks(
+                                        lAllLinks, setEndsWith = setFiles )
                     #
                     lPage.extend( lMoreLinks )
                     #
