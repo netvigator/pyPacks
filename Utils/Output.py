@@ -47,7 +47,6 @@ def getTextOutputFromExternalCommand( sCommand ):
     returns the stdout and stderr of the external command
     """
     #
-    #
     args = split( sCommand )
     #
     sOutPut, sError = Popen(
@@ -57,6 +56,25 @@ def getTextOutputFromExternalCommand( sCommand ):
                         shell=True ).communicate()
     #
     return sOutPut, sError
+
+
+
+def getOutputFromExternalCommand( sCommand ):
+    #
+    """
+    pass an external command as string
+    returns the stdout and stderr of the external command
+    works when getTextOutputFromExternalCommand() does not
+    """
+    #
+    sOutPut, sError = Popen(
+                        [ sCommand ],
+                        stdout = PIPE,
+                        stderr = PIPE,
+                        shell=True ).communicate()
+    #
+    return sOutPut, sError
+
 
 
 
