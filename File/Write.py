@@ -45,6 +45,7 @@ try:
     from ..String.Paragraph import getTextMakeParagraphs
     from ..Utils.Both2n3    import PYTHON2, getEncoded, getStrGotBytes
     from ..Utils.ImIf       import ImIf
+    from ..Utils.Output     import getOutputFromExternalCommand
 except ( ValueError, ImportError ):
     from File.Get           import getFileObject, getFileContent
     from File.Spec          import getFullSpec, getFullSpecDefaultOrPassed
@@ -57,6 +58,7 @@ except ( ValueError, ImportError ):
     from String.Paragraph   import getTextMakeParagraphs
     from Utils.Both2n3      import PYTHON2, getEncoded, getStrGotBytes
     from Utils.ImIf         import ImIf
+    from Utils.Output       import getOutputFromExternalCommand
 
 def QuickDump( sText, *sFileSpec, **kwargs ):
     #
@@ -451,7 +453,38 @@ def PutPrettyPrintInTemp( o ):
     pprint( o, stream = oFile )
     #
     oFile.close()
-    
+
+
+
+def getLinesProcessor( sScript, *sWriteToSpec ):
+    #
+    def processLinesMaybeWrite( lLines ):
+        #
+        if len( lLines ) < 5 or len( lLines ) > 12: return
+        #
+        sReadableLinkMore = lLines[ 1 ]
+        #
+        lParts = sReadableLinkMore.split()
+        #
+        if lParts[ -1 ].isdigit(): del lParts[ -1 ]
+        #
+        if len( lParts ) < 4: return
+        #
+        sReadableLinkLess = ' '.join( lParts )
+        #
+        sLines, sError = getOutputFromExternalCommand(
+                            '%s %s' % ( sScript, sReadableLinkLess ) )
+        #
+        if not sLines: return
+        #
+        lOut = [ sReadableLinkLess ]
+        lOut.append( sLines )
+        lOut.extend( lLines[ 2 : ] )
+        lOut.extend( [ '', '', '' ] )
+        #
+        openAppendClose( '\n'.join( lOut ), *sWriteToSpec )
+    #
+    return processLinesMaybeWrite
 
 
 
