@@ -462,7 +462,7 @@ def getLinesProcessor( sScript, *sWriteToSpec ):
         #
         if len( lLines ) < 5 or len( lLines ) > 12: return
         #
-        sReadableLinkMore = lLines[ 1 ]
+        sReadableLinkMore = lLines[ 0 ]
         #
         lParts = sReadableLinkMore.split()
         #
@@ -478,7 +478,7 @@ def getLinesProcessor( sScript, *sWriteToSpec ):
         if not sLines: return
         #
         lOut = [ sReadableLinkLess ]
-        lOut.append( sLines )
+        lOut.extend( [ sLines, lLines[ 1 ], '' ] )
         lOut.extend( lLines[ 2 : ] )
         lOut.extend( [ '', '', '' ] )
         #
