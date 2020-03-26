@@ -33,7 +33,7 @@ from os.path                import join, isfile, isdir
 from glob                   import glob
 from tempfile               import mkstemp
 
-from six                    import print_ as print3
+from six                    import next, print_ as print3
 
 try:
     from .Test              import isFileThere
@@ -400,7 +400,59 @@ def getSetFromLines( sFileSpec, sFoundIn = None ):
     #
     return setLines
 
-                
+
+
+def getFileLinesGenerator( *sFileSpec ):
+    #
+    sFileSpec = getFullSpec( *sFileSpec )
+    #
+    for line in open( sFileSpec ):
+        #
+        yield line
+
+
+def getLinesTogetherGenerator( genGetLineByLine ):
+    #
+    lLines = []
+    #
+    sThisLine = ''
+    #
+    while not sThisLine:
+        #
+        sThisLine = next( genGetLineByLine ).strip()
+        #
+    #
+    while sThisLine:
+        #
+        lLines.append( sThisLine )
+        #
+        sThisLine = next( genGetLineByLine ).strip()
+        #
+    #
+    return lLines
+
+
+def getLinesTogetherForProcess( fProcess, *sFileSpec ):
+    #
+    genGetLineByLine = getFileLinesGenerator( *sFileSpec )
+    #
+    try:
+        #
+        while True:
+            #
+            lLines = getLinesTogetherGenerator( genGetLineByLine )
+            #
+            fProcess( lLines )
+            #
+        #
+    except StopIteration:
+        #
+        pass
+        #
+    #
+
+
+
 
 if __name__ == "__main__":
     #
