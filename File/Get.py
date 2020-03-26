@@ -411,7 +411,7 @@ def getFileLinesGenerator( *sFileSpec ):
         yield line
 
 
-def getLinesTogetherGenerator( genGetLineByLine ):
+def getLinesTogether( genGetLineByLine ):
     #
     lLines = []
     #
@@ -440,7 +440,7 @@ def getLinesTogetherForProcess( fProcess, *sFileSpec ):
         #
         while True:
             #
-            lLines = getLinesTogetherGenerator( genGetLineByLine )
+            lLines = getLinesTogether( genGetLineByLine )
             #
             fProcess( lLines )
             #
