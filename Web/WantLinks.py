@@ -324,6 +324,16 @@ def getMoreTester( sScript, nMaxLinks ):
             #
             if lParts[ -1 ].isdigit(): del lParts[ -1 ]
             #
+            if len( lParts ) > 8:
+                #
+                lLenPart = [ ( len(s), s ) for s in frozenset( lParts ) ]
+                #
+                lLenPart.sort()
+                lLenPart.reverse()
+                #
+                lParts = [ t[1] for t in lLenPart[ : 8 ] ]
+                #
+            #
             sReadableLinkLess = ' '.join( lParts )
             #
             sLines, sError = getOutputFromExternalCommand(
