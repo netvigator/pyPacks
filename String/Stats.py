@@ -1246,6 +1246,15 @@ if __name__ == "__main__":
         #
         #break
     #
+    # "4 pcs - RCA 6922 vintage vacuum tube quad - E88CC 6DJ8 CV2492 CCa - valves"
+    #
+    # should find 6922 and return others cuz bunched up near end
+    #
+    #
+    # "HEATHKIT TUBE AMPLIFIER EA-3   \/ UA-2 \/ UA-1"
+    #
+    # find first only?
+    #
     def testSwapper():
         #
         for t in lTestItems:
