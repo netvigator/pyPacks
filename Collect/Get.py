@@ -532,12 +532,17 @@ def getRidOfDupesKeepOrder( seq ):
 
 class LongerList( UserList ):
     #
-    def __init__( self, iWantLen = 10 ):
+    def __init__( self, seqInit, iWantLen = None ):
         #
-        self.data = ( [ None ] * iWantLen )
+        lInit = list( seqInit )
         #
-        self._iNextOne = 0
+        self._iNextOne = len( lInit )
         #
+        if not iWantLen: iWantLen = self._iNextOne * 2
+        #
+        self.data = lInit
+        #
+        self.data.extend( [ None ] * max( iWantLen - self._iNextOne, 5 ) )
     #
     def append( self, something ):
         #
@@ -801,23 +806,39 @@ if __name__ == "__main__":
         lProblems.append( 'getRidOfDupesKeepOrder()' )
         #
     #
-    oTest = LongerList()
-    #
-    oTest.extend( range(5) )
+    oTest = LongerList( range(5) )
     #
     if len( oTest ) != 5:
         #
-        lProblems.append( 'len( LongerList() )' )
+        lProblems.append( 'len( LongerList() ) default length' )
         #
     #
     if oTest != [0, 1, 2, 3, 4, None, None, None, None, None]:
         #
-        lProblems.append( 'LongerList() content' )
+        lProblems.append( 'LongerList() content default length' )
         #
     #
     if oTest.getShrunk() != [0, 1, 2, 3, 4]:
         #
-        lProblems.append( 'len( LongerList().getShrunk() )' )
+        lProblems.append( 'len( LongerList().getShrunk() ) default length' )
+        #
+    #
+    oTest = LongerList( range(5), 15 )
+    #
+    if len( oTest ) != 5:
+        #
+        lProblems.append( 'len( LongerList() ) custom length' )
+        #
+    #
+    if oTest != [0, 1, 2, 3, 4,
+                 None, None, None, None, None, None, None, None, None, None]:
+        #
+        lProblems.append( 'LongerList() content custom length' )
+        #
+    #
+    if oTest.getShrunk() != [0, 1, 2, 3, 4]:
+        #
+        lProblems.append( 'len( LongerList().getShrunk() ) custom length' )
         #
     #
     #
