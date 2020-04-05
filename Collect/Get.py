@@ -530,7 +530,7 @@ def getRidOfDupesKeepOrder( seq ):
 
 
 
-class longerList( UserList ):
+class LongerList( UserList ):
     #
     def __init__( self, iWantLen = 10 ):
         #
@@ -801,23 +801,23 @@ if __name__ == "__main__":
         lProblems.append( 'getRidOfDupesKeepOrder()' )
         #
     #
-    oTest = longerList()
+    oTest = LongerList()
     #
     oTest.extend( range(5) )
     #
     if len( oTest ) != 5:
         #
-        lProblems.append( 'len( longerList() )' )
+        lProblems.append( 'len( LongerList() )' )
         #
     #
     if oTest != [0, 1, 2, 3, 4, None, None, None, None, None]:
         #
-        lProblems.append( 'longerList() content' )
+        lProblems.append( 'LongerList() content' )
         #
     #
     if oTest.getShrunk() != [0, 1, 2, 3, 4]:
         #
-        lProblems.append( 'len( longerList().getShrunk() )' )
+        lProblems.append( 'len( LongerList().getShrunk() )' )
         #
     #
     #
