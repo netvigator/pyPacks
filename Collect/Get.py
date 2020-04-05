@@ -22,6 +22,9 @@
 #
 # Copyright 2004-2020 Rick Graves
 #
+
+from six.moves import UserList
+
 try:
     from .Test          import isScaler, isListOrTuple
     from ..Iter.AllVers import iMap, iFilter, iRange, tRange, iZip, lZip
@@ -527,6 +530,32 @@ def getRidOfDupesKeepOrder( seq ):
 
 
 
+class longerList( UserList ):
+    #
+    def __init__( self, iWantLen = 10 ):
+        #
+        self.data = ( [ None ] * iWantLen )
+        #
+        self._iNextOne = 0
+        #
+    #
+    def append( self, something ):
+        #
+        self.data[ self._iNextOne ] = something
+        #
+        self._iNextOne += 1
+    #
+    def extend( self, iterable ):
+        #
+        for something in iterable:
+            #
+            self.append( something )
+    #
+    def __len__( self ): return self._iNextOne
+    #
+    def getShrunk( self ):
+        #
+        return [ u for u in self.data if u is not None ]
 
 
 
@@ -771,6 +800,27 @@ if __name__ == "__main__":
         #
         lProblems.append( 'getRidOfDupesKeepOrder()' )
         #
+    #
+    oTest = longerList()
+    #
+    oTest.extend( range(5) )
+    #
+    if len( oTest ) != 5:
+        #
+        lProblems.append( 'len( longerList() )' )
+        #
+    #
+    if oTest != [0, 1, 2, 3, 4, None, None, None, None, None]:
+        #
+        lProblems.append( 'longerList() content' )
+        #
+    #
+    if oTest.getShrunk() != [0, 1, 2, 3, 4]:
+        #
+        lProblems.append( 'len( longerList().getShrunk() )' )
+        #
+    #
+    #
     #
     #
     sayTestResult( lProblems )
