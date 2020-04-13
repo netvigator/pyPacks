@@ -269,6 +269,9 @@ def _isLocationInParens( iLocation, iParenOpen, iParenClose ):
 def _getSubStrLocationsBegAndEnd(
         dAllWordLocations, tLocationsOfInterest, bTrouble = False ):
     #
+    # this is called by both
+    # getStrLocationsBegAndEnd and _getStrLocationsBegAndEnd
+    #
     # if a word is repeated, the prior position number will be missing
     #
     lLocations = getListFromNestedLists( dAllWordLocations.values() )
@@ -628,9 +631,9 @@ def getStrLocationsBegAndEnd( sWhole, tStrsOfInterest, bTrouble = False ):
     o.dAllWordLocations = dAllWordLocations
     #
     return o
-    
-    
-    
+
+
+
 
 if __name__ == "__main__":
     #
@@ -1156,7 +1159,7 @@ if __name__ == "__main__":
                 '_getSubStrLocationsBegAndEnd( "JBL L220 Oracle Speakers" )' )
         #
     #
-    oTest = _getStrLocationsBegAndEnd( sBig, tLook4Models )
+    oTest = getStrLocationsBegAndEnd( sBig, tLook4Models )
     #
     # tNearFront, tOnEnd, tNearEnd, tInParens, dAllWordLocations
     #
@@ -1165,7 +1168,7 @@ if __name__ == "__main__":
         print3( 'oTest.dAllWordLocations:' )
         pprint( oTest.dAllWordLocations )
         lProblems.append(
-                '_getStrLocationsBegAndEnd dAllWordLocations'
+                'getStrLocationsBegAndEnd dAllWordLocations'
                 '( "JBL L220 Oracle Speakers" )' )
         #
     #
@@ -1175,7 +1178,7 @@ if __name__ == "__main__":
         #
         print3( tGot )
         lProblems.append(
-                '_getStrLocationsBegAndEnd( "JBL L220 Oracle Speakers" )' )
+                'getStrLocationsBegAndEnd( "JBL L220 Oracle Speakers" )' )
         #
     #
     # "15 x EL84 Telefunken Valvo Siemens Lorenz 6BQ5 old version Made in West Germany"
@@ -1269,7 +1272,7 @@ if __name__ == "__main__":
             oTest = _getStrLocationsBegAndEnd( t[0], t[1], bUseSwapper = False )
             #
     #
-    def testOriginal():
+    def testOriginalMistake():
         #
         for t in lTestItems:
             #
@@ -1282,6 +1285,13 @@ if __name__ == "__main__":
             #
             o = _getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest )
         #
+    #
+    def testOriginal():
+        #
+        for t in lTestItems:
+            #
+            oTest = _getStrLocationsBegAndEnd( t[0], t[1] )
+            #
     #
     def testNewImproved():
         #
@@ -1299,6 +1309,11 @@ if __name__ == "__main__":
     #
     #TimeTrial( testReplace )
     #
+    '''
+    #
+    new, imporoved getStrLocationsBegAndEnd is
+    somewhat faster than _getStrLocationsBegAndEnd
+    #
     print3( '\ndoing _getSubStrLocationsBegAndEnd() ...\n' )
     #
     TimeTrial( testOriginal )
@@ -1306,7 +1321,6 @@ if __name__ == "__main__":
     print3( '\ndoing getStrLocationsBegAndEnd() ...\n' )
     #
     TimeTrial( testNewImproved )
-    '''
     '''
     #
     sayTestResult( lProblems )
