@@ -1181,11 +1181,43 @@ if __name__ == "__main__":
                 'getStrLocationsBegAndEnd( "JBL L220 Oracle Speakers" )' )
         #
     #
+    sBig = ( "BROOK 10C Tube Amplifier   "
+             "Western Electric Fairchild 620 300B 2A3   Tested 10C3" )
+    # should find 10C not the rest
+    #
+    dAllWordLocations = getLocationsDictOrig( sBig )
+    #
+    def getLocationForSub( s ):
+        return getSubStringLocation( s, dAllWordLocations )
+    #
+    tLook4Models = ( "10C", "10C3", "620", "2A3", "300B" )
+    #
+    tLocationsOfInterest = tuple( map( getLocationForSub, tLook4Models ) )
+    #
+    o = _getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest )
+    #
+    # tNearFront, tOnEnd, tNearEnd, tInParens, dAllWordLocations
+    #
+    tGot = getTupleOffObj( o )
+    #
+    tExpect = ((1,), (11,), (8, 9, 11), ())
+    #
+    if tGot != tExpect:
+        #
+        print3( tGot )
+        lProblems.append(
+                'getStrLocationsBegAndEnd( "BROOK 10C Tube Amplifier" )' )
+        #
+    #
+    # print3( 'dAllWordLocations:', dAllWordLocations )
+    #
+    # print3( 'tGot:', tGot )
+    #
     # "15 x EL84 Telefunken Valvo Siemens Lorenz 6BQ5 old version Made in West Germany"
     # should find EL84 not 6BQ5
     #
-    # "BROOK 10C Tube Amplifier   Western Electric Fairchild 620 300B 2A3   Tested 10C3"
-    # should find 10C not the rest
+    # "4 pcs - RCA 6922 vintage vacuum tube quad - E88CC 6DJ8 CV2492 CCa - valves"
+    # should find 6922 not the rest
     #
     for t in lTestItems:
         #
