@@ -1206,7 +1206,7 @@ if __name__ == "__main__":
         #
         print3( tGot )
         lProblems.append(
-                'getStrLocationsBegAndEnd( "BROOK 10C Tube Amplifier" )' )
+                '_getSubStrLocationsBegAndEnd( "BROOK 10C Tube Amplifier" )' )
         #
     #
     # print3( 'dAllWordLocations:', dAllWordLocations )
@@ -1218,6 +1218,30 @@ if __name__ == "__main__":
     #
     # "4 pcs - RCA 6922 vintage vacuum tube quad - E88CC 6DJ8 CV2492 CCa - valves"
     # should find 6922 not the rest
+    #
+    sBig = ( "British Made Mullard 7DJ8 PCC88 Tube Valve "
+             "6DJ8 ECC88 sub -Warm Old School hifi" )
+
+    #
+    tLook4Models = ( "7DJ8", "PCC88", "6DJ8", "ECC88" )
+    #
+    o = getStrLocationsBegAndEnd( sBig, tLook4Models )
+    #
+    # tNearFront, tOnEnd, tNearEnd, tInParens, dAllWordLocations
+    #
+    tGot = getTupleOffObj( o )
+    #
+    tExpect = ( (3, 4), (), (), () )
+    #
+    if tGot != tExpect:
+        #
+        print3( tGot )
+        lProblems.append(
+                'getStrLocationsBegAndEnd( "Mullard 7DJ8 PCC88 Tube" )' )
+        #
+    #
+    #
+    #
     #
     for t in lTestItems:
         #
@@ -1354,5 +1378,6 @@ if __name__ == "__main__":
     #
     TimeTrial( testNewImproved )
     '''
+    #
     #
     sayTestResult( lProblems )
