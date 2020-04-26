@@ -228,13 +228,14 @@ def getReverseDictCarefully( dOrig ):
     """Return a dictionary with the values as keys and the keys as values.
     Since the values may not be unique, in the returned reverse dictionary,
     the original keys are in a list for each unique original value.
-    This is done CAREFULLY where the original values may be tuples or strings."""
+    This is done CAREFULLY where the original values may be 
+    lists, tuples or strings."""
     #
     lValueuKeys = []
     #
     for uKey, uValue in getItemIter( dOrig ):
         #
-        if type( uValue ) == tuple:
+        if type( uValue ) in ( tuple, list ):
             #
             for sValue in uValue:
                 #
