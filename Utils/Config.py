@@ -71,18 +71,17 @@ class MissingHostnameSectionHeaderError( Exception ): pass
 
 try:
     #
-    import configparser as ConfigParser # python 3
+    import configparser # python 3
     #
 except ImportError:
     #
     try:
         #
-        import ConfigParser
-        # from ConfigParser import NoSectionError, NoOptionError
+        import ConfigParser as configparser
         #
     except ImportError:
         #
-        import SafeConfigParser as ConfigParser
+        import SafeConfigParser as configparser
 #
 
 
@@ -149,7 +148,7 @@ def getConfigOptions(
             sConfigFile = ''
         #
     #
-    oOptions        = ConfigParser.SafeConfigParser() # new in 2.3
+    oOptions        = configparser.ConfigParser()
     #
     if not bNoConfigOK:
         #
