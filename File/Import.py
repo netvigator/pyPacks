@@ -174,9 +174,14 @@ def getDictIterOffCSV( *sFileSpec, **kwargs ):
     #
     while True:
         #
-        sLineOrig   = getNext( oFile )
-        #
-        if not sLineOrig: break
+        try:
+            #
+            sLineOrig   = getNext( oFile )
+            #
+        except StopIteration:
+            #
+            break
+            #
         #
         sLineOrig   = getLineOmitNewLine( sLineOrig )
         #
