@@ -23,7 +23,7 @@
 # Copyright 2004-2020 Rick Graves
 #
 #
-from time               import clock, time
+from time               import time
 
 from six                import print_ as print3
 
@@ -49,7 +49,7 @@ def _callOverAndOver( iterCallsPerSet, TimeThis, args, kwargs ):
     #
 
 
-def _timer( getNow, iCallsPerSet, iSets, TimeThis, args, kwargs ):
+def _timer( iCallsPerSet, iSets, TimeThis, args, kwargs ):
     #
     # iCallsPerSet is the number of times the function is call on each repetition
     # to test consistency,
@@ -63,11 +63,11 @@ def _timer( getNow, iCallsPerSet, iSets, TimeThis, args, kwargs ):
     #
     for iThisSet in iRange( iSets ):
         #
-        tBeg    = getNow()
+        tBeg    = time()
         #
         _callOverAndOver( iterCallsPerSet, TimeThis, args, kwargs )
         #
-        tEnd    = getNow()
+        tEnd    = time()
         #
         lResults[ iThisSet ] = tEnd - tBeg
         #
@@ -99,7 +99,7 @@ def _getGoodInt( nOne2Ten ):
     return iGoodInt
 
 
-def _definedTrial( getNow, iCallsPerSet, iSets, TimeThis, args, kwargs ):
+def _definedTrial( iCallsPerSet, iSets, TimeThis, args, kwargs ):
     #
     try: # moving this to the top breaks this package!
         from ..String.Output    import ReadableNo
@@ -108,7 +108,7 @@ def _definedTrial( getNow, iCallsPerSet, iSets, TimeThis, args, kwargs ):
         from String.Output      import ReadableNo
         from Time.Delta     import getDurationUnits
     #
-    lTimeList   = _timer( getNow, iCallsPerSet, iSets, TimeThis, args, kwargs )
+    lTimeList   = _timer( iCallsPerSet, iSets, TimeThis, args, kwargs )
     #
     fCallsPerSet = float( iCallsPerSet )
     #
@@ -143,27 +143,6 @@ def _definedTrial( getNow, iCallsPerSet, iSets, TimeThis, args, kwargs ):
 
 
 
-
-def _setClock( bUseClockNotTime = False ):
-    #
-    if bUseClockNotTime:
-        #
-        return clock
-        #
-    else:
-        #
-        return time
-
-
-
-def _sayClock( bUseClockNotTime ):
-    #
-    #
-    return ImIf( bUseClockNotTime, 'clock', 'time' )
-
-
-
-
 def TimeTrial( TimeThis, *args, **kwargs ):
     #
     """
@@ -182,8 +161,6 @@ def TimeTrial( TimeThis, *args, **kwargs ):
     #
     bClock1st           = False # use time as first timer
     #
-    getNow              = _setClock( False ) # use time
-    #
     if iCallsPerSet is None or iSets is None:
         #
         try:
@@ -201,30 +178,13 @@ def TimeTrial( TimeThis, *args, **kwargs ):
         #
         # time the function using both clock and time
         #
-        tBeg                = getNow()
+        tBeg                = time()
         #
         TimeThis( *args, **kwargs )
         #
-        tEnd                = getNow()
+        tEnd                = time()
         #
         nDuration           = tEnd - tBeg # "time" duration
-        #
-        getNow              = _setClock( True ) # use clock
-        #
-        tBeg                = getNow()
-        #
-        TimeThis( *args, **kwargs )
-        #
-        tEnd                = getNow()
-        #
-        if tEnd - tBeg > nDuration: # if "clock" gave a longer duration than "time"
-            #
-            nDuration       = tEnd - tBeg
-            #
-            bClock1st       = True # use "clock" as first timer
-            #
-        #
-        getNow              = _setClock( bClock1st )
         #
         nTargetSecs         =   1.0 # shoot for completing the sets in one sec
         #
@@ -246,13 +206,7 @@ def TimeTrial( TimeThis, *args, **kwargs ):
         #
         if iCallsPerSet < 1: iCallsPerSet = 1
     #
-    print3( "using", _sayClock( bClock1st ), "for a timer:" )
-    _definedTrial( getNow, iCallsPerSet, iSets, TimeThis, args, kwargs )
-    #
-    print3( "\nusing", _sayClock( not bClock1st ), "for a timer:" )
-    getNow = _setClock( not bClock1st )
-    _definedTrial( getNow, iCallsPerSet, iSets, TimeThis, args, kwargs )
-    print3( '\npython docs say clock is better for time trials (!?)' )
+    _definedTrial( iCallsPerSet, iSets, TimeThis, args, kwargs )
     #
     return iCallsPerSet, iSets
 
