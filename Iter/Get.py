@@ -109,7 +109,7 @@ def getPairsOffIterable( iterable ):
         #
         yield uThis, uNext
         #
-        if bOddLen: raise StopIteration
+        if bOddLen: break
 
 
 
