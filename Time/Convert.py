@@ -472,14 +472,25 @@ if __name__ == "__main__":
         lProblems.append( 'getDateTimeObjFromString()' )
         #
     #
-    if (    repr( getDateTimeObjFromIsoDateStr( sNow[:10] ) ) !=
-            'datetime.datetime' + repr( tNow[ : 6 ] )[:13] + ' 0, 0)' ):
+    sDateTimeStrRepr   = (
+            repr( getDateTimeObjFromIsoDateStr( sNow[:10] ) ) )
+    sDateTimeStrExpect = (
+            'datetime.datetime' + repr( tNow[ : 6 ] )[:13] + '0, 0)' )
+    #
+    if sDateTimeStrRepr!= sDateTimeStrExpect:
         #
+        from difflib import ndiff
         print3( 'sNow:', sNow )
-        print3( 'repr( getDateTimeObjFromIsoDateStr( sNow[:10] ) ):',
-                 repr( getDateTimeObjFromIsoDateStr( sNow[:10] ) ) )
-        print3( "'datetime.datetime' + repr( tNow[ : 6 ] )[:13] + ' 0, 0)':",
-                 'datetime.datetime' + repr( tNow[ : 6 ] )[:13] +  '0, 0)' )
+        print3( 'repr( tNow[ : 6 ] )[:13] ):',
+                '"%s"' % repr( tNow[ : 6 ] )[:13] )
+        print3( 'type( sDateTimeStrRepr   ):', type( sDateTimeStrRepr ) )
+        print3( 'type( sDateTimeStrExpect ):', type( sDateTimeStrExpect ) )
+        print3( '\n'.join(ndiff([sDateTimeStrRepr], [sDateTimeStrExpect])) )
+        print3( 'repr( getDateTimeObjFromIsoDateStr( sNow[:10] ) )        :',
+                 '"%s"' % repr( getDateTimeObjFromIsoDateStr( sNow[:10] ) ) )
+        print3( "'datetime.datetime' + repr( tNow[ : 6 ] )[:13] + '0, 0)':",
+                '"datetime.datetime' + repr( tNow[ : 6 ] )[:13] + '0, 0)"' )
+        print3()
         #
         lProblems.append( 'getDateTimeObjFromIsoDateStr()' )
         #
