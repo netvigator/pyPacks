@@ -188,6 +188,8 @@ dSub2nd = OrderedDict( (
     ( ',',      '[, ]*'     ),  # comma    matches ZERO or more commas or spaces
     ( '.',      '[. ]*'     ))) # dot      matches ZERO or more dots or spaces
 
+oFindSubs = getRegExObj( '(?: |\[-/ \]|\[, \]|\[. \])\*' )
+
 
 tSubLast = (
     ( ' *corporation',
@@ -588,6 +590,8 @@ def getRegExpress(
         #
         for i in iRange( len( lOrig ) ):
             #
+            lParts = oFindSubs.split( lRegEx[ i ] )
+            #
             if lOrig[ i ][ -1 ].isdigit():
                 #
                 if lOrig[ i ].startswith( '^' ):
@@ -603,7 +607,8 @@ def getRegExpress(
                     lRegEx[ i ] = r'%s\b' % lRegEx[ i ]
                     #
                 #
-            elif lLengths[ i ] <= iWordBoundChrs:
+            elif ( lLengths[ i ] <= iWordBoundChrs or
+                   len( lParts ) > 1 and len( lParts[-1] ) <= iWordBoundChrs ):
                 #
                 # world boundary chars not wanted if the string
                 # begins or ends with parens!
@@ -620,9 +625,15 @@ def getRegExpress(
                     #
                     lRegEx[ i ] = r'\b%s' % lRegEx[ i ]
                     #
-                else:
+                elif lLengths[ i ] <= iWordBoundChrs:
                     #
                     lRegEx[ i ] = r'\b%s\b' % lRegEx[ i ]
+                    #
+                elif (  len( lParts ) > 1 and
+                        len( lParts[-1] ) <= iWordBoundChrs and
+                        not bSubModelsOK ):
+                    #
+                    lRegEx[ i ] = r'%s\b' % lRegEx[ i ]
                     #
                 #
             #
@@ -1446,7 +1457,7 @@ if __name__ == "__main__":
     #
     sLook4 = 'Table Radio\rPre-amplifier\rPre-amp\rFuse Holder\rCapacitor'
     #
-    sRegExpress = getRegExpress( sLook4, iWordBoundChrs = 5, bEscBegEndOfStr = False )
+    sRegExpress = getRegExpress( sLook4, iWordBoundChrs = 2, bEscBegEndOfStr = False )
     #
     sWant = 'Table *Radio|Pre[-/ ]*amplifier|Pre[-/ ]*amp|Fuse *Holder|Capacitor'
     #
@@ -1477,7 +1488,7 @@ if __name__ == "__main__":
     #
     sLook4 = r'Model Two\rModel 2'
     #
-    sRegExpress = getRegExpress( sLook4, iWordBoundChrs = 5, bAddDash = True )
+    sRegExpress = getRegExpress( sLook4, iWordBoundChrs = 2, bAddDash = True )
     #
     sWant = r'Model[-/ ]*Two|Model[-/ ]*2\b'
     #
@@ -1812,7 +1823,7 @@ if __name__ == "__main__":
     #
     sLook4 = 'Model 2\rModel Two'
     #
-    sRegExpress = getRegExpress( sLook4, iWordBoundChrs  = 3 )
+    sRegExpress = getRegExpress( sLook4, iWordBoundChrs  = 2 )
     #
     sWant = r'Model *2\b|Model *Two'
     #
@@ -1880,6 +1891,22 @@ if __name__ == "__main__":
         #
         lProblems.append( 'getRegExpress(%s)' % sLook4 )
         #
+    #
+    sLook4 = '6550-VI'
+    #
+    sRegExpress = getRegExpress(
+            sLook4, bSubModelsOK = False, iWordBoundChrs = 3 )
+    #
+    sWant = r'6550[-/ ]*VI\b'
+    #
+    if sRegExpress != sWant:
+        #
+        print3( 'got: ', sRegExpress )
+        print3( 'want:', sWant )
+        #
+        lProblems.append( 'getRegExpress(%s)' % sLook4 )
+        #
+    #
     #
     #
     #
