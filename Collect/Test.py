@@ -313,6 +313,17 @@ def hasAnyEmpty( lSeq ):
 
 
 
+class EndsWithableMixin( object ):
+    #
+    def endswith( self, seq ):
+        #
+        return self[ - len( seq ) : ] == seq
+
+
+class TupleEndsWithable( EndsWithableMixin, tuple ): pass
+
+class ListEndsWithable( EndsWithableMixin, list ): pass
+
 
 if __name__ == "__main__":
     #
@@ -479,6 +490,30 @@ if __name__ == "__main__":
     if AnyMeet( [ 0 ] * 10, fTest ) or not AnyMeet( iRange( 10 ), fTest ):
         #
         lProblems.append( 'Any()' )
+        #
+    #
+    t = TupleEndsWithable( range(9) )
+    #
+    if not t.endswith( (6,7,8) ):
+        #
+        lProblems.append( 'TupleEndsWithable( range(9) ).endswith( (6,7,8)' )
+        #
+    #
+    if t.endswith( (6,7) ):
+        #
+        lProblems.append( 'TupleEndsWithable( range(9) ).endswith( (6,7)' )
+        #
+    #
+    l = ListEndsWithable( range(9) )
+    #
+    if not l.endswith( [6,7,8] ):
+        #
+        lProblems.append( 'ListEndsWithable( range(9) ).endswith( [6,7,8]' )
+        #
+    #
+    if l.endswith( [6,7] ):
+        #
+        lProblems.append( 'ListEndsWithable( range(9) ).endswith( [6,7]' )
         #
     #
     sayTestResult( lProblems )
