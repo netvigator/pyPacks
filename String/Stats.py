@@ -28,6 +28,7 @@ from string                 import digits, ascii_letters as letters
 
 try:
     from ..Collect.Get      import getListFromNestedLists
+    from ..Collect.Test     import TupleEndsWithable
     from ..Iter.AllVers     import tMap, iRange, tZip
     from ..Numb.Stats       import getMeanMembers
     from ..Object.Get       import ValueContainer, RandomFeeder
@@ -38,6 +39,7 @@ try:
     from ..Utils.TimeTrial  import TimeTrial
 except ( ValueError, ImportError ):
     from Collect.Get        import getListFromNestedLists
+    from Collect.Test       import TupleEndsWithable
     from Iter.AllVers       import tMap, iRange, tZip
     from Numb.Stats         import getMeanMembers
     from Object.Get         import ValueContainer, RandomFeeder
@@ -416,7 +418,7 @@ def _getSubStrLocationsBegAndEnd(
     return ValueContainer(
             tNearFront  = tuple( lNearFront ),
             tOnEnd      = tuple( lOnEnd ),
-            tNearEnd    = tuple( lNearEnd ),
+            tNearEnd    = TupleEndsWithable( lNearEnd ),
             tInParens   = tInParens )
 
 
