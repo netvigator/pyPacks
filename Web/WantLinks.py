@@ -38,7 +38,7 @@ try:
                                      getTextBefore )
     from ..String.Test      import isDigit
     from ..Time.Output      import getNowIsoDateTimeStr
-    from ..Utils.Both2n3    import print3
+    from ..Utils.Both2n3    import print3, getStrGotBytes
     from ..Utils.Output     import getOutputFromExternalCommand
     from .Address           import getHostPathTuple, getDomainOffURL
     from .HTML              import oFindLinkStart # href=
@@ -53,7 +53,7 @@ except ( ValueError, ImportError ):
                                      getTextBefore )
     from String.Test        import isDigit
     from Time.Output        import getNowIsoDateTimeStr
-    from Utils.Both2n3      import print3
+    from Utils.Both2n3      import print3, getStrGotBytes
     from Utils.Output       import getOutputFromExternalCommand
     from Web.Address        import getHostPathTuple, getDomainOffURL
     from Web.HTML           import oFindLinkStart # href=
@@ -341,6 +341,8 @@ def getMoreTester( sScript, nMaxLinks ):
             #
         #
         return sReadableLinkMore, sLines
+    #
+    return getMoreTests
 
 
 def getLinksDict(
@@ -440,8 +442,9 @@ def getLinksDict(
                 #
                 if lLinksInner and fMoreTests is not None:
                     #
-                    sReadableLinkPart, sLines = fMoreTests(
-                                                    lLinksInner, sLinkOuter )
+                    sReadableLinkPart, sLines = map(
+                            getStrGotBytes,
+                            fMoreTests( lLinksInner, sLinkOuter ) )
                     #
                     bWriteLinks = bool( sLines )
                     #
@@ -449,7 +452,8 @@ def getLinksDict(
                     #
                     bWriteLinks = True
                     #
-                    sReadableLinkPart = _getReadableLinkPart( sLinkOuter )
+                    sReadableLinkPart = getStrGotBytes(
+                            _getReadableLinkPart( sLinkOuter ) )
                     #
                 #
                 if bWriteLinks:
@@ -462,7 +466,7 @@ def getLinksDict(
                     else:
                         #
                         lPage.extend(
-                                [ sReadableLinkPart, sLinkOuter ] )
+                                [ sReadableLinkPart, '', '', sLinkOuter ] )
                         #
                     #
                     setFiles = frozenset( iMap( _getFileName, lLinksInner ) )
