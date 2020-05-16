@@ -425,10 +425,14 @@ def _getSubStrLocationsBegAndEnd(
 _setAlphaNums = frozenset( list( letters ) + list( digits ) )
 
 
-def _getStrLocationsBegAndEnd(
+def getStrLocationsBegAndEnd(
         sWhole, tStringsOfInterest, bUseSwapper = False, bTrouble = False ):
     #
     # swapper is slower, takes more than twice as long as using replace
+    # but this one works better on this string:
+    # ( "Electro Voice EV Vintage FiberGlass 8HD Horn Pair "
+    #   "Speaker T10 T25 T250 A" )
+    #
     #
     setUseChars = _setAlphaNums.difference( frozenset( sWhole ) )
     #
@@ -550,7 +554,8 @@ def _getStrLocationsBegAndEnd(
     return o
 
 
-def getStrLocationsBegAndEnd( sWhole, tStrsOfInterest, bTrouble = False ):
+def _getStrLocationsBegAndEnd( sWhole, tStrsOfInterest,
+                               bUseSwapper = False, bTrouble = False ):
     #
     lStingsGotSpace = [ s for s in tStrsOfInterest if ' ' in s ]
     #
@@ -1242,7 +1247,37 @@ if __name__ == "__main__":
                 'getStrLocationsBegAndEnd( "Mullard 7DJ8 PCC88 Tube" )' )
         #
     #
+    sBig = ( "Electro Voice EV Vintage FiberGlass 8HD Horn Pair "
+             "Speaker T10 T25 T250 A" )
     #
+    tLook4Models = ( "8HD", "T250", "T25" )
+    #
+    # o = _getStrLocationsBegAndEnd( sBig, tLook4Models, bTrouble = True )
+    #
+    o = getStrLocationsBegAndEnd( sBig, tLook4Models )
+    #
+    dAllWordLocations = o.dAllWordLocations
+    #
+    dExpect = {
+        'Electro': (0,),
+        'Voice': (1,),
+        'EV': (2,),
+        'Vintage': (3,),
+        'FiberGlass': (4,),
+        '8HD': (5,),
+        'Horn': (6,),
+        'Pair': (7,),
+        'Speaker': (8,),
+        'T10': (9,),
+        'T25': (10,),
+        'T250': (11,),
+        'A': (12,) }
+    #
+    if dAllWordLocations != dExpect:
+        lProblems.append(
+                'getStrLocationsBegAndEnd( '
+                '"Electro Voice EV Vintage FiberGlass 8HD Horn" )' )
+        #
     #
     #
     for t in lTestItems:
