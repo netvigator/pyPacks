@@ -325,7 +325,13 @@ def _getSubStrLocationsBegAndEnd(
     #
     lNearEnd = []
     #
-    for i in iRange( len( lLocations ) // 3 ):
+    iMaxNearFront = 0
+    #
+    if lNearFront: iMaxNearFront = max( lNearFront )
+    #
+    iOnEndBeginsHere = 2 + ( len( lLocations ) - iMaxNearFront ) // 2
+    #
+    for i in iRange( iOnEndBeginsHere ):
         #
         if dLocations[ lLocations[ i ] ]:
             #
@@ -469,6 +475,7 @@ def getStrLocationsBegAndEnd(
     #
     if bTrouble:
         print3( 'lStringsOfInterest:', lStringsOfInterest )
+    #
     for sStr in lStringsOfInterest:
         #
         while sSubstitute in dReverseSubs:
@@ -527,6 +534,7 @@ def getStrLocationsBegAndEnd(
     #
     if bTrouble:
         print3( 'tStringsOfInterest after:', tStringsOfInterest )
+    #
     if tStringsOfInterest:
         #
         for k, v in dReverseSubs.items():
@@ -547,7 +555,11 @@ def getStrLocationsBegAndEnd(
         tLocationsOfInterest = ()
         #
     #
-    o = _getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest )
+    if bTrouble:
+        print3( 'tLocationsOfInterest after:', tLocationsOfInterest )
+    #
+    o = _getSubStrLocationsBegAndEnd(
+            dAllWordLocations, tLocationsOfInterest, bTrouble = bTrouble )
     #
     o.dAllWordLocations = dAllWordLocations
     #
@@ -861,7 +873,7 @@ if __name__ == "__main__":
     #
     tExpect = (  (2,),
             (6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17),
-            (12, 13, 14, 15, 16, 17),
+            (11, 12, 13, 14, 15, 16, 17),
             () )
     #
     lTestItems.append(
@@ -1207,11 +1219,13 @@ if __name__ == "__main__":
     #
     tGot = getTupleOffObj( o )
     #
-    tExpect = ((1,), (11,), (8, 9, 11), ())
+    tExpect = ((1,), (11,), (7, 8, 9, 11), ())
     #
     if tGot != tExpect:
         #
-        print3( tGot )
+        print3( '"BROOK 10C Tube Amplifier"' )
+        print3( 'tGot:', tGot )
+        print3( 'tExpect:', tExpect )
         lProblems.append(
                 '_getSubStrLocationsBegAndEnd( "BROOK 10C Tube Amplifier" )' )
         #
@@ -1238,11 +1252,13 @@ if __name__ == "__main__":
     #
     tGot = getTupleOffObj( o )
     #
-    tExpect = ( (3, 4), (), (), () )
+    tExpect = ( (3, 4), (), (7, 8), () )
     #
     if tGot != tExpect:
         #
-        print3( tGot )
+        print3( '"Mullard 7DJ8 PCC88 Tube"' )
+        print3( 'tGot:', tGot )
+        print3( 'tExpect:', tExpect )
         lProblems.append(
                 'getStrLocationsBegAndEnd( "Mullard 7DJ8 PCC88 Tube" )' )
         #
@@ -1259,24 +1275,49 @@ if __name__ == "__main__":
     dAllWordLocations = o.dAllWordLocations
     #
     dExpect = {
-        'Electro': (0,),
-        'Voice': (1,),
-        'EV': (2,),
-        'Vintage': (3,),
-        'FiberGlass': (4,),
-        '8HD': (5,),
-        'Horn': (6,),
-        'Pair': (7,),
-        'Speaker': (8,),
-        'T10': (9,),
-        'T25': (10,),
-        'T250': (11,),
-        'A': (12,) }
+        'Electro':      ( 0,),
+        'Voice':        ( 1,),
+        'EV':           ( 2,),
+        'Vintage':      ( 3,),
+        'FiberGlass':   ( 4,),
+        '8HD':          ( 5,),
+        'Horn':         ( 6,),
+        'Pair':         ( 7,),
+        'Speaker':      ( 8,),
+        'T10':          ( 9,),
+        'T25':          (10,),
+        'T250':         (11,),
+        'A':            (12,) }
     #
     if dAllWordLocations != dExpect:
         lProblems.append(
                 'getStrLocationsBegAndEnd( '
                 '"Electro Voice EV Vintage FiberGlass 8HD Horn" )' )
+        #
+    #
+    sBig = ( 'Telefunken E88CC/01 w/ Mullard label <> '
+             'audiophono grade 6922 CCA 6DJ8 Gold Pins' )
+    #
+    tLook4Models = ('6DJ8', '6922', 'E88CC', 'CCA')
+    #
+    # o = _getSubStrLocationsBegAndEnd(
+    #         dAllWordLocations, tLook4Models, bTrouble = True )
+    #
+    o = getStrLocationsBegAndEnd( sBig, tLook4Models, bTrouble = False )
+    #
+    # tNearFront, tOnEnd, tNearEnd, tInParens, dAllWordLocations
+    #
+    tGot = getTupleOffObj( o )
+    #
+    tExpect = ( (1,), (), (9, 10, 11), () )
+    #
+    if tGot != tExpect:
+        #
+        print3( '"Telefunken E88CC/01 w/ Mullard label"' )
+        print3( 'tGot:', tGot )
+        print3( 'tExpect:', tExpect )
+        lProblems.append(
+                'getStrLocationsBegAndEnd( "Telefunken E88CC/01 w/ Mullard label" )' )
         #
     #
     #
