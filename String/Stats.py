@@ -420,6 +420,21 @@ def _getSubStrLocationsBegAndEnd(
             #
         #
     #
+    if  (   len( lNearFront ) > 1   and
+            lNearEnd                and
+            lOnEnd                  and
+            lNearFront[ 1 ] -  lNearFront[ 0 ]  > 1 and
+            lNearFront[ 1 ] >= lOnEnd[    -1 ] // 2 and
+            lNearFront[ 1 ] >  lNearEnd[ 0   ] // 2 ):
+        #
+        # move the latter lNearFront nodes to the beginning of lNearEnd
+        #
+        lNotSoNearFront = lNearFront[ 1 : ]
+        #
+        lNearEnd[ : 0 ] = lNotSoNearFront
+        #
+        del lNearFront[ - len( lNotSoNearFront ) : ]
+        #
     #
     return ValueContainer(
             tNearFront  = tuple( lNearFront ),
@@ -1320,6 +1335,27 @@ if __name__ == "__main__":
                 'getStrLocationsBegAndEnd( "Telefunken E88CC/01 w/ Mullard label" )' )
         #
     #
+    sBig = ( 'Pair Electro-Voice EV The Patrician Premium System 18Wk, '
+             '(2)828HF, T25A/6HD T35' )
+    #
+    tLook4Models = ('6HD', 'T35', '828HF', 'Patrician', 'T25A', '18Wk')
+    #
+    o = getStrLocationsBegAndEnd( sBig, tLook4Models, bTrouble = False )
+    #
+    # tNearFront, tOnEnd, tNearEnd, tInParens, dAllWordLocations
+    #
+    tGot = getTupleOffObj( o )
+    #
+    tExpect = ( (6,), (18, 19), (9, 14, 16, 18, 19), () )
+    #
+    if tGot != tExpect:
+        #
+        print3( '"Electro-Voice EV The Patrician Premium System"' )
+        print3( 'tGot:', tGot )
+        print3( 'tExpect:', tExpect )
+        lProblems.append(
+                'getStrLocationsBegAndEnd( "Electro-Voice EV The Patrician Premium System" )' )
+        #
     #
     for t in lTestItems:
         #
