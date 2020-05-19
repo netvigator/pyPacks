@@ -436,6 +436,8 @@ def _getSubStrLocationsBegAndEnd(
         del lNearFront[ - len( lNotSoNearFront ) : ]
         #
     #
+    if lOnEnd == lNearEnd: lNearEnd = []
+    #
     return ValueContainer(
             tNearFront  = tuple( lNearFront ),
             tOnEnd      = tuple( lOnEnd ),
@@ -830,7 +832,7 @@ if __name__ == "__main__":
     #
     tGot = getTupleOffObj( o )
     #
-    tExpect = ((1,), (11, 12), (11, 12), ())
+    tExpect = ((1,), (11, 12), (), ())
     #
     lTestItems.append(
             ( sBig, tLook4Models, tExpect, "Amperex 6922 gold" ) )
@@ -1076,7 +1078,7 @@ if __name__ == "__main__":
     #
     tGot = getTupleOffObj( o )
     #
-    tExpect = ((2,), (6,), (6,), ())
+    tExpect = ((2,), (6,), (), ())
     #
     lTestItems.append(
             ( sBig, tLook4Models, tExpect, "Stark 8-77 Tube Tester" ) )
