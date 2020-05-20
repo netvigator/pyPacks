@@ -438,6 +438,13 @@ def _getSubStrLocationsBegAndEnd(
     #
     if lOnEnd == lNearEnd: lNearEnd = []
     #
+    while lNearEnd and lNearEnd[ 0 ] == lNearFront[ -1 ] + 1:
+        #
+        lNearFront.append( lNearEnd[ 0 ] )
+        #
+        del lNearEnd[ 0 ]
+        #
+    #
     return ValueContainer(
             tNearFront  = tuple( lNearFront ),
             tOnEnd      = tuple( lOnEnd ),
@@ -1356,7 +1363,30 @@ if __name__ == "__main__":
         print3( 'tGot:', tGot )
         print3( 'tExpect:', tExpect )
         lProblems.append(
-                'getStrLocationsBegAndEnd( "Electro-Voice EV The Patrician Premium System" )' )
+                'getStrLocationsBegAndEnd( '
+                '"Electro-Voice EV The Patrician Premium System" )' )
+        #
+    #
+    sBig = "2 Metal RCA 6V6 VT-107 Vacuum Tubes Tested Guaranteed!"
+    #
+    tLook4Models = ( 'VT-107', '6V6' )
+    #
+    o = getStrLocationsBegAndEnd( sBig, tLook4Models, bTrouble = False )
+    #
+    # tNearFront, tOnEnd, tNearEnd, tInParens, dAllWordLocations
+    #
+    tGot = getTupleOffObj( o )
+    #
+    tExpect = ( (3, 4), (), (), () )
+    #
+    if tGot != tExpect:
+        #
+        print3( '"Metal RCA 6V6 VT-107 Vacuum Tubes"' )
+        print3( 'tGot:', tGot )
+        print3( 'tExpect:', tExpect )
+        lProblems.append(
+                'getStrLocationsBegAndEnd( '
+                '"Metal RCA 6V6 VT-107 Vacuum Tubes" )' )
         #
     #
     for t in lTestItems:
