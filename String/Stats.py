@@ -438,7 +438,7 @@ def _getSubStrLocationsBegAndEnd(
     #
     if lOnEnd == lNearEnd: lNearEnd = []
     #
-    while lNearEnd and lNearEnd[ 0 ] == lNearFront[ -1 ] + 1:
+    while lNearEnd and lNearFront and lNearEnd[ 0 ] == lNearFront[ -1 ] + 1:
         #
         lNearFront.append( lNearEnd[ 0 ] )
         #
