@@ -288,15 +288,25 @@ def getDictSubset( dOrig, *args ):
     '''
     get a new dictionary that has subset of the keys in the original
     say you have dOrig as {'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5, 'f': 6}
-    getDictSubset( d, 'a', 'b', 'c' ) returns
+
+    getDictSubset( dOrig, 'a', 'b', 'c' ) returns
     nNew as {'a': 1, 'b': 2, 'c': 3}
+
+    getDictSubset( dOrig, 'c', 'f', 'z' ) returns
+    nNew as { 'c': 3, 'f': 6 }
+
+    getDictSubset( dOrig, 'z' ) returns
+    nNew as {}
     '''
     #
     dNew = {}
     #
     for k in args:
         #
-        dNew[ k ] = dOrig.get( k )
+        if k in dOrig:
+            #
+            dNew[ k ] = dOrig.get( k )
+            #
         #
     #
     return dNew
@@ -789,7 +799,15 @@ if __name__ == "__main__":
     #
     if getDictSubset( dOrig, 'a', 'b', 'c' ) != dWant:
         #
-        lProblems.append( 'getDictSubset()' )
+        lProblems.append( 'getDictSubset() has all' )
+        #
+    #
+    tMaybe = ( 'c', 'f', 'z' )
+    dWant  = dict( c = 3, f = 6 )
+    #
+    if getDictSubset( dOrig, *tMaybe ) != dWant:
+        #
+        lProblems.append( 'getDictSubset() has some' )
         #
     #
     if getAnyKey( dOrig ) not in dOrig:
