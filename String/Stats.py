@@ -295,15 +295,19 @@ def _getSubStrLocationsBegAndEnd(
     #
     lNearFront = []
     #
-    for i in iRange( len( lLocations ) // 2 ):
+    for i in iRange( len( lLocations ) ):
         #
         if dLocations[ i ]:
             #
             lNearFront.append( i )
             #
+        elif i > len( lLocations ) // 3:
+            #
+            break # keep going if contiguous
+            #
         #
     #
-    lLocations.reverse() # make sure they are listed high to low
+    lLocations.reverse() # now high to low
     #
     lOnEnd = []
     #
@@ -321,17 +325,24 @@ def _getSubStrLocationsBegAndEnd(
     #
     setIgnoreThese = set( lOnEnd )
     #
-    lOnEnd.reverse() # now low to high
+    lOnEnd.reverse() # lOnEnd now low to high
     #
     lNearEnd = []
     #
-    iMaxNearFront = 0
+    iMaxNearFront   = 0
     #
-    if lNearFront: iMaxNearFront = max( lNearFront )
+    if lNearFront:
+        iMaxNearFront = max( 1 + max( lNearFront ), iMax // 2 )
     #
-    iOnEndBeginsHere = 2 + ( len( lLocations ) - iMaxNearFront ) // 2
+    iMinOnEnd       = iMax
     #
-    for i in iRange( iOnEndBeginsHere ):
+    if lOnEnd:      iMinOnEnd = min( lOnEnd )
+    #
+    iOnEndBeginsHere = iMaxNearFront + 1
+    #
+    lLocations.reverse() # now low to high
+    #
+    for i in iRange( iMaxNearFront, iMinOnEnd ):
         #
         if dLocations[ lLocations[ i ] ]:
             #
@@ -339,7 +350,12 @@ def _getSubStrLocationsBegAndEnd(
             #
         #
     #
-    lNearEnd.reverse() # now low to high
+    if bTrouble:
+        print3( 'iMaxNearFront, iMinOnEnd, range( iMaxNearFront + 1, iMinOnEnd ):' )
+        print3( iMaxNearFront,
+                iMinOnEnd,
+                tuple( iRange( iMaxNearFront + 1, iMinOnEnd ) ) )
+        print3( 'lNearEnd:', lNearEnd )
     #
     tInParens = ()
     #
@@ -434,15 +450,6 @@ def _getSubStrLocationsBegAndEnd(
         lNearEnd[ : 0 ] = lNotSoNearFront
         #
         del lNearFront[ - len( lNotSoNearFront ) : ]
-        #
-    #
-    if lOnEnd == lNearEnd: lNearEnd = []
-    #
-    while lNearEnd and lNearFront and lNearEnd[ 0 ] == lNearFront[ -1 ] + 1:
-        #
-        lNearFront.append( lNearEnd[ 0 ] )
-        #
-        del lNearEnd[ 0 ]
         #
     #
     return ValueContainer(
@@ -833,7 +840,8 @@ if __name__ == "__main__":
     #
     tLocationsOfInterest = tuple( map( getLocationForSub, tLook4Models ) )
     #
-    o = _getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest )
+    o = _getSubStrLocationsBegAndEnd(
+            dAllWordLocations, tLocationsOfInterest )
     #
     # tNearFront, tOnEnd, tNearEnd, tInParens, dAllWordLocations
     #
@@ -895,10 +903,7 @@ if __name__ == "__main__":
     #
     tGot = getTupleOffObj( o )
     #
-    tExpect = (  (2,),
-            (6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17),
-            (11, 12, 13, 14, 15, 16, 17),
-            () )
+    tExpect = ( (2,), (6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17), (), () )
     #
     lTestItems.append(
             ( sBig, tLook4Models, tExpect,
@@ -924,7 +929,8 @@ if __name__ == "__main__":
     tLocationsOfInterest = tuple(
                             map( getLocationForSub, ( tLook4Models ) ) )
     #
-    o = _getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest )
+    o = _getSubStrLocationsBegAndEnd(
+            dAllWordLocations, tLocationsOfInterest, bTrouble = False )
     #
     # tNearFront, tOnEnd, tNearEnd, tInParens, dAllWordLocations
     #
@@ -1237,13 +1243,14 @@ if __name__ == "__main__":
     #
     tLocationsOfInterest = tuple( map( getLocationForSub, tLook4Models ) )
     #
-    o = _getSubStrLocationsBegAndEnd( dAllWordLocations, tLocationsOfInterest )
+    o = _getSubStrLocationsBegAndEnd(
+            dAllWordLocations, tLocationsOfInterest, bTrouble = False )
     #
     # tNearFront, tOnEnd, tNearEnd, tInParens, dAllWordLocations
     #
     tGot = getTupleOffObj( o )
     #
-    tExpect = ((1,), (11,), (7, 8, 9, 11), ())
+    tExpect = ((1,), (11,), (7, 8, 9), ())
     #
     if tGot != tExpect:
         #
@@ -1355,7 +1362,7 @@ if __name__ == "__main__":
     #
     tGot = getTupleOffObj( o )
     #
-    tExpect = ( (6,), (18, 19), (9, 14, 16, 18, 19), () )
+    tExpect = ( (6,), (18, 19), (9, 14, 16), () )
     #
     if tGot != tExpect:
         #
@@ -1388,6 +1395,29 @@ if __name__ == "__main__":
                 'getStrLocationsBegAndEnd( '
                 '"Metal RCA 6V6 VT-107 Vacuum Tubes" )' )
         #
+    #
+    sBig = "2 Vintage Philips Holland GE  6DJ8 6922 E88CC Vacuum Tubes Tested Guaranteed!"
+    #
+    tLook4Models = ( 'E88CC', '6DJ8', '6922' )
+    #
+    o = getStrLocationsBegAndEnd( sBig, tLook4Models, bTrouble = False )
+    #
+    # tNearFront, tOnEnd, tNearEnd, tInParens, dAllWordLocations
+    #
+    tGot = getTupleOffObj( o )
+    #
+    tExpect = ( (5, 6, 7), (), (), () )
+    #
+    if tGot != tExpect:
+        #
+        print3( '"Philips Holland GE  6DJ8 6922 E88CC Vacuum Tubes"' )
+        print3( 'tGot:', tGot )
+        print3( 'tExpect:', tExpect )
+        lProblems.append(
+                'getStrLocationsBegAndEnd( '
+                '"Philips Holland GE  6DJ8 6922 E88CC Vacuum Tubes" )' )
+        #
+    #
     #
     for t in lTestItems:
         #
