@@ -23,17 +23,26 @@
 # Copyright 2004-2020 Rick Graves
 #
 
-from os                 import makedirs, sep as cSep
-from os.path            import exists, isdir, join
+from errno                  import EEXIST
+from os                     import makedirs, sep as cSep
+from os.path                import exists, isdir, join
 
 try:
-    from .Test          import isDirThere
-    from ..File.Del     import DeleteIfExists
-    from ..File.Test    import isFileThere
+    from .Test              import isDirThere
+    from ..File.Del         import DeleteIfExists
+    from ..File.Test        import isFileThere
+    from ..Utils.Both2n3    import PYTHON2
 except ( ValueError, ImportError ):
-    from Dir.Test       import isDirThere
-    from File.Del       import DeleteIfExists
-    from File.Test      import isFileThere
+    from Dir.Test           import isDirThere
+    from File.Del           import DeleteIfExists
+    from File.Test          import isFileThere
+    from Utils.Both2n3      import PYTHON2
+
+
+if PYTHON2:
+    class FileExistsError(OSError):
+        def __init__(self, msg):
+            super(FileExistsError, self).__init__(EEXIST, msg)
 
 
 def _stripLeadingSlash( sDir ):
@@ -72,8 +81,10 @@ def getDirBelow( sHeadDir, sHeadAndBelow ):
 
 
 
-def getMakeDir( *sDir ):
+def getMakeDir( *sDir, **kwargs ):
     #
+    iMode     = kwargs.get( 'iMode',    0o777 )
+    bExistsOK = kwargs.get( 'bExistsOK', True )
     #
     sDir = join( *sDir )
     #
@@ -84,9 +95,19 @@ def getMakeDir( *sDir ):
         # hit a FileExistsError 2019-08-11
         #
         try:
-            makedirs( sDir )
+            if PYTHON2:
+                #
+                makedirs( sDir, mode = iMode )
+                #
+            else:
+                #
+                makedirs( sDir, mode = iMode, exist_ok = bExistsOK )
+                #
         except FileExistsError:
+            #
             pass
+            #
+
 
 
 def _getTempDir():
