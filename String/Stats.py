@@ -58,6 +58,9 @@ if __name__ == "__main__":
 
 
 
+IGNORE_JOINERS = frozenset( ( '/', '|' ) )
+
+
 
 def AscStats( sString ):
     #
@@ -267,9 +270,8 @@ def _isLocationInParens( iLocation, iParenOpen, iParenClose ):
 
 
 
-
 def _getSubStrLocationsBegAndEnd(
-        dAllWordLocations, tLocationsOfInterest, bTrouble = False ):
+            dAllWordLocations, tLocationsOfInterest, bTrouble = False ):
     #
     # this is called by both
     # getStrLocationsBegAndEnd and _getStrLocationsBegAndEnd
@@ -289,11 +291,20 @@ def _getSubStrLocationsBegAndEnd(
         dLocations[ i ] = True
         #
     #
+    tIgnoreLocations = tuple(
+        getListFromNestedLists(
+            [ dAllWordLocations[ s ]
+            for s in dAllWordLocations.keys()
+            if s in IGNORE_JOINERS ] ) )
+    #
     if bTrouble:
         print3( 'dLocations:' )
         pprint( dLocations )
+        print3( 'lLocations:', lLocations )
     #
     lNearFront = []
+    #
+    iBailOutHere = len( lLocations ) // 3
     #
     for i in iRange( len( lLocations ) ):
         #
@@ -301,7 +312,11 @@ def _getSubStrLocationsBegAndEnd(
             #
             lNearFront.append( i )
             #
-        elif i > len( lLocations ) // 3:
+        elif i in tIgnoreLocations:
+            #
+            pass
+            #
+        elif i > iBailOutHere:
             #
             break # keep going if contiguous
             #
@@ -1416,6 +1431,28 @@ if __name__ == "__main__":
         lProblems.append(
                 'getStrLocationsBegAndEnd( '
                 '"Philips Holland GE  6DJ8 6922 E88CC Vacuum Tubes" )' )
+        #
+    #
+    sBig = "IEC Mullard 6922 / E88CC / 6DJ8 Gold Pin Tube"
+    #
+    tLook4Models = ( '6922', 'E88CC', '6DJ8' )
+    #
+    o = getStrLocationsBegAndEnd( sBig, tLook4Models, bTrouble = False )
+    #
+    # tNearFront, tOnEnd, tNearEnd, tInParens, dAllWordLocations
+    #
+    tGot = getTupleOffObj( o )
+    #
+    tExpect = ( (2, 4, 6), (), (), () )
+    #
+    if tGot != tExpect:
+        #
+        print3( '"Mullard 6922 / E88CC / 6DJ8 Gold"' )
+        print3( 'tGot:', tGot )
+        print3( 'tExpect:', tExpect )
+        lProblems.append(
+                'getStrLocationsBegAndEnd( '
+                '"Mullard 6922 / E88CC / 6DJ8 Gold" )' )
         #
     #
     #
