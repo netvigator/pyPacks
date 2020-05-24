@@ -70,7 +70,7 @@ if __name__ == "__main__":
     from time           import time
     from datetime       import datetime
     #
-    from Collect.Test   import AllMeet
+    from Collect.Test   import allMeet
     from Collect.Filter import RemoveDupes
     from Iter.AllVers   import tMap, tRange
     from Numb.Get       import getAdder
@@ -110,7 +110,7 @@ if __name__ == "__main__":
     #
     def GotDOW( iDay ): return iDay in tDOWs
     #
-    if not AllMeet( tDOWsFromNow, GotDOW ) or len( RemoveDupes( tDOWsFromNow ) ) != 7:
+    if not allMeet( tDOWsFromNow, GotDOW ) or len( RemoveDupes( tDOWsFromNow ) ) != 7:
         #
         lProblems.append( 'getDOWfromISO()' )
         #
