@@ -248,6 +248,8 @@ def ContainsAll( seq1, seq2 ):
     #
     """Check whether sequence1 contains all of the items in sequence2."""
     #
+    # alternate name: hasAllIn( seq1, seq2 )
+    #    
     return isSeq1SubsetOfSeq2( seq2, seq1 )
 
 
@@ -260,6 +262,7 @@ def ContainsAny( seq1, seq2 ):
     the 2nd param (set) can be any iterable
     """
     #
+    # alternate name: hasAnyIn( seq1, seq2 )
     #
     return True in iMap( seq1.__contains__, seq2 )
 
@@ -323,6 +326,7 @@ class EndsWithableMixin( object ):
 class TupleEndsWithable( EndsWithableMixin, tuple ): pass
 
 class ListEndsWithable( EndsWithableMixin, list ): pass
+
 
 
 if __name__ == "__main__":
