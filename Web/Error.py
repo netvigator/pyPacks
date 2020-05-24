@@ -125,7 +125,7 @@ def sayGetErrorOrWhat( fErrScore ):
 
 if __name__ == "__main__":
     #
-    from Collect.Test   import AllMeet
+    from Collect.Test   import allMeet
     from Iter.AllVers   import iMap, tMap
     from Utils.Result   import sayTestResult
     #
@@ -290,7 +290,7 @@ if __name__ == "__main__":
             <tr>
             <td><table width="676" border="0" cellpadding="8" cellspacing="0" bordercolor="#0066FF" bgcolor="#CFE7FF">
                 <tr>
-                    <td><div align="center">���ҧ�ѡҹ�Ǩ�觪ҵԢ�ЧѺ���u����䫵��
+                    <td><div align="center">���ҧ�ѡҹ�Ǩ�觪ҵԢ�ЧѺ���u���䫵��
                         ��ҡ��� ����w������ � �a͹Ҩ� �ѹ
                         <br>
                         ����µ����ͧҵ�/div></td>
@@ -350,7 +350,7 @@ if __name__ == "__main__":
     #
     def FairOrBetter( f ): return f > .75
     #
-    if not AllMeet( lScores, FairOrBetter ):
+    if not allMeet( lScores, FairOrBetter ):
         #
         lProblems.append( '_getErrorOrWhat()' )
         #
@@ -358,7 +358,7 @@ if __name__ == "__main__":
     #
     def FairOrBetter( f ): return f > 75
     #
-    if not AllMeet( lPerCents, FairOrBetter ):
+    if not allMeet( lPerCents, FairOrBetter ):
         #
         lProblems.append( 'getErrorPerCent()' )
         #
