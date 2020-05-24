@@ -960,7 +960,7 @@ if __name__ == "__main__":
     #
     from six            import print_ as print3
     
-    from Collect.Test   import AllMeet
+    from Collect.Test   import allMeet
     from Dict.Test      import isDict
     from Iter.AllVers   import lMap
     from String.Split   import getWhiteCleaned
@@ -1016,14 +1016,14 @@ if __name__ == "__main__":
     #
     def isInVars( sVar ): return sVar in setVars
     #
-    if not AllMeet( oEnvVarFinder.findall( sEnv ), isInVars ):
+    if not allMeet( oEnvVarFinder.findall( sEnv ), isInVars ):
         #
         lProblems.append( 'getEnvVariableFinder()' )
         #
     #
     tHTMLntts = _getHTMLntts()
     #
-    if len( tHTMLntts ) != 8 or not AllMeet( tHTMLntts, isDict ):
+    if len( tHTMLntts ) != 8 or not allMeet( tHTMLntts, isDict ):
         #
         lProblems.append( '_getHTMLntts()' )
         #
