@@ -969,12 +969,12 @@ dNicksWithins = getReverseDictCarefully( dWithinsNicks )
 
 def _testNames( sName1, sName2, dOthersNicks, dNicksOthers, fGetSlice ):
     #
-    from Collect.Test   import ContainsAny
+    from Collect.Test   import containsAny
     from Iter.AllVers   import iRange
     #
     if      sName1 in dNicksOthers and \
             sName2 in dNicksOthers and \
-            ContainsAny(
+            containsAny(
                 dNicksOthers[ sName1 ], dNicksOthers[ sName2 ] ):
         #
         raise Finished
@@ -1009,7 +1009,7 @@ def _testNames( sName1, sName2, dOthersNicks, dNicksOthers, fGetSlice ):
         if      sName1Part in dOthersNicks and \
                 sName2Part in dOthersNicks and \
                 ( sName1 == sName1Part or sName2 == sName1Part ) and \
-                ContainsAny(
+                containsAny(
                     dOthersNicks[ sName1Part ], dOthersNicks[ sName2Part ] ):
             #
             raise Finished
@@ -1026,7 +1026,7 @@ def _getPartEnd( s, i ): return s[ -i :   ]
 def isNickName( sName1, sName2 ):
     #
     from Collect.Query  import get1stThatMeets
-    from Collect.Test   import ContainsAny
+    from Collect.Test   import containsAny
     from Dict.Get       import getKeyIter
     from String.Test    import getItemFoundInString
     #
@@ -1048,7 +1048,7 @@ def isNickName( sName1, sName2 ):
             setPropers2   = dNickProper[ sName2 ]
             #
             if      setPropers1 == setPropers2              or \
-                    ContainsAny( setPropers1, setPropers2 ) or \
+                    containsAny( setPropers1, setPropers2 ) or \
                     sName2 in dNickProper[ sName1 ]         or \
                     sName1 in dNickProper[ sName2 ]:
                 #
