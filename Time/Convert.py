@@ -475,7 +475,7 @@ if __name__ == "__main__":
     sDateTimeStrRepr   = (
             repr( getDateTimeObjFromIsoDateStr( sNow[:10] ) ) )
     sDateTimeStrExpect = (
-            'datetime.datetime' + repr( tNow[ : 6 ] )[:13] + '0, 0)' )
+            'datetime.datetime' + repr( tNow[ : 6 ] )[:13] + ' 0, 0)' )
     #
     if sDateTimeStrRepr!= sDateTimeStrExpect:
         #
