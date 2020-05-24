@@ -30,7 +30,7 @@ try:
     from .Get               import getCharsOffEnd
     from .Test              import is1stCharAlpha
     from .Transform         import getSpace4NewLine
-    from ..Collect.Test     import AllMeet
+    from ..Collect.Test     import allMeet
     from ..File.Get         import getFileContent, getContent
     from ..File.Spec        import getFullSpecDefaultOrPassed
     from ..Iter.AllVers     import iMap, tFilter, iRange
@@ -40,7 +40,7 @@ except ( ValueError, ImportError ):
     from String.Get         import getCharsOffEnd
     from String.Test        import is1stCharAlpha
     from String.Transform   import getSpace4NewLine
-    from Collect.Test       import AllMeet
+    from Collect.Test       import allMeet
     from File.Get           import getFileContent, getContent
     from File.Spec          import getFullSpecDefaultOrPassed
     from Iter.AllVers       import iMap, tFilter, iRange
@@ -93,7 +93,7 @@ def _getRamdomText( iWantWords = 250, *sFileSpec, **kwargs ):
             #
             lParts = s.split( "'" )
             #
-            return AllMeet( lParts, isAlpha )
+            return allMeet( lParts, isAlpha )
         else:
             #
             return isAlpha( s )
