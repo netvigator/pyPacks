@@ -32,7 +32,7 @@ try:
     from ..Iter.AllVers     import iMap, iZip  as _iZip, lZip
     from ..Dict.Get         import getItemIter as _getItemIter
     from ..Collect.Query    import get1stThatMeets
-    from ..Collect.Test     import ContainsAll
+    from ..Collect.Test     import containsAll
     from ..Dict.Get         import getValueIter, getKeyList
     from ..Dir.Get          import sTempDir
     from ..File.Write       import putCsvOut, QuietDump
@@ -43,7 +43,7 @@ except ( ValueError, ImportError ):
     from eMail.Get          import ( getRealEmail, getEmailListFromString,
                                      getAddresseeStrOffSeq, getHyphen )
     from Collect.Query      import get1stThatMeets
-    from Collect.Test       import ContainsAll
+    from Collect.Test       import containsAll
     from Dict.Get           import getValueIter, getKeyList
     from Dir.Get            import sTempDir
     from File.Write         import putCsvOut, QuietDump
@@ -172,7 +172,7 @@ def isNotOKasEmail( sEmail ):
 def isSentBefore( oSentBefore, lSendNow ):
     #
     #
-    return oSentBefore and ContainsAll( oSentBefore, lSendNow )
+    return oSentBefore and containsAll( oSentBefore, lSendNow )
 
 
 
