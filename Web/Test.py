@@ -38,7 +38,7 @@ try:
     from .Country           import dCountryCodes
     from ..Collect.Get      import getValueIterOffItems as getValues
     from ..Collect.Query    import get1stThatMeets
-    from ..Collect.Test     import AllMeet
+    from ..Collect.Test     import allMeet
     from ..eMail.Test       import isEmailAddress
     from ..Iter.AllVers     import iFilter, lMap, iMap, iRange, iZip
     from ..Numb.Test        import isEven, isOdd
@@ -58,7 +58,7 @@ except ( ValueError, ImportError ):
     from Web.Country        import dCountryCodes
     from Collect.Get        import getValueIterOffItems as getValues
     from Collect.Query      import get1stThatMeets
-    from Collect.Test       import AllMeet
+    from Collect.Test       import allMeet
     from eMail.Test         import isEmailAddress
     from Iter.AllVers       import iFilter, lMap, iMap, iRange, iZip
     from Numb.Test          import isEven, isOdd
@@ -271,12 +271,12 @@ def _areInValidDotQuadRange( tDotQuad, bOverOK = False ):
     if bOverOK:
         #
         return (
-            AllMeet( tDotQuad[ 1 : ], _isQuadValueWithinValidRange ) and
+            allMeet( tDotQuad[ 1 : ], _isQuadValueWithinValidRange ) and
                      tDotQuad[ 0 ] < 257                             and
                    ( tDotQuad[ 0 ] < 256 or tDotQuad[ -1 ] == 0 ) )
     else:
         #
-        return AllMeet( tDotQuad, _isQuadValueWithinValidRange )
+        return allMeet( tDotQuad, _isQuadValueWithinValidRange )
 
 
 
