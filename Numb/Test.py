@@ -24,11 +24,11 @@
 #
 
 try:
-    from ..Collect.Test     import isListOrTuple, AllMeet
+    from ..Collect.Test     import isListOrTuple, allMeet
     from ..Iter.AllVers     import iRange
     from ..Utils.Both2n3    import setNumberTypes
 except ( ValueError, ImportError ):
-    from Collect.Test       import isListOrTuple, AllMeet
+    from Collect.Test       import isListOrTuple, allMeet
     from Iter.AllVers       import iRange
     from Utils.Both2n3      import setNumberTypes
 
@@ -61,7 +61,7 @@ def hasIntegersOnly( *args ):
         args = args[0]
     #
     #
-    bIntegerOnly = AllMeet( args, isInteger )
+    bIntegerOnly = allMeet( args, isInteger )
     #
     return bIntegerOnly
 
