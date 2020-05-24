@@ -725,7 +725,7 @@ if __name__ == "__main__":
     #
     from Collect.Query  import get1stThatFails
     from Iter.AllVers   import iMap, tMap, tFilter
-    from Collect.Test   import AllMeet
+    from Collect.Test   import allMeet
     from Utils.Result   import sayTestResult
     from sMail.Zips     import dApoZipCountry
     from sMail.Get      import getCountryFunctions
@@ -942,7 +942,7 @@ if __name__ == "__main__":
         lProblems.append( 'isZipLike() invalid zip' )
         #
     #
-    if AllMeet( iMap( isZipLikeStrict, tZipLike ) ):
+    if allMeet( iMap( isZipLikeStrict, tZipLike ) ):
         #
         lProblems.append( 'isZipLike() missing front 0 no good' )
         #
