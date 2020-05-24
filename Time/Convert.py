@@ -467,7 +467,10 @@ if __name__ == "__main__":
         #
         lProblems.append( 'getDateTimeTupleFromString()' )
         #
-    if repr( getDateTimeObjFromString( sNow ) ) != 'datetime.datetime' + repr( tNow[ : 6 ] ):
+    #
+    sExpect = 'datetime.datetime' + repr( tNow[ : 6 ] )
+    #
+    if repr( getDateTimeObjFromString( sNow ) ) != sExpect:
         #
         lProblems.append( 'getDateTimeObjFromString()' )
         #
