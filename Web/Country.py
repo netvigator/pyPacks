@@ -441,7 +441,7 @@ if __name__ == "__main__":
     #
     from six            import print_ as print3
     #
-    from Collect.Test   import AllMeet
+    from Collect.Test   import allMeet
     from Collect.Get    import getKeyIterOffItems
     from Dict.Test      import getHasKeyTester
     from Numb.Test      import areClose
@@ -472,8 +472,8 @@ if __name__ == "__main__":
     #
     if          type( dCountryCodes ) != dict               or \
                 len(  dCountryCodes ) != len( tCountries )  or \
-            not AllMeet( iCodesLower, hasKeyCountries    )      or \
-            not AllMeet( iCodesUpper, hasKeyUpperCountry ):
+            not allMeet( iCodesLower, hasKeyCountries    )      or \
+            not allMeet( iCodesUpper, hasKeyUpperCountry ):
         #
         lProblems.append( 'getCountryCodeDict()' )
         #
