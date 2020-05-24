@@ -171,7 +171,7 @@ if __name__ == "__main__":
     #
     lProblems = []
     #
-    from Collect.Test   import AllMeet
+    from Collect.Test   import allMeet
     from Dict.Get       import getKeyIter, getItemIter, getValueIter
     from Utils.Result   import sayTestResult
     #
@@ -181,11 +181,11 @@ if __name__ == "__main__":
     #
     def isRightValue( value ): return dReverse[ dReverse.getKeyFromValue( value ) ] == value
     #
-    if      not AllMeet( getValueIter( dTest ), dReverse.hasValue      ) or \
-            not AllMeet( getValueIter( dTest ), dReverse.hasSomething  ) or \
-            not AllMeet( getKeyIter(   dTest ), dReverse.hasKey        ) or \
-            not AllMeet( getKeyIter(   dTest ), dReverse.hasSomething  ) or \
-            not AllMeet( getValueIter( dTest ), isRightValue           ):
+    if      not allMeet( getValueIter( dTest ), dReverse.hasValue      ) or \
+            not allMeet( getValueIter( dTest ), dReverse.hasSomething  ) or \
+            not allMeet( getKeyIter(   dTest ), dReverse.hasKey        ) or \
+            not allMeet( getKeyIter(   dTest ), dReverse.hasSomething  ) or \
+            not allMeet( getValueIter( dTest ), isRightValue           ):
         #
         lProblems.append( 'DoubleDictClass()' )
         #
@@ -198,7 +198,7 @@ if __name__ == "__main__":
     #
     def hasItemForKey( key ): return GotItem( dClose.getValue4Key( key ) )
     #
-    if not AllMeet( getKeyIter( dTest ), hasItemForKey ):
+    if not allMeet( getKeyIter( dTest ), hasItemForKey ):
         #
         lProblems.append( 'GetClosestClass()' )
         #
