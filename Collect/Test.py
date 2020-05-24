@@ -172,7 +172,7 @@ def hasNoEmpties( lSeq ):
 def isAllEmpty( lSeq ):
     #
     #
-    return AllMeet( lSeq, isEmpty )
+    return allMeet( lSeq, isEmpty )
 
 
 def hasNonEmpty( lSeq ):
@@ -244,7 +244,7 @@ def isSeq1SubsetOfSeq2( seq1, seq2, bStrict = False ):
     return setSeq1.issubset( setSeq2 )
 
 
-def ContainsAll( seq1, seq2 ):
+def containsAll( seq1, seq2 ):
     #
     """Check whether sequence1 contains all of the items in sequence2."""
     #
@@ -254,7 +254,7 @@ def ContainsAll( seq1, seq2 ):
 
 
 
-def ContainsAny( seq1, seq2 ):
+def containsAny( seq1, seq2 ):
     #
     """Check whether sequence1 contains any of the items in sequence2.
     the 1st param (seq) must have a __contains__ method
@@ -269,7 +269,7 @@ def ContainsAny( seq1, seq2 ):
 
 
 
-def AllMeet( seq, pred = bool ):
+def allMeet( seq, pred = bool ):
     """
     Returns True if pred(x) is True for every element in the iterable
     (lazily, via shortcutting).
@@ -285,7 +285,7 @@ def BothMeet( seq, pred = bool ):
     (lazily, via shortcutting).
     """
     #
-    return AllMeet(seq, pred)
+    return allMeet(seq, pred)
 
 
 def NoneMeet( seq, pred = bool ): # name cannot be None!
@@ -403,7 +403,7 @@ if __name__ == "__main__":
         lProblems.append( 'isNotInSortedList()' )
         #
     if     AnyMeet( ( [ 'x' ], 'abc', { 'a' : 5 }, ( 1, )   ), isEmpty ) or \
-       not AllMeet( ( [],      '',    {},          ()       ), isEmpty ):
+       not allMeet( ( [],      '',    {},          ()       ), isEmpty ):
         #
         lProblems.append( 'isEmpty()' )
         #
@@ -446,39 +446,39 @@ if __name__ == "__main__":
         #
     #
     #
-    if      not ContainsAll( letters, uppercase ) or \
-                ContainsAll( uppercase, letters ):
+    if      not containsAll( letters, uppercase ) or \
+                containsAll( uppercase, letters ):
         #
         # """Check whether sequence contains all of the items in the set."""
         #
-        lProblems.append( 'ContainsAll()' )
+        lProblems.append( 'containsAll()' )
         #
-    if      not ContainsAny( letters, '01234e' ) or \
-                ContainsAny( letters, '012345' ):
+    if      not containsAny( letters, '01234e' ) or \
+                containsAny( letters, '012345' ):
         #
         # """Check whether sequence contains any of the items in the set."""
         #
-        lProblems.append( 'ContainsAny() letters compared with string' )
+        lProblems.append( 'containsAny() letters compared with string' )
         #
     tLetters = tuple( letters )
     #
-    if      not ContainsAny( tLetters, '01234e' ) or \
-                ContainsAny( tLetters, '012345' ):
+    if      not containsAny( tLetters, '01234e' ) or \
+                containsAny( tLetters, '012345' ):
         #
         # """Check whether sequence contains any of the items in the set."""
         #
-        lProblems.append( 'ContainsAny() tLetters compared with string' )
+        lProblems.append( 'containsAny() tLetters compared with string' )
         #
-    if      not ContainsAny( tLetters, tuple( '01234e' ) ) or \
-                ContainsAny( tLetters, tuple( '012345' ) ):
+    if      not containsAny( tLetters, tuple( '01234e' ) ) or \
+                containsAny( tLetters, tuple( '012345' ) ):
         #
         # """Check whether sequence contains any of the items in the set."""
         #
-        lProblems.append( 'ContainsAny() tLetters compared with tuple( string )' )
+        lProblems.append( 'containsAny() tLetters compared with tuple( string )' )
         #
     fTest = bool
     #
-    if AllMeet( iRange( 10 ), fTest ) or not AllMeet( iRange( 1, 10 ), fTest ):
+    if allMeet( iRange( 10 ), fTest ) or not allMeet( iRange( 1, 10 ), fTest ):
         #
         lProblems.append( 'All()' )
         #
