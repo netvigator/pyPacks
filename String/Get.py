@@ -35,6 +35,7 @@ try:
     from .Dumpster          import ( DumpYouNameItClass, oKeepAlphaSpaces,
                                      oKeepAlphaDigitsSpacesHash,
                                      getDigitsOnly )
+    from .Find              import getRegExObj
     from .Split             import ( SplitRegular, SplitRight, SplitC,
                                      SplitRightC, getWhiteCleaned )
     from .Test              import ( getItemFoundInString, isDigit,
@@ -52,6 +53,7 @@ except ( ValueError, ImportError ):
     from String.Dumpster    import ( DumpYouNameItClass, oKeepAlphaSpaces,
                                      oKeepAlphaDigitsSpacesHash,
                                      getDigitsOnly )
+    from String.Find        import getRegExObj
     from String.Split       import ( SplitRegular, SplitRight, SplitC,
                                      SplitRightC, getWhiteCleaned )
     from String.Test        import ( getItemFoundInString, isDigit,
@@ -76,6 +78,18 @@ try:
 except ImportError:
     def getUpper( s ): return s.upper()
     def getLower( s ): return s.lower()
+
+
+
+_oParensSearcherObj = getRegExObj( r'(?:\().*?(?:\))' )
+
+
+def getParensParts( s ):
+    #
+    lAllInParens = _oParensSearcherObj.findall( s )
+    lNotInParens = _oParensSearcherObj.split(   s )
+    #
+    return ''.join( lAllInParens ), ' () '.join( lNotInParens )
 
 
 
@@ -1366,6 +1380,35 @@ if __name__ == "__main__":
     if getRawGotStr( sOrig ) != sWant:
         #
         lProblems.append( 'getRawGotStr("%s")' % sOrig )
+        #
+    #
+    #
+    sIn, sOut = getParensParts( sLong )
+    #
+    if sIn:
+        #
+        lProblems.append( 'getParensParts() nothing in parens' )
+        #
+    #
+    if sOut != sLong:
+        #
+        lProblems.append( 'getParensParts() no parens' )
+        #
+    #
+    #
+    s = (   "4x KT61 ( 6AG6 G ) tubes HALTRON ( M.O.V. ) - "
+            "NOS (~  6V6G / EL33 /  EL3 ) KT 61" )
+    #
+    sIn, sOut = getParensParts( s )
+    #
+    if sIn != '( 6AG6 G )( M.O.V. )(~  6V6G / EL33 /  EL3 )':
+        #
+        lProblems.append( 'getParensParts() in parens' )
+        #
+    #
+    if sOut != '4x KT61  ()  tubes HALTRON  ()  - NOS  ()  KT 61':
+        #
+        lProblems.append( 'getParensParts() not in parens' )
         #
     #
     #
