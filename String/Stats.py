@@ -453,10 +453,10 @@ def _getSubStrLocationsBegAndEnd(
     #
     if  (   len( lNearFront ) > 1   and
             lNearEnd                and
-            lOnEnd                  and
             lNearFront[ 1 ] -  lNearFront[ 0 ]  > 1 and
-            lNearFront[ 1 ] >= lOnEnd[    -1 ] // 2 and
             lNearFront[ 1 ] >  lNearEnd[ 0   ] // 2 ):
+            #lNearFront[ 1 ] >= lOnEnd[    -1 ] // 2 and
+            #lOnEnd                  and
         #
         # move the latter lNearFront nodes to the beginning of lNearEnd
         #
@@ -1411,7 +1411,8 @@ if __name__ == "__main__":
                 '"Metal RCA 6V6 VT-107 Vacuum Tubes" )' )
         #
     #
-    sBig = "2 Vintage Philips Holland GE  6DJ8 6922 E88CC Vacuum Tubes Tested Guaranteed!"
+    sBig = ( "2 Vintage Philips Holland GE  6DJ8 6922 E88CC Vacuum Tubes "
+             "Tested Guaranteed!" )
     #
     tLook4Models = ( 'E88CC', '6DJ8', '6922' )
     #
@@ -1453,6 +1454,29 @@ if __name__ == "__main__":
         lProblems.append(
                 'getStrLocationsBegAndEnd( '
                 '"Mullard 6922 / E88CC / 6DJ8 Gold" )' )
+        #
+    #
+    sBig = ( "JBL L220 Walnut Excellent "
+             "with 076 Cats-eye, LE5-9, LE14A Aquaplas Cone all OEM" )
+    #
+    tLook4Models = ( 'L220', 'LE14A', '076', 'LE5-9' )
+    #
+    o = getStrLocationsBegAndEnd( sBig, tLook4Models, bTrouble = False )
+    #
+    # tNearFront, tOnEnd, tNearEnd, tInParens, dAllWordLocations
+    #
+    tGot = getTupleOffObj( o )
+    #
+    tExpect = ( (1,), (), (5, 7, 9), () )
+    #
+    if tGot != tExpect:
+        #
+        print3( '"JBL L220 Walnut Excellent"' )
+        print3( 'tGot:', tGot )
+        print3( 'tExpect:', tExpect )
+        lProblems.append(
+                'getStrLocationsBegAndEnd( '
+                '"JBL L220 Walnut Excellent" )' )
         #
     #
     #
