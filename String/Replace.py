@@ -223,26 +223,23 @@ def getSpaceForWhiteAlsoStrip( s ):
 
 def getTextReversed( s ):
     #
-    lText       = list( s )
-    #
-    lText.reverse()
-    #
-    return ''.join( lText )
+    return s[::-1]
 
 
 
 def ReverseOrder( uText ):  # works on strings and tuples as well as lists
     #
-    bGotString  = type( uText ) == str
-    #
-    lText       = list( uText ) # in case of tuple also
-    #
-    lText.reverse()
+    bGotString  = isinstance( uText, str )
     #
     if bGotString:
         #
-        uReturn = ''.join( lText )
+        uReturn = uText[::-1]
+        #
     else:
+        #
+        lText       = list( uText ) # in case of tuple also
+        #
+        lText.reverse()
         #
         uReturn = lText
         #
