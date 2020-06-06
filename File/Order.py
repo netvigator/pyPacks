@@ -31,14 +31,14 @@ from os             import listdir, rename, getcwd
 from six            import print_ as print3
 
 try:
-    from ..Collect.Get    import getSeparateKeysValues
+    from ..Collect.Get  import getSeparateKeysValues
     from ..Iter.AllVers import tFilter, iMap, tMap, iZip
+    from ..String.Test  import isDigit
 except ( ValueError, ImportError ):
     from Collect.Get    import getSeparateKeysValues
     from Iter.AllVers   import tFilter, iMap, tMap, iZip
+    from String.Test    import isDigit
 
-
-def _isDigit( c ): return c.isdigit()
 
 
 def _getEndDigits( s ):
@@ -54,7 +54,7 @@ def _getEndDigits( s ):
     #
     iEndDigits  = 0
     #
-    lEndDigits  = list( takewhile( _isDigit, lChars ) )
+    lEndDigits  = list( takewhile( isDigit, lChars ) )
     #
     lEndDigits.reverse()
     #
