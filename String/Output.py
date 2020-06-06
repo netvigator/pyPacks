@@ -41,7 +41,7 @@ except ( ValueError, ImportError ):
 
 def ReadableNo( nNumb, iRtJustLen = 0, iWantDecimals=0 ):
     #
-    if type( nNumb ) == str:
+    if isinstance( nNumb, str ):
         #
         sNumb       = nNumb.strip()
         #
