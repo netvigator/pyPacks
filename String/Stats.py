@@ -24,10 +24,10 @@
 #
 
 from collections            import OrderedDict
+from itertools              import chain
 from string                 import digits, ascii_letters as letters
 
 try:
-    from ..Collect.Get      import getListFromNestedLists
     from ..Collect.Test     import TupleEndsWithable
     from ..Iter.AllVers     import tMap, iRange, tZip
     from ..Numb.Stats       import getMeanMembers
@@ -38,7 +38,6 @@ try:
     from ..String.Test      import isPunctuation, isNotPunctuation
     from ..Utils.TimeTrial  import TimeTrial
 except ( ValueError, ImportError ):
-    from Collect.Get        import getListFromNestedLists
     from Collect.Test       import TupleEndsWithable
     from Iter.AllVers       import tMap, iRange, tZip
     from Numb.Stats         import getMeanMembers
@@ -278,7 +277,7 @@ def _getSubStrLocationsBegAndEnd(
     #
     # if a word is repeated, the prior position number will be missing
     #
-    lLocations = getListFromNestedLists( dAllWordLocations.values() )
+    lLocations = list( chain.from_iterable( dAllWordLocations.values() ) )
     #
     iMax = max( lLocations )
     #
@@ -292,7 +291,7 @@ def _getSubStrLocationsBegAndEnd(
         #
     #
     tIgnoreLocations = tuple(
-        getListFromNestedLists(
+        chain.from_iterable(
             [ dAllWordLocations[ s ]
             for s in dAllWordLocations.keys()
             if s in IGNORE_JOINERS ] ) )
@@ -593,7 +592,8 @@ def getStrLocationsBegAndEnd(
                 #
             #
         #
-        tLocationsOfInterest = tuple( getListFromNestedLists(
+        tLocationsOfInterest = tuple(
+            chain.from_iterable(
                 [ dAllWordLocations[ s ] for s in tStringsOfInterest ] ) )
         #
     else:
@@ -673,7 +673,8 @@ def _getStrLocationsBegAndEnd( sWhole, tStrsOfInterest,
     #
     if lStrsOfInterest:
         #
-        tLocationsOfInterest = tuple( getListFromNestedLists(
+        tLocationsOfInterest = tuple(
+            chain.from_iterable(
                 [ dAllWordLocations[ s ] for s in lStrsOfInterest ] ) )
         #
     else:
