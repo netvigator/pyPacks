@@ -23,7 +23,9 @@
 # Copyright 2004-2020 Rick Graves
 #
 
-from six.moves import UserList
+from itertools          import chain
+
+from six.moves          import UserList
 
 try:
     from .Test          import isScaler, isListOrTuple
@@ -39,7 +41,7 @@ except ( ValueError, ImportError ):
     from Utils.Get      import getTrue as _getTrue
 
 
-def getListFromNestedLists( lList, gotScaler = isScaler ): # flatten nested list
+def _getListFromNestedLists( lList, gotScaler = isScaler ): # flatten nested list
     #
     """This returns a single, flat list.
     """
@@ -62,6 +64,12 @@ def getListFromNestedLists( lList, gotScaler = isScaler ): # flatten nested list
         #
     #
     return lFlat
+
+
+
+def getListFromNestedLists( lList ):
+    #
+    return list( chain.from_iterable( lList ) )
 
 
 
