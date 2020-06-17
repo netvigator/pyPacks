@@ -119,6 +119,13 @@ def getIntegerDivisionRoundUp( iAbove, iBelow ):
 
 
 
+def getIntegerRoundDown( iNumb, iDivisor = 10 ):
+    #
+    return iNumb - iNumb % iDivisor
+
+
+
+
 if __name__ == "__main__":
     #
     from sys import argv
@@ -463,6 +470,23 @@ if __name__ == "__main__":
         #
         lProblems.append( 'getIntegerDivisionRoundUp( 6, 2 )' )
         #
+    #
+    #
+    if getIntegerRoundDown( 19, 10 ) != 10:
+        #
+        lProblems.append( 'getIntegerRoundDown( 19, 10 )' )
+        #
+    #
+    if getIntegerRoundDown( 19, 5 ) != 15:
+        #
+        lProblems.append( 'getIntegerRoundDown( 19, 5 )' )
+        #
+    #
+    if getIntegerRoundDown( 10, 10 ) != 10:
+        #
+        lProblems.append( 'getIntegerRoundDown( 10, 10 )' )
+        #
+    #
     #
     #
     sayTestResult( lProblems )
