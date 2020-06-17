@@ -477,6 +477,11 @@ if __name__ == "__main__":
         lProblems.append( 'getIntegerRoundDown( 19, 10 )' )
         #
     #
+    if getIntegerRoundDown( 19 ) != 10:
+        #
+        lProblems.append( 'getIntegerRoundDown( 19)' )
+        #
+    #
     if getIntegerRoundDown( 19, 5 ) != 15:
         #
         lProblems.append( 'getIntegerRoundDown( 19, 5 )' )
@@ -485,6 +490,11 @@ if __name__ == "__main__":
     if getIntegerRoundDown( 10, 10 ) != 10:
         #
         lProblems.append( 'getIntegerRoundDown( 10, 10 )' )
+        #
+    #
+    if getIntegerRoundDown( 10 ) != 10:
+        #
+        lProblems.append( 'getIntegerRoundDown( 10 )' )
         #
     #
     #
