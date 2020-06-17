@@ -24,7 +24,7 @@
 #
 
 from bisect             import bisect_left, bisect_right
-from datetime           import datetime
+from datetime           import datetime, date
 from time               import time, localtime
 try:
     from .Clock         import getSecsSinceEpoch
@@ -342,23 +342,32 @@ def getDeltaYearsFromDates( sEarlier, sLater = None ):
 
 
 
-def getAgeOffDOB( uDOB, sFormatDate = _sFormatISOdate, oNow = None ):
+def getAgeOffDOB( uDOB, sFormatDate = _sFormatISOdate, oToday = None ):
     #
     if isinstance( uDOB, str ):
         #
-        oDOB = getDateTimeObjFromString( uDOB, sFormatDate )
+        oDOB = getDateTimeObjFromString( uDOB, sFormatDate ).date()
         #
     else:
         #
         oDOB = uDOB
         #
     #
-    if oNow is None:
+    if oToday is None:
         #
-        oNow = datetime( *localtime()[:6] )
+        oToday = date.today()
         #
     #
-    return getDeltaDaysFromObjs( oDOB, oNow ) / 365.25
+    iAge = oToday.year - oDOB.year
+    #
+    if  (   oToday.month <  oDOB.month or
+          ( oToday.month == oDOB.month and
+            oToday.day   <  oDOB.day ) ):
+        #
+        iAge -= 1
+        #
+    #
+    return iAge
 
 
 
@@ -581,5 +590,37 @@ if __name__ == "__main__":
         #
         lProblems.append( 'getDeltaDaysFromDates() earlier only' )
         #
+    #
+    #
+    iOldTimer = iNow - ( 50.5 * 365.25 * 24 * 3600 )
+    #
+    sDOB = getIsoDateTimeStrFromSecs( iOldTimer )[ : 10 ]
+    #
+    iAge = getAgeOffDOB( sDOB )
+    #
+    if iAge != 50:
+        #
+        lProblems.append( 'getAgeOffDOB( seconds date )' )
+        #
+    #
+    #
+    s50YrsAgoYesterday  = '%s%s' % (
+            int( sYesterday[:4] ) - 50, sYesterday[4:10] )
+    s50YrsAgoTomorrow   = '%s%s' % (
+            int( sTomorrow [:4] ) - 50, sTomorrow [4:10] )
+    #
+    if getAgeOffDOB( s50YrsAgoYesterday ) != 50:
+        #
+        lProblems.append( 'getAgeOffDOB( s50YrsAgoYesterday )' )
+        #
+    #
+    if getAgeOffDOB( s50YrsAgoTomorrow ) != 49:
+        #
+        lProblems.append( 'getAgeOffDOB( s50YrsAgoTomorrow )' )
+        #
+    #
+    #
+    #
+    # print3( getAgeOffDOB( sOldTimer ) )
     #
     sayTestResult( lProblems )
