@@ -342,7 +342,7 @@ def getDeltaYearsFromDates( sEarlier, sLater = None ):
 
 
 
-def getAgeOffDOB( uDOB, sFormatDate = _sFormatISOdate, oToday = None ):
+def getAgeOffDOB( uDOB, sFormatDate = _sFormatISOdate, uToday = None ):
     #
     if isinstance( uDOB, str ):
         #
@@ -353,16 +353,29 @@ def getAgeOffDOB( uDOB, sFormatDate = _sFormatISOdate, oToday = None ):
         oDOB = uDOB
         #
     #
-    if oToday is None:
+    if uToday is None:
         #
         oToday = date.today()
+        #
+    elif isinstance( uToday, str ):
+        #
+        oToday = getDateTimeObjFromString( uToday, sFormatDate ).date()
+        #
+    else:
+        #
+        oToday = uToday
         #
     #
     iAge = oToday.year - oDOB.year
     #
-    if  (   oToday.month <  oDOB.month or
-          ( oToday.month == oDOB.month and
-            oToday.day   <  oDOB.day ) ):
+    if (        oToday.month == oDOB.month == 2 and
+              ( oToday.day == 28 and oDOB.day == 29 ) ):
+        #
+        pass
+        #
+    elif (      oToday.month <  oDOB.month or
+              ( oToday.month == oDOB.month and
+                oToday.day   <  oDOB.day ) ):
         #
         iAge -= 1
         #
@@ -619,8 +632,28 @@ if __name__ == "__main__":
         lProblems.append( 'getAgeOffDOB( s50YrsAgoTomorrow )' )
         #
     #
+    sLeapYearBD = '1972-02-29'
+    sToday      = '2020-02-27'
+    #
+    if getAgeOffDOB( sLeapYearBD, uToday = sToday ) != 47:
+        #
+        lProblems.append( 'getAgeOffDOB( sLeapYearBD )' )
+        #
+    #
+    sToday      = '2020-02-28'
+    #
+    if getAgeOffDOB( sLeapYearBD, uToday = sToday ) != 48:
+        #
+        lProblems.append( 'getAgeOffDOB( sLeapYearBD )' )
+        #
     #
     #
-    # print3( getAgeOffDOB( sOldTimer ) )
+    sToday      = '2020-03-01'
+    #
+    if getAgeOffDOB( sLeapYearBD, uToday = sToday ) != 48:
+        #
+        lProblems.append( 'getAgeOffDOB( sLeapYearBD )' )
+        #
+    #
     #
     sayTestResult( lProblems )
