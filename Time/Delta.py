@@ -25,20 +25,19 @@
 
 from bisect             import bisect_left, bisect_right
 from datetime           import datetime
-from time               import time
-
+from time               import time, localtime
 try:
     from .Clock         import getSecsSinceEpoch
     from .Convert       import getIsoDateTimeStrFromSecs, getDateTimeObjFromString
     from .Output        import getNowIsoDateTimeStr, sayIsoDateTimeLocal
     from ..Utils.ImIf   import ImIf
-    from ..Time         import _iSecsPerDay, _sFormatISOdateTime # in __init__.py
+    from ..Time         import _iSecsPerDay, _sFormatISOdate # in __init__.py
 except ( ValueError, ImportError ):
     from Time.Clock     import getSecsSinceEpoch
     from Time.Convert   import getIsoDateTimeStrFromSecs, getDateTimeObjFromString
     from Time.Output    import getNowIsoDateTimeStr, sayIsoDateTimeLocal
     from Utils.ImIf     import ImIf
-    from Time           import _iSecsPerDay, _sFormatISOdateTime # in __init__.py
+    from Time           import _iSecsPerDay, _sFormatISOdate # in __init__.py
 
 
 
@@ -339,6 +338,28 @@ def getDeltaYearsFromDates( sEarlier, sLater = None ):
     '''
     #
     return getDeltaDaysFromDates( sEarlier, sLater ) / 365.25
+
+
+
+
+def getAgeOffDOB( uDOB, sFormatDate = _sFormatISOdate, oNow = None ):
+    #
+    if isinstance( uDOB, str ):
+        #
+        oDOB = getDateTimeObjFromString( uDOB, sFormatDate )
+        #
+    else:
+        #
+        oDOB = uDOB
+        #
+    #
+    if oNow is None:
+        #
+        oNow = datetime( *localtime()[:6] )
+        #
+    #
+    return getDeltaDaysFromObjs( oDOB, oNow ) / 365.25
+
 
 
 
