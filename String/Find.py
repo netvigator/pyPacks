@@ -1908,6 +1908,8 @@ if __name__ == "__main__":
         #
     #
     #
+    sThis = '#83 Lot Of 3rca Cunningham Radiotron 45 Ux 245 Cx 345 Vacuum tubes'
     #
+    sExclude = '83 total - #83'
     #
     sayTestResult( lProblems )
