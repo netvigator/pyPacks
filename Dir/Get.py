@@ -149,6 +149,15 @@ def _getDurableTempDir():
 sDurableTempDir = _getDurableTempDir()
 
 
+'''
+
+def getThisFileSpec( sFullSpec ):
+def getThisFileSpec( sFileName ):
+this is in Utils.Both2n3
+this note is to aid any text search for the function
+'''
+
+
 
 if __name__ == "__main__":
     #
