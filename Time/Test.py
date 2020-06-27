@@ -27,12 +27,14 @@ from datetime           import datetime
 from time               import strptime
 
 try:
+    from ..Object       import Finished
     from .Convert       import ( getSecsSinceEpochFromString, _sFormatDateAm,
                                  getDateTimeObjFromString, _sFormatUSAdateTime )
     # __init__.py
     from ..Time         import ( _sFormatISOdateTime, _sFormatISOdateTimeNoColon,
                                  _sFormatDateEu )
 except ( ValueError, ImportError ):
+    from Object       import Finished
     from Time.Convert   import ( getSecsSinceEpochFromString, _sFormatDateAm,
                                  getDateTimeObjFromString, _sFormatUSAdateTime )
     # __init__.py
@@ -40,7 +42,6 @@ except ( ValueError, ImportError ):
                                  _sFormatDateEu )
 
 
-class Finished( Exception ): pass
 
 
 def isDateTimeObj( uTest ): return isinstance( uTest, datetime )
