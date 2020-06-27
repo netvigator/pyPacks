@@ -22,7 +22,6 @@
 #
 # Copyright 2004-2020 Rick Graves
 #
-class Finished( Exception ): pass
 
 from copy                   import copy
 from csv                    import reader
@@ -36,6 +35,7 @@ try:
     from .Spec              import getFullSpec
     from ..Dir.Get          import sTempDir
     from ..Iter.AllVers     import iFilter, iMap, tMap, iRange, iZip
+    from ..Object           import Finished
     from ..String.Get       import ( getTextAfter, getCharNotIn,
                                      getTextAfterLast, getContentOutOfQuotes )
     from ..String.Find      import getRegExObj
@@ -47,6 +47,7 @@ except ( ValueError, ImportError ):
     from File.Spec          import getFullSpec
     from Dir.Get            import sTempDir
     from Iter.AllVers       import iFilter, iMap, tMap, iRange, iZip
+    from Object             import Finished
     from String.Get         import ( getTextAfter, getCharNotIn,
                                      getTextAfterLast, getContentOutOfQuotes )
     from String.Find        import getRegExObj
