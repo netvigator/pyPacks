@@ -32,6 +32,7 @@ from string             import digits
 
 from six                import print_ as print3
 
+from Object             import Finished
 from String.Dumpster    import getDigitsOnly
 from String.Find        import getFinderFindAll
 from String.Test        import getHasSubstrTester                                                                                            
@@ -71,7 +72,7 @@ fixAllLevel2sUnderLevel1( dCountryCodesMore, dConfValueFixers )
 
 setNoAmNumbPlanCountries = dCountryCodesMore['NANP']['countries']
 
-class Finished( Exception ): pass
+
 
 def _getCountryCodeFinder():
     #
