@@ -35,7 +35,7 @@ try:
     from ..Iter.AllVers     import iRange, getEnumerator, permutations
     from ..Iter.Get         import iRevRange
     from .Dumpster          import getAlphaNumCleanNoSpaces, getAlphaNumDashNoSpaces
-    from String             import setNonAlphaNums
+    from ..String           import setNonAlphaNums
     from ..Utils.TimeTrial  import TimeTrial
 except ( ValueError, ImportError ):
     from Collect.Get        import getRidOfDupesKeepOrder
