@@ -31,10 +31,10 @@
 # Abbrev.py also has getStateFinder() and getStateCodeFinder()
 
 
+from Object         import Finished
 from sMail.Abbrev   import dCodesProvAbbrevCA
 from String.Find    import getRegExObj, getFinderFindAll, getSeqWordBounds
 
-class Finished( Exception ): pass
 
 _s1stLetterCodeCA = ''.join( dCodesProvAbbrevCA )
 
