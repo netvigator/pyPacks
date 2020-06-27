@@ -1,1 +1,3 @@
+
+setNonAlphaNums = frozenset( '~!@#$%^&*()_+-=?/' )
  
