@@ -26,8 +26,9 @@
 from six            import print_ as print3
 
 from Dict.Get       import getReverseDictCarefully
+from Object         import Finished
 
-class Finished( Exception ): pass
+
 
 dNickProper = dict( (
     ('ab', ('abner', 'abigail')),
