@@ -605,16 +605,18 @@ def getRegExpress(
                 # world boundary chars not wanted if the string
                 # begins or ends with non alpha numeric!
                 #
-                if  (   lOrig[ i ][  0 ] in setNonAlphaNums and
-                        lOrig[ i ][ -1 ] in setNonAlphaNums ):
+                bNonAlphaNumBeg = lOrig[ i ][  0 ] in setNonAlphaNums
+                bNonAlphaNumEnd = lOrig[ i ][ -1 ] in setNonAlphaNums
+                #
+                if bNonAlphaNumBeg and bNonAlphaNumEnd:
                     #
                     continue
                     #
-                elif lOrig[ i ][ 0 ] in setNonAlphaNums:
+                elif bNonAlphaNumBeg:
                     #
                     lRegEx[ i ] = r'%s\b' % lRegEx[ i ]
                     #
-                elif lOrig[ i ][ -1 ] in setNonAlphaNums:
+                elif bNonAlphaNumEnd:
                     #
                     lRegEx[ i ] = r'\b%s' % lRegEx[ i ]
                     #
