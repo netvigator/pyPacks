@@ -30,9 +30,10 @@ from time       import strftime, strptime, time, tzname, timezone
 
 try:
     from ..Iter.AllVers import lMap, getEnumerator
+    from ..Object       import Finished
     from ..String.Find  import getRegExObj
     from ..Utils.ImIf   import ImIf
-    from ..Time         import ( 
+    from ..Time         import (
             _sFormatISOdateTime,
             _sFormatISOdate,
             _sFormatDateAm,
@@ -43,9 +44,10 @@ try:
             _dMonthsNamesShort ) # explicit imports better than implicit
 except ( ValueError, ImportError ):
     from Iter.AllVers   import lMap, getEnumerator
+    from Object         import Finished
     from String.Find    import getRegExObj
     from Utils.ImIf     import ImIf
-    from Time           import ( 
+    from Time           import (
             _sFormatISOdateTime,
             _sFormatISOdate,
             _sFormatDateAm,
@@ -58,8 +60,6 @@ except ( ValueError, ImportError ):
 
 
 class FormatMismatchError( Exception ): pass
-
-class Finished( Exception ): pass
 
 
 
