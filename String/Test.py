@@ -30,20 +30,22 @@ from string                 import ascii_uppercase as uppercase
 from zlib                   import decompress
 
 try:
+    from ..String           import setNonAlphaNums
     from .Find              import getFinderFindAll
     from .Transform         import TranslatorFactory
     from ..Collect.Query    import get1stThatMeets, get1stThatFails
     from ..Iter.AllVers     import iMap, iRange, iZip, lZip
+    from ..Object           import Finished
 except ( ValueError, ImportError ):
+    from String             import setNonAlphaNums
     from String.Find        import getFinderFindAll
     from String.Transform   import TranslatorFactory
     from Collect.Query      import get1stThatMeets, get1stThatFails
     from Iter.AllVers       import iMap, iRange, iZip, lZip
+    from Object             import Finished
 
 
 
-
-class Finished( Exception ): pass
 
 setQuoteChars   = frozenset( '"\'' ) # '"' + "'"
 
@@ -51,7 +53,6 @@ setAsciiAlpha   = frozenset( lowercase + uppercase )
 setAsciiDigit   = frozenset( digits )
 setPunctuation  = frozenset( punctuation )
 setPuncAndSpace = frozenset( punctuation + ' ' )
-setNonAlphaNums = frozenset( '~!@#$%^&*()_+-=?/' )
 setDigitsPuncSp = frozenset( digits + punctuation + ' ' )
 
 def _getASCII_128():
