@@ -592,7 +592,7 @@ def getRegExpress(
             #
             lParts = oFindSubs.split( lRegEx[ i ] )
             #
-            if lOrig[ i ][ -1 ].isdigit():
+            if lOrig[ i ][ -1 ].isdigit(): # this one ends with a digit
                 #
                 if lOrig[ i ].startswith( '^' ):
                     #
@@ -600,7 +600,22 @@ def getRegExpress(
                     #
                 elif lLengths[ i ] <= iWordBoundChrs:
                     #
-                    lRegEx[ i ] = r'\b%s\b' % lRegEx[ i ]
+                    if lOrig[i][0] == lOrig[i][-1] == '#':
+                        #
+                        pass # \b d/n work with # character!
+                        #
+                    elif lOrig[i][0] == '#':
+                        #
+                        lRegEx[ i ] = r'%s\b' % lRegEx[ i ]
+                        #
+                    elif lOrig[i][-1] == '#':
+                        #
+                        lRegEx[ i ] = r'\b%s' % lRegEx[ i ]
+                        #
+                    else:
+                        #
+                        lRegEx[ i ] = r'\b%s\b' % lRegEx[ i ]
+                        #
                     #
                 else:
                     #
@@ -613,15 +628,15 @@ def getRegExpress(
                 # world boundary chars not wanted if the string
                 # begins or ends with parens!
                 #
-                if lOrig[ i ][ 0 ] in '^(' and lOrig[ i ][ -1 ] in '$)':
+                if lOrig[ i ][ 0 ] in '^(#' and lOrig[ i ][ -1 ] in '$)#':
                     #
                     continue
                     #
-                elif lOrig[ i ][ 0 ] in '^(':
+                elif lOrig[ i ][ 0 ] in '^(#':
                     #
                     lRegEx[ i ] = r'%s\b' % lRegEx[ i ]
                     #
-                elif lOrig[ i ][ -1 ] in '$)':
+                elif lOrig[ i ][ -1 ] in '$)#':
                     #
                     lRegEx[ i ] = r'\b%s' % lRegEx[ i ]
                     #
@@ -1894,8 +1909,7 @@ if __name__ == "__main__":
     #
     sLook4 = '6550-VI'
     #
-    sRegExpress = getRegExpress(
-            sLook4, bSubModelsOK = False, iWordBoundChrs = 3 )
+    sRegExpress = getRegExpress( sLook4, iWordBoundChrs = 3 )
     #
     sWant = r'6550[-/ ]*VI\b'
     #
@@ -1911,5 +1925,35 @@ if __name__ == "__main__":
     sThis = '#83 Lot Of 3rca Cunningham Radiotron 45 Ux 245 Cx 345 Vacuum tubes'
     #
     sExclude = '83 total - #83'
+    #
+    sLook4 = '#83'
+    #
+    sRegExpress = getRegExpress( sLook4, iWordBoundChrs = 2 )
+    #
+    sWant = r'#83\b'
+    #
+    if sRegExpress != sWant:
+        #
+        print3( 'got: ', sRegExpress )
+        print3( 'want:', sWant )
+        #
+        lProblems.append( 'getRegExpress(%s)' % sLook4 )
+        #
+    #
+    #
+    sLook4 = '83#'
+    #
+    sRegExpress = getRegExpress( sLook4, iWordBoundChrs = 2 )
+    #
+    sWant = r'\b83#'
+    #
+    if sRegExpress != sWant:
+        #
+        print3( 'got: ', sRegExpress )
+        print3( 'want:', sWant )
+        #
+        lProblems.append( 'getRegExpress(%s)' % sLook4 )
+        #
+    #
     #
     sayTestResult( lProblems )
