@@ -24,11 +24,11 @@
 #
 
 
+from Object         import Finished
 from String.Get     import getTextAfter, getTextWithin
 from Web.Scraper    import PosterScraperClass, getterScraperClass, oSequencer
 
 
-class Finished( Exception ): pass
 
 sTempUnavailable = 'temporarily unavailable: web site for %s'
 
