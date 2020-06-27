@@ -35,6 +35,7 @@ try:
     from ..Iter.AllVers     import iRange, getEnumerator, permutations
     from ..Iter.Get         import iRevRange
     from .Dumpster          import getAlphaNumCleanNoSpaces, getAlphaNumDashNoSpaces
+    from String             import setNonAlphaNums
     from ..Utils.TimeTrial  import TimeTrial
 except ( ValueError, ImportError ):
     from Collect.Get        import getRidOfDupesKeepOrder
@@ -42,6 +43,7 @@ except ( ValueError, ImportError ):
     from Iter.AllVers       import iRange, getEnumerator, permutations
     from Iter.Get           import iRevRange
     from String.Dumpster    import getAlphaNumCleanNoSpaces, getAlphaNumDashNoSpaces
+    from String             import setNonAlphaNums
     from Utils.TimeTrial    import TimeTrial
 
 
@@ -592,51 +594,27 @@ def getRegExpress(
             #
             lParts = oFindSubs.split( lRegEx[ i ] )
             #
-            if lOrig[ i ][ -1 ].isdigit(): # this one ends with a digit
+            if lOrig[ i ][ -1 ].isdigit() and lOrig[ i ].startswith( '^' ):
+                # this one ends with a digit
                 #
-                if lOrig[ i ].startswith( '^' ):
-                    #
-                    lRegEx[ i ] = r'%s\b' % lRegEx[ i ]
-                    #
-                elif lLengths[ i ] <= iWordBoundChrs:
-                    #
-                    if lOrig[i][0] == lOrig[i][-1] == '#':
-                        #
-                        pass # \b d/n work with # character!
-                        #
-                    elif lOrig[i][0] == '#':
-                        #
-                        lRegEx[ i ] = r'%s\b' % lRegEx[ i ]
-                        #
-                    elif lOrig[i][-1] == '#':
-                        #
-                        lRegEx[ i ] = r'\b%s' % lRegEx[ i ]
-                        #
-                    else:
-                        #
-                        lRegEx[ i ] = r'\b%s\b' % lRegEx[ i ]
-                        #
-                    #
-                else:
-                    #
-                    lRegEx[ i ] = r'%s\b' % lRegEx[ i ]
-                    #
+                lRegEx[ i ] = r'%s\b' % lRegEx[ i ]
                 #
             elif ( lLengths[ i ] <= iWordBoundChrs or
                    len( lParts ) > 1 and len( lParts[-1] ) <= iWordBoundChrs ):
                 #
                 # world boundary chars not wanted if the string
-                # begins or ends with parens!
+                # begins or ends with non alpha numeric!
                 #
-                if lOrig[ i ][ 0 ] in '^(#' and lOrig[ i ][ -1 ] in '$)#':
+                if  (   lOrig[ i ][  0 ] in setNonAlphaNums and
+                        lOrig[ i ][ -1 ] in setNonAlphaNums ):
                     #
                     continue
                     #
-                elif lOrig[ i ][ 0 ] in '^(#':
+                elif lOrig[ i ][ 0 ] in setNonAlphaNums:
                     #
                     lRegEx[ i ] = r'%s\b' % lRegEx[ i ]
                     #
-                elif lOrig[ i ][ -1 ] in '$)#':
+                elif lOrig[ i ][ -1 ] in setNonAlphaNums:
                     #
                     lRegEx[ i ] = r'\b%s' % lRegEx[ i ]
                     #
@@ -644,9 +622,10 @@ def getRegExpress(
                     #
                     lRegEx[ i ] = r'\b%s\b' % lRegEx[ i ]
                     #
-                elif (  len( lParts ) > 1 and
-                        len( lParts[-1] ) <= iWordBoundChrs and
-                        not bSubModelsOK ):
+                elif not bSubModelsOK:
+                    #(  len( lParts ) > 1 and
+                    #    len( lParts[-1] ) <= iWordBoundChrs and
+                    #    not bSubModelsOK ):
                     #
                     lRegEx[ i ] = r'%s\b' % lRegEx[ i ]
                     #
