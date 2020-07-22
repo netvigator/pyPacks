@@ -41,6 +41,9 @@ except ( ValueError, ImportError ):
     from String.Output      import ReadableNo
 
 
+# ### Plural is in String/Output.py ###
+
+
 def getSayLessThanOne( nNumb, iWantSignificants = 2 ):
     #
     iLen        = iWantSignificants
