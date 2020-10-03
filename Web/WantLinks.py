@@ -485,6 +485,8 @@ def getLinksDict(
                 #
             #
         #
+        lPage = [ getStrGotBytes( s ) for s in lPage ]
+        #
         openAppendClose( '\n'.join( lPage ), '/tmp', sFileName )
         #
     #
