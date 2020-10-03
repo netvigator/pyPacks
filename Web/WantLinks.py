@@ -34,6 +34,7 @@ try:
     from ..File.Get         import getListFromFileLines
     from ..File.Write       import QuickDumpLines, MakeTemp, openAppendClose
     from ..Iter.AllVers     import iRange, iMap
+    from ..String.Convert   import getString
     from ..String.Get       import ( getContentOutOfQuotes, getTextBeforeLast,
                                      getTextBefore )
     from ..String.Test      import isDigit
@@ -49,6 +50,7 @@ except ( ValueError, ImportError ):
     from File.Get           import getListFromFileLines
     from File.Write         import QuickDumpLines, MakeTemp, openAppendClose
     from Iter.AllVers       import iRange, iMap
+    from String.Convert     import getString
     from String.Get         import ( getContentOutOfQuotes, getTextBeforeLast,
                                      getTextBefore )
     from String.Test        import isDigit
@@ -485,7 +487,7 @@ def getLinksDict(
                 #
             #
         #
-        lPage = [ getStrGotBytes( s ) for s in lPage ]
+        lPage = [ getString( s ) for s in lPage ]
         #
         openAppendClose( '\n'.join( lPage ), '/tmp', sFileName )
         #
