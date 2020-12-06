@@ -287,5 +287,10 @@ if __name__ == "__main__":
         lProblems.append( 'isDateTimeObj() passed string' )
         #
     #
+    if isDateTimeObj( None ):
+        #
+        lProblems.append( 'isDateTimeObj() passed None' )
+        #
+    #
     #
     sayTestResult( lProblems )
