@@ -41,6 +41,7 @@ try:
             _sFormatISONoSpace,
             _sFormatNatureUSA,
             _sFormatUSAdateTime,
+            _sFormatEbay_DateTime,
             _dMonthsNamesShort ) # explicit imports better than implicit
 except ( ValueError, ImportError ):
     from Iter.AllVers   import lMap, getEnumerator
@@ -55,6 +56,7 @@ except ( ValueError, ImportError ):
             _sFormatISONoSpace,
             _sFormatNatureUSA,
             _sFormatUSAdateTime,
+            _sFormatEbay_DateTime,
             _dMonthsNamesShort ) # explicit imports better than implicit
 
 
@@ -80,9 +82,9 @@ def getMonthNumOffName( sMonth ):
     return sNumb
 
 
-def getIsoDateTimeFromObj( oDateTime ):
+def getIsoDateTimeFromObj( oDateTime, sFormat = _sFormatISOdateTime ):
     #
-    return oDateTime.strftime( _sFormatISOdateTime )
+    return oDateTime.strftime( sFormat )
 
 
 def getIsoDateTimeStrFromSecs(
@@ -472,6 +474,8 @@ if __name__ == "__main__":
     #
     if repr( getDateTimeObjFromString( sNow ) ) != sExpect:
         #
+        print( 'got   :', repr( getDateTimeObjFromString( sNow ) ) )
+        print( 'expect:', sExpect )
         lProblems.append( 'getDateTimeObjFromString()' )
         #
     #
@@ -497,6 +501,29 @@ if __name__ == "__main__":
         #
         lProblems.append( 'getDateTimeObjFromIsoDateStr()' )
         #
+    #
+    sDateTime = "2017-12-15T05:22:47.000Z"
+    #
+    oDateTime = getDateTimeObjFromIsoDateStr(
+                    sDateTime, sFormat = _sFormatEbay_DateTime )
+    #
+    if oDateTime != datetime( 2017, 12, 15, 5, 22, 47, 0 ):
+        #
+        lProblems.append( 'getDateTimeObjFromIsoDateStr() w ebay format' )
+        #
+    #
+    sDateTimeGot = getIsoDateTimeFromObj( oDateTime, _sFormatEbay_DateTime )
+    #
+    if sDateTimeGot != sDateTime:
+        #
+        print( 'got   :', repr( sDateTimeGot ) )
+        print( 'expect:', repr( sDateTime    ) )
+        #
+        lProblems.append( 'getIsoDateTimeFromObj() w ebay format' )
+        #
+    #
+    #
+    #
     #
     if getSecsFromDuration( '01:01:01' ) != 3661:
         #
