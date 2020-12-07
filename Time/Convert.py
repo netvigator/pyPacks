@@ -504,12 +504,11 @@ if __name__ == "__main__":
     #
     sDateTime = "2017-12-15T05:22:47.000Z"
     #
-    oDateTime = getDateTimeObjFromIsoDateStr(
-                    sDateTime, sFormat = _sFormatEbay_DateTime )
+    oDateTime = getDateTimeObjFromString( sDateTime, _sFormatEbay_DateTime )
     #
     if oDateTime != datetime( 2017, 12, 15, 5, 22, 47, 0 ):
         #
-        lProblems.append( 'getDateTimeObjFromIsoDateStr() w ebay format' )
+        lProblems.append( 'getDateTimeObjFromString() w ebay format' )
         #
     #
     sDateTimeGot = getIsoDateTimeFromObj( oDateTime, _sFormatEbay_DateTime )
