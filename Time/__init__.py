@@ -12,6 +12,7 @@ _sFormatDateEu              = '%d/%m/%Y'
 _sFormatISONoSpace          = '%Y-%m-%d_%H.%M.%S'
 _sFormatISOdateTimeNoColon  = '%Y-%m-%d_%H.%M.%S'
 _sFormatISOdateTimeNoSpace  = '%Y-%m-%d_%H:%M:%S'
+_sFormatEbay_DateTime       = '%Y-%m-%dT%H:%M:%S.000Z'
 
 _sFormatNatureUSA           = '%d %m %Y'
 _sFormatUSAdateTime         = '%m/%d/%Y %I:%M:%S %p'
