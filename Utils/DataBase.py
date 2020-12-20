@@ -30,12 +30,10 @@ try:
     from ..Collect.Get  import getStringsStripTuple
     from ..Object.Get   import QuickObject
     from ..String.Find  import getRegExObj
-    from ..Utils.Config import getBoolOffYesNoTrueFalse as getBool
 except ( ValueError, ImportError ):
     from Collect.Get    import getStringsStripTuple
     from Object.Get     import QuickObject
     from String.Find    import getRegExObj
-    from Utils.Config   import getBoolOffYesNoTrueFalse as getBool
 
 # must have space before or after bar "|"
 oFindColumnSplits = getRegExObj( r'(?: \|)|(?:\| )' )
@@ -148,6 +146,7 @@ if __name__ == "__main__":
     from Utils.Result   import sayTestResult
     #
     from Utils          import sMarketsTable
+    from Utils.Config   import getBoolOffYesNoTrueFalse as getBool
     #
     oTableIter      = getTableFromScreenCaptureGenerator( sMarketsTable )
     #
