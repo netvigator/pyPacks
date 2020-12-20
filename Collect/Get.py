@@ -490,6 +490,11 @@ def getStringsStripped( l ):
     return list( getStrStripIter( l ) )
 
 
+def getStringsStripTuple( l ):
+    #
+    return tuple( getStrStripIter( l ) )
+
+
 
 def getLongest( iterable ):
     #
@@ -580,7 +585,7 @@ if __name__ == "__main__":
     from six            import print_ as print3
     #
     from Dict.Get       import getItemIter, getKeyList
-    from Iter.AllVers   import lMap, lRange, tRange
+    from Iter.AllVers   import lMap, tMap, lRange, tRange
     from String.Get     import getUpper
     from Utils.Version  import PYTHON3
     from Utils.Result   import sayTestResult
@@ -784,6 +789,11 @@ if __name__ == "__main__":
         lProblems.append( 'getStringsStripped()' )
         #
     #
+    if getStringsStripTuple( lPaddedNos ) != tMap( str, iRange(10) ):
+        #
+        lProblems.append( 'getStringsStripTuple()' )
+        #
+    #    
     t = ( 'abc', 'abcd', 'abcde', 'ab', 'a' )
     #
     if getLongest( t ) != 'abcde':
