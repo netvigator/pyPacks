@@ -27,11 +27,11 @@
 from six                import print_ as print3
 
 try:
-    from ..Collect.Get  import getStringsStripTuple
+    from ..Collect.Get  import getStringsStripTuple, getStringsStripped
     from ..Object.Get   import QuickObject
     from ..String.Find  import getRegExObj
 except ( ValueError, ImportError ):
-    from Collect.Get    import getStringsStripTuple
+    from Collect.Get    import getStringsStripTuple, getStringsStripped
     from Object.Get     import QuickObject
     from String.Find    import getRegExObj
 
@@ -59,7 +59,9 @@ def getNamePositionDict( tHeader ):
 
 
 
-def getTableFromScreenCaptureGenerator( uScreenCapture ):
+def getTableFromScreenCaptureGenerator( uScreenCapture, bListOut = False ):
+    #
+    fGetStrings = getStringsStripped if bListOut else getStringsStripTuple
     #
     if isinstance( uScreenCapture, str ):
         #
@@ -72,11 +74,11 @@ def getTableFromScreenCaptureGenerator( uScreenCapture ):
     #
     for sLine in oLines:
         #
-        lParts = getStringsStripTuple( oFindColumnSplits.split( sLine ) )
+        uParts = fGetStrings( oFindColumnSplits.split( sLine ) )
         #
-        if len( lParts ) == 1: continue
+        if len( uParts ) == 1: continue
         #
-        yield lParts
+        yield uParts
 
 
 def _getValue( lParts, sColName, dColPositions, dConverts, setNone4Empty ):
@@ -167,6 +169,15 @@ if __name__ == "__main__":
     if tHeader != tExpect:
         #
         lProblems.append( 'tHeader from getTableFromScreenCaptureGenerator()' )
+        #
+    #
+    oTableIter      = getTableFromScreenCaptureGenerator( sMarketsTable, True )
+    #
+    lHeader         = next( oTableIter )
+    #
+    if lHeader != list( tExpect ):
+        #
+        lProblems.append( 'lHeader from getTableFromScreenCaptureGenerator()' )
         #
     #
     dExpect = dict(
