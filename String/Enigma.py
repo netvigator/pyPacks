@@ -705,10 +705,10 @@ def _printOut( sOrig, sPassPhrase = sFilePhrase ):
     #
     print3( sSayOrig, sOrig )
     #
-    sSayHeavy   = '%s%s%s%s%s' % (
-                    sRawH, sQuoteH, sEncryptedH, sQuoteH, sSayMoreH )
+    sSayHeavy   = '%s%s%s%s' % (
+                    sRawH, sQuoteH, sEncryptedH, sQuoteH )
     #
-    print3( 'encrypted heavy:   %s' % sSayHeavy )
+    print3( 'encrypted heavy:   %s%s' % ( sSayHeavy, sSayMoreH ) )
     #
     if sEncryptedH2:
         #
@@ -716,10 +716,10 @@ def _printOut( sOrig, sPassPhrase = sFilePhrase ):
                 ( sQuoteH, sEncryptedH2, sQuoteH ) )
         #
     #
-    sSayLite    = '%s%s%s%s%s' % (
-                    sRawL, sQuoteL, sEncryptedL, sQuoteL, sSayMoreL )
+    sSayLite    = '%s%s%s%s' % (
+                    sRawL, sQuoteL, sEncryptedL, sQuoteL )
     #
-    print3( 'encrypted lite:    %s' % sSayLite )
+    print3( 'encrypted lite:    %s%s' % ( sSayLite, sSayMoreL ) )
     #
     if sEncryptedL2:
         #
