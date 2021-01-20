@@ -705,8 +705,10 @@ def _printOut( sOrig, sPassPhrase = sFilePhrase ):
     #
     print3( sSayOrig, sOrig )
     #
-    print3( 'encrypted heavy:   %s%s%s%s%s' %
-                ( sRawH, sQuoteH, sEncryptedH, sQuoteH, sSayMoreH ) )
+    sSayHeavy   = '%s%s%s%s%s' % (
+                    sRawH, sQuoteH, sEncryptedH, sQuoteH, sSayMoreH )
+    #
+    print3( 'encrypted heavy:   %s' % sSayHeavy )
     #
     if sEncryptedH2:
         #
@@ -714,8 +716,10 @@ def _printOut( sOrig, sPassPhrase = sFilePhrase ):
                 ( sQuoteH, sEncryptedH2, sQuoteH ) )
         #
     #
-    print3( 'encrypted lite:    %s%s%s%s%s' %
-                ( sRawL, sQuoteL, sEncryptedL, sQuoteL, sSayMoreL ) )
+    sSayLite    = '%s%s%s%s%s' % (
+                    sRawL, sQuoteL, sEncryptedL, sQuoteL, sSayMoreL )
+    #
+    print3( 'encrypted lite:    %s' % sSayLite )
     #
     if sEncryptedL2:
         #
@@ -723,6 +727,7 @@ def _printOut( sOrig, sPassPhrase = sFilePhrase ):
                 ( sQuoteL, sEncryptedL2, sQuoteL ) )
         #
     #
+    print3( '%s  --  %s' % ( sSayHeavy.strip(), sSayLite.strip() ) )
 
 
 def None2Enigma( sThis ):
