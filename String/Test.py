@@ -335,9 +335,19 @@ def almostEndsWith( sText, sLookFor, iDropMax = 5 ):
 
 
 
+def beginsOrEndsWithDigit( sText, iWhich ):
+    #
+    return isinstance( sText, str ) and len( sText ) > 0 and sText[ iWhich ].isdigit()
+
+
 def endsWithDigit( sText ):
     #
-    return type( sText ) == str and len( sText ) > 0 and sText[ -1 ].isdigit()
+    return beginsOrEndsWithDigit( sText, -1 )
+
+
+def beginsWithDigit( sText ):
+    #
+    return beginsOrEndsWithDigit( sText, 0 )
 
 
 
@@ -888,6 +898,13 @@ if __name__ == "__main__":
         #
         lProblems.append( 'endsWithDigit()' )
         #
+    #
+    if not( beginsWithDigit( '012345abcdefghijk' ) and not beginsWithDigit( 'abcdefghijk012345' ) ):
+        #
+        lProblems.append( 'beginsWithDigit()' )
+        #
+    #
+    #
     if not(     hasSubstring( 'abcdefghijk012345', 'GHI', bCaseSensitive = False ) and \
                 hasSubstring( 'abcdefghijk012345', 'ghi', bCaseSensitive = True ) and \
                 hasSubstring( 'abcdefghijk012345', 'G',   bCaseSensitive = False ) and \
