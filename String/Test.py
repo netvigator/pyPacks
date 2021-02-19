@@ -287,9 +287,9 @@ def isInQuotesSingle( uValue ):
     Strict! string must start and end with single quote chars.
     '''
     #
-    return  isinstance( uValue, str ) and \
-            uValue.startswith( "'" )  and \
-            uValue.endswith( "'" )
+    return ( isinstance( uValue, str ) and
+             uValue.startswith( "'" )  and
+             uValue.endswith( "'" ) )
 
 
 
@@ -299,9 +299,9 @@ def isInQuotesDouble( uValue ):
     Strict! string must start and end with double quote chars.
     '''
     #
-    return  isinstance( uValue, str ) and \
-            uValue.startswith( '"' )  and \
-            uValue.endswith( '"' )
+    return ( isinstance( uValue, str ) and
+             uValue.startswith( '"' )  and
+             uValue.endswith( '"' ) )
 
 
 def isInQuotesEither( uValue ):
@@ -337,7 +337,9 @@ def almostEndsWith( sText, sLookFor, iDropMax = 5 ):
 
 def beginsOrEndsWithDigit( sText, iWhich ):
     #
-    return isinstance( sText, str ) and len( sText ) > 0 and sText[ iWhich ].isdigit()
+    return ( isinstance( sText, str ) and
+             len( sText ) > 0 and
+             sText[ iWhich ].isdigit() )
 
 
 def endsWithDigit( sText ):
@@ -634,17 +636,18 @@ def areWordsClose( sWord1, sWord2 ):
         iDifference = abs( iWord1Len - iWord2Len )
         #
         setCharPosns1 = frozenset(
-                            lZip( sWord1, iRange(   iWord1Len    ) ) + \
+                            lZip( sWord1, iRange(   iWord1Len    ) ) +
                             lZip( sWord1, iRange( - iWord1Len, 0 ) ) )
         setCharPosns2 = frozenset(
-                            lZip( sWord2, iRange(   iWord2Len    ) ) + \
+                            lZip( sWord2, iRange(   iWord2Len    ) ) +
                             lZip( sWord2, iRange( - iWord2Len, 0 ) ) )
         #
-        haveOverlap = iDifference < iMinLen // 3 and \
-            len( setCharPosns1.intersection( setCharPosns2 ) ) >= iMinLen
+        haveOverlap = (
+                iDifference < iMinLen // 3 and
+                len( setCharPosns1.intersection( setCharPosns2 ) ) >= iMinLen )
         #
-        haveSubsets =   setWord1.issubset( setWord2 ) or \
-                        setWord2.issubset( setWord1 )
+        haveSubsets = ( setWord1.issubset( setWord2 ) or
+                        setWord2.issubset( setWord1 ) )
         #
         iSplitAt = iMinLen // 2
         #
@@ -652,15 +655,15 @@ def areWordsClose( sWord1, sWord2 ):
         #
         if iSplitAt > 1:
             #
-            haveStartsOrEndsWith = \
-                sWord1.startswith( sWord2[ : iSplitAt   ] ) or \
-                sWord2.startswith( sWord1[ : iSplitAt   ] ) or \
-                sWord1.endswith(   sWord2[  -iSplitAt : ] ) or \
-                sWord2.endswith(   sWord1[  -iSplitAt : ] )
+            haveStartsOrEndsWith = (
+                sWord1.startswith( sWord2[ : iSplitAt   ] ) or
+                sWord2.startswith( sWord1[ : iSplitAt   ] ) or
+                sWord1.endswith(   sWord2[  -iSplitAt : ] ) or
+                sWord2.endswith(   sWord1[  -iSplitAt : ] ) )
         #
-        bClose =    fRatio < .3 and \
-                    haveStartsOrEndsWith and \
-                    ( haveSubsets or haveOverlap )
+        bClose =  ( fRatio < .3 and
+                    haveStartsOrEndsWith and
+                    ( haveSubsets or haveOverlap ) )
         #
     #
     return bClose
@@ -784,7 +787,9 @@ if __name__ == "__main__":
         #
         lProblems.append( 'isDot()' )
         #
-    if not( isDigitOrDot( '2' ) and isDigitOrDot( '.' ) and not isDigitOrDot( 'a' ) ):
+    if not(     isDigitOrDot( '2' ) and
+                isDigitOrDot( '.' ) and
+            not isDigitOrDot( 'a' ) ):
         #
         lProblems.append( 'isDigitOrDot()' )
         #
@@ -796,12 +801,14 @@ if __name__ == "__main__":
         #
         lProblems.append( 'hasNoDigits()' )
         #
-    if not( hasDigitAndDot( '1.2.3.4' ) and not hasDigitAndDot( '1-2-3-4' ) and not hasDigitAndDot( 'a.b.c.d' ) ):
+    if not(    hasDigitAndDot( '1.2.3.4' ) and
+           not hasDigitAndDot( '1-2-3-4' ) and
+           not hasDigitAndDot( 'a.b.c.d' ) ):
         #
         lProblems.append( 'hasDigitAndDot()' )
         #
-    if not(     hasDigitsAndDotsOnly( '1.2.3.4' ) and \
-            not hasDigitsAndDotsOnly( '1-2-3-4' ) and \
+    if not(     hasDigitsAndDotsOnly( '1.2.3.4' ) and
+            not hasDigitsAndDotsOnly( '1-2-3-4' ) and
             not hasDigitsAndDotsOnly( 'a.b.c.d' ) ):
         #
         lProblems.append( 'hasDigitsAndDotsOnly()' )
@@ -834,21 +841,21 @@ if __name__ == "__main__":
         lProblems.append( 'hasAnyUpper()' )
         #
     #
-    if          hasMixedCase( 'ABCDE' ) or \
-                hasMixedCase( 'abcde' ) or \
-            not hasMixedCase( 'abCde' ):
+    if (        hasMixedCase( 'ABCDE' ) or
+                hasMixedCase( 'abcde' ) or
+            not hasMixedCase( 'abCde' ) ):
         #
         lProblems.append( 'hasMixedCase()' )
         #
     #
     sTest = 'abcdefghijk'
     #
-    if not(     getItemFoundInString( sTest, ( 'wx', 'xy', 'bc' ) ) == 'bc' and \
+    if not(     getItemFoundInString( sTest, ( 'wx', 'xy', 'bc' ) ) == 'bc' and
             not getItemFoundInString( sTest, ( 'wx', 'xy', 'yz' ) ) ):
         #
         lProblems.append( 'getItemFoundInString()' )
         #
-    if not(     AnyItemFoundInString( sTest, ( 'wx', 'xy', 'ab' ) ) and \
+    if not(     AnyItemFoundInString( sTest, ( 'wx', 'xy', 'ab' ) ) and
             not AnyItemFoundInString( sTest, ( 'wx', 'xy', 'yz' ) ) ):
         #
         lProblems.append( 'AnyItemFoundInString()' )
@@ -861,57 +868,67 @@ if __name__ == "__main__":
         #
         lProblems.append( 'isQuoteLastChar()' )
         #
-    if not(     EndsWithCharsIgnoreWhite( 'abcde ', 'DE', bCaseSensitive = False ) and \
-                EndsWithCharsIgnoreWhite( 'abcde ', 'de', bCaseSensitive = True ) and \
-            not EndsWithCharsIgnoreWhite( 'abcde ', 'DE', bCaseSensitive = True ) and \
-            not EndsWithCharsIgnoreWhite( 'ABCDE ', 'cd', bCaseSensitive = False ) ):
+    #
+    fTestThis = EndsWithCharsIgnoreWhite # keep lines below shorter than 80
+    #
+    if not(     fTestThis( 'abcde ', 'DE', bCaseSensitive = False ) and
+                fTestThis( 'abcde ', 'de', bCaseSensitive = True  ) and
+            not fTestThis( 'abcde ', 'DE', bCaseSensitive = True  ) and
+            not fTestThis( 'ABCDE ', 'cd', bCaseSensitive = False ) ):
         #
         lProblems.append( 'EndsWithCharsIgnoreWhite()' )
         #
-    if not( hasAlphaNumsOnly( 'abcdefghijk012345' ) and not hasAlphaNumsOnly( 'abcdefghijk012345;' ) ):
+    if not(    hasAlphaNumsOnly( 'abcdefghijk012345' ) and
+           not hasAlphaNumsOnly( 'abcdefghijk012345;' ) ):
         #
         lProblems.append( 'hasAlphaNumsOnly()' )
         #
-    if not(     isDigitOrDotOnly( '1' ) and \
-                isDigitOrDotOnly( '.' ) and \
-            not isDigitOrDotOnly( 'a' ) and \
+    if not(     isDigitOrDotOnly( '1' ) and
+                isDigitOrDotOnly( '.' ) and
+            not isDigitOrDotOnly( 'a' ) and
             not isDigitOrDotOnly( ';' ) ):
         #
         lProblems.append( 'isDigitOrDotOnly()' )
         #
-    if not(     isAlphaNumOrDot( 'a' ) and isAlphaNumOrDot( '2' ) and isAlphaNumOrDot( '.' ) and \
+    if not(     isAlphaNumOrDot( 'a' ) and
+                isAlphaNumOrDot( '2' ) and
+                isAlphaNumOrDot( '.' ) and
             not isAlphaNumOrDot( ';' ) ):
         #
         lProblems.append( 'isAlphaNumOrDot()' )
         #
     #
-    if not( isInQuotesSingle( "'abcde'" ) and not isInQuotesSingle( '"abcde"' ) ):
+    if not(    isInQuotesSingle( "'abcde'" ) and
+           not isInQuotesSingle( '"abcde"' ) ):
         #
         lProblems.append( 'isInQuotesSingle()' )
         #
-    if not(     almostEndsWith( 'abcdefghijk', 'fg', iDropMax = 5 ) and \
+    if not(     almostEndsWith( 'abcdefghijk', 'fg', iDropMax = 5 ) and
             not almostEndsWith( 'abcdefghijk', 'de', iDropMax = 5 ) ):
         #
         lProblems.append( 'almostEndsWith()' )
         #
-    if not( endsWithDigit( 'abcdefghijk012345' ) and not endsWithDigit( '012345abcdefghijk' ) ):
+    if not(    endsWithDigit( 'abcdefghijk012345' ) and
+           not endsWithDigit( '012345abcdefghijk' ) ):
         #
         lProblems.append( 'endsWithDigit()' )
         #
     #
-    if not( beginsWithDigit( '012345abcdefghijk' ) and not beginsWithDigit( 'abcdefghijk012345' ) ):
+    if not(    beginsWithDigit( '012345abcdefghijk' ) and
+           not beginsWithDigit( 'abcdefghijk012345' ) ):
         #
         lProblems.append( 'beginsWithDigit()' )
         #
     #
+    sTest = 'abcdefghijk012345' # keep lines below shorter than 80
     #
-    if not(     hasSubstring( 'abcdefghijk012345', 'GHI', bCaseSensitive = False ) and \
-                hasSubstring( 'abcdefghijk012345', 'ghi', bCaseSensitive = True ) and \
-                hasSubstring( 'abcdefghijk012345', 'G',   bCaseSensitive = False ) and \
-                hasSubstring( 'abcdefghijk012345', 'g',   bCaseSensitive = True ) and \
-            not hasSubstring( 'abcdefghijk012345', 'GhI', bCaseSensitive = True ) and \
-            not hasSubstring( 'abcdefghijk012345', 'Gh1', bCaseSensitive = False ) and \
-            not hasSubstring( 'abcdefghijk012345', 'l',   bCaseSensitive = True ) ):
+    if not(     hasSubstring( sTest, 'GHI', bCaseSensitive = False ) and
+                hasSubstring( sTest, 'ghi', bCaseSensitive = True  ) and
+                hasSubstring( sTest, 'G',   bCaseSensitive = False ) and
+                hasSubstring( sTest, 'g',   bCaseSensitive = True  ) and
+            not hasSubstring( sTest, 'GhI', bCaseSensitive = True  ) and
+            not hasSubstring( sTest, 'Gh1', bCaseSensitive = False ) and
+            not hasSubstring( sTest, 'l',   bCaseSensitive = True  ) ):
         #
         lProblems.append( 'hasSubstring()' )
         #
@@ -944,8 +961,8 @@ if __name__ == "__main__":
         #
         lProblems.append( 'isStringNotEmpty()' )
         #
-    if not(     isStringAndNotEmpty( 'abc' ) and \
-            not isStringAndNotEmpty(  123  ) and \
+    if not(     isStringAndNotEmpty( 'abc' ) and
+            not isStringAndNotEmpty(  123  ) and
             not isStringAndNotEmpty(  ''   ) ):
         #
         lProblems.append( 'isStringAndNotEmpty()' )
@@ -960,7 +977,8 @@ if __name__ == "__main__":
     #
     oTestABC = getHasSubstringTester( 'ABC' )
     #
-    if not( oTestABC( '012345ABCEFGHIJKL' ) and not oTestABC( '012345A6BCEFGHIJKL' ) ):
+    if not(    oTestABC( '012345A'  'BCEFGHIJKL' ) and
+           not oTestABC( '012345A6' 'BCEFGHIJKL' ) ):
         #
         lProblems.append( 'getHasSubstringTester()' )
         #
@@ -981,7 +999,8 @@ if __name__ == "__main__":
     #
     oTestJorKorL = getEndsWithAnyOfTtester( 'JKL' )
     #
-    if not ( oTestJorKorL( 'ABCEFGHIJKL' ) and not oTestJorKorL( 'ABCEFGHIJKL0' ) ):
+    if not (    oTestJorKorL( 'ABCEFGHIJKL' ) and
+            not oTestJorKorL( 'ABCEFGHIJKL0' ) ):
         #
         lProblems.append( 'getEndsWithAnyOfTtester()' )
         #
@@ -992,33 +1011,33 @@ if __name__ == "__main__":
         lProblems.append( 'isSpace()' )
         #
     #
-    if          isInOrder( 'exayza' ) or \
-            not isInOrder( 'abcdef' ) or \
-            not isInOrder( 'fedcba' ):
+    if (        isInOrder( 'exayza' ) or
+            not isInOrder( 'abcdef' ) or
+            not isInOrder( 'fedcba' ) ):
         #
         lProblems.append( 'isInOrder()' )
         #
     #
-    if          endsWithOneOf( 'abc', ( 'x', 'y', 'z' ) ) or \
-            not endsWithOneOf( 'abc', ( 'a', 'b', 'c' ) ):
+    if (        endsWithOneOf( 'abc', ( 'x', 'y', 'z' ) ) or
+            not endsWithOneOf( 'abc', ( 'a', 'b', 'c' ) ) ):
         #
         lProblems.append( 'endsWithOneOf()' )
         #
     #
-    if          startsWithOneOf( 'abc', ( 'x', 'y', 'z' ) ) or \
-            not startsWithOneOf( 'abc', ( 'a', 'b', 'c' ) ):
+    if (        startsWithOneOf( 'abc', ( 'x', 'y', 'z' ) ) or
+            not startsWithOneOf( 'abc', ( 'a', 'b', 'c' ) ) ):
         #
         lProblems.append( 'endsWithOneOf()' )
         #
     #
-    if          _endsWithOneOfManually( 'abc', ( 'x', 'y', 'z' ) ) or \
-            not _endsWithOneOfManually( 'abc', ( 'a', 'b', 'c' ) ):
+    if (        _endsWithOneOfManually( 'abc', ( 'x', 'y', 'z' ) ) or
+            not _endsWithOneOfManually( 'abc', ( 'a', 'b', 'c' ) ) ):
         #
         lProblems.append( '_endsWithOneOfManually()' )
         #
     #
-    if          _startsWithOneOfManually( 'abc', ( 'x', 'y', 'z' ) ) or \
-            not _startsWithOneOfManually( 'abc', ( 'a', 'b', 'c' ) ):
+    if (        _startsWithOneOfManually( 'abc', ( 'x', 'y', 'z' ) ) or
+            not _startsWithOneOfManually( 'abc', ( 'a', 'b', 'c' ) ) ):
         #
         lProblems.append( '_startsWithOneOfManually()' )
         #
@@ -1035,8 +1054,8 @@ if __name__ == "__main__":
         lProblems.append( 'getHasSubstrTester() substring not in string' )
         #
     #
-    if          areWordsClose( 'alphabet', 'zenophobia' ) or \
-            not areWordsClose( "Moorehead", "Moorhead" ):
+    if (        areWordsClose( 'alphabet', 'zenophobia' ) or
+            not areWordsClose( "Moorehead", "Moorhead" ) ):
         #
         lProblems.append( 'areWordsClose()' )
         #
@@ -1163,6 +1182,5 @@ if __name__ == "__main__":
         #
         lProblems.append( 'hasPunctuation( "15" SILVER" )' )
         #
-    #
-    
+    #    
     sayTestResult( lProblems )
