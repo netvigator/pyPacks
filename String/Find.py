@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/
 #
-# Copyright 2004-2020 Rick Graves
+# Copyright 2004-2021 Rick Graves
 #
 from collections            import OrderedDict
 from re                     import compile as REcompile
@@ -422,6 +422,7 @@ def getRegExpress(
         iWordBoundChrs  = 0,
         bCaseSensitive  = False,   # will the search RegEx be case sensitive?
         bEscBegEndOfStr = True,    # escape RegEx beg/end of string chars
+        bExcludeDots    = False,   # sLook4 is digits, do not find if got dots
         bPluralize      = False ): # will also find plural version of word
     #
     '''
@@ -448,6 +449,8 @@ def getRegExpress(
     lLengths = [ len( getAlphaNumCleanNoSpaces( s ) )
                  for s
                  in lOrig ]
+    #
+    tGotOnlyDigits = tuple( [ s.isdigit() for s in lOrig ] )
     #
     #if sLook4Orig == r'Model Two\rModel 2':
         #print3( '' )
@@ -644,6 +647,11 @@ def getRegExpress(
                 #
                 lRegEx[ i ] = lRegEx[ i ][ 2 : ]
                 #
+        #
+    #
+    if bExcludeDots and True in tGotOnlyDigits:
+        #
+        print3( 'lRegEx:', lRegEx )
         #
     #
     #if sLook4Orig == r'Model Two\rModel 2':
@@ -1936,5 +1944,31 @@ if __name__ == "__main__":
         lProblems.append( 'getRegExpress(%s)' % sLook4 )
         #
     #
+    sLook4 = '2'
+    #
+    sRegExpress = getRegExpress( sLook4,
+                            bExcludeDots = True )
+    #
+    '''
+    >>> from String.Output import show_re
+    >>> show_re( '\d', 'abc 2 def' )
+
+    abc {2} def
+    >>> show_re( '\d', 'abc 2. def' )
+
+    abc {2}. def
+    >>> show_re( '2', 'abc 2. def' )
+
+    abc {2}. def
+    >>> show_re( '2(?!\.)', 'abc 2. def' )
+
+    abc 2. def
+    >>> show_re( '2(?!\.)', 'abc .2 def' )
+
+    abc .{2} def
+    >>> show_re( '(?<!\.)2(?!\.)', 'abc .2 def' )
+
+    abc .2 def
+    '''
     #
     sayTestResult( lProblems )
