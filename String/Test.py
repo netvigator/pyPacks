@@ -337,8 +337,8 @@ def almostEndsWith( sText, sLookFor, iDropMax = 5 ):
 
 def beginsOrEndsWithDigit( sText, iWhich ):
     #
-    return ( isinstance( sText, str ) and
-             len( sText ) > 0 and
+    return ( sText and
+             isinstance( sText, str ) and
              sText[ iWhich ].isdigit() )
 
 
