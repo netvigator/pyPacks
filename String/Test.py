@@ -404,19 +404,6 @@ def isString   ( u ): return     isinstance( u, str )
 def isNotString( u ): return not isinstance( u, str )
 
 
-def isStringLike( u ):
-    #
-    bString = True
-    #
-    try:
-        u += ''
-    except:
-        bString = False
-    #
-    return bString
-
-
-def isNotStringLike( u ): return not isStringLike( u )
 
 
 def isEmptyString(       s ): return s == ''
@@ -955,16 +942,6 @@ if __name__ == "__main__":
     if not isNotString( 12345 ) or isNotString( 'abcde' ):
         #
         lProblems.append( 'isNotString()' )
-        #
-    #
-    if isStringLike( 12345 ):
-        #
-        lProblems.append( 'isStringLike() passed integer' )
-        #
-    #
-    if not isStringLike( 'abcde' ):
-        #
-        lProblems.append( 'isStringLike() passed string' )
         #
     #
     if not isEmptyString( '' ) or isEmptyString( 'a' ):
