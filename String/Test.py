@@ -761,8 +761,8 @@ if __name__ == "__main__":
         #
         lProblems.append( 'isAsciiDigit()' )
         #
-    
-    if not( hasAnyAlpha( '012e45' ) and not hasAnyAlpha( '012345' ) ):
+    #
+    if not hasAnyAlpha( '012e45' ) or hasAnyAlpha( '012345' ):
         #
         lProblems.append( 'hasAnyAlpha()' )
         #
@@ -770,30 +770,32 @@ if __name__ == "__main__":
         #
         lProblems.append( 'hasAlphaOnly()' )
         #
-    if not( isNotDot(      'a'     ) and not isNotDot(        '.' ) ):
+    if not isNotDot( 'a' ) or isNotDot( '.' ):
         #
         lProblems.append( 'isNotDot()' )
         #
-    if not( hasDigitsOnly( '012345') and not hasDigitsOnly(   '012E45' ) ):
+    if not hasDigitsOnly( '012345') or hasDigitsOnly( '012E45' ):
         #
         lProblems.append( 'hasDigitsOnly()' )
         #
-    if not( isDigit(         '2'  ) and not isDigit(         'a' ) ):
+    if not isDigit( '2'  ) or isDigit( 'a' ):
         #
         lProblems.append( 'isDigit()' )
         #
-        #
-    if not( isDot(           '.' ) and not isDot(           'a' ) ):
+    #
+    if not isDot( '.' ) or isDot( 'a' ):
         #
         lProblems.append( 'isDot()' )
         #
+    #
     if not(     isDigitOrDot( '2' ) and
                 isDigitOrDot( '.' ) and
             not isDigitOrDot( 'a' ) ):
         #
         lProblems.append( 'isDigitOrDot()' )
         #
-    if not( hasAnyDigits( 'abcd3' ) and not hasAnyDigits( 'abcde' ) ):
+    #
+    if not hasAnyDigits( 'abcd3' ) or hasAnyDigits( 'abcde' ):
         #
         lProblems.append( 'hasAnyDigits()' )
         #
@@ -807,13 +809,13 @@ if __name__ == "__main__":
         #
         lProblems.append( 'hasDigitAndDot()' )
         #
-    if not(     hasDigitsAndDotsOnly( '1.2.3.4' ) and
-            not hasDigitsAndDotsOnly( '1-2-3-4' ) and
-            not hasDigitsAndDotsOnly( 'a.b.c.d' ) ):
+    if ( not hasDigitsAndDotsOnly( '1.2.3.4' ) or
+             hasDigitsAndDotsOnly( '1-2-3-4' ) or
+             hasDigitsAndDotsOnly( 'a.b.c.d' ) ):
         #
         lProblems.append( 'hasDigitsAndDotsOnly()' )
         #
-    if not( isPunctuation( ';' ) and not isPunctuation( 'a' ) ):
+    if not isPunctuation( ';' ) or isPunctuation( 'a' ):
         #
         lProblems.append( 'isPunctuation()' )
         #
@@ -823,15 +825,16 @@ if __name__ == "__main__":
         lProblems.append( 'isNotPunctuation()' )
         #
     #
-    if not( isPunctOrSpace( ';' ) and not isPunctOrSpace( 'a' ) ):
+    if not isPunctOrSpace( ';' ) or isPunctOrSpace( 'a' ):
         #
         lProblems.append( 'isPunctOrSpace() punctuation' )
         #
+    #
     if not( isPunctOrSpace( ' ' ) and not isPunctOrSpace( 'a' ) ):
         #
         lProblems.append( 'isPunctOrSpace() space' )
         #
-    if not( hasNoLower( 'ABCDE' ) and not hasNoLower( 'ABCdE' ) ):
+    if not hasNoLower( 'ABCDE' ) or hasNoLower( 'ABCdE' ):
         #
         lProblems.append( 'hasNoLower()' )
         #
@@ -850,16 +853,18 @@ if __name__ == "__main__":
     #
     sTest = 'abcdefghijk'
     #
-    if not(     getItemFoundInString( sTest, ( 'wx', 'xy', 'bc' ) ) == 'bc' and
-            not getItemFoundInString( sTest, ( 'wx', 'xy', 'yz' ) ) ):
+    if (    not getItemFoundInString( sTest, ( 'wx', 'xy', 'bc' ) ) == 'bc' or
+                getItemFoundInString( sTest, ( 'wx', 'xy', 'yz' ) ) ):
         #
         lProblems.append( 'getItemFoundInString()' )
         #
-    if not(     AnyItemFoundInString( sTest, ( 'wx', 'xy', 'ab' ) ) and
-            not AnyItemFoundInString( sTest, ( 'wx', 'xy', 'yz' ) ) ):
+    #
+    if (    not AnyItemFoundInString( sTest, ( 'wx', 'xy', 'ab' ) ) or
+                AnyItemFoundInString( sTest, ( 'wx', 'xy', 'yz' ) ) ):
         #
         lProblems.append( 'AnyItemFoundInString()' )
         #
+    #
     if not( isQuote1stChar( "'how now'" ) and not isQuote1stChar( "how now" ) ):
         #
         lProblems.append( 'isQuote1stChar()' )
@@ -878,11 +883,13 @@ if __name__ == "__main__":
         #
         lProblems.append( 'EndsWithCharsIgnoreWhite()' )
         #
-    if not(    hasAlphaNumsOnly( 'abcdefghijk012345' ) and
-           not hasAlphaNumsOnly( 'abcdefghijk012345;' ) ):
+    #
+    if (    not hasAlphaNumsOnly( 'abcdefghijk012345'  ) or
+                hasAlphaNumsOnly( 'abcdefghijk012345;' ) ):
         #
         lProblems.append( 'hasAlphaNumsOnly()' )
         #
+    #
     if not(     isDigitOrDotOnly( '1' ) and
                 isDigitOrDotOnly( '.' ) and
             not isDigitOrDotOnly( 'a' ) and
@@ -898,24 +905,26 @@ if __name__ == "__main__":
         lProblems.append( 'isAlphaNumOrDot()' )
         #
     #
-    if not(    isInQuotesSingle( "'abcde'" ) and
-           not isInQuotesSingle( '"abcde"' ) ):
+    if (    not isInQuotesSingle( "'abcde'" ) or
+                isInQuotesSingle( '"abcde"' ) ):
         #
         lProblems.append( 'isInQuotesSingle()' )
         #
-    if not(     almostEndsWith( 'abcdefghijk', 'fg', iDropMax = 5 ) and
-            not almostEndsWith( 'abcdefghijk', 'de', iDropMax = 5 ) ):
+    #
+    if (    not almostEndsWith( 'abcdefghijk', 'fg', iDropMax = 5 ) or
+                almostEndsWith( 'abcdefghijk', 'de', iDropMax = 5 ) ):
         #
         lProblems.append( 'almostEndsWith()' )
         #
-    if not(    endsWithDigit( 'abcdefghijk012345' ) and
-           not endsWithDigit( '012345abcdefghijk' ) ):
+    #
+    if (    not endsWithDigit( 'abcdefghijk012345' ) or
+                endsWithDigit( '012345abcdefghijk' ) ):
         #
         lProblems.append( 'endsWithDigit()' )
         #
     #
-    if not(    beginsWithDigit( '012345abcdefghijk' ) and
-           not beginsWithDigit( 'abcdefghijk012345' ) ):
+    if (    not beginsWithDigit( '012345abcdefghijk' ) or
+                beginsWithDigit( 'abcdefghijk012345' ) ):
         #
         lProblems.append( 'beginsWithDigit()' )
         #
@@ -932,15 +941,18 @@ if __name__ == "__main__":
         #
         lProblems.append( 'hasSubstring()' )
         #
-    if not( isQuote( '"' ) and isQuote( "'" ) and not isQuote( 'a' ) ):
+    #
+    if not( isQuote( '"' ) and isQuote( "'" ) ) or isQuote( 'a' ):
         #
         lProblems.append( 'isQuote()' )
         #
-    if not( isString   ( 'abcde' ) and not isString( 12345 ) ):
+    #
+    if not isString( 'abcde' ) or isString( 12345 ):
         #
         lProblems.append( 'isString()' )
         #
-    if not( isNotString( 12345 ) and not isNotString( 'abcde' ) ):
+    #
+    if not isNotString( 12345 ) or isNotString( 'abcde' ):
         #
         lProblems.append( 'isNotString()' )
         #
@@ -949,58 +961,62 @@ if __name__ == "__main__":
         #
         lProblems.append( 'isStringLike() passed integer' )
         #
+    #
     if not isStringLike( 'abcde' ):
         #
         lProblems.append( 'isStringLike() passed string' )
         #
-    if not( isEmptyString( '' ) and not isEmptyString( 'a' ) ):
+    #
+    if not isEmptyString( '' ) or isEmptyString( 'a' ):
         #
         lProblems.append( 'isEmptyString()' )
         #
-    if not( isStringNotEmpty( 'abc' ) and not isStringNotEmpty( '' ) ):
+    #
+    if not isStringNotEmpty( 'abc' ) or isStringNotEmpty( '' ):
         #
         lProblems.append( 'isStringNotEmpty()' )
         #
-    if not(     isStringAndNotEmpty( 'abc' ) and
-            not isStringAndNotEmpty(  123  ) and
-            not isStringAndNotEmpty(  ''   ) ):
+    #
+    if (    not isStringAndNotEmpty( 'abc' ) or
+                isStringAndNotEmpty(  123  ) or
+                isStringAndNotEmpty(  ''   ) ):
         #
         lProblems.append( 'isStringAndNotEmpty()' )
         #
     #
     oTestABC = getStartsWithSomethingTester( 'ABC' )
     #
-    if not( oTestABC( 'ABCEFGHIJKL' ) and not oTestABC( '0ABCEFGHIJKL' ) ):
+    if not oTestABC( 'ABCEFGHIJKL' ) or oTestABC( '0ABCEFGHIJKL' ):
         #
         lProblems.append( 'getStartsWithSomethingTester()' )
         #
     #
     oTestABC = getHasSubstringTester( 'ABC' )
     #
-    if not(    oTestABC( '012345A'  'BCEFGHIJKL' ) and
-           not oTestABC( '012345A6' 'BCEFGHIJKL' ) ):
+    if (   not oTestABC( '012345A'  'BCEFGHIJKL' ) and
+               oTestABC( '012345A6' 'BCEFGHIJKL' ) ):
         #
         lProblems.append( 'getHasSubstringTester()' )
         #
     #
     oTestJKL = getEndsWithSomethingTester( 'JKL' )
     #
-    if not ( oTestJKL( 'ABCEFGHIJKL' ) and not oTestJKL( 'ABCEFGHIJKL0' ) ):
+    if not oTestJKL( 'ABCEFGHIJKL' ) or oTestJKL( 'ABCEFGHIJKL0' ):
         #
         lProblems.append( 'getEndsWithSomethingTester()' )
         #
     #
     oTestAorBorC = getStartsWithAnyOfTtester( 'ABC' )
     #
-    if not ( oTestAorBorC( 'CEFGHIJKL' ) and not oTestAorBorC( 'FGHIJKL' ) ):
+    if not oTestAorBorC( 'CEFGHIJKL' ) or oTestAorBorC( 'FGHIJKL' ):
         #
         lProblems.append( 'getStartsWithAnyOfTtester()' )
         #
     #
     oTestJorKorL = getEndsWithAnyOfTtester( 'JKL' )
     #
-    if not (    oTestJorKorL( 'ABCEFGHIJKL' ) and
-            not oTestJorKorL( 'ABCEFGHIJKL0' ) ):
+    if (    not oTestJorKorL( 'ABCEFGHIJKL'  ) or
+                oTestJorKorL( 'ABCEFGHIJKL0' ) ):
         #
         lProblems.append( 'getEndsWithAnyOfTtester()' )
         #
