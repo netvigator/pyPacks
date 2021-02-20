@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/
 #
-# Copyright 2004-2020 Rick Graves
+# Copyright 2004-2021 Rick Graves
 #
 #from os.path import join, isfile, getmtime, split, splitext, exists, basename, isdir
 #from os      import stat, environ, getcwd, listdir, rename, remove
