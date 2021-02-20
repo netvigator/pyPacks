@@ -29,10 +29,8 @@ from os.path import join, split, splitext, basename, isdir, join
 
 try:
     from ..Dir.Get      import sTempDir, sDurableTempDir
-    from ..String.Test  import isStringLike
 except ( ValueError, ImportError ):
     from Dir.Get        import sTempDir, sDurableTempDir
-    from String.Test    import isStringLike
 
 
 def getPathNameExt( sSpec ):
@@ -104,7 +102,7 @@ def _getFileSpecOffParts( tParts ):
 def getFullSpec( *tParts ):
     #
     #
-    if isStringLike( tParts ):
+    if isinstance( tParts, str ):
         #
         sFileSpec = tParts
         #
@@ -112,7 +110,7 @@ def getFullSpec( *tParts ):
         #
         sFileSpec = tParts[0]
         #
-    else: # not isStringLike( tParts )
+    else: # not isinstance( tParts, str )
         #
         sFileSpec = _getFileSpecOffParts( tParts )
         #
