@@ -348,18 +348,21 @@ def _getCharsShifted( sShiftThis, getShifted, sPassPhrase, iPassPhraseNumb ):
 
 
 
-def Encrypt( sEncryptThis, sPassPhrase = sFilePhrase ):
+def Encrypt( sThis, sPassPhrase = sFilePhrase ):
     #
     # Encrypt STEP 1 shuffle & cut, reverse, shuffle & cut
     #
-    oStats      = _getMoreAscStats( sPassPhrase, len( sEncryptThis ) )
+    # handle multi line strings
+    sThis       = sThis.replace( '\n', r'\\n' ).replace( '\r', r'\\r' )
+    #
+    oStats      = _getMoreAscStats( sPassPhrase, len( sThis ) )
     #
     iCutAt0     = oStats.iCutAt0
     iCutAt1     = oStats.iCutAt1
     #
     sConverted  = ShuffleAndCut(
                         getTextReversed(
-                            ShuffleAndCut( sEncryptThis, iCutOffset = iCutAt0 )
+                            ShuffleAndCut( sThis, iCutOffset = iCutAt0 )
                         ),
                     iCutOffset = iCutAt1 )
     #
@@ -426,7 +429,9 @@ def Decrypt( sDecryptThis, sPassPhrase = sFilePhrase ):
     #
     # Encrypt STEP -1 shuffle & cut, reverse, shuffle & cut
     #
-    return _getShuffleCutReverseShuffleCut( sConverted, iCutAt0, iCutAt1 )
+    sReturn = _getShuffleCutReverseShuffleCut( sConverted, iCutAt0, iCutAt1 )
+    #
+    return sReturn.replace( r'\\r', '\r' ).replace( r'\\n', '\n' )
 
 
 
@@ -519,6 +524,9 @@ def _getShuffleShiftReverseFlipPunctuate( sThis, getShifted, iCutAt ):
 
 def EncryptLite( sThis, sPassPhrase = sFilePhrase ):
     #
+    # handle multi line strings
+    sThis   = sThis.replace( '\n', r'\\n' ).replace( '\r', r'\\r' )
+    #
     oStats  = _getMoreAscStats( sPassPhrase, len( sThis ) )
     #
     iPassPhraseNumb = oStats.iTotal - oStats.iDifference
@@ -568,7 +576,9 @@ def DecryptLite( sThis, sPassPhrase = sFilePhrase ):
     #
     iCutAt1 = oStats.iCutAt1
     #
-    return _getPunctuateFlipReverseShiftShuffleCut( sThis, getShifted, iCutAt1 )
+    sReturn = _getPunctuateFlipReverseShiftShuffleCut( sThis, getShifted, iCutAt1 )
+    #
+    return sReturn.replace( r'\\r', '\r' ).replace( r'\\n', '\n' )
 
 
 
@@ -1032,5 +1042,36 @@ if __name__ == "__main__":
         #
         lProblems.append( sSayProblem )
         #
+    #
+    sTest = 'line 1\nline 2\nline 3'
+    #
+    if Decrypt( Encrypt( sTest ) ) != sTest:
+        #
+        print( 'sTest = ' )
+        print( sTest )
+        lProblems.append( 'Decrypt( Encrypt( "sTest" ) )' )
+        #
+    if DecryptLite( EncryptLite( sTest ) ) != sTest:
+        #
+        print( 'sTest = ' )
+        print( sTest )
+        lProblems.append( 'DecryptLite( EncryptLite( "sTest" ) )' )
+        #
+    #
+    sTestCRLF = 'line 1\r\nline 2\r\nline 3'
+    #
+    if Decrypt( Encrypt( sTestCRLF ) ) != sTestCRLF:
+        #
+        print( 'sTestCRLF = ' )
+        print( sTestCRLF )
+        lProblems.append( 'Decrypt( Encrypt( "sTestCRLF" ) )' )
+        #
+    if DecryptLite( EncryptLite( sTestCRLF ) ) != sTestCRLF:
+        #
+        print( 'sTestCRLF = ' )
+        print( sTestCRLF )
+        lProblems.append( 'DecryptLite( EncryptLite( "sTestCRLF" ) )' )
+        #
+    #
     #
     sayTestResult( lProblems )
