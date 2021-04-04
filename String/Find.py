@@ -422,7 +422,7 @@ def getRegExpress(
         iWordBoundChrs  = 0,
         bCaseSensitive  = False,   # will the search RegEx be case sensitive?
         bEscBegEndOfStr = True,    # escape RegEx beg/end of string chars
-        bExcludeDots    = False,   # sLook4 is digits, do not find if got dots
+        bExcludeDots    = False,   # sLook4 digits, do not find if got dots b4/after
         bPluralize      = False ): # will also find plural version of word
     #
     '''
@@ -651,7 +651,15 @@ def getRegExpress(
     #
     if bExcludeDots and True in tGotOnlyDigits:
         #
-        print3( 'lRegEx:', lRegEx )
+        # if sLook4 is digits, do not find if got dots b4 or after
+        #
+        for i in iRange( len( lRegEx ) ):
+            #
+            if tGotOnlyDigits[ i ]:
+                #
+                lRegEx[ i ] = r'(?<!\.)%s(?!\.)' % lRegEx[ i ]
+                #
+            #
         #
     #
     #if sLook4Orig == r'Model Two\rModel 2':
@@ -1946,8 +1954,16 @@ if __name__ == "__main__":
     #
     sLook4 = '2'
     #
-    sRegExpress = getRegExpress( sLook4,
-                            bExcludeDots = True )
+    sRegExpress = getRegExpress( sLook4, bExcludeDots = True )
+    #
+    if sRegExpress != '(?<!\\.)2(?!\\.)':
+        #
+        print3( 'got: ', sRegExpress )
+        # print3( 'want:', sWant )
+        #
+        lProblems.append( 'getRegExpress(%s)' % sLook4 )
+        #
+    #
     #
     '''
     >>> from String.Output import show_re
