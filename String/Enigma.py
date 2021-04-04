@@ -51,7 +51,7 @@ from string                 import ascii_lowercase as lowercase
 from string                 import ascii_uppercase as uppercase
 
 try:
-    from .Find              import oFinderCRorLF
+    from .Find              import oFinderCRorLF, oFinderCRorLFnMore
     from .Replace           import getTextReversed
     from .Stats             import AscStats
     from .Transform         import TranslatorFactory, getSwapper
@@ -63,7 +63,7 @@ try:
     from ..Utils.Both2n3    import print3
     from ..Utils.ImIf       import ImIf
 except ( ValueError, ImportError ):
-    from String.Find        import oFinderCRorLF
+    from String.Find        import oFinderCRorLF, oFinderCRorLFnMore
     from String.Replace     import getTextReversed
     from String.Stats       import AscStats
     from String.Transform   import TranslatorFactory, getSwapper
@@ -353,7 +353,15 @@ def Encrypt( sThis, sPassPhrase = sFilePhrase ):
     # Encrypt STEP 1 shuffle & cut, reverse, shuffle & cut
     #
     # handle multi line strings
-    sThis       = sThis.replace( '\n', r'\\n' ).replace( '\r', r'\\r' )
+    #
+    if oFinderCRorLF.search( sThis ):
+        #
+        # code works with printable characters, but CR & LF are not printable
+        # so convert
+        # CR (1 char) to \r (2 chars) and LF (1 char) to \n (2 chars)
+        #
+        sThis   = sThis.replace( '\n', r'\n' ).replace( '\r', r'\r' )
+        #
     #
     oStats      = _getMoreAscStats( sPassPhrase, len( sThis ) )
     #
@@ -431,7 +439,14 @@ def Decrypt( sDecryptThis, sPassPhrase = sFilePhrase ):
     #
     sReturn = _getShuffleCutReverseShuffleCut( sConverted, iCutAt0, iCutAt1 )
     #
-    return sReturn.replace( r'\\r', '\r' ).replace( r'\\n', '\n' )
+    # handle multi line strings
+    #
+    if oFinderCRorLFnMore.search( sReturn ):
+        #
+        sReturn = sReturn.replace( r'\r', '\r' ).replace( r'\n', '\n' )
+        #
+    #
+    return sReturn
 
 
 
@@ -525,7 +540,15 @@ def _getShuffleShiftReverseFlipPunctuate( sThis, getShifted, iCutAt ):
 def EncryptLite( sThis, sPassPhrase = sFilePhrase ):
     #
     # handle multi line strings
-    sThis   = sThis.replace( '\n', r'\\n' ).replace( '\r', r'\\r' )
+    #
+    if oFinderCRorLF.search( sThis ):
+        #
+        # code works with printable characters, but CR & LF are not printable
+        # so convert
+        # CR (1 char) to \r (2 chars) and LF (1 char) to \n (2 chars)
+        #
+        sThis   = sThis.replace( '\n', r'\n' ).replace( '\r', r'\r' )
+        #
     #
     oStats  = _getMoreAscStats( sPassPhrase, len( sThis ) )
     #
@@ -578,7 +601,14 @@ def DecryptLite( sThis, sPassPhrase = sFilePhrase ):
     #
     sReturn = _getPunctuateFlipReverseShiftShuffleCut( sThis, getShifted, iCutAt1 )
     #
-    return sReturn.replace( r'\\r', '\r' ).replace( r'\\n', '\n' )
+    # handle multi line strings
+    #
+    if oFinderCRorLFnMore.search( sReturn ):
+        #
+        sReturn = sReturn.replace( r'\r', '\r' ).replace( r'\n', '\n' )
+        #
+    #
+    return sReturn
 
 
 
@@ -613,7 +643,8 @@ def DecryptLiteNone( sThis ):
 
 
 
-def _getSayMore( bGotSingleQuote, bGotDoubleQuote, bGotBackSlash ):
+def _getSayMore(
+        bGotSingleQuote, bGotDoubleQuote, bGotBackSlash, bMultiLineOrig = False ):
     #
     sSayMore = ''
     lSayMore = []
@@ -641,7 +672,7 @@ def _getSayMore( bGotSingleQuote, bGotDoubleQuote, bGotBackSlash ):
         sSayMore = ' *AND* '.join( lSayMore )
         #
     #
-    if sSayMore:
+    if sSayMore and not bMultiLineOrig:
         #
         sSayMore = ' -- ' + sSayMore
         #
@@ -650,6 +681,8 @@ def _getSayMore( bGotSingleQuote, bGotDoubleQuote, bGotBackSlash ):
 
 
 def _printOut( sOrig, sPassPhrase = sFilePhrase ):
+    #
+    bMultiLineOrig = oFinderCRorLF.search( sOrig )
     #
     sBackSlash      = chr( 92 )
     sDoubleBack     = sBackSlash * 2
@@ -666,8 +699,10 @@ def _printOut( sOrig, sPassPhrase = sFilePhrase ):
     bGotBackSlashH  = sBackSlash in sEncryptedH
     bGotBackSlashL  = sBackSlash in sEncryptedL
     #
-    sSayMoreH       = _getSayMore( bGotSingleH, bGotDoubleH, bGotBackSlashH )
-    sSayMoreL       = _getSayMore( bGotSingleL, bGotDoubleL, bGotBackSlashL )
+    sSayMoreH       = _getSayMore(
+            bGotSingleH, bGotDoubleH, bGotBackSlashH, bMultiLineOrig )
+    sSayMoreL       = _getSayMore(
+            bGotSingleL, bGotDoubleL, bGotBackSlashL, bMultiLineOrig )
     #
     sEncryptedH2 = sEncryptedL2 = ''
     sRawH = sRawL = ' '
@@ -704,7 +739,11 @@ def _printOut( sOrig, sPassPhrase = sFilePhrase ):
         sQuoteL = ImIf( "'" in sEncryptedL, '"', "'" )
         #
     #
-    if max( len( sQuoteH ), len( sQuoteL  ) ) == 1:
+    if bMultiLineOrig:
+        #
+        sSayOrig = 'original:'
+        #
+    elif max( len( sQuoteH ), len( sQuoteL  ) ) == 1:
         #
         sSayOrig = 'original:           '
         #
@@ -713,28 +752,66 @@ def _printOut( sOrig, sPassPhrase = sFilePhrase ):
         sSayOrig = 'original:             '
         #
     #
-    print3( sSayOrig, sOrig )
+    if bMultiLineOrig:
+        #
+        print3( sSayOrig )
+        print3( sOrig )
+        #
+    else:
+        #
+        print3( sSayOrig, sOrig )
+        #
     #
     sSayHeavy   = '%s%s%s%s' % (
                     sRawH, sQuoteH, sEncryptedH, sQuoteH )
     #
-    print3( 'encrypted heavy:   %s%s' % ( sSayHeavy, sSayMoreH ) )
-    #
-    if sEncryptedH2:
+    if bMultiLineOrig:
         #
-        print3( 'backslash doubled:  %s%s%s' %
-                ( sQuoteH, sEncryptedH2, sQuoteH ) )
+        print3( 'encrypted heavy:' )
+        print3( sSayHeavy.strip() )
+        print3( sSayMoreH.strip() )
+        #
+        if sEncryptedH2:
+            #
+            print3( 'backslash doubled:' )
+            print3( '%s%s%s' % ( sQuoteH, sEncryptedH2, sQuoteH ) )
+            #
+        #
+    else:
+        #
+        print3( 'encrypted heavy:   %s%s' % ( sSayHeavy, sSayMoreH ) )
+        #
+        if sEncryptedH2:
+            #
+            print3( 'backslash doubled:  %s%s%s' %
+                    ( sQuoteH, sEncryptedH2, sQuoteH ) )
+            #
         #
     #
     sSayLite    = '%s%s%s%s' % (
                     sRawL, sQuoteL, sEncryptedL, sQuoteL )
     #
-    print3( 'encrypted lite:    %s%s' % ( sSayLite, sSayMoreL ) )
-    #
-    if sEncryptedL2:
+    if bMultiLineOrig:
         #
-        print3( 'backslash doubled:  %s%s%s' %
-                ( sQuoteL, sEncryptedL2, sQuoteL ) )
+        print3( 'encrypted lite:' )
+        print3( sSayLite.strip() )
+        print3( sSayMoreL.strip() )
+        #
+        if sEncryptedL2:
+            #
+            print3( 'backslash doubled:' )
+            print3( '%s%s%s' % ( sQuoteL, sEncryptedL2, sQuoteL ) )
+            #
+        #
+    else:
+        #
+        print3( 'encrypted lite:    %s%s' % ( sSayLite, sSayMoreL ) )
+        #
+        if sEncryptedL2:
+            #
+            print3( 'backslash doubled:  %s%s%s' %
+                    ( sQuoteL, sEncryptedL2, sQuoteL ) )
+            #
         #
     #
     print3( '%s  --  %s' % ( sSayHeavy.strip(), sSayLite.strip() ) )
@@ -758,6 +835,12 @@ def EncryptBoth( sThis, sPassPhrase = sFilePhrase ):
     #
     _printOut( sThis, sPassPhrase )
 
+
+def pD( s ):
+    print( Decrypt( s ) )
+
+def pDL( s ):
+    print( DecryptLite( s ) )
 
 
 E, D, EB = Encrypt, Decrypt, EncryptBoth
