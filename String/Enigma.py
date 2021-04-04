@@ -837,10 +837,10 @@ def EncryptBoth( sThis, sPassPhrase = sFilePhrase ):
 
 
 def pD( s ):
-    print( Decrypt( s ) )
+    print3( Decrypt( s ) )
 
 def pDL( s ):
-    print( DecryptLite( s ) )
+    print3( DecryptLite( s ) )
 
 
 E, D, EB = Encrypt, Decrypt, EncryptBoth
@@ -1130,14 +1130,14 @@ if __name__ == "__main__":
     #
     if Decrypt( Encrypt( sTest ) ) != sTest:
         #
-        print( 'sTest = ' )
-        print( sTest )
+        print3( 'sTest = ' )
+        print3( sTest )
         lProblems.append( 'Decrypt( Encrypt( "sTest" ) )' )
         #
     if DecryptLite( EncryptLite( sTest ) ) != sTest:
         #
-        print( 'sTest = ' )
-        print( sTest )
+        print3( 'sTest = ' )
+        print3( sTest )
         lProblems.append( 'DecryptLite( EncryptLite( "sTest" ) )' )
         #
     #
@@ -1145,14 +1145,14 @@ if __name__ == "__main__":
     #
     if Decrypt( Encrypt( sTestCRLF ) ) != sTestCRLF:
         #
-        print( 'sTestCRLF = ' )
-        print( sTestCRLF )
+        print3( 'sTestCRLF = ' )
+        print3( sTestCRLF )
         lProblems.append( 'Decrypt( Encrypt( "sTestCRLF" ) )' )
         #
     if DecryptLite( EncryptLite( sTestCRLF ) ) != sTestCRLF:
         #
-        print( 'sTestCRLF = ' )
-        print( sTestCRLF )
+        print3( 'sTestCRLF = ' )
+        print3( sTestCRLF )
         lProblems.append( 'DecryptLite( EncryptLite( "sTestCRLF" ) )' )
         #
     #
