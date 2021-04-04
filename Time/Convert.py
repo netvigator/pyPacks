@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/
 #
-# Copyright 2004-2020 Rick Graves
+# Copyright 2004-2021 Rick Graves
 #
 
 from datetime   import datetime, timedelta
@@ -278,7 +278,7 @@ def getIsoDateFromOther( sDate,
         #
     else:
         #
-        raise NotImplementedError
+        pass # raise NotImplementedError
     #
     #
     tDate = strptime( sNewDate, sFormatIn )
@@ -482,7 +482,7 @@ if __name__ == "__main__":
     sDateTimeStrRepr   = (
             repr( getDateTimeObjFromIsoDateStr( sNow[:10] ) ) )
     sDateTimeStrExpect = (
-            'datetime.datetime' + repr( tNow[ : 6 ] )[:13] + ' 0, 0)' )
+            'datetime.datetime' + repr( tNow[ : 6 ] )[:13] + '0, 0)' )
     #
     if sDateTimeStrRepr!= sDateTimeStrExpect:
         #
