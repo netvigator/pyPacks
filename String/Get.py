@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/
 #
-# Copyright 2004-2020 Rick Graves
+# Copyright 2004-2021 Rick Graves
 #
 from itertools              import takewhile
 from gzip                   import GzipFile
@@ -214,6 +214,26 @@ def getTextWithin(
     return getTextBefore(
                 getTextAfter( sString, sBefore, iWhichOne, fSplit ),
                 sAfter, 1, fSplit, bWantEmptyIfNoAfter = not bAfterOptional )
+
+
+
+def getTextWithinFinders( sString, oFindBefore, oFindAfter ):
+    #
+    sWithin = None
+    #
+    lBeforeAfterBefore = oFindBefore.split( sString )
+    #
+    if len( lBeforeAfterBefore ) > 1:
+        #
+        lBeforeAfterAfter = oFindAfter.split( lBeforeAfterBefore[1] )
+        #
+        if len( lBeforeAfterAfter ) > 1:
+            #
+            sWithin = lBeforeAfterAfter[0]
+            #
+        #
+    #
+    return sWithin
 
 
 
@@ -1409,6 +1429,30 @@ if __name__ == "__main__":
     if sOut != '4x KT61  ()  tubes HALTRON  ()  - NOS  ()  KT 61':
         #
         lProblems.append( 'getParensParts() not in parens' )
+        #
+    #
+    # getTextWithinFinders( sString, oFindBefore, oFindAfter )
+    #
+    oFindBefore = getRegExObj( 'ddddd '   )
+    oFindAfter  = getRegExObj( ' fffffff' )
+    #
+    sGot = getTextWithinFinders( sLong, oFindBefore, oFindAfter )
+    #
+    if sGot != 'eee':
+        #
+        lProblems.append( 'getTextWithinFinders() found text' )
+        #
+    #
+    oFindNotFound = getRegExObj( 'wxyz' )
+    #
+    if getTextWithinFinders( sLong, oFindNotFound, oFindAfter ) is not None:
+        #
+        lProblems.append( 'getTextWithinFinders() not found before' )
+        #
+    #
+    if getTextWithinFinders( sLong, oFindBefore, oFindNotFound ) is not None:
+        #
+        lProblems.append( 'getTextWithinFinders() not found after' )
         #
     #
     #
