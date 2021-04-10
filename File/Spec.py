@@ -140,11 +140,7 @@ if __name__ == "__main__":
     #
     lProblems = []
     #
-    from os.path import join, exists
-    from os      import rename
-    #
     from Dir.Get        import sTempDir
-    from File.Del       import DeleteIfExists
     from Utils.Result   import sayTestResult
     #
     if getPathNameExt( '/home/Common/pyPacks/File/Spec.py' ) != \
