@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/
 #
-# Copyright 2004-2020 Rick Graves
+# Copyright 2004-2021 Rick Graves
 #
 # from os.path import join, isfile, getmtime, split, splitext, exists, basename, isdir
 # from os      import stat, environ, getcwd, listdir, rename, remove
@@ -128,17 +128,15 @@ def getLineCount( *tParts ):
     #
     if not isFileThere( sFileSpec ): raise FileNotThereError( sFileSpec )
     #
-    fFile = open( sFileSpec )
-    #
-    iLines = 0
-    #
-    for sLine in fFile:
+    with open( sFileSpec ) as oFile:
         #
-        iLines += 1
+        for i, s in enumerate( oFile ):
+            #
+            pass
+            #
+        #
     #
-    fFile.close()
-    #
-    return iLines
+    return i + 1
 
 
 def _isURL( s ):
@@ -203,27 +201,30 @@ if __name__ == "__main__":
     from Dir.Get        import sTempDir
     from File.Get       import getTempFile, getListOffFileLines
     from File.Write     import QuickDumpLines
+    from Utils.Both2n3  import getThisFileSpec
     from Utils.Result   import sayTestResult
     #
     lProblems = []
     #
-    if getModTime( 'Info.py' ) < 1170000000:
+    sThisFile = getThisFileSpec(__file__)
+    #
+    if getModTime( sThisFile ) < 1170000000:
         #
         lProblems.append( 'getModTime()' )
         #
     #
 
-    if getTimeStamp( 'Info.py' ) < 1170000000:
+    if getTimeStamp( sThisFile ) < 1170000000:
         #
         lProblems.append( 'getTimeStamp()' )
         #
     #
-    iSize = getSize( 'Info.py' )
+    iSize = getSize( sThisFile )
     #
-    if iSize < 6000 or iSize > 7000:
+    if iSize < 7000 or iSize > 8000:
         #
         lProblems.append( 'getSize() size of Info.py' )
-        lProblems.append( "got size: %s bytes" % str( getSize( 'Info.py' ) ) )
+        lProblems.append( "got size: %s bytes" % str( getSize( sThisFile ) ) )
         #
     #
 
@@ -232,12 +233,12 @@ if __name__ == "__main__":
         lProblems.append( 'getSaySize()' )
         #
     #
-    iLines = getLineCount( 'Info.py' )
+    iLines = getLineCount( sThisFile )
     #
     if iLines < 200 or iLines > 300:
         #
         lProblems.append( 'getLineCount()' )
-        lProblems.append( "  " + str( getLineCount( 'Info.py' ) ) )
+        lProblems.append( "  " + str( getLineCount( sThisFile ) ) )
         #
     #
     sTempFile = getTempFile()
