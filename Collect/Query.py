@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/
 #
-# Copyright 2004-2020 Rick Graves
+# Copyright 2004-2021 Rick Graves
 #
 
 from six                import next as getNext
@@ -43,6 +43,8 @@ def get1stThatMeets( iterable, fCondition = bool ):
     try:
         #
         uReturn = getNext( iFilter( fCondition, iterable ) )
+        #
+        if uReturn is None: uReturn = True # handles looking for a None
         #
     except ( TypeError, StopIteration ):
         #
@@ -71,6 +73,15 @@ def get1stThatFails( iterable, fCondition = bool ):
 # def get1stFalse( iterable ): return get1stThatFails( iterable )
 
 get1stFalse = get1stThatFails
+
+
+
+def _isNone( u ): return u is None
+
+
+def gotAnyNone( iterable ):
+    #
+    return get1stThatMeets( iterable, _isNone )
 
 
 
@@ -179,5 +190,20 @@ if __name__ == "__main__":
         #
         lProblems.append( 'getBegAndEndIfInOrder()' )
         #
+    #
+    lStuff = [ 1, 'a', 3.14159 ]
+    #
+    if gotAnyNone( lStuff ):
+        #
+        lProblems.append( 'gotAnyNone() no None' )
+        #
+    #
+    lStuff.append( None )
+    #
+    if not gotAnyNone( lStuff ):
+        #
+        lProblems.append( 'gotAnyNone() got a None' )
+        #
+    #
     #
     sayTestResult( lProblems )
