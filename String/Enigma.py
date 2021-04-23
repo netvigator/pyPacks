@@ -644,7 +644,8 @@ def DecryptLiteNone( sThis ):
 
 
 def _getSayMore(
-        bGotSingleQuote, bGotDoubleQuote, bGotBackSlash, bMultiLineOrig = False ):
+        bGotSingleQuote, bGotDoubleQuote, bGotBackSlash, bGodDoubleSpace,
+        bMultiLineOrig = False ):
     #
     sSayMore = ''
     lSayMore = []
@@ -665,6 +666,11 @@ def _getSayMore(
     if bGotBackSlash:
         #
         lSayMore.append( 'has backslash character, must test, might not work' )
+        #
+    #
+    if bGodDoubleSpace:
+        #
+        lSayMore.append( 'has double spaces, HTML compresses, need a warning' )
         #
     #
     if lSayMore:
@@ -699,10 +705,15 @@ def _printOut( sOrig, sPassPhrase = sFilePhrase ):
     bGotBackSlashH  = sBackSlash in sEncryptedH
     bGotBackSlashL  = sBackSlash in sEncryptedL
     #
+    bGodDoubleSpaceH= "  " in sEncryptedH
+    bGodDoubleSpaceL= "  " in sEncryptedL
+    #
     sSayMoreH       = _getSayMore(
-            bGotSingleH, bGotDoubleH, bGotBackSlashH, bMultiLineOrig )
+            bGotSingleH, bGotDoubleH, bGotBackSlashH, bGodDoubleSpaceH,
+            bMultiLineOrig )
     sSayMoreL       = _getSayMore(
-            bGotSingleL, bGotDoubleL, bGotBackSlashL, bMultiLineOrig )
+            bGotSingleL, bGotDoubleL, bGotBackSlashL, bGodDoubleSpaceL,
+            bMultiLineOrig )
     #
     sEncryptedH2 = sEncryptedL2 = ''
     sRawH = sRawL = ' '
@@ -1083,14 +1094,15 @@ if __name__ == "__main__":
             'encrypt lite /decrypt lite great password short passphrase' )
         #
     #
-    tAll = (( True, True, True ),
-            ( True, True, False),
-            ( True, False,True ),
-            ( False,True, True ),
-            ( True, False,False),
-            ( False,True, False),
-            ( False,False,True ),
-            ( False,False,False) )
+    tAll = (( True, True, True, False),
+            ( True, True, False,False),
+            ( True, False,True, False),
+            ( False,True, True, False),
+            ( True, False,False,False),
+            ( False,True, False,False),
+            ( False,False,True, False),
+            ( False,False,False,True ),
+            ( False,False,False,False) )
     #
     lResults = [ _getSayMore( *t ) for t in tAll ]
     #
@@ -1105,6 +1117,7 @@ if __name__ == "__main__":
         ' -- has single quote',
         ' -- has double quote',
         ' -- has backslash character, must test, might not work',
+        ' -- has double spaces, HTML compresses, need a warning',
         '' ]
     #
     if lResults != lExpect:
