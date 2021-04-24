@@ -253,8 +253,8 @@ def FlipCase( sText, bAlternate = False ):
 def _getShift( iSeed, iMax = 126 ):
     #
     '''
-    want characters space 32 & above
-    do not normally want chars higher than 126
+    want characters from space 32 to tilde ~ 126 inclusive
+    range of 94 (126 - 32)
     _getShift(  93 ) returns 93
     _getShift(  94 ) returns 94
     _getShift(  95 ) returns  0
@@ -271,8 +271,8 @@ def _getShift( iSeed, iMax = 126 ):
 def _getThisShifted( iThis, iShift, iMax = 126 ):
     #
     '''
-    want characters space 32 & above
-    do not normally want chars higher than 126
+    want characters from space 32 to tilde ~ 126 inclusive
+    range of 94 (126 - 32)
     _getThisShifted( 32, 92 ) returns 124
     _getThisShifted( 32, 93 ) returns 125
     _getThisShifted( 32, 94 ) returns 126
@@ -293,8 +293,8 @@ def _getThisUnShifted( iThis, iShift, iMax = 126 ):
     #
     '''
     undo for _getThisShifted
-    want characters space 32 & above
-    do not normally want chars higher than 126
+    want characters from space 32 to tilde ~ 126 inclusive
+    range of 94 (126 - 32)
     _getThisUnShifted(  35,  1 ) returns  34
     _getThisUnShifted(  35,  2 ) returns  33
     _getThisUnShifted(  35,  3 ) returns  32
@@ -1071,24 +1071,24 @@ if __name__ == "__main__":
         lProblems.append( '_getThisUnShifted( 35, various )' )
         #
     #
-    sGreatPw = 'Gr34tP@55w0rd'
+    sGreatPW = 'Gr34tP@55w0rd'
     #
-    if Decrypt( Encrypt( sGreatPw ) ) != sGreatPw:
+    if Decrypt( Encrypt( sGreatPW ) ) != sGreatPW:
         #
         lProblems.append( 'encrypt/decrypt great password' )
         #
     #
-    if DecryptLite( EncryptLite( sGreatPw ) ) != sGreatPw:
+    if DecryptLite( EncryptLite( sGreatPW ) ) != sGreatPW:
         #
         lProblems.append( 'encrypt lite /decrypt lite great password' )
         #
     #
-    if Decrypt( Encrypt( sGreatPw, 'abc' ), 'abc' ) != sGreatPw:
+    if Decrypt( Encrypt( sGreatPW, 'abc' ), 'abc' ) != sGreatPW:
         #
         lProblems.append( 'encrypt/decrypt great password short passphrase' )
         #
     #
-    if DecryptLite( EncryptLite( sGreatPw, 'abc' ), 'abc' ) != sGreatPw:
+    if DecryptLite( EncryptLite( sGreatPW, 'abc' ), 'abc' ) != sGreatPW:
         #
         lProblems.append(
             'encrypt lite /decrypt lite great password short passphrase' )
@@ -1167,6 +1167,26 @@ if __name__ == "__main__":
         print3( 'sTestCRLF = ' )
         print3( sTestCRLF )
         lProblems.append( 'DecryptLite( EncryptLite( "sTestCRLF" ) )' )
+        #
+    #
+    sTestOrig = 'Bullwinkle J Moose\n8888 8888 8888 8888\n8888888888888888\n08/28\n888'
+    #
+    sTestEncr = Encrypt( sTestOrig )
+    #
+    if Decrypt( sTestEncr ) != sTestOrig:
+        #
+        print3( 'sTestOrig = ' )
+        print3( sTestOrig )
+        lProblems.append( 'Decrypt( Encrypt( "sTestOrig" ) )' )
+        #
+    #
+    if (    sTestEncr !=
+            '''}}/3"c$@kk}}87y'}jek}}nSp(-FJkB}8S)^-'''
+            '''8@.'FuU}8\_SkF\@Y}89NT}F0KB}8kZ^''' ):
+        #
+        print3( 'sTestEncr = ' )
+        print3( sTestEncr )
+        lProblems.append( 'Encrypt( "sTestOrig" )' )
         #
     #
     #
