@@ -752,15 +752,15 @@ def _printOut( sOrig, sPassPhrase = sFilePhrase ):
     #
     if bMultiLineOrig:
         #
-        sSayOrig = 'original:'
+        sSayOrig = 'original:' # ends here
         #
     elif max( len( sQuoteH ), len( sQuoteL  ) ) == 1:
         #
-        sSayOrig = 'original:           '
+        sSayOrig = 'original:           ' # ends here
         #
     else:
         #
-        sSayOrig = 'original:             '
+        sSayOrig = 'original:             ' # ends here
         #
     #
     if bMultiLineOrig:
