@@ -20,10 +20,11 @@
 #
 #   http://www.gnu.org/licenses/
 #
-# Copyright 2004-2020 Rick Graves
+# Copyright 2004-2021 Rick Graves
 #
 
-from calendar import weekday
+from calendar           import weekday
+from datetime           import datetime, timedelta
 
 try:
     from .Output        import getNowIsoDateTimeStr
@@ -62,13 +63,28 @@ def getDOWfromISO( sDate ):
 
 
 
+def getPriorWeekday( oDate ):
+    #
+    oReturn = oDate # Objects of these types are immutable.
+    #
+    oOneDay = timedelta( days = 1 )
+    #
+    # weekday() day of the week as an integer,
+    # where Monday is 0 and Sunday is 6
+    #
+    while oReturn.weekday() > 4:
+        #
+        oReturn -= oOneDay
+        #
+    #
+    return oReturn
 
 
 
 if __name__ == "__main__":
     #
     from time           import time
-    from datetime       import datetime
+    from datetime       import date
     #
     from Collect.Test   import allMeet
     from Collect.Filter import RemoveDupes
@@ -114,5 +130,33 @@ if __name__ == "__main__":
         #
         lProblems.append( 'getDOWfromISO()' )
         #
+    #
+    oOneDay = timedelta( days = 1 )
+    #
+    oTodayLess0 = date.today()
+    oTodayLess1 = oTodayLess0 - oOneDay
+    oTodayLess2 = oTodayLess1 - oOneDay
+    oTodayLess3 = oTodayLess2 - oOneDay
+    oTodayLess4 = oTodayLess3 - oOneDay
+    oTodayLess5 = oTodayLess4 - oOneDay
+    oTodayLess6 = oTodayLess5 - oOneDay
+    #
+    lObjects = [ oTodayLess0,
+                 oTodayLess1,
+                 oTodayLess2,
+                 oTodayLess3,
+                 oTodayLess4,
+                 oTodayLess5,
+                 oTodayLess6 ]
+    #
+    lDays = [ getPriorWeekday( o ).weekday() for o in lObjects ]
+    #
+    lDays.sort()
+    #
+    if lDays != [0, 1, 2, 3, 4, 4, 4]:
+        #
+        lProblems.append( 'getPriorWeekday()' )
+        #
+    #
     #
     sayTestResult( lProblems )
