@@ -854,8 +854,8 @@ def pDL( s ):
     print3( DecryptLite( s ) )
 
 
-E, D, EB = Encrypt, Decrypt, EncryptBoth
-EL, DL = EncryptLite, DecryptLite
+E, D, EB = Encrypt, pD, EncryptBoth
+EL, DL = EncryptLite, pDL
 DN , DLN = DecryptNone, DecryptLiteNone
 EN, ELN = EncryptNone, EncryptLiteNone
 
