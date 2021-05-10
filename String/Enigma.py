@@ -688,6 +688,11 @@ def _getSayMore(
 
 def _printOut( sOrig, sPassPhrase = sFilePhrase ):
     #
+    if sOrig is None:
+        #
+        print3( '\ncalling script must return a value, not just print!!!\n' )
+        #
+    #
     bMultiLineOrig = oFinderCRorLF.search( sOrig )
     #
     sBackSlash      = chr( 92 )
