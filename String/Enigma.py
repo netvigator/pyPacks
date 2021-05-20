@@ -61,7 +61,6 @@ try:
     from ..Iter.AllVers     import iMap, lMap, tMap, iZip, iRange
     from ..Numb.Test        import isEven, isOdd
     from ..Utils.Both2n3    import print3
-    from ..Utils.ImIf       import ImIf
 except ( ValueError, ImportError ):
     from String.Find        import oFinderCRorLF, oFinderCRorLFnMore
     from String.Replace     import getTextReversed
@@ -73,7 +72,6 @@ except ( ValueError, ImportError ):
     from Iter.AllVers       import iMap, lMap, tMap, iZip, iRange
     from Numb.Test          import isEven, isOdd
     from Utils.Both2n3      import print3
-    from Utils.ImIf         import ImIf
 
 sSafe   =  punctuation.replace( '\\', ' ' ) + digits
 
@@ -739,20 +737,20 @@ def _printOut( sOrig, sPassPhrase = sFilePhrase ):
     #
     if "'" in sEncryptedH and '"' in sEncryptedH:
         #
-        sQuoteH = ImIf( sEncryptedH.endswith( "'" ), '"""', "'''" )
+        sQuoteH = '"""' if sEncryptedH.endswith( "'" ) else "'''"
         #
     else:
         #
-        sQuoteH = ImIf( "'" in sEncryptedH, '"', "'" )
+        sQuoteH = '"' if "'" in sEncryptedH else "'"
         #
     #
     if "'" in sEncryptedL and '"' in sEncryptedL:
         #
-        sQuoteL = ImIf( sEncryptedL.endswith( "'" ), '"""', "'''" )
+        sQuoteL = '"""' if sEncryptedL.endswith( "'" ) else "'''"
         #
     else:
         #
-        sQuoteL = ImIf( "'" in sEncryptedL, '"', "'" )
+        sQuoteL = '"' if "'" in sEncryptedL else "'"
         #
     #
     if bMultiLineOrig:
@@ -830,7 +828,7 @@ def _printOut( sOrig, sPassPhrase = sFilePhrase ):
             #
         #
     #
-    print3( '%s  --  %s' % ( sSayHeavy.strip(), sSayLite.strip() ) )
+    print3( '%s -- %s' % ( sSayHeavy.strip(), sSayLite.strip() ) )
 
 
 def None2Enigma( sThis ):
