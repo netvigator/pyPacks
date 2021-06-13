@@ -62,3 +62,6 @@ target/
 
 # enigma info file
 .enigma-info
+
+# misc secrets
+*secrets.ini
