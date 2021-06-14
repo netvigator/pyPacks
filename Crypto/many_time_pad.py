@@ -66,11 +66,9 @@ def _gotHexStringWantBytes( s ):
 
 
 
-tBytesCiphers = tuple( [ _gotHexStringWantBytes( s ) for s in tHexCiphers ] )
 
 
 
-iMaxLen = max( map( len, tBytesCiphers ) )
 
 
 
@@ -101,12 +99,15 @@ def _getHexOut( s ):
     else: # PYTHON3
         return s.encode("utf-8").hex()
 
-if __name__ == "__main__":
+def decryptElevenCiphers( bFinalOutput = False ):
     #
     from Utils.Config import getConfDict
     #
     # key = random(256)
-    bFinalOutput = True # False
+    #
+    tBytesCiphers = tuple( [ _gotHexStringWantBytes( s ) for s in tHexCiphers ] )
+    #
+    iMaxLen = max( map( len, tBytesCiphers ) )
     #
     oSpaceFinder = REcompile( ' {8,1024}' ) # 8 or more spaces next to each other
     #
@@ -215,3 +216,16 @@ if __name__ == "__main__":
         #
 
         
+if __name__ == "__main__":
+    #
+    hCipher     = '09e1c5f70a65ac519458e7e53f36'
+    #
+    message1    = 'attack at dawn'
+    #
+    byCipher    = _gotHexStringWantBytes( hCipher )
+    #
+    key         = crypt( byCipher, message1 )
+    #
+    newCipher   = crypt( key, 'attack at dusk' )
+    #
+    print( 'new plan:', _getHexOut( newCipher ) )
