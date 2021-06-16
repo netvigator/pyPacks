@@ -32,18 +32,25 @@ def random(size=16):
     return urandom(size)
 
 
-def _getByteGotInt( u ):
+def _getStrMaybeGotInt( u ):
     #
-    if PYTHON2:
+    if PYTHON2 or isinstance( u, str ):
         return u
     else: # PYTHON3
         return chr( u )
 
 
+def _getOrdOrVal( u ):
+    #
+    if isinstance( u, str ):
+        return ord( u )
+    else:
+        return u
+
+
 def _strxor( a, b ):
     #
-    s = "".join( [ chr( ord( _getByteGotInt(x) ) ^ ord(y) )
-                   for (x, y) in zip(a, b) ] )
+    s = "".join( [ chr( _getOrdOrVal(x) ^ ord(y) ) for (x, y) in zip(a, b) ] )
     #
     return s
 
@@ -192,7 +199,7 @@ def decryptElevenCiphers( bFinalOutput = False ):
                 #
                 sKeyChar = _gotHexStringWantBytes( t[0] )
                 #
-                s = crypt( sKeyChar, _getByteGotInt( t[1] ) )
+                s = crypt( sKeyChar, _getStrMaybeGotInt( t[1] ) )
                 #
                 if not bFinalOutput and s == ' ':
                     #
@@ -229,3 +236,5 @@ if __name__ == "__main__":
     newCipher   = crypt( key, 'attack at dusk' )
     #
     print( 'new plan:', _getHexOut( newCipher ) )
+    #
+    # decryptElevenCiphers()
