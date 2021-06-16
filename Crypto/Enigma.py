@@ -73,13 +73,19 @@ except ( ValueError, ImportError ):
     from Numb.Test          import isOdd
     from Utils.Both2n3      import print3
 
-sSafe   =  punctuation.replace( '\\', ' ' ) + digits
 
-changePunct = TranslatorFactory( sSafe, getTextReversed( sSafe ) )
+# want characters from space 32 to tilde ~ 126 inclusive
+MIN_CHAR =  32
+MAX_CHAR = 126
 
-sFilePhrase = None
 
-sThisLocation       = dirname(realpath(__file__))
+_sSafe          =  punctuation.replace( '\\', ' ' ) + digits
+
+changePunct     = TranslatorFactory( _sSafe, getTextReversed( _sSafe ) )
+
+sFilePhrase     = None
+
+sThisLocation   = dirname(realpath(__file__))
 
 if system() == 'Windows':
     sPassPhraseFileName =  'enigma-info' # leading dots not allowed
@@ -194,7 +200,6 @@ def _getMoreAscStats( sPassPhrase, iEncryptThisLen ):
 
 
 
-
 def DescendChars( sOrig,
         iOffset         = 0,
         bStepIncrement  = False,
@@ -259,7 +264,7 @@ def FlipCase( sText, bAlternate = False ):
 
 
 
-def _getShift( iSeed, iMax = 126, iMin = 32 ):
+def _getShift( iSeed ):
     #
     '''
     want characters from space 32 to tilde ~ 126 inclusive
@@ -275,13 +280,13 @@ def _getShift( iSeed, iMax = 126, iMin = 32 ):
     see docstring for _getThisShifted
     '''
     #
-    iUseRange = 1 + iMax - iMin
+    iUseRange = 1 + MAX_CHAR - MIN_CHAR
     #
     return iSeed % iUseRange
 
 
 
-def _getThisShifted( iThis, iShift, iMax = 126, iMin = 32 ):
+def _getThisShifted( iThis, iShift ):
     #
     '''
     want characters from space 32 to tilde ~ 126 inclusive
@@ -296,16 +301,15 @@ def _getThisShifted( iThis, iShift, iMax = 126, iMin = 32 ):
     _getThisShifted( 32, 97 ) returns  34
     '''
     #
-    if iShift + iThis > iMax:
+    if iShift + iThis > MAX_CHAR:
         #
-        iShift += iMin - iMax - 1
+        iShift += MIN_CHAR - MAX_CHAR - 1
         #
     #
     return iThis + iShift
 
 
-
-def _getThisUnShifted( iThis, iShift, iMax = 126, iMin = 32 ):
+def _getShiftedPutBack( iThis, iShift ):
     #
     '''
     undo for _getThisShifted
@@ -313,63 +317,30 @@ def _getThisUnShifted( iThis, iShift, iMax = 126, iMin = 32 ):
     range of 94 (126 - 32)
     The USA keyboard has 47 keys that yield ASCII characters,
       and the output of each is varied by Shift
-    _getThisUnShifted(  35,  1 ) returns  34
-    _getThisUnShifted(  35,  2 ) returns  33
-    _getThisUnShifted(  35,  3 ) returns  32
-    _getThisUnShifted(  35,  4 ) returns 126
-    _getThisUnShifted(  35,  5 ) returns 125
-    _getThisUnShifted(  35,  6 ) returns 124
+    _getShiftedPutBack(  35,  1 ) returns  34
+    _getShiftedPutBack(  35,  2 ) returns  33
+    _getShiftedPutBack(  35,  3 ) returns  32
+    _getShiftedPutBack(  35,  4 ) returns 126
+    _getShiftedPutBack(  35,  5 ) returns 125
+    _getShiftedPutBack(  35,  6 ) returns 124
     '''
     #
-    if iThis - iShift < iMin:
+    if iThis - iShift < MIN_CHAR:
         #
-        iShift -= 1 + iMax - iMin
+        iShift -= 1 + MAX_CHAR - MIN_CHAR
         #
     #
     return iThis - iShift
 
 
-def _getCharsShifted( sShiftThis, getShifted, sPassPhrase, iPassPhraseNumb, iRevPassPhrase ):
-    #
-    iShiftThisLen = len( sShiftThis )
-    #
-    lThisShifted = [ None ] * iShiftThisLen
-    #
-    lPassPhrase = list( sPassPhrase )
-    #
-    if iShiftThisLen > len( sPassPhrase ):
-        #
-        iMore = 1 + iShiftThisLen // len( sPassPhrase )
-        #
-        lPassPhrase *= iMore
-        #
-    #
-    iPassPhraseStartAt = iPassPhraseNumb % (
-                                len( lPassPhrase ) - iShiftThisLen )
-    #
-    if iPassPhraseStartAt > 0:
-        #
-        del lPassPhrase[ : iPassPhraseStartAt ]
-        #
-    #
-    for i in iRange( iShiftThisLen ):
-        #
-        lThisShifted[i] = chr(
-                            getShifted(
-                                ord( sShiftThis[i]  ),
-                                ord( lPassPhrase[i] ) - 32 ) )
-        #
-    #
-    return ''.join( lThisShifted )
 
 
-def _getCharsShiftedNew(
+def _getCharsShifted(
             sShiftThis,
             getShifted,
             sPassPhrase,
             iPassPhraseNumb,
-            iRevPassPhrase    = False,
-            iMin              = 32,
+            iRevPassPhrase  = False,
             bLongPassPhrase = False ):
     #
     iShiftThisLen   = len( sShiftThis )
@@ -387,9 +358,13 @@ def _getCharsShiftedNew(
         iMakeLonger = 1 + iShiftThisLen // iPassPhraseLen
         #
     #
-    iMakeLonger += bLongPassPhrase
+    if bLongPassPhrase:
+        #
+        iMakeLonger *= 2
     #
     if iMakeLonger > 1:
+        #
+        # make pass phrase longer, have more choice on where to begin
         #
         lPassPhrase *= iMakeLonger
         #
@@ -401,14 +376,17 @@ def _getCharsShiftedNew(
     #
     if bLongPassPhrase:
         #
-        # make pass phrase longer, have more choice on where to begin
+        # have more choice on where to begin
         #
         iPassPhraseStartAt = iPassPhraseNumb % iPassPhraseLen
         #
     else:
         #
-        iPassPhraseStartAt = iPassPhraseNumb % ( iPassPhraseLen - iShiftThisLen )
+        iPassPhraseStartAt = \
+                iPassPhraseNumb % ( len( lPassPhrase ) - iShiftThisLen )
         #
+    #
+    iOrigPassPhraseLen = len( lPassPhrase )
     #
     if iPassPhraseStartAt > 0:
         #
@@ -420,10 +398,11 @@ def _getCharsShiftedNew(
         lThisShifted[i] = chr(
                             getShifted(
                                 ord( sShiftThis[i]  ),
-                                ord( lPassPhrase[i] ) - iMin ) )
+                                ord( lPassPhrase[i] ) - MIN_CHAR ) )
         #
     #
     return ''.join( lThisShifted )
+
 
 
 def _getCharsShifted2(
@@ -431,18 +410,16 @@ def _getCharsShifted2(
             getShifted,
             sPassPhrase,
             iPassPhraseNumb,
-            iRevPassPhrase    = False,
-            iMin              = 32,
-            bLongPassPhrase = False ):
+            iRevPassPhrase  = None,
+            bLongPassPhrase = True ):
     #
-    return _getCharsShiftedNew(
+    return _getCharsShifted(
             sShiftThis,
             getShifted,
             sPassPhrase,
             iPassPhraseNumb,
             iRevPassPhrase,
-            iMin,
-            bLongPassPhrase = True )
+            bLongPassPhrase )
 
 
 
@@ -460,9 +437,7 @@ def Encrypt( sThis,
              iRevPassPhrase  = False,
              getCharsShifted = _getCharsShifted ):
     #
-    # Encrypt STEP 1 shuffle & cut, reverse, shuffle & cut
-    #
-    # handle multi line strings
+    # Encrypt STEP 0 handle multi line strings
     #
     if oFinderCRorLF.search( sThis ):
         #
@@ -472,6 +447,8 @@ def Encrypt( sThis,
         #
         sThis   = sThis.replace( '\n', r'\n' ).replace( '\r', r'\r' )
         #
+    #
+    # Encrypt STEP 1 shuffle & cut, reverse, shuffle & cut
     #
     oStats      = _getMoreAscStats( sPassPhrase, len( sThis ) )
     #
@@ -572,7 +549,7 @@ def Decrypt(    sDecryptThis,
     #
     sConverted  = getCharsShifted(
                         sDecryptThis,
-                        _getThisUnShifted,
+                        _getShiftedPutBack,
                         sPassPhrase,
                         iPassPhraseNumb,
                         iRevPassPhrase )
@@ -797,7 +774,7 @@ def DecryptLite( sThis,
         #
         return getCharsShifted(
                     sShiftThis,
-                    _getThisUnShifted,
+                    _getShiftedPutBack,
                     sPassPhrase,
                     iPassPhraseNumb,
                     iRevPassPhrase )
@@ -903,7 +880,10 @@ def _getSayMore(
     return sSayMore
 
 
-def _printOut( sOrig, sPassPhrase = sFilePhrase ):
+def _printOut(  sOrig,
+                sPassPhrase = sFilePhrase,
+                fEncryptH = Encrypt2,
+                fEncryptL = EncryptLite2 ):
     #
     if sOrig is None:
         #
@@ -915,8 +895,8 @@ def _printOut( sOrig, sPassPhrase = sFilePhrase ):
     sBackSlash      = chr( 92 )
     sDoubleBack     = sBackSlash * 2
     #
-    sEncryptedH     = Encrypt(     sOrig, sPassPhrase )
-    sEncryptedL     = EncryptLite( sOrig, sPassPhrase )
+    sEncryptedH     = fEncryptH( sOrig, sPassPhrase )
+    sEncryptedL     = fEncryptL( sOrig, sPassPhrase )
     #
     bGotSingleH     = "'" in sEncryptedH
     bGotDoubleH     = '"' in sEncryptedH
@@ -1064,22 +1044,47 @@ def None2EnigmaLite( sThis ):
     _printOut( sOrig )
 
 
-def EncryptBoth( sThis, sPassPhrase = sFilePhrase ):
+def EncryptBoth( sThis,
+                sPassPhrase = sFilePhrase,
+                fEncryptH = Encrypt,
+                fEncryptL = EncryptLite ):
+    #
+    _printOut( sThis, sPassPhrase )
+
+def EncryptBoth2( sThis, sPassPhrase = sFilePhrase ):
     #
     _printOut( sThis, sPassPhrase )
 
 
 def pD( s ):
-    print3( Decrypt( s ) )
+    sOut = Decrypt( s )
+    print3( sOut )
+    return sOut 
 
 def pDL( s ):
-    print3( DecryptLite( s ) )
+    sOut = DecryptLite( s )
+    print3( sOut )
+    return sOut
+
+def pD2( s ):
+    sOut = Decrypt2( s )
+    print3( sOut )
+    return sOut
+
+def pDL2( s ):
+    sOut = DecryptLite2( s )
+    print3( DecryptLite2( s ) )
+    return sOut
 
 
-E, D, EB = Encrypt, pD, EncryptBoth
-EL, DL = EncryptLite, pDL
-DN , DLN = DecryptNone, DecryptLiteNone
-EN, ELN = EncryptNone, EncryptLiteNone
+
+E, D, EB = Encrypt2, pD, EncryptBoth2
+D2, DL2  = pD2, pDL2
+EL, DL   = EncryptLite, pDL
+DN, DLN  = DecryptNone, DecryptLiteNone
+EN, ELN  = EncryptNone, EncryptLiteNone
+
+
 
 if __name__ == "__main__":
     #
@@ -1143,11 +1148,9 @@ if __name__ == "__main__":
         lProblems.append( 'DecryptLite( EncryptLite( "%s" ) ) with Odd pass phrase' % sTest )
         #
     #
-    setCommonChars = set( [] )
-    #
-    for c in sEncryptedOdd:
-        if c in sEncryptedEven:
-            setCommonChars.add( c )
+    setCommonChars = frozenset(
+        [ c for c in sEncryptedOdd
+          if c in sEncryptedEven ] )
     #
     if len( setCommonChars ) > len( sTest ) // 2:
         #
@@ -1213,6 +1216,15 @@ if __name__ == "__main__":
     if DecryptLite( EncryptLite( sTest ) ) != sTest:
         #
         lProblems.append( 'DecryptLite( EncryptLite( "%s" ) )' % sTest )
+        #
+    #
+    if Decrypt2( Encrypt2( sTest ) ) != sTest:
+        #
+        lProblems.append( 'Decrypt2( Encrypt2( "%s" ) )' % sTest )
+        #
+    if DecryptLite2( EncryptLite2( sTest ) ) != sTest:
+        #
+        lProblems.append( 'DecryptLite2( EncryptLite2( "%s" ) )' % sTest )
         #
     #
     sTest = 'The cat \x8e in the hat.'
@@ -1282,26 +1294,26 @@ if __name__ == "__main__":
         lProblems.append( '_getThisShifted( 32, 92 - 98 )' )
         #
     #
-    if (    _getThisUnShifted( 124, 92 ) !=  32 or
-            _getThisUnShifted( 125, 93 ) !=  32 or
-            _getThisUnShifted( 126, 94 ) !=  32 or
-            _getThisUnShifted(  32,  0 ) !=  32 or
-            _getThisUnShifted(  33,  1 ) !=  32 or
-            _getThisUnShifted(  34,  2 ) !=  32 or
-            _getThisUnShifted(  35,  3 ) !=  32 ):
+    if (    _getShiftedPutBack( 124, 92 ) !=  32 or
+            _getShiftedPutBack( 125, 93 ) !=  32 or
+            _getShiftedPutBack( 126, 94 ) !=  32 or
+            _getShiftedPutBack(  32,  0 ) !=  32 or
+            _getShiftedPutBack(  33,  1 ) !=  32 or
+            _getShiftedPutBack(  34,  2 ) !=  32 or
+            _getShiftedPutBack(  35,  3 ) !=  32 ):
         #
-        lProblems.append( '_getThisUnShifted( various, 92 - 94, 0 - 3 )' )
+        lProblems.append( '_getShiftedPutBack( various, 92 - 94, 0 - 3 )' )
         #
     #
-    if (    _getThisUnShifted(  35,  0 ) !=  35 or
-            _getThisUnShifted(  35,  1 ) !=  34 or
-            _getThisUnShifted(  35,  2 ) !=  33 or
-            _getThisUnShifted(  35,  3 ) !=  32 or
-            _getThisUnShifted(  35,  4 ) != 126 or
-            _getThisUnShifted(  35,  5 ) != 125 or
-            _getThisUnShifted(  35,  6 ) != 124 ):
+    if (    _getShiftedPutBack(  35,  0 ) !=  35 or
+            _getShiftedPutBack(  35,  1 ) !=  34 or
+            _getShiftedPutBack(  35,  2 ) !=  33 or
+            _getShiftedPutBack(  35,  3 ) !=  32 or
+            _getShiftedPutBack(  35,  4 ) != 126 or
+            _getShiftedPutBack(  35,  5 ) != 125 or
+            _getShiftedPutBack(  35,  6 ) != 124 ):
         #
-        lProblems.append( '_getThisUnShifted( 35, various )' )
+        lProblems.append( '_getShiftedPutBack( 35, various )' )
         #
     #
     #
@@ -1319,7 +1331,7 @@ if __name__ == "__main__":
     #
     if DecryptLite( EncryptLite( sGreatPW ) ) != sGreatPW:
         #
-        lProblems.append( 'encrypt lite /decrypt lite great password' )
+        lProblems.append( 'encrypt lite/decrypt lite great password' )
         #
     #
     if Decrypt( Encrypt( sGreatPW, 'abc' ), 'abc' ) != sGreatPW:
@@ -1393,6 +1405,19 @@ if __name__ == "__main__":
         lProblems.append( 'DecryptLite( EncryptLite( "sTest" ) )' )
         #
     #
+    if Decrypt2( Encrypt2( sTest ) ) != sTest:
+        #
+        print3( 'sTest = ' )
+        print3( sTest )
+        lProblems.append( 'Decrypt2( Encrypt2( "sTest" ) )' )
+        #
+    if DecryptLite2( EncryptLite2( sTest ) ) != sTest:
+        #
+        print3( 'sTest = ' )
+        print3( sTest )
+        lProblems.append( 'DecryptLite2( EncryptLite2( "sTest" ) )' )
+        #
+    #
     sTestCRLF = 'line 1\r\nline 2\r\nline 3'
     #
     if Decrypt( Encrypt( sTestCRLF ) ) != sTestCRLF:
@@ -1406,6 +1431,19 @@ if __name__ == "__main__":
         print3( 'sTestCRLF = ' )
         print3( sTestCRLF )
         lProblems.append( 'DecryptLite( EncryptLite( "sTestCRLF" ) )' )
+        #
+    #
+    if Decrypt2( Encrypt2( sTestCRLF ) ) != sTestCRLF:
+        #
+        print3( 'sTestCRLF = ' )
+        print3( sTestCRLF )
+        lProblems.append( 'Decrypt2( Encrypt2( "sTestCRLF" ) )' )
+        #
+    if DecryptLite2( EncryptLite2( sTestCRLF ) ) != sTestCRLF:
+        #
+        print3( 'sTestCRLF = ' )
+        print3( sTestCRLF )
+        lProblems.append( 'DecryptLite2( EncryptLite2( "sTestCRLF" ) )' )
         #
     #
     sTestOrig = 'Bullwinkle J Moose\n8888 8888 8888 8888\n8888888888888888\n08/28\n888'
@@ -1428,5 +1466,39 @@ if __name__ == "__main__":
         lProblems.append( 'Encrypt( "sTestOrig" )' )
         #
     #
-    #    
+    sTestEncr = Encrypt2( sTestOrig )
+    #
+    if Decrypt2( sTestEncr ) != sTestOrig:
+        #
+        print3( 'sTestOrig = ' )
+        print3( sTestOrig )
+        lProblems.append( 'Decrypt2( Encrypt2( "sTestOrig" ) )' )
+        #
+    #
+    if (    sTestEncr !=
+            '''k8B}}8F}na98}}9\F${V\8}}?@'u+n$()Bi}}'''
+            '''k\&%()9lT}kszB'a:u}}koP${"q8}Tk.''' ):
+        #
+        print3( 'sTestEncr = ' )
+        print3( sTestEncr )
+        lProblems.append( 'Encrypt2( "sTestOrig" )' )
+    #
+    sTestEncr = EncryptLite2( sTestOrig )
+    #
+    if DecryptLite2( sTestEncr ) != sTestOrig:
+        #
+        print3( 'sTestOrig = ' )
+        print3( sTestOrig )
+        lProblems.append( 'DecryptLite2( EncryptLite2( "sTestOrig" ) )' )
+        #
+    #
+    if (    sTestEncr !=
+            '''rNoqUpgQU8ar00p;=mQU6pcGgD@"uwLggqX'''
+            '''g2t"JUFFgR=g#"\\"U+vg3jTg"iq0#Cgg0\\''' ):
+        #
+        print3( 'sTestEncr = ' )
+        print3( sTestEncr )
+        lProblems.append( 'EncryptLite2( "sTestOrig" )' )
+    #
+    #
     sayTestResult( lProblems )
