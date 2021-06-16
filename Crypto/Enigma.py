@@ -1,7 +1,7 @@
 #!/home/rick/bin/pythonTest
 # -*- coding: utf-8 -*-
 #
-# string functions Enigma
+# Crypto functions Enigma
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -51,15 +51,15 @@ from string                 import ascii_lowercase as lowercase
 from string                 import ascii_uppercase as uppercase
 
 try:
-    from .Find              import oFinderCRorLF, oFinderCRorLFnMore
-    from .Replace           import getTextReversed
-    from .Stats             import AscStats
-    from .Transform         import TranslatorFactory, getSwapper
+    from ..String.Find      import oFinderCRorLF, oFinderCRorLFnMore
+    from ..String.Replace   import getTextReversed
+    from ..String.Stats     import AscStats
+    from ..String.Transform import TranslatorFactory, getSwapper
     from ..Collect.Cards    import ShuffleAndCut, getCutPosition
     from ..File.Get         import getFileContent
     from ..File.Test        import isFileThere
     from ..Iter.AllVers     import iMap, lMap, tMap, iZip, iRange
-    from ..Numb.Test        import isEven, isOdd
+    from ..Numb.Test        import isOdd
     from ..Utils.Both2n3    import print3
 except ( ValueError, ImportError ):
     from String.Find        import oFinderCRorLF, oFinderCRorLFnMore
@@ -70,7 +70,7 @@ except ( ValueError, ImportError ):
     from File.Get           import getFileContent
     from File.Test          import isFileThere
     from Iter.AllVers       import iMap, lMap, tMap, iZip, iRange
-    from Numb.Test          import isEven, isOdd
+    from Numb.Test          import isOdd
     from Utils.Both2n3      import print3
 
 sSafe   =  punctuation.replace( '\\', ' ' ) + digits
@@ -92,9 +92,13 @@ sMsg = None
 
 if __name__ == "__main__":
     #
-    # need a sFilePhrase for testing
+    # need sFilePhrases for testing
     #
-    sFilePhrase = 'See Dick. See Jane. See Spot. See Spot run.'
+    # even total, odd  difference
+    sFilePhrase     = 'See Dick. See Jane. See Spot. See Spot run.'
+    #
+    # odd  total, even difference
+    sFilePhraseOdd  = 'See Dick. See Jane. See Spot. See Spot run!'
     #
 elif isFileThere( sPassPhraseFileSpec ):
     #
@@ -130,9 +134,16 @@ if sMsg:
 
 def _getCutAt( iBigNumb, iEncryptThisLen ):
     #
+    # if iCutAt = zero, the deck/string will be cut in the middle
+    # if iCutAt < zero, the deck/string will be cut closer to the front
+    # if iCutAt > zero, the deck/string will be cut closer to the end
+    #
     iCutAt       = iBigNumb % iEncryptThisLen - ( iEncryptThisLen // 2 )
     #
     iLen         = iEncryptThisLen # want to keep below lines < 80 chars
+    #
+    # getCutPosition returns the regular index position where to cut
+    # the first character of the string has regular index position of zero
     #
     tCutPosition = (
             getCutPosition( iLen, bPutBack = True,  iOffset = iCutAt ),
@@ -248,11 +259,14 @@ def FlipCase( sText, bAlternate = False ):
 
 
 
-def _getShift( iSeed, iMax = 126 ):
+def _getShift( iSeed, iMax = 126, iMin = 32 ):
     #
     '''
     want characters from space 32 to tilde ~ 126 inclusive
     range of 94 (126 - 32)
+    The USA keyboard has 47 keys that yield ASCII characters,
+      and the output of each is varied by Shift
+    a number above the range must wrap around to the beginning
     _getShift(  93 ) returns 93
     _getShift(  94 ) returns 94
     _getShift(  95 ) returns  0
@@ -261,16 +275,19 @@ def _getShift( iSeed, iMax = 126 ):
     see docstring for _getThisShifted
     '''
     #
-    iUseRange = iMax - 31
+    iUseRange = 1 + iMax - iMin
     #
     return iSeed % iUseRange
 
 
-def _getThisShifted( iThis, iShift, iMax = 126 ):
+
+def _getThisShifted( iThis, iShift, iMax = 126, iMin = 32 ):
     #
     '''
     want characters from space 32 to tilde ~ 126 inclusive
     range of 94 (126 - 32)
+    The USA keyboard has 47 keys that yield ASCII characters,
+      and the output of each is varied by Shift
     _getThisShifted( 32, 92 ) returns 124
     _getThisShifted( 32, 93 ) returns 125
     _getThisShifted( 32, 94 ) returns 126
@@ -279,20 +296,23 @@ def _getThisShifted( iThis, iShift, iMax = 126 ):
     _getThisShifted( 32, 97 ) returns  34
     '''
     #
-    while iShift + iThis > iMax:
+    if iShift + iThis > iMax:
         #
-        iShift += 31 - iMax
+        iShift += iMin - iMax - 1
         #
     #
-    return iShift + iThis
+    return iThis + iShift
 
 
-def _getThisUnShifted( iThis, iShift, iMax = 126 ):
+
+def _getThisUnShifted( iThis, iShift, iMax = 126, iMin = 32 ):
     #
     '''
     undo for _getThisShifted
     want characters from space 32 to tilde ~ 126 inclusive
     range of 94 (126 - 32)
+    The USA keyboard has 47 keys that yield ASCII characters,
+      and the output of each is varied by Shift
     _getThisUnShifted(  35,  1 ) returns  34
     _getThisUnShifted(  35,  2 ) returns  33
     _getThisUnShifted(  35,  3 ) returns  32
@@ -301,16 +321,15 @@ def _getThisUnShifted( iThis, iShift, iMax = 126 ):
     _getThisUnShifted(  35,  6 ) returns 124
     '''
     #
-    while iThis - iShift < 32:
+    if iThis - iShift < iMin:
         #
-        iShift -= iMax - 31
+        iShift -= 1 + iMax - iMin
         #
     #
     return iThis - iShift
 
 
-
-def _getCharsShifted( sShiftThis, getShifted, sPassPhrase, iPassPhraseNumb ):
+def _getCharsShifted( sShiftThis, getShifted, sPassPhrase, iPassPhraseNumb, iRevPassPhrase ):
     #
     iShiftThisLen = len( sShiftThis )
     #
@@ -344,9 +363,102 @@ def _getCharsShifted( sShiftThis, getShifted, sPassPhrase, iPassPhraseNumb ):
     return ''.join( lThisShifted )
 
 
+def _getCharsShiftedNew(
+            sShiftThis,
+            getShifted,
+            sPassPhrase,
+            iPassPhraseNumb,
+            iRevPassPhrase    = False,
+            iMin              = 32,
+            bLongPassPhrase = False ):
+    #
+    iShiftThisLen   = len( sShiftThis )
+    #
+    lThisShifted    = [ None ] * iShiftThisLen
+    #
+    lPassPhrase     = list( sPassPhrase )
+    #
+    iMakeLonger     = 1
+    #
+    iPassPhraseLen  = len( sPassPhrase )
+    #
+    if iShiftThisLen > iPassPhraseLen:
+        #
+        iMakeLonger = 1 + iShiftThisLen // iPassPhraseLen
+        #
+    #
+    iMakeLonger += bLongPassPhrase
+    #
+    if iMakeLonger > 1:
+        #
+        lPassPhrase *= iMakeLonger
+        #
+    #
+    if isOdd( iRevPassPhrase ):
+        #
+        lPassPhrase.reverse()
+        #
+    #
+    if bLongPassPhrase:
+        #
+        # make pass phrase longer, have more choice on where to begin
+        #
+        iPassPhraseStartAt = iPassPhraseNumb % iPassPhraseLen
+        #
+    else:
+        #
+        iPassPhraseStartAt = iPassPhraseNumb % ( iPassPhraseLen - iShiftThisLen )
+        #
+    #
+    if iPassPhraseStartAt > 0:
+        #
+        del lPassPhrase[ : iPassPhraseStartAt ]
+        #
+    #
+    for i in iRange( iShiftThisLen ):
+        #
+        lThisShifted[i] = chr(
+                            getShifted(
+                                ord( sShiftThis[i]  ),
+                                ord( lPassPhrase[i] ) - iMin ) )
+        #
+    #
+    return ''.join( lThisShifted )
 
 
-def Encrypt( sThis, sPassPhrase = sFilePhrase ):
+def _getCharsShifted2(
+            sShiftThis,
+            getShifted,
+            sPassPhrase,
+            iPassPhraseNumb,
+            iRevPassPhrase    = False,
+            iMin              = 32,
+            bLongPassPhrase = False ):
+    #
+    return _getCharsShiftedNew(
+            sShiftThis,
+            getShifted,
+            sPassPhrase,
+            iPassPhraseNumb,
+            iRevPassPhrase,
+            iMin,
+            bLongPassPhrase = True )
+
+
+
+def _getTextReversedMaybe( s, i ):
+    #
+    if isOdd( i ):
+        return getTextReversed( s )
+    else:
+        return s
+
+
+def Encrypt( sThis,
+             sPassPhrase     = sFilePhrase,
+             iRevThis        = True,
+             iRevPassPhrase  = False,
+             getCharsShifted = _getCharsShifted ):
     #
     # Encrypt STEP 1 shuffle & cut, reverse, shuffle & cut
     #
@@ -366,10 +478,20 @@ def Encrypt( sThis, sPassPhrase = sFilePhrase ):
     iCutAt0     = oStats.iCutAt0
     iCutAt1     = oStats.iCutAt1
     #
+    if iRevThis is None:
+        #
+        iRevThis = oStats.iTotal
+        #
+    #
+    if iRevPassPhrase is None:
+        #
+        iRevPassPhrase = oStats.iDifference
+        #
+    #
     sConverted  = ShuffleAndCut(
-                        getTextReversed(
-                            ShuffleAndCut( sThis, iCutOffset = iCutAt0 )
-                        ),
+                        _getTextReversedMaybe(
+                            ShuffleAndCut( sThis, iCutOffset = iCutAt0 ),
+                            iRevThis ),
                     iCutOffset = iCutAt1 )
     #
     # Encrypt STEP  2 shift all characters
@@ -378,14 +500,23 @@ def Encrypt( sThis, sPassPhrase = sFilePhrase ):
                 oStats.iDifference,
                 ( oStats.iTotal - oStats.iDifference ) )
     #
-    sConverted  = _getCharsShifted(
+    sConverted  = getCharsShifted(
                         sConverted,
                         _getThisShifted,
                         sPassPhrase,
-                        iPassPhraseNumb )
+                        iPassPhraseNumb,
+                        iRevPassPhrase )
     #
     return sConverted
 
+
+def Encrypt2( sThis, sPassPhrase = sFilePhrase ):
+    #
+    return Encrypt( sThis,
+                    sPassPhrase,
+                    iRevThis        = None,
+                    iRevPassPhrase  = None,
+                    getCharsShifted = _getCharsShifted2 )
 
 
 def EncryptNone( sEncryptThis ):
@@ -407,27 +538,44 @@ def EncryptNone( sEncryptThis ):
 
 
 
-def _getShuffleCutReverseShuffleCut( sConverted, iCutAt0, iCutAt1 ):
+def _getShuffleCutReverseShuffleCut(
+            sConverted, iCutAt0, iCutAt1, iRevThis = True, iRevPassPhrase = False ):
     #
     return ShuffleAndCut(
-                    getTextReversed(
-                    ShuffleAndCut( sConverted, True, iCutOffset = iCutAt1 ) ),
+                    _getTextReversedMaybe(
+                        ShuffleAndCut( sConverted, True, iCutOffset = iCutAt1 ),
+                        iRevThis ),
                 True, iCutOffset = iCutAt0 )
 
 
-def Decrypt( sDecryptThis, sPassPhrase = sFilePhrase ):
+def Decrypt(    sDecryptThis,
+                sPassPhrase     = sFilePhrase,
+                iRevThis        = True,
+                iRevPassPhrase  = False,
+                getCharsShifted = _getCharsShifted ):
     #
     # Decrypt STEP -2 shift all characters
     #
     oStats      = _getMoreAscStats( sPassPhrase, len( sDecryptThis ) )
     #
+    if iRevThis is None:
+        #
+        iRevThis = oStats.iTotal
+        #
+    #
+    if iRevPassPhrase is None:
+        #
+        iRevPassPhrase = oStats.iDifference
+        #
+    #
     iPassPhraseNumb = oStats.iTotal - oStats.iDifference
     #
-    sConverted  = _getCharsShifted(
+    sConverted  = getCharsShifted(
                         sDecryptThis,
                         _getThisUnShifted,
                         sPassPhrase,
-                        iPassPhraseNumb )
+                        iPassPhraseNumb,
+                        iRevPassPhrase )
     #
     iCutAt0     = oStats.iCutAt0
     iCutAt1     = oStats.iCutAt1
@@ -435,7 +583,8 @@ def Decrypt( sDecryptThis, sPassPhrase = sFilePhrase ):
     #
     # Encrypt STEP -1 shuffle & cut, reverse, shuffle & cut
     #
-    sReturn = _getShuffleCutReverseShuffleCut( sConverted, iCutAt0, iCutAt1 )
+    sReturn = _getShuffleCutReverseShuffleCut(
+                    sConverted, iCutAt0, iCutAt1, iRevThis )
     #
     # handle multi line strings
     #
@@ -445,6 +594,16 @@ def Decrypt( sDecryptThis, sPassPhrase = sFilePhrase ):
         #
     #
     return sReturn
+
+
+
+def Decrypt2( sThis, sPassPhrase = sFilePhrase ):
+    #
+    return Decrypt( sThis,
+                    sPassPhrase,
+                    iRevThis        = None,
+                    iRevPassPhrase  = None,
+                    getCharsShifted = _getCharsShifted2 )
 
 
 
@@ -526,16 +685,23 @@ def getRot13( sText ):
 
 
 
-def _getShuffleShiftReverseFlipPunctuate( sThis, getShifted, iCutAt ):
+def _getShuffleShiftReverseFlipPunctuate(
+            sThis, getShifted, iCutAt, iRevThis = True, iRevPassPhrase = False ):
     #
     return ShuffleAndCut(
                 getShifted(
-                getTextReversed(
-                FlipCase(
-                changePunct( sThis ), True ) ) ), iCutOffset = iCutAt )
+                    _getTextReversedMaybe(
+                        FlipCase( changePunct( sThis ), True ),
+                        iRevThis )
+                ), iCutOffset = iCutAt )
 
 
-def EncryptLite( sThis, sPassPhrase = sFilePhrase ):
+def EncryptLite(
+            sThis,
+            sPassPhrase     = sFilePhrase,
+            iRevThis        = True,
+            iRevPassPhrase  = False,
+            getCharsShifted = _getCharsShifted ):
     #
     # handle multi line strings
     #
@@ -550,18 +716,42 @@ def EncryptLite( sThis, sPassPhrase = sFilePhrase ):
     #
     oStats  = _getMoreAscStats( sPassPhrase, len( sThis ) )
     #
+    if iRevThis is None:
+        #
+        iRevThis = oStats.iTotal
+        #
+    #
+    if iRevPassPhrase is None:
+        #
+        iRevPassPhrase = oStats.iDifference
+        #
+    #
     iPassPhraseNumb = oStats.iTotal - oStats.iDifference
     #
     def getShifted( sShiftThis ):
         #
-        return _getCharsShifted(
-                    sShiftThis, _getThisShifted, sPassPhrase, iPassPhraseNumb )
+        return getCharsShifted(
+                    sShiftThis,
+                    _getThisShifted,
+                    sPassPhrase,
+                    iPassPhraseNumb,
+                    iRevPassPhrase )
         #
     #
     iCutAt1 = oStats.iCutAt1
     #
     return _getShuffleShiftReverseFlipPunctuate(
-                sThis, getShifted, iCutAt1 )
+                sThis, getShifted, iCutAt1, iRevThis )
+
+
+def EncryptLite2( sThis, sPassPhrase = sFilePhrase ):
+    #
+    return EncryptLite(
+                    sThis,
+                    sPassPhrase,
+                    iRevThis        = None,
+                    iRevPassPhrase  = None,
+                    getCharsShifted = _getCharsShifted2 )
 
 
 
@@ -572,32 +762,50 @@ def EncryptLiteNone( sThis ):
     return _getShuffleShiftReverseFlipPunctuate( sThis, getShifted, 0 )
 
 
-def _getPunctuateFlipReverseShiftShuffleCut( sThis, getShifted, iCutAt1 ):
+def _getPunctuateFlipReverseShiftShuffleCut(
+            sThis, getShifted, iCutAt1, iRevThis = True, iRevPassPhrase = False ):
     #
     return changePunct(
                 FlipCase(
-                getTextReversed(
-                getShifted(
-                ShuffleAndCut( sThis, 1, iCutOffset = iCutAt1 ) ) ), 1 ) )
+                _getTextReversedMaybe(
+                    getShifted(
+                        ShuffleAndCut( sThis, 1, iCutOffset = iCutAt1 ) ),
+                    iRevThis ), 1 ) )
 
 
-def DecryptLite( sThis, sPassPhrase = sFilePhrase ):
+def DecryptLite( sThis,
+                 sPassPhrase        = sFilePhrase,
+                 iRevThis           = True,
+                 iRevPassPhrase     = False,
+                 getCharsShifted    = _getCharsShifted ):
     #
     oStats  = _getMoreAscStats( sPassPhrase, len( sThis ) )
+    #
+    if iRevThis is None:
+        #
+        iRevThis = oStats.iTotal
+        #
+    #
+    if iRevPassPhrase is None:
+        #
+        iRevPassPhrase = oStats.iDifference
+        #
     #
     iPassPhraseNumb = oStats.iTotal - oStats.iDifference
     #
     def getShifted( sShiftThis ):
         #
-        return _getCharsShifted(
+        return getCharsShifted(
                     sShiftThis,
                     _getThisUnShifted,
                     sPassPhrase,
-                    iPassPhraseNumb )
+                    iPassPhraseNumb,
+                    iRevPassPhrase )
     #
     iCutAt1 = oStats.iCutAt1
     #
-    sReturn = _getPunctuateFlipReverseShiftShuffleCut( sThis, getShifted, iCutAt1 )
+    sReturn = _getPunctuateFlipReverseShiftShuffleCut(
+                    sThis, getShifted, iCutAt1, iRevThis, iRevPassPhrase )
     #
     # handle multi line strings
     #
@@ -607,6 +815,17 @@ def DecryptLite( sThis, sPassPhrase = sFilePhrase ):
         #
     #
     return sReturn
+
+
+
+def DecryptLite2( sThis, sPassPhrase = sFilePhrase ):
+    #
+    return DecryptLite(
+                    sThis,
+                    sPassPhrase,
+                    iRevThis        = None,
+                    iRevPassPhrase  = None,
+                    getCharsShifted = _getCharsShifted2 )
 
 
 
@@ -900,10 +1119,67 @@ if __name__ == "__main__":
         #
         lProblems.append( 'Decrypt( Encrypt( "%s" ) )' % sTest )
         #
+    if Decrypt2( Encrypt2( sTest ) ) != sTest:
+        #
+        lProblems.append( 'Decrypt2( Encrypt2( "%s" ) )' % sTest )
+        #
+    #
     if DecryptLite( EncryptLite( sTest ) ) != sTest:
         #
         lProblems.append( 'DecryptLite( EncryptLite( "%s" ) )' % sTest )
         #
+    #
+    sEncryptedEven = EncryptLite( sTest )
+    #
+    if DecryptLite( sEncryptedEven )!= sTest:
+        #
+        lProblems.append( 'DecryptLite( EncryptLite( "%s" ) )' % sTest )
+        #
+    #
+    sEncryptedOdd = EncryptLite( sTest, sFilePhraseOdd )
+    #
+    if DecryptLite( sEncryptedOdd, sFilePhraseOdd  )!= sTest:
+        #
+        lProblems.append( 'DecryptLite( EncryptLite( "%s" ) ) with Odd pass phrase' % sTest )
+        #
+    #
+    setCommonChars = set( [] )
+    #
+    for c in sEncryptedOdd:
+        if c in sEncryptedEven:
+            setCommonChars.add( c )
+    #
+    if len( setCommonChars ) > len( sTest ) // 2:
+        #
+        lProblems.append( 'chars in common, DecryptLite( EncryptLite( "%s" ) ) with Odd pass phrase' % sTest )
+        #
+    #
+    sEncryptedEven = EncryptLite2( sTest )
+    #
+    if DecryptLite2( sEncryptedEven )!= sTest:
+        #
+        lProblems.append( 'DecryptLite2( EncryptLite2( "%s" ) )' % sTest )
+        #
+    #
+    sEncryptedOdd = EncryptLite2( sTest, sFilePhraseOdd )
+    #
+    if DecryptLite2( sEncryptedOdd, sFilePhraseOdd  )!= sTest:
+        #
+        lProblems.append( 'DecryptLite2( EncryptLite2( "%s" ) ) with Odd pass phrase' % sTest )
+        #
+    #
+    setCommonChars = set( [] )
+    #
+    for c in sEncryptedOdd:
+        if c in sEncryptedEven:
+            setCommonChars.add( c )
+    #
+    if len( setCommonChars ) > ( 1 + len( sTest ) ) // 2:
+        #
+        lProblems.append( 'chars in common, DecryptLite2( EncryptLite2( "%s" ) ) with Odd pass phrase' % sTest )
+        #
+    #
+    #
     if XOREncrypt( sTest ) != '3c0d094c0c09114c0501481104094f00041842':
         #
         lProblems.append( 'XOREncrypt()' )
@@ -964,52 +1240,6 @@ if __name__ == "__main__":
         lProblems.append( 'DecryptLite( EncryptLite( "%s" ) )' % sTest )
         #
     #
-    # &#39;*g$fh%bA%Yt&#39;
-    # to
-    # Tung6550Sol
-    #
-    # also need to convert
-    # &amp;quot;&amp;#39;***&amp;amp;!%%***&amp;amp;((&amp;#39;&amp;quot;
-    # to
-    # &quot;&#39;***&amp;!%%***&amp;((&#39;&quot;
-    #
-    #sOrig   = '&#39;*g$fh%bA%Yt&#39;'
-    #sWant   = 'Tung6550Sol'
-    ##
-    #sGot    = getYahooHtmlDecrypted( sOrig )
-    ##
-    #if sGot != sWant:
-        ##
-        #print3( 'want: ', sWant )
-        #print3( 'got:  ', sGot  ) 
-        #lProblems.append( 'getYahooHtmlDecrypted()' )
-        ##
-    ##
-    #sOrig   = '&#39;*g$fh%bA%Yt&#39;'.replace( '&', '&amp;' )
-    #sWant   = 'Tung6550Sol'
-    ##
-    #sGot    = getYahooHtmlDecrypted( sOrig )
-    ##
-    #if sGot != sWant:
-        ##
-        #print3( 'want: ', sWant )
-        #print3( 'got:  ', sGot  ) 
-        #lProblems.append( 'getYahooHtmlDecrypted()' )
-        ##
-    ##
-    #sOrig   = '&#39;_@Mpz5HxJ&quot;7&#39;'
-    #sWant   = 'em8Bp3t$bnY'
-    ##
-    #sGot    = getYahooHtmlDecrypted( sOrig, bLite = False )
-    ##
-    #if sGot != sWant:
-        ##
-        #print3( 'want: ', sWant )
-        #print3( 'got:  ', sGot  ) 
-        #lProblems.append( 'getYahooHtmlDecrypted() not lite' )
-        ##
-    #
-    #
     if (    _getShift(  88 ) != 88 or
             _getShift(  89 ) != 89 or
             _getShift(  90 ) != 90 or
@@ -1060,7 +1290,7 @@ if __name__ == "__main__":
             _getThisUnShifted(  34,  2 ) !=  32 or
             _getThisUnShifted(  35,  3 ) !=  32 ):
         #
-        lProblems.append( '_getThisUnShifted( various, 92 - 98 )' )
+        lProblems.append( '_getThisUnShifted( various, 92 - 94, 0 - 3 )' )
         #
     #
     if (    _getThisUnShifted(  35,  0 ) !=  35 or
@@ -1074,11 +1304,17 @@ if __name__ == "__main__":
         lProblems.append( '_getThisUnShifted( 35, various )' )
         #
     #
+    #
     sGreatPW = 'Gr34tP@55w0rd'
     #
     if Decrypt( Encrypt( sGreatPW ) ) != sGreatPW:
         #
         lProblems.append( 'encrypt/decrypt great password' )
+        #
+    #
+    if Decrypt2( Encrypt2( sGreatPW ) ) != sGreatPW:
+        #
+        lProblems.append( 'encrypt2/decrypt2 great password' )
         #
     #
     if DecryptLite( EncryptLite( sGreatPW ) ) != sGreatPW:
@@ -1192,5 +1428,5 @@ if __name__ == "__main__":
         lProblems.append( 'Encrypt( "sTestOrig" )' )
         #
     #
-    #
+    #    
     sayTestResult( lProblems )
