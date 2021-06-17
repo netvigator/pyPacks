@@ -1,7 +1,7 @@
 #!/home/rick/bin/pythonTest
 # -*- coding: utf-8 -*-
 #
-# intermediate If function
+# intermediate If function aka Conditional expressions or ternary operator
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,14 +20,33 @@
 #
 #   http://www.gnu.org/licenses/
 #
-# Copyright 2004-2020 Rick Graves
+# Copyright 2004-2021 Rick Graves
 #
+'''
+Conditional expressions (sometimes called a “ternary operator”)
+New in version 2.5
+This ImIf module is obsolete!
+it is better to use conditional expressions than to call this!
+'''
 
+try:
+    from ..Utils.Version    import isVersAtLeast
+except ( ValueError, ImportError ):
+    from Utils.Version      import isVersAtLeast
 
-
-def ImIf( bCondition, uTrue, uFalse ):  # Immediate If
+if isVersAtLeast( "2.5" ):
     #
-    return ( uTrue, uFalse )[ int( not bCondition ) ]
+    def ImIf( bCondition, uTrue, uFalse ):  # Immediate If
+        #
+        return uTrue if bCondition else uFalse
+    #
+else:
+    #
+    def ImIf( bCondition, uTrue, uFalse ):  # Immediate If
+        #
+        return ( uTrue, uFalse )[ not bCondition ]
+
+
 
 
 
