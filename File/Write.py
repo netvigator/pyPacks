@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/
 #
-# Copyright 2004-2020 Rick Graves
+# Copyright 2004-2021 Rick Graves
 #
 # getFullSpec( *sFileSpec )
 # getFullSpecDefaultOrPassed( *sFileSpec )
@@ -44,7 +44,6 @@ try:
     from ..String.Get       import getTextAfterLast
     from ..String.Paragraph import getTextMakeParagraphs
     from ..Utils.Both2n3    import PYTHON2, getEncoded, getStrGotBytes
-    from ..Utils.ImIf       import ImIf
     from ..Utils.Output     import getOutputFromExternalCommand
 except ( ValueError, ImportError ):
     from File.Get           import getFileObject, getFileContent
@@ -57,7 +56,6 @@ except ( ValueError, ImportError ):
     from String.Get         import getTextAfterLast
     from String.Paragraph   import getTextMakeParagraphs
     from Utils.Both2n3      import PYTHON2, getEncoded, getStrGotBytes
-    from Utils.ImIf         import ImIf
     from Utils.Output       import getOutputFromExternalCommand
 
 def QuickDump( sText, *sFileSpec, **kwargs ):
