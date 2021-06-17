@@ -32,7 +32,6 @@ try:
     from ..Iter.AllVers import lMap, getEnumerator
     from ..Object       import Finished
     from ..String.Find  import getRegExObj
-    from ..Utils.ImIf   import ImIf
     from ..Time         import (
             _sFormatISOdateTime,
             _sFormatISOdate,
@@ -47,7 +46,6 @@ except ( ValueError, ImportError ):
     from Iter.AllVers   import lMap, getEnumerator
     from Object         import Finished
     from String.Find    import getRegExObj
-    from Utils.ImIf     import ImIf
     from Time           import (
             _sFormatISOdateTime,
             _sFormatISOdate,
@@ -91,9 +89,9 @@ def getIsoDateTimeStrFromSecs(
         fSecsSinceEpoch = None, bWantLocal = True, sFormat = _sFormatISOdateTime ):
     #
     #
-    getTime             = ImIf( bWantLocal, localtime, gmtime )
+    getTime             = localtime if bWantLocal else gmtime
     #
-    if fSecsSinceEpoch   is None: fSecsSinceEpoch = time()
+    if fSecsSinceEpoch is None: fSecsSinceEpoch = time()
     #
     tSayTime            = getTime( fSecsSinceEpoch )
     #
@@ -141,7 +139,7 @@ def getSecsSinceEpochFromString(
     #
     tDateTime           = getDateTimeTupleFromString( sDateTime, sFormat )
     #
-    iAdjust4TZ          = ImIf( bAdjust2UTC, timezone, 0 )
+    iAdjust4TZ          = timezone if bAdjust2UTC else 0
     #
     return int( mktime( tDateTime ) ) + iAdjust4TZ
 
@@ -162,7 +160,7 @@ def getDateTimeObjFromString(
     #
     oDateTimeObj    = datetime( *lDateTime )
     #
-    iAdjust4TZ  = ImIf( bAdjust2UTC, timezone, 0 )
+    iAdjust4TZ  = timezone if bAdjust2UTC else 0
     #
     oAdjust4TZ  = timedelta( seconds = iAdjust4TZ )
     #
@@ -482,7 +480,7 @@ if __name__ == "__main__":
     sDateTimeStrRepr   = (
             repr( getDateTimeObjFromIsoDateStr( sNow[:10] ) ) )
     sDateTimeStrExpect = (
-            'datetime.datetime' + repr( tNow[ : 6 ] )[:13] + '0, 0)' )
+            'datetime.datetime' + repr( tNow[ : 6 ] )[:13] + ' 0, 0)' )
     #
     if sDateTimeStrRepr!= sDateTimeStrExpect:
         #
@@ -495,8 +493,8 @@ if __name__ == "__main__":
         print3( '\n'.join(ndiff([sDateTimeStrRepr], [sDateTimeStrExpect])) )
         print3( 'repr( getDateTimeObjFromIsoDateStr( sNow[:10] ) )        :',
                  '"%s"' % repr( getDateTimeObjFromIsoDateStr( sNow[:10] ) ) )
-        print3( "'datetime.datetime' + repr( tNow[ : 6 ] )[:13] + '0, 0)':",
-                '"datetime.datetime' + repr( tNow[ : 6 ] )[:13] + '0, 0)"' )
+        print3( "'datetime.datetime' + repr( tNow[ : 6 ] )[:13] + ' 0, 0)':",
+                '"datetime.datetime' + repr( tNow[ : 6 ] )[:13] + ' 0, 0)"' )
         print3()
         #
         lProblems.append( 'getDateTimeObjFromIsoDateStr()' )
