@@ -335,6 +335,8 @@ def _getShiftedPutBack( iThis, iShift ):
 
 
 
+
+
 def _getCharsShifted(
             sShiftThis,
             getShifted,
@@ -397,7 +399,7 @@ def _getCharsShifted(
         #
         lThisShifted[i] = chr(
                             getShifted(
-                                ord( sShiftThis[i]  ),
+                                ord( sShiftThis [i] ),
                                 ord( lPassPhrase[i] ) - MIN_CHAR ) )
         #
     #
@@ -410,8 +412,7 @@ def _getCharsShifted2(
             getShifted,
             sPassPhrase,
             iPassPhraseNumb,
-            iRevPassPhrase  = None,
-            bLongPassPhrase = True ):
+            iRevPassPhrase  = None ):
     #
     return _getCharsShifted(
             sShiftThis,
@@ -419,7 +420,7 @@ def _getCharsShifted2(
             sPassPhrase,
             iPassPhraseNumb,
             iRevPassPhrase,
-            bLongPassPhrase )
+            bLongPassPhrase = True )
 
 
 
@@ -448,7 +449,7 @@ def Encrypt( sThis,
         sThis   = sThis.replace( '\n', r'\n' ).replace( '\r', r'\r' )
         #
     #
-    # Encrypt STEP 1 shuffle & cut, reverse, shuffle & cut
+    # Encrypt STEP 1 shuffle & cut, maybe reverse, shuffle & cut
     #
     oStats      = _getMoreAscStats( sPassPhrase, len( sThis ) )
     #
@@ -1124,7 +1125,14 @@ if __name__ == "__main__":
         #
         lProblems.append( 'Decrypt( Encrypt( "%s" ) )' % sTest )
         #
-    if Decrypt2( Encrypt2( sTest ) ) != sTest:
+    #
+    sEncryptedH = Encrypt2( sTest )
+    sDecryptedH = Decrypt2( sEncryptedH )
+    #
+    if sDecryptedH != sTest:
+        #
+        print( 'Encrypted:', sEncryptedH )
+        print( 'Decrypted:', sDecryptedH )
         #
         lProblems.append( 'Decrypt2( Encrypt2( "%s" ) )' % sTest )
         #
