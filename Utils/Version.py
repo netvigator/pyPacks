@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/
 #
-# Copyright 2009-2020 Rick Graves
+# Copyright 2009-2021 Rick Graves
 #
 from sys import version
 
@@ -67,21 +67,21 @@ except ImportError:
 
 
 
-def isVersAtLeast( sNeed ):
+def isVersAtLeast( uNeed ):
     #
     '''
-    pass to sNeed param string in form of "2.6"
+    pass to uNeed param string in form of "2.6" or float 2.6
     returns whether this version is at least sNeed
     '''
     #
     tGot    = _getVersionIntegers( tVERSION )
     #
-    tNeed   = _getVersionIntegers( _getVersionTuple( str( sNeed ) ) )
+    tNeed   = _getVersionIntegers( _getVersionTuple( str( uNeed ) ) )
     #
     return tGot >= tNeed
     
 
-def isVersBefore( sNeed ):
+def isVersBefore( uNeed ):
     #
     '''
     pass to sNeed param string in form of "2.6"
@@ -90,7 +90,7 @@ def isVersBefore( sNeed ):
     #
     sGot = '.'.join( tVERSION[:2] )
     #
-    return sGot < sNeed
+    return sGot < str( uNeed )
 
 
 def getSayVersion():
@@ -115,7 +115,17 @@ if __name__ == "__main__":
         lProblems.append( 'isVersAtLeast() we only support 2.4 and later' )
         #
     #
+    if not isVersAtLeast( 2.4 ):
+        #
+        lProblems.append( 'isVersAtLeast() we only support 2.4 and later' )
+        #
+    #
     if isVersBefore( '2.4' ):
+        #
+        lProblems.append( 'isVersBefore() we only support 2.4 and later' )
+        #
+    #
+    if isVersBefore( 2.4 ):
         #
         lProblems.append( 'isVersBefore() we only support 2.4 and later' )
         #
