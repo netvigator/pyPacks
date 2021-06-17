@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/
 #
-# Copyright 2004-2020 Rick Graves
+# Copyright 2004-2021 Rick Graves
 #
 import asyncore, socket
 
@@ -481,7 +481,6 @@ def getRawContent(
     from Iter.AllVers   import lMap, iZip
     from String.Get     import getUnZipped, getTextAfter, getTextBefore
    #from Utils.Both2n3  import urljoin
-    from Utils.ImIf     import ImIf
     from Web.Zip        import getCompressedOffChunks
     from Web.HTML       import getBodyOnly, \
                         oFindiFrameBeg, oFindFrameSpec, oFindFrameSpec
