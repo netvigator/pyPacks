@@ -38,7 +38,6 @@ try:
     from ..Dict.Get     import getItemIter
     from ..Iter.AllVers import iMap
     from ..Iter.Get     import getListSwapValueKey
-    from ..Utils.ImIf   import ImIf
     from ..Web.Address  import getDomainOffUrl
     from ..Web.Test     import isURL
 except ( ValueError, ImportError ):
@@ -50,7 +49,6 @@ except ( ValueError, ImportError ):
     from Dict.Get       import getItemIter
     from Iter.Get       import getListSwapValueKey
     from Iter.AllVers   import iMap
-    from Utils.ImIf     import ImIf
     from Web.Address    import getDomainOffUrl
     from Web.Test       import isURL
 
@@ -62,7 +60,7 @@ def getModTime( *tParts, **kwargs ):
     #
     bWantLocal  = kwargs.get( 'bWantLocal' )
     #
-    iAdjust4TZ  = ImIf( bWantLocal, 0, timezone )
+    iAdjust4TZ  = 0 if bWantLocal else timezone
     #
     return int( getmtime( sFullSpec ) ) + iAdjust4TZ
 
