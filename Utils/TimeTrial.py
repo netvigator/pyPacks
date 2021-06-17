@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/
 #
-# Copyright 2004-2020 Rick Graves
+# Copyright 2004-2021 Rick Graves
 #
 #
 from time               import time
@@ -29,10 +29,8 @@ from six                import print_ as print3
 
 try:
     from ..Iter.AllVers import iRange, tFilter
-    from ..Utils.ImIf   import ImIf
 except ( ValueError, ImportError ):
     from Iter.AllVers   import iRange, tFilter
-    from Utils.ImIf     import ImIf
 
 
 def _sayClockTimeCPU( tBefore, sSay ):
