@@ -181,10 +181,6 @@ def CopyAllFiles( sDirFrom, sDirTo, uWantExtensions = [] ):
                 #
 
 
-def ImIf( bCondition, uTrue, uFalse ):  # Immediate If
-    #
-    return ( uTrue, uFalse )[ not bCondition ]
-
 
 
 def getArgs( *args ):
@@ -211,7 +207,7 @@ def getArgs( *args ):
         #
         lWantExtensions = [ sWant.strip() for sWant in lWantExtensions if sWant.strip() != '' ]
         #
-        lWantExtensions = [ ImIf( sWant.startswith( '.' ), sWant, '.' + sWant )
+        lWantExtensions = [ sWant if sWant.startswith( '.' ) else '.' + sWant
                             for sWant in lWantExtensions ]
         #
         lWantExtensions = [ sWant.lower() for sWant in lWantExtensions ]
