@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/
 #
-# Copyright 2010-2020 Rick Graves
+# Copyright 2010-2021 Rick Graves
 #
 
 #( oFinderStateName,
@@ -225,8 +225,6 @@ def isOverseasZipStringTest( sZip, bLeadingZeroDropOK = True ):
 
 def isZipInState( sZip, sState ):
     #
-    from Utils.ImIf import ImIf
-    #
     from sMail.Zips import dZipRange4State, dZipRange4Code
     #
     hasValid    = False
@@ -235,9 +233,9 @@ def isZipInState( sZip, sState ):
             sState in dZipRange4Code or
             sState in dZipRange4State ):
         #
-        dStateZips  = ImIf(
-            sState in dZipRange4State,
-                dZipRange4State, dZipRange4Code )
+        dStateZips = ( dZipRange4State
+                       if sState in dZipRange4State
+                       else dZipRange4Code )
         #
         dZipLimits = dStateZips.get( sState )
         #
