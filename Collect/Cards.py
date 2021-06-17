@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/
 #
-# Copyright 2004-2020 Rick Graves
+# Copyright 2004-2021 Rick Graves
 #
 '''
 simulates suffling a deck of cards
@@ -34,13 +34,11 @@ try:
     from ..Numb.Crunch  import getIntegerDivisionRoundUp
     from ..Numb.Get     import getSumOnlyIntegers
     from ..Numb.Test    import isOdd
-    from ..Utils.ImIf   import ImIf
 except ( ValueError, ImportError ):
     from Iter.AllVers   import iRange, tRange, iMap
     from Numb.Crunch    import getIntegerDivisionRoundUp
-    from Numb.Test      import isOdd
-    from Utils.ImIf     import ImIf
     from Numb.Get       import getSumOnlyIntegers
+    from Numb.Test      import isOdd
 
 
 _dMaxShuffles = {
@@ -97,7 +95,9 @@ def CutTheCards( uSeq, bPutBack = False, bSloppy = False, iOffset = 0 ):
         #
         iLenTenth   = iCutAt // 5 or 1
         #
-        iCutAt      = iCutAt + ( ImIf( random() > 0.5, 1, -1 ) * randrange( iLenTenth ) )
+        iCutAt      = iCutAt + \
+                      ( 1 if random() > 0.5 else -1 *
+                        randrange( iLenTenth ) )
         #
     #
     return uSeq[ : iCutAt ], uSeq[ iCutAt : ] # uTop, uBot
@@ -270,9 +270,9 @@ def ShuffleAndCut(
     #
     if iShuffles is None:
         #
-        iStartAt    = ImIf( iLen % 7 == 0, 1, 2 )
+        iStartAt    = 1 if iLen % 7 == 0 else 2
         #
-        iDivisor    = ImIf( isOdd( iLen ), 2, 3 )
+        iDivisor    = 2 if isOdd( iLen ) else 3
         #
         iShuffles   = iStartAt + ( iLen % iDivisor )
         #
