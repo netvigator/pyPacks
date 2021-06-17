@@ -20,18 +20,13 @@
 #
 #   http://www.gnu.org/licenses/
 #
-# Copyright 2004-2020 Rick Graves
+# Copyright 2004-2021 Rick Graves
 #
 #
 from os             import getcwd
 from sys            import argv
 
 from six            import print_ as print3
-
-try:
-    from .ImIf      import ImIf
-except ( ValueError, ImportError ):
-    from Utils.ImIf import ImIf
 
 
 def sayTestResult( lProblems ):
@@ -45,7 +40,7 @@ def sayTestResult( lProblems ):
         #
         t = ( sFile, getcwd() )
         #
-        sWorkingOrNot       = ImIf( sFile == 'Result.py', '', 'not ' )
+        sWorkingOrNot       = '' if sFile == 'Result.py' else 'not '
         #
         sSay = '%%s in %%s is %sworking:' % sWorkingOrNot
         #
@@ -59,6 +54,7 @@ def sayTestResult( lProblems ):
 
 if __name__ == "__main__":
     #
-    lProblems = [ 'sayTestResult should print this line' ]
+    lProblems = [ 'sayTestResult should say it is not working and print this line',
+                  'if it does, then it is working! (Sorry.)' ]
     #
     sayTestResult( lProblems )
