@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/
 #
-# Copyright 2004-2020 Rick Graves
+# Copyright 2004-2021 Rick Graves
 #
 
 from six    import print_ as print3
@@ -30,12 +30,10 @@ from re     import compile as REcompile, MULTILINE
 try:
     from .Replace           import ReplaceManyOldWithManyNew
     from ..Iter.AllVers     import iMap, lMap, iRange, lRange
-    from ..Utils.ImIf       import ImIf
     from ..String.Transform import getSwapper
 except ( ValueError, ImportError ):
     from String.Replace     import ReplaceManyOldWithManyNew
     from Iter.AllVers       import iMap, lMap, iRange, lRange
-    from Utils.ImIf         import ImIf
     from String.Transform   import getSwapper
 
 
@@ -111,8 +109,7 @@ def ReadableNo( nNumb, iRtJustLen = 0, iWantDecimals=0 ):
 
 def Plural( iQty, sPlural = 's', sSingular = '' ):
     #
-    #
-    return ImIf( iQty == 1, sSingular, sPlural )
+    return sSingular if iQty == 1 else sPlural
 
 
 
