@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/
 #
-# Copyright 2004-2020 Rick Graves
+# Copyright 2004-2021 Rick Graves
 #
 
 from bisect             import bisect_left, bisect_right
@@ -30,13 +30,11 @@ try:
     from .Clock         import getSecsSinceEpoch
     from .Convert       import getIsoDateTimeStrFromSecs, getDateTimeObjFromString
     from .Output        import getNowIsoDateTimeStr, sayIsoDateTimeLocal
-    from ..Utils.ImIf   import ImIf
     from ..Time         import _iSecsPerDay, _sFormatISOdate # in __init__.py
 except ( ValueError, ImportError ):
     from Time.Clock     import getSecsSinceEpoch
     from Time.Convert   import getIsoDateTimeStrFromSecs, getDateTimeObjFromString
     from Time.Output    import getNowIsoDateTimeStr, sayIsoDateTimeLocal
-    from Utils.ImIf     import ImIf
     from Time           import _iSecsPerDay, _sFormatISOdate # in __init__.py
 
 
@@ -107,7 +105,7 @@ def getSecsNowPlusDHMS(
         bWantLocal  = True ):
     #
     #
-    getTime         = ImIf( bWantLocal, time, getSecsSinceEpoch )
+    getTime = time if bWantLocal else getSecsSinceEpoch
     #
     return _getSecsPlusDHMS( getTime(), iDays, iHours, iMins, iSecs )
 
