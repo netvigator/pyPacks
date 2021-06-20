@@ -222,6 +222,67 @@ def decryptElevenCiphers( bFinalOutput = False ):
         i += 1
         #
 
+
+'''two encryption/decryption systems, one using AES in CBC mode and another using AES in counter mode (CTR).  In both cases the 16-byte encryption IV is chosen at random and is prepended to the ciphertext.
+
+Correctly guessing a random 128-bit AES key on the first try
+>>> 2**128/1000000000
+340282366920938463463374607431L
+>>> len(str(2**128/1000000000))
+30
+
+Suppose that using commodity hardware it is possible to build a computer 
+for about $200 that can brute force about 1 billion AES keys per second. 
+Suppose an organization wants to run an exhaustive search for a single 
+128-bit AES key and was willing to spend 4 trillion dollars to buy these 
+machines (this is more than the annual US federal budget). How long would 
+it take the organization to brute force this single 128-bit AES key with these machines?
+
+len(str(((((2**128/1000000000)/20000000000)/3600)/24)/365))
+12
+539,514,153,540
+More than a billion years
+
+
+Question 6
+Let mm be a message consisting of \ellℓ AES blocks
+(say \ell = 100ℓ=100).  Alice encrypts mm using CBC mode and transmits
+the resulting ciphertext to Bob.  Due to a network error,
+ciphertext block number \ell/2ℓ/2 is corrupted during transmission.
+All other ciphertext blocks are transmitted and received correctly.
+Once Bob decrypts the received ciphertext, how many plaintext blocks
+will be corrupted?
+
+Question 7
+Let mm be a message consisting of \ellℓ AES blocks (say \ell = 100ℓ=100).
+Alice encrypts mm using randomized counter mode and
+transmits the resulting ciphertext to Bob.  Due to a network error,
+ciphertext block number \ell/2ℓ/2 is corrupted during transmission.
+All other ciphertext blocks are transmitted and received correctly.
+Once Bob decrypts the received ciphertext, how many plaintext blocks
+will be corrupted?
+
+
+Suppose an attacker intercepts a packet where he knows that the packet payload is encrypted using AES in CBC mode with a random IV.  The encrypted packet payload is 128 bytes.
+
+The messages is plausibly the decryption of the payload:
+
+
+'In this letter I make some remarks on a general principle relevant to enciphering in general and my machine.'
+108
+
+'To consider the resistance of an enciphering process to being broken we should assume that at same times the enemy knows everything but the key being used and to break it needs only discover the key from this information.'
+221
+
+'We see immediately that one needs little information to begin to break down the process.'
+88
+
+'The most direct computation would be for the enemy to try all 2^r possible keys, one by one.'
+92
+
+'''
+
+
         
 if __name__ == "__main__":
     #
