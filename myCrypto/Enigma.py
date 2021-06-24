@@ -1,7 +1,7 @@
 #!/home/rick/bin/pythonTest
 # -*- coding: utf-8 -*-
 #
-# Crypto functions Enigma
+# myCrypto functions Enigma
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -602,8 +602,8 @@ def DecryptNone( sDecryptThis ):
 def XOREncrypt( sText, sPassword = 'hello' ):
     #
     #
-    lText       = iMap( ord, list( sText     ) )
-    tPassword   = tMap( ord, list( sPassword ) )
+    lText       = iMap( ord, sText     )
+    tPassword   = tMap( ord, sPassword )
     #
     iPasswords  = 1 + ( len( sText ) // len( sPassword ) )
     #
@@ -740,6 +740,7 @@ def EncryptLiteNone( sThis ):
     return _getShuffleShiftReverseFlipPunctuate( sThis, getShifted, 0 )
 
 
+
 def _getPunctuateFlipReverseShiftShuffleCut(
             sThis, getShifted, iCutAt1, iRevThis = True, iRevPassPhrase = False ):
     #
@@ -813,28 +814,6 @@ def DecryptLiteNone( sThis ):
     #
     return _getPunctuateFlipReverseShiftShuffleCut( sThis, getShifted, 0 )
 
-
-
-#def getYahooHtmlDecrypted( s, bLite = True ):
-    ##
-    #'''
-    #default is lite
-    #pass False as 2nd param to use heavy
-    #'''
-    #from Web.HTML import getTextgotYahooHTML
-    ##
-    #sFixed = getTextgotYahooHTML( s )
-    ##
-    ## sFixed = sFixed[ 1 : ][ 0 : -1 ] # strip quote chars
-    ##
-    #sFixed = sFixed.replace( "\\", '' ) # don't want \ chars
-    ##
-    #if bLite:
-        #fDecription = DecryptLite
-    #else:
-        #fDecription = Decrypt
-    ##
-    #return fDecription( sFixed, sPassPhrase = None )
 
 
 
@@ -1060,22 +1039,22 @@ def EncryptBoth2( sThis, sPassPhrase = sFilePhrase ):
 def pD( s ):
     sOut = Decrypt( s )
     print3( sOut )
-    return sOut 
+    # return sOut
 
 def pDL( s ):
     sOut = DecryptLite( s )
     print3( sOut )
-    return sOut
+    # return sOut
 
 def pD2( s ):
     sOut = Decrypt2( s )
     print3( sOut )
-    return sOut
+    # return sOut
 
 def pDL2( s ):
     sOut = DecryptLite2( s )
     print3( DecryptLite2( s ) )
-    return sOut
+    # return sOut
 
 
 
