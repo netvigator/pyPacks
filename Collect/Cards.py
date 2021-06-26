@@ -486,5 +486,17 @@ if __name__ == "__main__":
         #
     #
     #
+    sCards = '0123456789ABCDEF'
+    #
+    lCards = [ ShuffleAndCut( sCards, iCutOffset = i )
+               for i in range( -7, 8 ) ]
+    #
+    setCards = frozenset( lCards )
+    #
+    if len( lCards ) != len( setCards ):
+        #
+        lProblems.append( 'ShuffleAndCut() over a range' )
+        #
+    #
     #
     sayTestResult( lProblems )
