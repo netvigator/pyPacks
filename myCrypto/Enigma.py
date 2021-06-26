@@ -444,42 +444,44 @@ def _getTextReversedMaybe( s, i ):
 
 
 
+
 def _shuffleEncrypted( sEncrypted, oPassPhraseStats, bPutBack = False ):
     #
-    iBoostTotal = oPassPhraseStats.iTotal
-    iDifference = oPassPhraseStats.iDifference
+    iBoostTotal     = oPassPhraseStats.iTotal
+    iPassPhDiff     = oPassPhraseStats.iDifference
     #
-    oOutStats   = _getMoreAscStats(
-                    sEncrypted, sEncrypted, iBoostTotal, iDifference )
+    oEncrStats      = _getMoreAscStats(
+                        sEncrypted, sEncrypted, iBoostTotal, iPassPhDiff )
     #
-    iTotal = oOutStats.iTotal
+    iEncrTotal      = oEncrStats.iTotal
     #
     if bPutBack:
         #
-        iCutAtA     = oOutStats.iCutAt1
-        iCutAtB     = oOutStats.iCutAt0
-        iShufflesA  = ( iTotal               % 5 ) + 1
-        iShufflesB  = ( iTotal + iDifference % 5 ) + 1
+        iCutAtIn    = oEncrStats.iCutAt1
+        iCutAtOut   = oEncrStats.iCutAt0
+        iShufflesIn = ( ( iEncrTotal + iBoostTotal ) % 5 ) + 1
+        iShufflesOut= ( ( iEncrTotal + iPassPhDiff ) % 5 ) + 1
         #
     else:
         #
-        iCutAtA     = oOutStats.iCutAt0
-        iCutAtB     = oOutStats.iCutAt1
-        iShufflesA  = ( iTotal + iDifference % 5 ) + 1
-        iShufflesB  = ( iTotal               % 5 ) + 1
+        iCutAtIn    = oEncrStats.iCutAt0
+        iCutAtOut   = oEncrStats.iCutAt1
+        iShufflesIn = ( ( iEncrTotal + iPassPhDiff ) % 5 ) + 1
+        iShufflesOut= ( ( iEncrTotal + iBoostTotal ) % 5 ) + 1
         #
     #
-    sConverted  = ShuffleAndCut(
-                        ShuffleAndCut(
+    sConverted      = ShuffleAndCut(
+                            ShuffleAndCut(
                                 sEncrypted,
                                 bPutBack,
-                                iShuffles  = iShufflesA,
-                                iCutOffset = iCutAtA ),
-                    bPutBack,
-                    iShuffles  = iShufflesB,
-                    iCutOffset = iCutAtB )
+                                iShuffles  = iShufflesIn,
+                                iCutOffset = iCutAtIn ),
+                        bPutBack,
+                        iShuffles  = iShufflesOut,
+                        iCutOffset = iCutAtOut )
     #
     return sConverted
+
 
 
 
@@ -1207,6 +1209,7 @@ if __name__ == "__main__":
         lProblems.append( 'Decrypt2( Encrypt2( "%s" ) )' % sTest )
         #
     #
+    #
     if DecryptLite( EncryptLite( sTest ) ) != sTest:
         #
         lProblems.append( 'DecryptLite( EncryptLite( "%s" ) )' % sTest )
@@ -1525,7 +1528,7 @@ if __name__ == "__main__":
         #
     #
     sTestOrig = ( 'Bullwinkle J Moose\n8888 8888 8888 8888\n' +
-                  '8888888888888888\n08/28\n888' )
+                '8888888888888888\n08/28\n888' )
     #
     sTestEncr = Encrypt( sTestOrig )
     #
@@ -1555,8 +1558,8 @@ if __name__ == "__main__":
         #
     #
     if (    sTestEncr !=
-           r'''Fq(VTl}kk@}B+F:(a}i}Pk\"%{}98.}?Bzu8a$n}'''
-            '''B8o}9{&$8)\kT}8s'}'n}u)9k}}$\\''' ):
+            '''%8BaB98T'}k\VkB(}"9?8}}$ksn9$(}}:i\}}'''
+            '''uno&\8')}ql@F}k{.z$8{)}}u}FTk+aP''' ):
         #
         print3( 'c) sTestEncr =' )
         print3( sTestEncr )
@@ -1572,8 +1575,8 @@ if __name__ == "__main__":
         #
     #
     if (    sTestEncr !=
-           r'''q+g0qFpN"La"JU\"uUTtmgg@g3g;CRgUvq00FcoUgriU6r'''
-            '''\w8g"Q0#"Qj2=g=DpgXp#gG''' ):
+            '''00ggp32m0"waiFcqvX;gg"UgJ6NUg0#RDgjtQ'''
+           r'''\\LrqFGUgg=g#u8"Upo+qpC=@QT"Ur"g''' ):
         #
         print3( 'd) sTestEncr =' )
         print3( sTestEncr )
@@ -1615,7 +1618,14 @@ if __name__ == "__main__":
     #
     if max( lCuts ) > iHalfLen or min( lCuts ) < - iHalfLen:
         #
-        lProblems.append( '_getCutAt()' )
+        lProblems.append( '_getCutAt() beyond max/min' )
+        #
+    #
+    if      max( lCuts ) not in (  iHalfLen,  iHalfLen - 1 ) or \
+            min( lCuts ) not in ( -iHalfLen, -iHalfLen + 1 ):
+        #
+        print3( iHalfLen, max( lCuts ), min( lCuts ) )
+        lProblems.append( '_getCutAt() close enough to max/min' )
         #
     #
     sayTestResult( lProblems )
