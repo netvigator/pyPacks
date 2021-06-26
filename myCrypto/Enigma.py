@@ -1628,4 +1628,17 @@ if __name__ == "__main__":
         lProblems.append( '_getCutAt() close enough to max/min' )
         #
     #
+    tPasswords = (
+        'MyGreatPassword',
+        'MyGreatPassw0rd',
+        'MyGreatP@ssw0rd',
+        'MyGre@tPassw0rd',
+        'MyGr3atPassw0rd',
+        'MyGr3atP@ssw0rd',
+        'MyGr3atPassword',
+        'MyGr3@tPassw0rd' )
+    #
+    tCiphers = tuple( [ Encrypt2(s) for s in tPasswords ] )
+    #
+    
     sayTestResult( lProblems )
