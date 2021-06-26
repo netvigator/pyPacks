@@ -444,27 +444,29 @@ def _getTextReversedMaybe( s, i ):
 
 
 
-def _shuffleEncrypted( sEncrypted, oStats, bPutBack = False ):
+def _shuffleEncrypted( sEncrypted, oPassPhraseStats, bPutBack = False ):
     #
-    iBoostTotal = oStats.iTotal
-    iDifference = oStats.iDifference
+    iBoostTotal = oPassPhraseStats.iTotal
+    iDifference = oPassPhraseStats.iDifference
     #
-    oOutStats = _getMoreAscStats(
+    oOutStats   = _getMoreAscStats(
                     sEncrypted, sEncrypted, iBoostTotal, iDifference )
+    #
+    iTotal = oOutStats.iTotal
     #
     if bPutBack:
         #
         iCutAtA     = oOutStats.iCutAt1
         iCutAtB     = oOutStats.iCutAt0
-        iShufflesA  = ( oOutStats.iTotal % 5 ) + 1
-        iShufflesB  = ( iDifference      % 5 ) + 1
+        iShufflesA  = ( iTotal               % 5 ) + 1
+        iShufflesB  = ( iTotal + iDifference % 5 ) + 1
         #
     else:
         #
         iCutAtA     = oOutStats.iCutAt0
         iCutAtB     = oOutStats.iCutAt1
-        iShufflesA  = ( iDifference      % 5 ) + 1
-        iShufflesB  = ( oOutStats.iTotal % 5 ) + 1
+        iShufflesA  = ( iTotal + iDifference % 5 ) + 1
+        iShufflesB  = ( iTotal               % 5 ) + 1
         #
     #
     sConverted  = ShuffleAndCut(
@@ -501,19 +503,19 @@ def Encrypt( sThis,
     #
     # Encrypt STEP 1 shuffle & cut, maybe reverse, shuffle & cut
     #
-    oStats      = _getMoreAscStats( sPassPhrase, sThis )
+    oPassPhraseStats = _getMoreAscStats( sPassPhrase, sThis )
     #
-    iCutAt0     = oStats.iCutAt0
-    iCutAt1     = oStats.iCutAt1
+    iCutAt0          = oPassPhraseStats.iCutAt0
+    iCutAt1          = oPassPhraseStats.iCutAt1
     #
     if iRevThis is None:
         #
-        iRevThis = oStats.iTotal
+        iRevThis    = oPassPhraseStats.iTotal
         #
     #
     if iRevPassPhrase is None:
         #
-        iRevPassPhrase = oStats.iDifference
+        iRevPassPhrase = oPassPhraseStats.iDifference
         #
     #
     sConverted  = ShuffleAndCut(
@@ -525,8 +527,8 @@ def Encrypt( sThis,
     # Encrypt STEP 2 shift all characters
     #
     iPassPhraseNumb = max(
-                oStats.iDifference,
-                ( oStats.iTotal - oStats.iDifference ) )
+                oPassPhraseStats.iDifference,
+                ( oPassPhraseStats.iTotal - oPassPhraseStats.iDifference ) )
     #
     sConverted  = getCharsShifted(
                         sConverted,
@@ -539,7 +541,7 @@ def Encrypt( sThis,
     #
     if bShuffleEncrypted:
         #
-        sConverted = _shuffleEncrypted( sConverted, oStats )
+        sConverted = _shuffleEncrypted( sConverted, oPassPhraseStats )
         #
     #
     return sConverted
@@ -563,9 +565,10 @@ def EncryptNone( sEncryptThis ):
     sConverted  = ShuffleAndCut(
                     getTextReversed( ShuffleAndCut( sEncryptThis ) ) )
     #
-    oStats      = AscStats( sConverted )
+    oPassPhraseStats      = AscStats( sConverted )
     #
-    iUseOffset  = ( oStats.iLength % 4 ) - ( oStats.iDifference % 8 )
+    iUseOffset  = ( oPassPhraseStats.iLength % 4 ) - \
+                  ( oPassPhraseStats.iDifference % 8 )
     #
     sConverted  = DescendChars( sConverted, iUseOffset )
     #
@@ -594,27 +597,27 @@ def Decrypt(    sDecryptThis,
     #
     # Decrypt STEP -3 undo shuffle encrypted characters (if applicable)
     #
-    oStats      = _getMoreAscStats( sPassPhrase, sDecryptThis )
+    oPassPhraseStats    = _getMoreAscStats( sPassPhrase, sDecryptThis )
     #
     if bShuffleEncrypted:
         #
-        sDecryptThis = _shuffleEncrypted(
-                            sDecryptThis, oStats, bPutBack = True )
+        sDecryptThis    = _shuffleEncrypted(
+                            sDecryptThis, oPassPhraseStats, bPutBack = True )
         #
     #
     # Decrypt STEP -2 shift all characters
     #
     if iRevThis is None:
         #
-        iRevThis = oStats.iTotal
+        iRevThis = oPassPhraseStats.iTotal
         #
     #
     if iRevPassPhrase is None:
         #
-        iRevPassPhrase = oStats.iDifference
+        iRevPassPhrase = oPassPhraseStats.iDifference
         #
     #
-    iPassPhraseNumb = oStats.iTotal - oStats.iDifference
+    iPassPhraseNumb = oPassPhraseStats.iTotal - oPassPhraseStats.iDifference
     #
     sConverted  = getCharsShifted(
                         sDecryptThis,
@@ -623,8 +626,8 @@ def Decrypt(    sDecryptThis,
                         iPassPhraseNumb,
                         iRevPassPhrase )
     #
-    iCutAt0     = oStats.iCutAt0
-    iCutAt1     = oStats.iCutAt1
+    iCutAt0     = oPassPhraseStats.iCutAt0
+    iCutAt1     = oPassPhraseStats.iCutAt1
     #
     #
     # Encrypt STEP -1 shuffle & cut, reverse, shuffle & cut
@@ -658,9 +661,10 @@ def DecryptNone( sDecryptThis ):
     #
     sConverted  = DescendChars( FlipCase( sDecryptThis, True ), 0, 1 )
     #
-    oStats      = AscStats( sConverted )
+    oPassPhraseStats      = AscStats( sConverted )
     #
-    iUseOffset  = ( oStats.iLength % 4 ) - ( oStats.iDifference % 8 )
+    iUseOffset  = ( oPassPhraseStats.iLength % 4 ) - \
+                  ( oPassPhraseStats.iDifference % 8 )
     #
     sConverted  = DescendChars( sConverted, iUseOffset )
     #
@@ -762,19 +766,19 @@ def EncryptLite(
         sThis   = sThis.replace( '\n', r'\n' ).replace( '\r', r'\r' )
         #
     #
-    oStats  = _getMoreAscStats( sPassPhrase, sThis )
+    oPassPhraseStats  = _getMoreAscStats( sPassPhrase, sThis )
     #
     if iRevThis is None:
         #
-        iRevThis = oStats.iTotal
+        iRevThis = oPassPhraseStats.iTotal
         #
     #
     if iRevPassPhrase is None:
         #
-        iRevPassPhrase = oStats.iDifference
+        iRevPassPhrase = oPassPhraseStats.iDifference
         #
     #
-    iPassPhraseNumb = oStats.iTotal - oStats.iDifference
+    iPassPhraseNumb = oPassPhraseStats.iTotal - oPassPhraseStats.iDifference
     #
     def getShifted( sShiftThis ):
         #
@@ -786,14 +790,14 @@ def EncryptLite(
                     iRevPassPhrase )
         #
     #
-    iCutAt1 = oStats.iCutAt1
+    iCutAt1 = oPassPhraseStats.iCutAt1
     #
     sConverted = _getShuffleShiftReverseFlipPunctuate(
                         sThis, getShifted, iCutAt1, iRevThis )
     #
     if bShuffleEncrypted:
         #
-        sConverted = _shuffleEncrypted( sConverted, oStats )
+        sConverted = _shuffleEncrypted( sConverted, oPassPhraseStats )
         #
     #
     return sConverted
@@ -837,25 +841,25 @@ def DecryptLite( sThis,
                  getCharsShifted    = _getCharsShifted,
                  bShuffleEncrypted  = False ):
     #
-    oStats  = _getMoreAscStats( sPassPhrase, sThis )
+    oPassPhraseStats  = _getMoreAscStats( sPassPhrase, sThis )
     #
     if bShuffleEncrypted:
         #
         sThis = _shuffleEncrypted(
-                            sThis, oStats, bPutBack = True )
+                            sThis, oPassPhraseStats, bPutBack = True )
         #
     #
     if iRevThis is None:
         #
-        iRevThis = oStats.iTotal
+        iRevThis = oPassPhraseStats.iTotal
         #
     #
     if iRevPassPhrase is None:
         #
-        iRevPassPhrase = oStats.iDifference
+        iRevPassPhrase = oPassPhraseStats.iDifference
         #
     #
-    iPassPhraseNumb = oStats.iTotal - oStats.iDifference
+    iPassPhraseNumb = oPassPhraseStats.iTotal - oPassPhraseStats.iDifference
     #
     def getShifted( sShiftThis ):
         #
@@ -866,7 +870,7 @@ def DecryptLite( sThis,
                     iPassPhraseNumb,
                     iRevPassPhrase )
     #
-    iCutAt1 = oStats.iCutAt1
+    iCutAt1 = oPassPhraseStats.iCutAt1
     #
     sReturn = _getPunctuateFlipReverseShiftShuffleCut(
                     sThis, getShifted, iCutAt1, iRevThis, iRevPassPhrase )
@@ -1527,7 +1531,7 @@ if __name__ == "__main__":
     #
     if Decrypt( sTestEncr ) != sTestOrig:
         #
-        print3( 'sTestOrig = ' )
+        print3( 'a) sTestOrig =' )
         print3( sTestOrig )
         lProblems.append( 'Decrypt( Encrypt( "sTestOrig" ) )' )
         #
@@ -1536,7 +1540,7 @@ if __name__ == "__main__":
             '''}}/3"c$@kk}}87y'}jek}}nSp(-FJkB}8S)^-8@.'''
             ''''FuU}8\_SkF\@Y}89NT}F0KB}8kZ^''' ):
         #
-        print3( 'sTestEncr = ' )
+        print3( 'b) sTestEncr =' )
         print3( sTestEncr )
         lProblems.append( 'Encrypt( "sTestOrig" )' )
         #
@@ -1545,16 +1549,16 @@ if __name__ == "__main__":
     #
     if Decrypt2( sTestEncr ) != sTestOrig:
         #
-        print3( 'sTestOrig = ' )
+        print3( 'sTestOrig =' )
         print3( sTestOrig )
         lProblems.append( 'Decrypt2( Encrypt2( "sTestOrig" ) )' )
         #
     #
     if (    sTestEncr !=
-           r'''iFkV$)}T$o$B9\}+k(}u'k&8a?}kaB}q}}s\{B8}'''
-            '''{P(}lFkn8)9}u.%}:@T\9'}8}nz8"''' ):
+           r'''Fq(VTl}kk@}B+F:(a}i}Pk\"%{}98.}?Bzu8a$n}'''
+            '''B8o}9{&$8)\kT}8s'}'n}u)9k}}$\\''' ):
         #
-        print3( 'sTestEncr = ' )
+        print3( 'c) sTestEncr =' )
         print3( sTestEncr )
         lProblems.append( 'Encrypt2( "sTestOrig" )' )
     #
@@ -1568,24 +1572,24 @@ if __name__ == "__main__":
         #
     #
     if (    sTestEncr !=
-           r'''NFp3"\U0vDg"aUGC2U\p0Xg#UigU=mgLog;'''
-            '''jurF0g@0Jr+ggt8"c#gQ"6qqpgQ"gqR=Tw''' ):
+           r'''q+g0qFpN"La"JU\"uUTtmgg@g3g;CRgUvq00FcoUgriU6r'''
+            '''\w8g"Q0#"Qj2=g=DpgXp#gG''' ):
         #
-        print3( 'sTestEncr = ' )
+        print3( 'd) sTestEncr =' )
         print3( sTestEncr )
         lProblems.append( 'EncryptLite2( "sTestOrig" )' )
     #
     #
     sTestEncr = sEncryptedH
     #
-    oStats = _getMoreAscStats( sFilePhrase, sTestEncr )
+    oPassPhraseStats = _getMoreAscStats( sFilePhrase, sTestEncr )
     #
-    sShuffled = _shuffleEncrypted( sTestEncr, oStats )
-    sPutBack  = _shuffleEncrypted( sShuffled, oStats, bPutBack = True )
+    sShuffled = _shuffleEncrypted( sTestEncr, oPassPhraseStats )
+    sPutBack  = _shuffleEncrypted( sShuffled, oPassPhraseStats, bPutBack = True )
     #
     if sTestEncr != sPutBack:
         #
-        print3( 'sTestEncr = ' )
+        print3( 'e) sTestEncr =' )
         print3( sTestEncr )
         lProblems.append( '_shuffleEncrypted(( "sTestEncr" )' )
         #
@@ -1593,8 +1597,8 @@ if __name__ == "__main__":
     #
     sSeq = '0123456789ABCDEF'
     #
-    sShuffled = _shuffleEncrypted( sSeq,      oStats )
-    sPutBack  = _shuffleEncrypted( sShuffled, oStats, bPutBack = True )
+    sShuffled = _shuffleEncrypted( sSeq,      oPassPhraseStats )
+    sPutBack  = _shuffleEncrypted( sShuffled, oPassPhraseStats, bPutBack = True )
     #
     if sSeq != sPutBack:
         #
