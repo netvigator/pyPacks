@@ -138,7 +138,7 @@ if sMsg:
     print3('')
 
 
-def _getCutAt( iBigNumb, iEncryptLen ):
+def _getCutAt( iBigNumb, iEncryptLen, bWantCloserToCenter = False ):
     #
     # if iCutAt = zero, the deck/string will be cut in the middle
     # if iCutAt < zero, the deck/string will be cut closer to the front
@@ -164,12 +164,17 @@ def _getCutAt( iBigNumb, iEncryptLen ):
         iCutAt   = iCutAt // 2
         #
     #
+    if bWantCloserToCenter and iCutAt > iEncryptLen // 4:
+        #
+        iCutAt   = iCutAt // 2
+        #
+    #
     return iCutAt
 
 
 
 def _getMoreAscStats(
-            sPassPhrase, sEncrypt, iBoostTotal = 0, iDifference = None ):
+            sStatsPhrase, sEncrypt, iBoostTotal = 0, iDifference = None ):
     #
     '''
     consider zero to be the middle position in the string,
@@ -189,7 +194,7 @@ def _getMoreAscStats(
     AscStats.iTotal
     '''
     #
-    o               = AscStats( sPassPhrase )
+    o               = AscStats( sStatsPhrase )
     #
     if iDifference is None:
         #
@@ -200,11 +205,17 @@ def _getMoreAscStats(
     #
     iBigNumb        = max( iDifference, ( iUseTotal - iDifference ) )
     #
+    iMinNumb        = min( iDifference, ( iUseTotal - iDifference ) )
+    #
     iEncryptLen     = len( sEncrypt )
     #
-    o.iCutAt0       = _getCutAt( iBigNumb,  iEncryptLen )
+    bWantCloserToCenter = iBoostTotal # and isOdd( o.iTotal )
     #
-    o.iCutAt1       = _getCutAt( iUseTotal, iEncryptLen )
+    o.iCutAt0       = _getCutAt( iBigNumb,  iEncryptLen, bWantCloserToCenter )
+    #
+    o.iCutAt1       = _getCutAt( iUseTotal, iEncryptLen, bWantCloserToCenter )
+    #
+    o.iCutAt2       = _getCutAt( iMinNumb,  iEncryptLen, bWantCloserToCenter )
     #
     return o
 
@@ -246,13 +257,19 @@ def DescendChars( sOrig,
 
 
 
+
+
 def FlipCase( sText, bAlternate = False ):
     #
-    '''
+    r'''
     if bAlternate = False aBcDeF becomes AbCdEf
     if bAlternate = True  aBcDeF becomes ABCDEF
+    BUT
+    now that this code is accomodating new lines,
+    \n & \r should not be swapped to \N or \R !!!!
     '''
     #
+    lParts = oFinderCRorLFnMore.split(   sText )
     #
     if bAlternate:
         #
@@ -269,6 +286,31 @@ def FlipCase( sText, bAlternate = False ):
     else:
         #
         sFlipped    = sText.swapcase()
+        #
+    #
+    if len( lParts ) > 1:
+        #
+        lNewLs = oFinderCRorLFnMore.findall( sText )
+        #
+        lCorrect = []
+        #
+        iStart   = 0
+        #
+        for i in range( len( lParts ) ):
+            #
+            lCorrect.append( sFlipped[ iStart : iStart + len( lParts[i] ) ] )
+            #
+            iStart += len( lParts[i] )
+            #
+            if len( lNewLs ) > i:
+                #
+                lCorrect.append( lNewLs[i] )
+                #
+                iStart += len( lNewLs[i] )
+                #
+            #
+        #
+        sFlipped = ''.join( lCorrect )
         #
     #
     return sFlipped
@@ -435,6 +477,7 @@ def _getCharsShifted2(
 
 
 
+
 def _getTextReversedMaybe( s, i ):
     #
     if isOdd( i ):
@@ -447,6 +490,8 @@ def _getTextReversedMaybe( s, i ):
 
 def _shuffleEncrypted( sEncrypted, oPassPhraseStats, bPutBack = False ):
     #
+    # bShuffleEncrypted is True
+    #
     iBoostTotal     = oPassPhraseStats.iTotal
     iPassPhDiff     = oPassPhraseStats.iDifference
     #
@@ -455,30 +500,60 @@ def _shuffleEncrypted( sEncrypted, oPassPhraseStats, bPutBack = False ):
     #
     iEncrTotal      = oEncrStats.iTotal
     #
+    iBigInteger     = iEncrTotal + iBoostTotal
+    #
     if bPutBack:
         #
+        if isOdd( iBigInteger ):
+            #
+            sEncrypted = getTextReversed( sEncrypted )
+            #
+        #
         iCutAtIn    = oEncrStats.iCutAt1
-        iCutAtOut   = oEncrStats.iCutAt0
-        iShufflesIn = ( ( iEncrTotal + iBoostTotal ) % 5 ) + 1
-        iShufflesOut= ( ( iEncrTotal + iPassPhDiff ) % 5 ) + 1
+        iCutAtMid   = oEncrStats.iCutAt0
+        iCutAtOut   = oEncrStats.iCutAt2
+        #
+        # deck of cards will return to original order
+        # after 8 perfect shuffles!
+        #
+        iShufflesIn = ( iBigInteger % 3 ) + 1
+        iShufflesMid= ( iBigInteger % 4 ) + 1
+        iShufflesOut= ( iBigInteger % 5 ) + 1
         #
     else:
         #
-        iCutAtIn    = oEncrStats.iCutAt0
+        iCutAtIn    = oEncrStats.iCutAt2
+        iCutAtMid   = oEncrStats.iCutAt0
         iCutAtOut   = oEncrStats.iCutAt1
-        iShufflesIn = ( ( iEncrTotal + iPassPhDiff ) % 5 ) + 1
-        iShufflesOut= ( ( iEncrTotal + iBoostTotal ) % 5 ) + 1
+        #
+        # deck of cards will return to original order
+        # after 8 perfect shuffles!
+        #
+        iShufflesIn = ( iBigInteger % 5 ) + 1
+        iShufflesMid= ( iBigInteger % 4 ) + 1
+        iShufflesOut= ( iBigInteger % 3 ) + 1
         #
     #
     sConverted      = ShuffleAndCut(
                             ShuffleAndCut(
-                                sEncrypted,
-                                bPutBack,
-                                iShuffles  = iShufflesIn,
-                                iCutOffset = iCutAtIn ),
+                                    ShuffleAndCut(
+                                        sEncrypted,
+                                        bPutBack,
+                                        iShuffles  = iShufflesIn,
+                                        iCutOffset = iCutAtIn ),
+                            bPutBack,
+                            iShuffles  = iShufflesMid,
+                            iCutOffset = iCutAtMid ),
                         bPutBack,
                         iShuffles  = iShufflesOut,
                         iCutOffset = iCutAtOut )
+    #
+    oFinalStats = AscStats( sConverted )
+    #
+    if isOdd( iBigInteger ) and not bPutBack:
+        #
+        sConverted = getTextReversed( sConverted )
+        #
     #
     return sConverted
 
@@ -547,6 +622,7 @@ def Encrypt( sThis,
         #
     #
     return sConverted
+
 
 
 def Encrypt2( sThis, sPassPhrase = sFilePhrase ):
@@ -1166,6 +1242,7 @@ if __name__ == "__main__":
     #
     lProblems = []
     #
+    #
     if DescendChars( lowercase ) != \
             '\x9e\x9d\x9c\x9b\x9a\x99\x98\x97\x96\x95\x94\x93\x92\x91' + \
             '\x90\x8f\x8e\x8d\x8c\x8b\x8a\x89\x88\x87\x86\x85':
@@ -1222,9 +1299,10 @@ if __name__ == "__main__":
         lProblems.append( 'DecryptLite( EncryptLite( "%s" ) )' % sTest )
         #
     #
-    sEncryptedOdd = EncryptLite( sTest, sFilePhraseOdd )
+    sEncryptedOdd = EncryptLite( sTest,         sFilePhraseOdd )
+    sDecryptedOdd = DecryptLite( sEncryptedOdd, sFilePhraseOdd )
     #
-    if DecryptLite( sEncryptedOdd, sFilePhraseOdd  )!= sTest:
+    if sDecryptedOdd != sTest:
         #
         lProblems.append( 'DecryptLite( EncryptLite( "%s" ) ) with Odd pass phrase' % sTest )
         #
@@ -1240,14 +1318,18 @@ if __name__ == "__main__":
     #
     sEncryptedEven = EncryptLite2( sTest )
     #
-    if DecryptLite2( sEncryptedEven )!= sTest:
+    if sDecryptedOdd != sTest:
         #
         lProblems.append( 'DecryptLite2( EncryptLite2( "%s" ) )' % sTest )
         #
     #
-    sEncryptedOdd = EncryptLite2( sTest, sFilePhraseOdd )
+    sEncryptedOdd = EncryptLite2( sTest,         sFilePhraseOdd )
+    sDecryptedOdd = DecryptLite2( sEncryptedOdd, sFilePhraseOdd )
     #
-    if DecryptLite2( sEncryptedOdd, sFilePhraseOdd  )!= sTest:
+    if sDecryptedOdd != sTest:
+        #
+        print3( 'sEncryptedOdd:', sEncryptedOdd )
+        print3( 'sDecryptedOdd:', sDecryptedOdd )
         #
         lProblems.append( 'DecryptLite2( EncryptLite2( "%s" ) ) with Odd pass phrase' % sTest )
         #
@@ -1303,10 +1385,19 @@ if __name__ == "__main__":
         #
         lProblems.append( 'Decrypt2( Encrypt2( "%s" ) )' % sTest )
         #
-    if DecryptLite2( EncryptLite2( sTest ) ) != sTest:
+    #
+    sTest = 'The cat \\ in the hat.'
+    #
+    sEncrypted = EncryptLite2( sTest )
+    sDecrypted = DecryptLite2( sEncrypted )
+    #
+    if sDecrypted != sTest:
         #
+        print3( sEncrypted )
+        print3( sDecrypted )
         lProblems.append( 'DecryptLite2( EncryptLite2( "%s" ) )' % sTest )
         #
+    #
     #
     sTest = 'The cat \x8e in the hat.'
     #
@@ -1558,8 +1649,8 @@ if __name__ == "__main__":
         #
     #
     if (    sTestEncr !=
-            '''%8BaB98T'}k\VkB(}"9?8}}$ksn9$(}}:i\}}'''
-            '''uno&\8')}ql@F}k{.z$8{)}}u}FTk+aP''' ):
+            '''8q}z)}+89}k"}s(iu\}F.{uk%B'V}8k$:}'''
+        r'''&)@{8}TPaT\(?$9}}o'lk$}FaB8kB9}n}\n''' ):
         #
         print3( 'c) sTestEncr =' )
         print3( sTestEncr )
@@ -1575,12 +1666,12 @@ if __name__ == "__main__":
         #
     #
     if (    sTestEncr !=
-            '''00ggp32m0"waiFcqvX;gg"UgJ6NUg0#RDgjtQ'''
-           r'''\\LrqFGUgg=g#u8"Upo+qpC=@QT"Ur"g''' ):
+            r'''gnJUg;vciw02pg0"UT@cqoU8#=gGqL\tgR0U6g"'''
+            r'''gXqFa"m3g0gr"Q=p+p"uggUFr\QjD#''' ):
         #
         print3( 'd) sTestEncr =' )
         print3( sTestEncr )
-        lProblems.append( 'EncryptLite2( "sTestOrig" )' )
+        lProblems.append( 'EncryptLite2( "sTestEncr" )' )
     #
     #
     sTestEncr = sEncryptedH
@@ -1628,17 +1719,88 @@ if __name__ == "__main__":
         lProblems.append( '_getCutAt() close enough to max/min' )
         #
     #
-    tPasswords = (
-        'MyGreatPassword',
-        'MyGreatPassw0rd',
-        'MyGreatP@ssw0rd',
-        'MyGre@tPassw0rd',
-        'MyGr3atPassw0rd',
-        'MyGr3atP@ssw0rd',
-        'MyGr3atPassword',
-        'MyGr3@tPassw0rd' )
+    sText = r'abcd\nefgh\rijkl'
     #
-    tCiphers = tuple( [ Encrypt2(s) for s in tPasswords ] )
+    sGot    = FlipCase( sText )
+    sExpect = r'ABCD\nEFGH\rIJKL'
     #
-    
+    if sGot != sExpect:
+        print3( sGot )
+        lProblems.append( 'FlipCase() w new lines no alternate' )
+        #
+    #
+    sGot    = FlipCase( sText, bAlternate = True )
+    sExpect = r'AbCd\nEfGh\rIjKl'
+    if sGot != sExpect:
+        print3( sGot )
+        lProblems.append( 'FlipCase() w new lines & w alternate' )
+        #
+    #
+    doPasswordAnalysis = False
+    #
+    if doPasswordAnalysis:
+        #
+        tPasswords = (
+            'My_Great_Password', # no special characters
+            'My_Great_Passw0rd', # 0 for o
+            'My_Great_P@ssword', # @ for 2nd a
+            'My_Gr3at_Password', # 3 for e
+            'My_Great_P@ssw0rd', # 0 for o & @ for 2nd a
+            'My_Gr3at_Passw0rd', # 0 for o & 3 for e
+            'My_Gr3at_P@ssword', # @ for 2nd a & 3 for e
+            )
+        #
+        sPhrase = ( 'Look, Bullwinkle! A message in a bottle! - '
+                    'Fan mail from some flounder? - '
+                    'No! This is what I really call a message!' )
+        #
+        sPhrase = 'Bullwinkle is a dope!'
+        #
+        tCiphers = tuple( [ Encrypt2(s,sPhrase) for s in tPasswords ] )
+        #
+        iCipherLen = len( tCiphers[0] )
+        #
+        dColsInCommon = {}
+        #
+        print3( '         Modulus' )
+        print3( 'No Total 5 4 3 2 password          -> encrypted' )
+        for i in range( len( tPasswords ) ):
+            #
+            oX = AscStats( tPasswords[i] )
+            oY = AscStats( tCiphers[i] )
+            #
+            iTotal = oX.iTotal + oY.iTotal
+            #
+            for j in range( i + 1, len( tPasswords ) ):
+                #
+                iInCommon = 0
+                #
+                for k in range( iCipherLen ):
+                    #
+                    iInCommon += int( tCiphers[i][k] == tCiphers[j][k] )
+                    #
+                #
+                dColsInCommon[ ( i, j ) ] = iInCommon
+                #
+            #
+            print3( "%03d" % i,
+                iTotal, iTotal%5, iTotal%4, iTotal%3, iTotal%2,
+                tPasswords[i], '->', tCiphers[i] )
+            #
+        #
+        from pprint import pprint
+        #
+        tRowPairs = tuple( dColsInCommon.keys() )
+        #
+        for t in tRowPairs:
+            #
+            if dColsInCommon[ t ] < 3:
+                #
+                del dColsInCommon[ t ]
+                #
+            #
+        #
+        pprint( dColsInCommon )
+    #
+    #
     sayTestResult( lProblems )
