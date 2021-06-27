@@ -26,6 +26,7 @@
 simulates suffling a deck of cards
 you supply the sequence (the deck)
 '''
+
 from copy               import copy
 from random             import random, randrange, shuffle
 
@@ -87,6 +88,7 @@ def getCutPosition( uSeq, bPutBack = False, iOffset = 0 ):
     return iCutAt
 
 
+
 def CutTheCards( uSeq, bPutBack = False, bSloppy = False, iOffset = 0 ):
     #
     iCutAt = getCutPosition( uSeq, bPutBack = bPutBack, iOffset = iOffset )
@@ -100,92 +102,67 @@ def CutTheCards( uSeq, bPutBack = False, bSloppy = False, iOffset = 0 ):
                         randrange( iLenTenth ) )
         #
     #
-    return uSeq[ : iCutAt ], uSeq[ iCutAt : ] # uTop, uBot
+    return uSeq[ : iCutAt ], uSeq[ iCutAt : ]
+
 
 
 
 def ShuffleTheCards( uSeq, bPutBack = False, iShuffles = 1 ):
     #
-    uEmpty                  = uSeq[ len( uSeq ) : ]
+    bGotString              = isinstance( uSeq, str )
     #
     iLen                    = len( uSeq )
     #
-    iHalfLen                = getIntegerDivisionRoundUp( iLen, 2 )
-    #
-    tCards                  = tRange( iHalfLen )
-    #
     lSeq                    = list( uSeq )
     #
-    sShuffled               = uSeq
+    iHalfLen                = getIntegerDivisionRoundUp( iLen, 2 )
+    #
+    tCardIndexes            = tRange( iHalfLen )
+    #
+    lSeq                    = list( uSeq )
     #
     for iShuffle in iRange( iShuffles ):
         #
         if bPutBack:
             #
-            sBeg, sEnd          = copy( uEmpty ), copy( uEmpty )
+            lBeg, lEnd      = [], []
             #
-            if uEmpty == '':    # string
+            for iThisCard in tCardIndexes:
                 #
-                for iThisCard in tCards:
-                    #
-                    sBeg        += lSeq[ ( 2 * iThisCard ) + 0 ]
-                    #
-                    if ( 2 * iThisCard ) + 1 < iLen:
-                        #
-                        sEnd    += lSeq[ ( 2 * iThisCard ) + 1 ]
-                        #
-                    #
+                lBeg.append( lSeq[ ( 2 * iThisCard ) + 0 ] )
                 #
-            else:               # list
-                #
-                for iThisCard in tCards:
+                if ( 2 * iThisCard ) + 1 < iLen:
                     #
-                    sBeg.append( lSeq[ ( 2 * iThisCard ) + 0 ] )
-                    #
-                    if ( 2 * iThisCard ) + 1 < iLen:
-                        #
-                        sBeg.append( lSeq[ ( 2 * iThisCard ) + 0 ] )
-                        #
+                    lEnd.append( lSeq[ ( 2 * iThisCard ) + 1 ] )
                     #
                 #
             #
-            sShuffled           = sBeg + sEnd
+            lShuffled       = lBeg + lEnd
             #
         else:
             #
-            sShuffled           = copy( uEmpty )
+            lShuffled       = []
             #
-            if uEmpty == '':    # string
+            for iThisCard in tCardIndexes:
                 #
-                for iThisCard in tCards:
-                    #
-                    sShuffled       += lSeq[ iThisCard ]
-                    #
-                    if iThisCard + iHalfLen < iLen:
-                        #
-                        sShuffled   += lSeq[ iThisCard + iHalfLen ]
-                        #
-                    #
+                lShuffled.append( lSeq[ iThisCard ] )
                 #
-                #
-            else:               # list
-                #
-                for iThisCard in tCards:
+                if iThisCard + iHalfLen < iLen:
                     #
-                    sShuffled.append( lSeq[ iThisCard ] )
-                    #
-                    if iThisCard + iHalfLen < iLen:
-                        #
-                        sShuffled.append( lSeq[ iThisCard + iHalfLen ] )
-                        #
+                    lShuffled.append( lSeq[ iThisCard + iHalfLen ] )
                     #
                 #
             #
         #
-        lSeq        = list( sShuffled )
+        lSeq = lShuffled
         #
     #
-    return sShuffled
+    if bGotString:
+        #
+        return ''.join( lSeq )
+    #
+    return lSeq
+
 
 
 
@@ -268,6 +245,10 @@ def ShuffleAndCut(
     #
     iLen            = len( uSeq )
     #
+    bGotString = isinstance( uSeq, str )
+    #
+    lSeq            = list( uSeq )
+    #
     if iShuffles is None:
         #
         iStartAt    = 1 if iLen % 7 == 0 else 2
@@ -281,12 +262,12 @@ def ShuffleAndCut(
         #
         for iThisShuffle in iRange( iShuffles ):
             #
-            uTop, uBot  = CutTheCards(
-                            uSeq, bPutBack = True, iOffset = iCutOffset )
+            lTop, lBot  = CutTheCards(
+                            lSeq, bPutBack = True, iOffset = iCutOffset )
             #
-            uSeq        = uBot + uTop   # put bottom on top
+            lSeq        = lBot + lTop   # put bottom on top
             #
-            uSeq        = ShuffleTheCards( uSeq, bPutBack = True )
+            lSeq        = ShuffleTheCards( lSeq, bPutBack = True )
             #
             #
         #
@@ -296,23 +277,25 @@ def ShuffleAndCut(
             #
             if bSloppy:
                 #
-                uSeq    = SloppyShuffle(   uSeq )
+                lSeq    = SloppyShuffle(   lSeq )
                 #
             else:
                 #
-                uSeq    = ShuffleTheCards( uSeq )
+                lSeq    = ShuffleTheCards( lSeq )
                 #
             #
-            uTop, uBot  = CutTheCards(
-                            uSeq, bSloppy = bSloppy, iOffset = iCutOffset )
+            lTop, lBot  = CutTheCards(
+                            lSeq, bSloppy = bSloppy, iOffset = iCutOffset )
             #
-            uSeq        = uBot + uTop   # put bottom on top
+            lSeq        = lBot + lTop   # put bottom on top
             #
         #
+    #
+    if bGotString:
         #
-    #
-    #
-    return uSeq
+        return ''.join( lSeq )
+        #
+    return lSeq
 
 
 
@@ -365,13 +348,16 @@ def getRandoms( lSeq, iWant = -1, bSloppyShuffle = False ):
     shuffle( lSeq )
     #
     # from Python docs on shuffle
-    # Note that for even rather small len(x), the total number of permutations of x
+    # Note that for even rather small len(x),
+    # the total number of permutations of x
     # is larger than the period of most random number generators;
-    # this implies that most permutations of a long sequence can never be generated.
+    # this implies that most permutations
+    # of a long sequence can never be generated.
     #
     if bSloppyShuffle:
         #
-        lTop, lBot  = CutTheCards( SloppyShuffle( ShuffleAndCut( lSeq ) ), bSloppy = True )
+        lTop, lBot  = CutTheCards(
+                SloppyShuffle( ShuffleAndCut( lSeq ) ), bSloppy = True )
         #
     else:
         #
@@ -408,13 +394,13 @@ if __name__ == "__main__":
     #
     lProblems = []
     #
-    from string import digits
-    from string import ascii_letters as letters
+    from string             import digits
+    from string             import ascii_letters as letters
     #
-    from Iter.AllVers   import lRange
-    from Iter.AllVers   import iMap
-    from Utils.Result   import sayTestResult
-    from Utils.Both2n3  import print3
+    from Iter.AllVers       import lRange
+    from Iter.AllVers       import iMap
+    from Utils.Result       import sayTestResult
+    from Utils.Both2n3      import print3
     #
     #
     lSeq = letters
@@ -426,30 +412,35 @@ if __name__ == "__main__":
 
     # tests to make sure ShuffleAndCut( sChars ) != sChars
     #
-    sChars = letters + digits
+    sChars      = letters + digits
     #
-    iCharsLen = len( sChars )
+    iCharsLen   = len( sChars )
+    #
+    lChars      = list( sChars )
     #
     lCardsRange = lRange( iCharsLen )[ 3 : ]
     #
-    lProblems += [ i for i in lCardsRange if sChars[ : i ] == ShuffleAndCut( sChars[ : i ] ) ]
+    lProblems += [ i for i in lCardsRange
+                   if lChars[ : i ] == ShuffleAndCut( lChars[ : i ] ) ]
     #
     del lCardsRange[ : 3 ]
     #
     if [ i for i in lCardsRange
-         if ShuffleAndCut( sChars[ : i ] ) == ShuffleAndCut( sChars[ : i ], bSloppy = True ) ]:
+         if ShuffleAndCut( lChars[ : i ] ) ==
+            ShuffleAndCut( lChars[ : i ], bSloppy = True ) ]:
         #
-        lProblems.append( 'ShuffleAndCut( sChars, bSloppy = True )' )
+        lProblems.append( 'ShuffleAndCut( lChars, bSloppy = True )' )
         #
-    #for i in lCardsRange:
-        ##
-        #print3( ShuffleAndCut( sChars[ : i ] ) )
     #
     for i in iRange(5):
         #
-        sDigits = getRandoms( ''.join( iMap( str, iRange(10) ) ), iWant = i + 4 )
+        sDigits = getRandoms(
+                ''.join( iMap( str, iRange(10) ) ), iWant = i + 4 )
         #
-        if ShuffleDigits( ShuffleDigits( sDigits ), bPutBack = True ) != sDigits:
+        sShuffled = ShuffleDigits( sDigits )
+        sPutBack  = ShuffleDigits( sShuffled, bPutBack = True )
+        #
+        if sPutBack != sDigits:
             #
             lProblems.append( 'ShuffleDigits() "%s"' % sDigits )
             #
@@ -498,5 +489,26 @@ if __name__ == "__main__":
         lProblems.append( 'ShuffleAndCut() over a range' )
         #
     #
+    if ShuffleTheCards( letters, iShuffles = 8 ) != letters:
+        #
+        lProblems.append( 'ShuffleTheCards() '
+                          'deck of letters back to the original' )
+        #
+    #
+    for t in ( ( letters, 'letters' ), ( digits, 'digits' ) ):
+        #
+        for i in iRange(8):
+            #
+            sShuffled = ShuffleTheCards(
+                            t[0],   iShuffles = i )
+            sPutBack  = ShuffleTheCards(
+                            sShuffled, iShuffles = i, bPutBack = True )
+            #
+            if sPutBack != t[0]:
+                #
+                lProblems.append(
+                        'ShuffleTheCards( %s, iShuffles = %s ) put back' %
+                        ( t[1], i ) )
+                #
     #
     sayTestResult( lProblems )
