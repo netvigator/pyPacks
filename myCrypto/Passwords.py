@@ -39,7 +39,8 @@ def getPassword( want_length = 18, special_characters = easyPunctuation ):
         if (    any(c.islower() for c in password) and
                 any(c.isupper() for c in password) and
                 any(c.isdigit() for c in password) and
-                any(c in special_characters for c in password) ):
+                any(c in special_characters
+                                for c in password) ):
             break
     return password
 
@@ -57,7 +58,7 @@ if __name__ == "__main__":
     #
     if len( getPassword( 12, '' ) ) != 12:
         #
-        lProblems.append( 'getPassword() w specials' )
+        lProblems.append( 'getPassword() w no specials' )
         #
     #
     #
