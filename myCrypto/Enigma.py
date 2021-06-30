@@ -172,6 +172,8 @@ def _getCutAt( iBigNumb, iEncryptLen, bWantCloserToCenter = False ):
     return iCutAt
 
 
+oFilePhraseStats = AscStats( sFilePhrase )
+
 
 def _getMoreAscStats(
             sStatsPhrase, sEncrypt, iBoostTotal = 0, iDifference = None ):
@@ -194,7 +196,13 @@ def _getMoreAscStats(
     AscStats.iTotal
     '''
     #
-    o               = AscStats( sStatsPhrase )
+    if oFilePhraseStats.sString == sStatsPhrase:
+        #
+        o           = oFilePhraseStats
+        #
+    else:
+        #
+        o           = AscStats( sStatsPhrase )
     #
     if iDifference is None:
         #
@@ -218,7 +226,6 @@ def _getMoreAscStats(
     o.iCutAt2       = _getCutAt( iMinNumb,  iEncryptLen, bWantCloserToCenter )
     #
     return o
-
 
 
 
