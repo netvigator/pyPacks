@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/
 #
-# Copyright 2004-2020 Rick Graves
+# Copyright 2004-2021 Rick Graves
 #
 
 from collections            import OrderedDict
@@ -92,7 +92,8 @@ def AscStats( sString ):
                     iLength     = iLength,
                     iMin        = iMin,
                     iMax        = iMax,
-                    iTotal      = iTotal )
+                    iTotal      = iTotal,
+                    sString     = sString )
     #
     return oReturn
 
