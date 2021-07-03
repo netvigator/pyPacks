@@ -1005,21 +1005,23 @@ def _getSayMore(
         #
     elif bGotSingleQuote:
         #
-        lSayMore.append( 'has single quote' )
+        lSayMore.append( 'has a single quote' )
         #
     elif bGotDoubleQuote:
         #
-        lSayMore.append( 'has double quote' )
+        lSayMore.append( 'has a double quote' )
         #
     #
     if bGotBackSlash:
         #
-        lSayMore.append( 'has backslash character, must test, might not work' )
+        lSayMore.append(
+                'has a backslash character, must test, might not work' )
         #
     #
     if bGodDoubleSpace:
         #
-        lSayMore.append( 'has double spaces, HTML compresses, need a warning' )
+        lSayMore.append(
+                'has double spaces, HTML compresses, need a warning' )
         #
     #
     if lSayMore:
@@ -1205,6 +1207,7 @@ def EncryptBoth( sThis,
                 fEncryptL = EncryptLite ):
     #
     _printOut( sThis, sPassPhrase )
+
 
 def EncryptBoth2( sThis, sPassPhrase = sFilePhrase ):
     #
