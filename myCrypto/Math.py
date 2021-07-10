@@ -71,14 +71,21 @@ if __name__ == "__main__":
     #
     lProblems = []
     #
-    #
-    #
     if getGCD( 973, 301 ) != (7, 13, -42):
         #
         # 13 * 973 - 42 * 301 = 7
         #
         lProblems.append( 'getGCD( 973, 301 )' )
         #
+    #
+    # wikipedia example
+    if getGCD( 46, 240 )!= (2, -9, 47):
+        #
+        # -9 * 240 + 47 * 46 = 2
+        #
+        lProblems.append( 'getGCD( 46, 240 )' )
+        #
+    #
     #
     sayTestResult( lProblems )
 
