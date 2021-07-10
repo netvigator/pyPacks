@@ -325,27 +325,6 @@ def FlipCase( sText, bAlternate = False ):
 
 
 
-def _getShift( iSeed ):
-    #
-    '''
-    want characters from space 32 to tilde ~ 126 inclusive
-    range of 94 (126 - 32)
-    The USA keyboard has 47 keys that yield ASCII characters,
-      and the output of each is varied by Shift
-    a number above the range must wrap around to the beginning
-    _getShift(  93 ) returns 93
-    _getShift(  94 ) returns 94
-    _getShift(  95 ) returns  0
-    _getShift(  96 ) returns  1
-    _getShift(  97 ) returns  2
-    see docstring for _getThisShifted
-    '''
-    #
-    iUseRange = CHAR_RANGE
-    #
-    return iSeed % iUseRange
-
-
 
 def _getThisShifted( iThis, iShift ):
     #
@@ -1439,31 +1418,15 @@ if __name__ == "__main__":
         lProblems.append( 'DecryptLite( EncryptLite( "%s" ) )' % sTest )
         #
     #
-    if (    _getShift(  88 ) != 88 or
-            _getShift(  89 ) != 89 or
-            _getShift(  90 ) != 90 or
-            _getShift(  91 ) != 91 or
-            _getShift(  92 ) != 92 or
-            _getShift(  93 ) != 93 or
-            _getShift(  94 ) != 94 or
-            _getShift(  95 ) !=  0 or
-            _getShift(  96 ) !=  1 or
-            _getShift(  97 ) !=  2 or
-            _getShift(  98 ) !=  3 or
-            _getShift(  99 ) !=  4 or
-            _getShift( 100 ) !=  5 ):
-        #
-        lProblems.append( '_getShift( 88 - 100 )' )
-        #
     #
-    iShift = _getShift( 95 )
+    iShift = 95 % CHAR_RANGE
     #
     if _getThisShifted( 32, iShift ) != 32:
         #
         lProblems.append( '_getThisShifted( 32, 0 )' )
         #
     #
-    iShift = _getShift( 96 )
+    iShift = 96 % CHAR_RANGE
     #
     if _getThisShifted( 32, iShift ) != 33:
         #
