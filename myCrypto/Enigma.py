@@ -343,12 +343,7 @@ def _getThisShifted( iThis, iShift ):
     #
     iShiftTo = iShift + iThis
     #
-    if iShiftTo > MAX_CHAR:
-        #
-        iShiftTo -= CHAR_RANGE
-        #
-    #
-    return iShiftTo
+    return iShiftTo if iShiftTo <= MAX_CHAR else iShiftTo - CHAR_RANGE
 
 
 def _getShiftedPutBack( iThis, iShift ):
@@ -369,12 +364,7 @@ def _getShiftedPutBack( iThis, iShift ):
     #
     iShiftTo = iThis - iShift
     #
-    if iShiftTo < MIN_CHAR:
-        #
-        iShiftTo += CHAR_RANGE
-        #
-    #
-    return iShiftTo
+    return iShiftTo if iShiftTo >= MIN_CHAR else iShiftTo + CHAR_RANGE
 
 
 
