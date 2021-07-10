@@ -77,6 +77,7 @@ except ( ValueError, ImportError ):
 # want characters from space 32 to tilde ~ 126 inclusive
 MIN_CHAR =  32
 MAX_CHAR = 126
+CHAR_RANGE = 1 + MAX_CHAR - MIN_CHAR
 
 
 _sSafe          =  punctuation.replace( '\\', ' ' ) + digits
@@ -340,7 +341,7 @@ def _getShift( iSeed ):
     see docstring for _getThisShifted
     '''
     #
-    iUseRange = 1 + MAX_CHAR - MIN_CHAR
+    iUseRange = CHAR_RANGE
     #
     return iSeed % iUseRange
 
@@ -361,12 +362,14 @@ def _getThisShifted( iThis, iShift ):
     _getThisShifted( 32, 97 ) returns  34
     '''
     #
-    if iShift + iThis > MAX_CHAR:
+    iShiftTo = iShift + iThis
+    #
+    if iShiftTo > MAX_CHAR:
         #
-        iShift += MIN_CHAR - MAX_CHAR - 1
+        iShiftTo -= CHAR_RANGE
         #
     #
-    return iThis + iShift
+    return iShiftTo
 
 
 def _getShiftedPutBack( iThis, iShift ):
@@ -385,12 +388,14 @@ def _getShiftedPutBack( iThis, iShift ):
     _getShiftedPutBack(  35,  6 ) returns 124
     '''
     #
-    if iThis - iShift < MIN_CHAR:
+    iShiftTo = iThis - iShift
+    #
+    if iShiftTo < MIN_CHAR:
         #
-        iShift -= 1 + MAX_CHAR - MIN_CHAR
+        iShiftTo += CHAR_RANGE
         #
     #
-    return iThis - iShift
+    return iShiftTo
 
 
 
@@ -1540,16 +1545,16 @@ if __name__ == "__main__":
     lResults = [ _getSayMore( *t ) for t in tAll ]
     #
     lExpect = [
-        ' -- has both single and double quotes *AND* has backslash character, '
+        ' -- has both single and double quotes *AND* has a backslash character, '
             'must test, might not work',
         ' -- has both single and double quotes',
-        ' -- has single quote *AND* has backslash character, '
+        ' -- has a single quote *AND* has a backslash character, '
             'must test, might not work',
-        ' -- has double quote *AND* has backslash character, '
+        ' -- has a double quote *AND* has a backslash character, '
             'must test, might not work',
-        ' -- has single quote',
-        ' -- has double quote',
-        ' -- has backslash character, must test, might not work',
+        ' -- has a single quote',
+        ' -- has a double quote',
+        ' -- has a backslash character, must test, might not work',
         ' -- has double spaces, HTML compresses, need a warning',
         '' ]
     #
