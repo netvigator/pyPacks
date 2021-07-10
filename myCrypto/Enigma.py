@@ -330,20 +330,22 @@ def _getThisShifted( iThis, iShift ):
     #
     '''
     want characters from space 32 to tilde ~ 126 inclusive
-    range of 94 (126 - 32)
+    range of 95 (126 - 32) + 1 (want inclusive)
     The USA keyboard has 47 keys that yield ASCII characters,
       and the output of each is varied by Shift
-    _getThisShifted( 32, 92 ) returns 124
-    _getThisShifted( 32, 93 ) returns 125
-    _getThisShifted( 32, 94 ) returns 126
-    _getThisShifted( 32, 95 ) returns  32
-    _getThisShifted( 32, 96 ) returns  33
-    _getThisShifted( 32, 97 ) returns  34
+    add one more: space (spacebar)
+    _getThisShifted( 32, 92 ) returns 124 |
+    _getThisShifted( 32, 93 ) returns 125 }
+    _getThisShifted( 32, 94 ) returns 126 ~
+    _getThisShifted( 32, 95 ) returns  32 space
+    _getThisShifted( 32, 96 ) returns  33 !
+    _getThisShifted( 32, 97 ) returns  34 "
     '''
     #
-    iShiftTo = iShift + iThis
+    iShiftTo = iThis + iShift
     #
     return iShiftTo if iShiftTo <= MAX_CHAR else iShiftTo - CHAR_RANGE
+
 
 
 def _getShiftedPutBack( iThis, iShift ):
@@ -351,21 +353,21 @@ def _getShiftedPutBack( iThis, iShift ):
     '''
     undo for _getThisShifted
     want characters from space 32 to tilde ~ 126 inclusive
-    range of 94 (126 - 32)
+    range of 95 (126 - 32) + 1 (want inclusive)
     The USA keyboard has 47 keys that yield ASCII characters,
       and the output of each is varied by Shift
-    _getShiftedPutBack(  35,  1 ) returns  34
-    _getShiftedPutBack(  35,  2 ) returns  33
-    _getShiftedPutBack(  35,  3 ) returns  32
-    _getShiftedPutBack(  35,  4 ) returns 126
-    _getShiftedPutBack(  35,  5 ) returns 125
-    _getShiftedPutBack(  35,  6 ) returns 124
+    add one more: space (spacebar)
+    _getShiftedPutBack(  35,  1 ) returns  34 "
+    _getShiftedPutBack(  35,  2 ) returns  33 !
+    _getShiftedPutBack(  35,  3 ) returns  32 space
+    _getShiftedPutBack(  35,  4 ) returns 126 ~
+    _getShiftedPutBack(  35,  5 ) returns 125 }
+    _getShiftedPutBack(  35,  6 ) returns 124 |
     '''
     #
     iShiftTo = iThis - iShift
     #
     return iShiftTo if iShiftTo >= MIN_CHAR else iShiftTo + CHAR_RANGE
-
 
 
 
