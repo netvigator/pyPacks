@@ -240,24 +240,24 @@ def DescendChars( sOrig,
     chr(101)+chr(102)+chr(103) becomes chr(154)+chr(153)+chr(152)
     '''
     #
-    #
-    def getIncrement( i ): return 0
-    #
     if bStepIncrement:
         #
-        iIncrement  = ( -1, 1 )[ not bBackStep ]
-        # returns -1 if bBackStep, 1 if not
+        iIncrement = -1 if bBackStep else 1
         #
         def getIncrement( i ): return iIncrement * ( i % 8 )
+        #
+    else:
+        #
+        def getIncrement( i ): return 0
         #
     #
     def getNewChar( sChar, iThis ):
         #
-        i = ( 255 + iOffset + getIncrement( iThis ) - ord( sChar ) )
+        i = 255 + iOffset + getIncrement( iThis ) - ord( sChar )
         #
         return chr( i % 256 )
     #
-    lNewChars       = lMap( getNewChar, sOrig, iRange( len( sOrig ) ) )
+    lNewChars = lMap( getNewChar, sOrig, iRange( len( sOrig ) ) )
     #
     if bBackwards: lNewChars.reverse()
     #
@@ -493,29 +493,29 @@ def _shuffleEncrypted( sEncrypted, oPassPhraseStats, bPutBack = False ):
             #
         #
         iCutAtIn    = oEncrStats.iCutAt1
-        iCutAtMid   = oEncrStats.iCutAt0
         iCutAtOut   = oEncrStats.iCutAt2
         #
         # deck of cards will return to original order
         # after 8 perfect shuffles!
         #
         iShufflesIn = ( iBigInteger % 3 ) + 1
-        iShufflesMid= ( iBigInteger % 4 ) + 1
         iShufflesOut= ( iBigInteger % 5 ) + 1
         #
     else:
         #
         iCutAtIn    = oEncrStats.iCutAt2
-        iCutAtMid   = oEncrStats.iCutAt0
         iCutAtOut   = oEncrStats.iCutAt1
         #
         # deck of cards will return to original order
         # after 8 perfect shuffles!
         #
         iShufflesIn = ( iBigInteger % 5 ) + 1
-        iShufflesMid= ( iBigInteger % 4 ) + 1
         iShufflesOut= ( iBigInteger % 3 ) + 1
         #
+    #
+    iCutAtMid       = oEncrStats.iCutAt0
+    #
+    iShufflesMid    = ( iBigInteger % 4 ) + 1
     #
     sConverted      = ShuffleAndCut(
                             ShuffleAndCut(
@@ -647,6 +647,7 @@ def _getShuffleCutReverseShuffleCut(
                         ShuffleAndCut( sConverted, True, iCutOffset = iCutAt1 ),
                         iRevThis ),
                 True, iCutOffset = iCutAt0 )
+
 
 
 def Decrypt(    sDecryptThis,
@@ -810,11 +811,11 @@ def _getShuffleShiftReverseFlipPunctuate(
 
 def EncryptLite(
             sThis,
-            sPassPhrase      = sFilePhrase,
-            iRevThis          = True,
-            iRevPassPhrase    = False,
-            getCharsShifted   = _getCharsShifted,
-            bShuffleEncrypted = False ):
+            sPassPhrase         = sFilePhrase,
+            iRevThis            = True,
+            iRevPassPhrase      = False,
+            getCharsShifted     = _getCharsShifted,
+            bShuffleEncrypted   = False ):
     #
     # handle multi line strings
     #
