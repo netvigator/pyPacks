@@ -76,7 +76,6 @@ cd ../String
 ./Delimit.py
 ./Dumpster.py
 ./Eat.py
-./Enigma.py
 ./Find.py
 ./Get.py
 ./getEncrypted.py
@@ -137,3 +136,8 @@ cd ../Web
 ./Test.py
 # ./WebCat.py
 # ./Zip.py
+cd ../myCrypto
+./Enigma.py
+./Math.py
+./Passwords.py
+cd ,,
