@@ -1965,6 +1965,25 @@ if __name__ == "__main__":
         #
     #
     #
+    sLook4a = 'tuner-preamp'
+    #
+    sRegExpressNoSlash = getRegExpress( sLook4a )
+    #
+    sLook4b = 'tuner/preamp'
+    #
+    sRegExpressGotSlash = getRegExpress( sLook4b )
+    #
+    # , bAddDash = True
+    # if sRegExpress != 'tuner(/ *)+preamp':
+    tGot    = ( sRegExpressNoSlash, sRegExpressGotSlash )
+    tWant   = 'tuner[-/ ]*preamp', 'tuner(/ *)+preamp'
+    #
+    if tGot != tWant:
+        #
+        print( tGot )
+        lProblems.append( 'getRegExpress( %s, %s)' % ( sLook4a, sLook4b ) )
+        #
+    #
     '''
     >>> from String.Output import show_re
     >>> show_re( '\d', 'abc 2 def' )
