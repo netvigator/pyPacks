@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/
 #
-# Copyright 2004-2020 Rick Graves
+# Copyright 2004-2021 Rick Graves
 #
 from copy import deepcopy
 
@@ -605,6 +605,17 @@ except ImportError:
     OrderedDict = OrderedDictBackport
 
 
+class DictCanSave( dict ):
+    '''
+    save() method is fake,
+    dict can substitute for objects with save() method
+    save() is a placeholder that does NOT raise an error
+    '''
+    def save( self ): pass
+
+
+
+
 if __name__ == "__main__":
     #
     from six            import print_ as print3
@@ -851,5 +862,9 @@ if __name__ == "__main__":
         #
         lProblems.append( 'OrderedDictBackport()' )
         #
+    #
+    oDict = DictCanSave( a=10, b=11, c=12, d=13, e=14, f=15, g=16, h=17, i=18, j=19 )
+    #
+    oDict.save()
     #
     sayTestResult( lProblems )
