@@ -531,11 +531,11 @@ def _shuffleEncrypted( sEncrypted, oPassPhraseStats, bPutBack = False ):
                         iShuffles  = iShufflesOut,
                         iCutOffset = iCutAtOut )
     #
-    oFinalStats = AscStats( sConverted )
+    oFinalStats     = AscStats( sConverted )
     #
     if isOdd( iBigInteger ) and not bPutBack:
         #
-        sConverted = getTextReversed( sConverted )
+        sConverted  = getTextReversed( sConverted )
         #
     #
     return sConverted
@@ -1714,6 +1714,7 @@ if __name__ == "__main__":
         tPasswords = (
             'My_Great_Password', # no special characters
             'My_Great_Passw0rd', # 0 for o
+            'My_Gre@t_Password', # @ for 1st a
             'My_Great_P@ssword', # @ for 2nd a
             'My_Gr3at_Password', # 3 for e
             'My_Great_P@ssw0rd', # 0 for o & @ for 2nd a
@@ -1721,11 +1722,11 @@ if __name__ == "__main__":
             'My_Gr3at_P@ssword', # @ for 2nd a & 3 for e
             )
         #
-        sPhrase = ( 'Look, Bullwinkle! A message in a bottle! - '
-                    'Fan mail from some flounder? - '
-                    'No! This is what I really call a message!' )
+        # sPhrase = 'Bullwinkle is a dope!'
         #
-        sPhrase = 'Bullwinkle is a dope!'
+        sPhrase = ( 'Look, Bullwinkle! A message in a bottle! | '
+                    'Fan mail from some flounder? | '
+                    'No! This is what I really call a message!' )
         #
         tCiphers = tuple( [ Encrypt2(s,sPhrase) for s in tPasswords ] )
         #
@@ -1772,6 +1773,6 @@ if __name__ == "__main__":
             #
         #
         pprint( dColsInCommon )
-    #
-    #
+        #
+    #                            |   |
     sayTestResult( lProblems )
