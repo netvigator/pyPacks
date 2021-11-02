@@ -24,7 +24,12 @@
 #
 #
 import string
-import secrets
+from sys import exit
+try:
+    import secrets
+except ImportError:
+    print( "This requires the secrets package in Python 3" )
+    exit(1)
 
 # only include characters that display well and are easy to find on keyboard
 easyPunctuation = '!#$%&()*+,-./:;<=>?@[]^_{|}~'
