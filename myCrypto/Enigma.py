@@ -1162,6 +1162,14 @@ def _printOut(  sOrig,
         #
     #
     print3( '%s -- %s' % ( sSayHeavy.strip(), sSayLite.strip() ) )
+    #
+    if '!' in sOrig:
+        #
+        print3( 'Caveat: got exclamation point in original, '
+                 'bash requires single quotes, '
+                 'nothing else is workable!!!!' )
+        #
+    #
 
 
 def None2Enigma( sThis ):
