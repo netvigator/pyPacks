@@ -20,20 +20,23 @@
 #
 #   http://www.gnu.org/licenses/
 #
-# Copyright 2004-2021 Rick Graves
+# Copyright 2004-2022 Rick Graves
 #
-from copy import deepcopy
-
+from copy   import deepcopy
+from re     import compile as REcompile
 try:
-    from ..Iter.AllVers     import iZip
+    from ..Iter.AllVers     import iZip, iRange
     from ..Iter.Get         import getIterSwapValueKey as _getIterSwapValueKey
     from ..Object.Test      import isMutable
     from ..Utils.Version    import PYTHON3
 except ( ValueError, ImportError ):
-    from Iter.AllVers       import iZip
+    from Iter.AllVers       import iZip, iRange
     from Iter.Get           import getIterSwapValueKey as _getIterSwapValueKey
     from Object.Test        import isMutable
     from Utils.Version      import PYTHON3
+
+
+oEqualsFinder = REcompile( ' *= *' ) # also removes the spaces
 
 
 if PYTHON3:
@@ -112,7 +115,7 @@ else:
         #
         return tuple( d.iteritems() )
     #
-    
+
 
 def getDictOffPairOfLists( lKeys, lValues ): # getDictOffTwoLists, getDictOff2Lists
     #
@@ -616,13 +619,84 @@ class DictCanSave( dict ):
 
 
 
+def _getHowManyIndents( s ):
+    #
+    return ( len( s ) - len( s.lstrip() ) ) // 4
+
+
+
+def getNestedDicts( sFlatFile ):
+    #
+    '''
+    get nested dicts from ini like file with indented sections
+    example in self test below
+    '''
+    #
+    dNested = {}
+    #
+    lHeadings = [ '' ] * 4
+    #
+    iCurrentIndents = 0
+    #
+    def getLevelDict( iLevel ):
+        #
+        dReturn = dNested
+        #
+        for i in iRange( iLevel + 1 ):
+            #
+            dReturn = dReturn[ lHeadings[i] ]
+            #
+        return dReturn
+    #
+    #
+    for line in open( sFlatFile ):
+        #
+        iIndents = _getHowManyIndents( line )
+        #
+        sCurrentLine = line.strip()
+        #
+        if not sCurrentLine: continue
+        #
+        if iIndents == 0: # new heading
+            #
+            iCurrentIndents = 0
+            #
+        #
+        if '=' in line: # item for current heading level
+            #
+            dThis = getLevelDict( iIndents )
+            #
+            lParts = oEqualsFinder.split( sCurrentLine )
+            #
+            dThis[ lParts[0] ] = int( lParts[1] )
+            #
+        else: # something new
+            #
+            lHeadings[ iIndents ] = sCurrentLine
+            #
+            dCurrent = getLevelDict( iIndents - 1 )
+            #
+            dCurrent[ sCurrentLine ] = {}
+            #
+            iCurrentIndents = iIndents
+            #
+        #
+    #
+    return dNested
+
+
+
+
 if __name__ == "__main__":
     #
     from six            import print_ as print3
     from six            import next   as getNext
     #
     from Collect.Test   import hasAny
-    from Iter.AllVers   import iMap, tMap, iRange, tRange, iZip, lZip
+    from File.Del       import DeleteIfExists
+    from File.Get       import getTempFile
+    from File.Write     import QuickDump
+    from Iter.AllVers   import iMap, tMap, tRange, lZip
    #from Utils.Both2n3  import getNext
     from Utils.Result   import sayTestResult
     #
@@ -866,5 +940,141 @@ if __name__ == "__main__":
     oDict = DictCanSave( a=10, b=11, c=12, d=13, e=14, f=15, g=16, h=17, i=18, j=19 )
     #
     oDict.save()
+    #
+    if _getHowManyIndents( 'abc' ) != 0:
+        #
+        lProblems.append( '_getHowManyIndents() flush left' )
+        #
+    #
+    if _getHowManyIndents( '    abc' ) != 1:
+        #
+        lProblems.append( '_getHowManyIndents() one level' )
+        #
+    #
+    if _getHowManyIndents( '        abc' ) != 2:
+        #
+        lProblems.append( '_getHowManyIndents() two levels' )
+        #
+    #
+    sIniTestText = '''
+Harman Kardon
+
+    Citation II
+
+    stars               = 10
+    quantity            = 2
+
+        electrolytics
+        4 mfd 450V      = 2
+        40 mfd 525V     = 1
+        200 mfd 250V    = 1
+        20-20 mfd 150V  = 1
+        50-50 mfd 450V  = 1
+
+        coupling caps
+        .22 mfd 600V    = 4
+        .47 mfd 600V    = 4
+        .039 mfd 200V   = 2
+
+    Citation IV
+
+    stars               = 9
+    quantity            = 1
+
+        electrolytics
+        1000-1000 mfd 30V   = 1
+        40-40-40 mfd 450V   = 1
+        2 mfd 25V           = 2
+        200 mfd 3V          = 8
+        80-50-40 mfd 450V   = 1
+
+        coupling caps - mylar
+        .0023 mfd 100V      = 2
+        .003 mfd 100V       = 2
+        .03 mfd 100V        = 2
+        .05 mfd 100V        = 2
+        .1 mfd 400V         = 6
+        .47 mfd 400V        = 7
+
+Heath
+
+    W-5M
+
+    stars               = 9
+    quantity            = 6
+
+        electrolytics
+        20-20-20 mfd 450V   = 1
+        20 mdf 350V         = 2
+        100 mfd 50V         = 2
+        40 mfd 450V         = 2
+        40-40 mfd 450V      = 1
+
+        coupling caps
+        .1 mfd 200V     = 1
+        .1 mfd 400V     = 2
+        1 mfd 400V      = 1
+    '''
+    #
+    #
+    sFile = getTempFile()
+    #
+    QuickDump( sIniTestText, sFile, bSayBytes = False )
+    #
+    dGot = getNestedDicts( sFile )
+    #
+    dWant = {
+        'Harman Kardon':
+            {'Citation II':
+                {'stars'                : 10,
+                 'quantity'             : 2,
+                'electrolytics':
+                   {'4 mfd 450V'        : 2,
+                    '40 mfd 525V'       : 1,
+                    '200 mfd 250V'      : 1,
+                    '20-20 mfd 150V'    : 1,
+                    '50-50 mfd 450V'    : 1},
+                 'coupling caps':
+                   {'.22 mfd 600V'      : 4,
+                    '.47 mfd 600V'      : 4,
+                    '.039 mfd 200V'     : 2}},
+            'Citation IV':
+                {'stars'                : 9,
+                 'quantity'             : 1,
+                 'electrolytics':
+                   {'1000-1000 mfd 30V' : 1,
+                    '40-40-40 mfd 450V' : 1,
+                    '2 mfd 25V'         : 2,
+                    '200 mfd 3V'        : 8,
+                    '80-50-40 mfd 450V' : 1},
+                 'coupling caps - mylar':
+                   {'.0023 mfd 100V'    : 2,
+                    '.003 mfd 100V'     : 2,
+                    '.03 mfd 100V'      : 2,
+                    '.05 mfd 100V'      : 2,
+                    '.1 mfd 400V'       : 6,
+                    '.47 mfd 400V'      : 7}}},
+        'Heath':
+           {'W-5M':
+                {'stars'                : 9,
+                 'quantity'             : 6,
+                 'electrolytics':
+                   {'20-20-20 mfd 450V'   : 1,
+                    '20 mdf 350V'         : 2,
+                    '100 mfd 50V'         : 2,
+                    '40 mfd 450V'         : 2,
+                    '40-40 mfd 450V'      : 1},
+                 'coupling caps':
+                   {'.1 mfd 200V'     : 1,
+                    '.1 mfd 400V'     : 2,
+                    '1 mfd 400V'      : 1}}}
+                   }
+    #
+    if dWant != dGot:
+        #
+        lProblems.append( 'getNestedDicts()' )
+        #
+    ##
+    DeleteIfExists( sFile )
     #
     sayTestResult( lProblems )
