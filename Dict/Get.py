@@ -636,8 +636,6 @@ def getNestedDicts( sFlatFile ):
     #
     lHeadings = [ '' ] * 4
     #
-    iCurrentIndents = 0
-    #
     def getLevelDict( iLevel ):
         #
         dReturn = dNested
@@ -657,11 +655,6 @@ def getNestedDicts( sFlatFile ):
         #
         if not sCurrentLine: continue
         #
-        if iIndents == 0: # new heading
-            #
-            iCurrentIndents = 0
-            #
-        #
         if '=' in line: # item for current heading level
             #
             dThis = getLevelDict( iIndents )
@@ -677,8 +670,6 @@ def getNestedDicts( sFlatFile ):
             dCurrent = getLevelDict( iIndents - 1 )
             #
             dCurrent[ sCurrentLine ] = {}
-            #
-            iCurrentIndents = iIndents
             #
         #
     #
