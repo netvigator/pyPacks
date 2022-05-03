@@ -937,7 +937,7 @@ def getSplitAndStrip( s, uSplitOn = ',' ):
         else:
             lParts = iterSplitC( s, uSplitOn )
     else:
-        lParts = uSplitOn .split( s )
+        lParts = uSplitOn.split( s )
     #
     return tMap( getStripped, lParts )
 
