@@ -1,4 +1,4 @@
-#!/home/rick/bin/pythonTest
+#!/home/rick/.local/bin/pythonTest
 # -*- coding: utf-8 -*-
 #
 # Utility Both2n3
@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/
 #
-# Copyright 2009-2020 Rick Graves
+# Copyright 2009-2023 Rick Graves
 #
 # here, must use built in map -- cannot import iMap
 

@@ -1,4 +1,4 @@
-#!/home/rick/bin/pythonTest
+#!/home/rick/.local/bin/pythonTest
 # -*- coding: utf-8 -*-
 #
 # string functions Convert bytes <-> string Python3 but Python2 compatible
@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/
 #
-# Copyright 2012-2020 Rick Graves
+# Copyright 2012-2023 Rick Graves
 #
 '''
 

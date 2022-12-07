@@ -1,4 +1,4 @@
-#!/home/rick/bin/pythonTest
+#!/home/rick/.local/bin/pythonTest
 # -*- coding: utf-8 -*-
 #
 # String Names
@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/
 #
-# Copyright 2007-2020 Rick Graves
+# Copyright 2007-2023 Rick Graves
 #
 
 from six            import print_ as print3

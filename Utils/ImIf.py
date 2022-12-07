@@ -1,4 +1,4 @@
-#!/home/rick/bin/pythonTest
+#!/home/rick/.local/bin/pythonTest
 # -*- coding: utf-8 -*-
 #
 # intermediate If function aka Conditional expressions or ternary operator
@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/
 #
-# Copyright 2004-2021 Rick Graves
+# Copyright 2004-2023 Rick Graves
 #
 '''
 Conditional expressions (sometimes called a “ternary operator”)

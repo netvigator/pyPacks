@@ -1,4 +1,4 @@
-#!/home/rick/bin/pythonTest
+#!/home/rick/.local/bin/pythonTest
 # -*- coding: utf-8 -*-
 #
 # SnailMail sMail functions get
@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/
 #
-# Copyright 2010-2020 Rick Graves
+# Copyright 2010-2023 Rick Graves
 #
 from String.Find import getFinderFindAll, getRegExObj
 

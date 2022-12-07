@@ -1,4 +1,4 @@
-#!/home/rick/bin/pythonTest
+#!/home/rick/.local/bin/pythonTest
 # -*- coding: utf-8 -*-
 #
 # string functions Text4Tests.py
@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/
 #
-# Copyright 2011-2020 Rick Graves
+# Copyright 2011-2023 Rick Graves
 #
 
 sHTML =  (

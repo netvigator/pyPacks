@@ -1,4 +1,4 @@
-#!/home/rick/bin/pythonTest
+#!/home/rick/.local/bin/pythonTest
 # -*- coding: utf-8 -*-
 #
 # SnailMail sMail functions Test
@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/
 #
-# Copyright 2010-2021 Rick Graves
+# Copyright 2010-2023 Rick Graves
 #
 
 #( oFinderStateName,

@@ -1,4 +1,4 @@
-#!/home/rick/bin/pythonTest
+#!/home/rick/.local/bin/pythonTest
 #
 # Number functions Crunch specialized number crunchers
 #
@@ -19,7 +19,7 @@
 #
 #   http://www.gnu.org/licenses/
 #
-# Copyright 2012-2020 Rick Graves
+# Copyright 2012-2023 Rick Graves
 #
 try:
     from ..Time.Delta   import getIsoDateTimeNowPlus as getNowPlus

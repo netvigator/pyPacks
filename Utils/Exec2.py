@@ -1,4 +1,4 @@
-#!/home/rick/bin/pythonTest
+#!/home/rick/.local/bin/pythonTest
 # -*- coding: utf-8 -*-
 #
 # exec for python 3, solve incompatibility with version 2
@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/
 #
-# Copyright 2014-2020 Rick Graves
+# Copyright 2014-2023 Rick Graves
 #
 
 

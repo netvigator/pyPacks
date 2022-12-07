@@ -1,4 +1,4 @@
-#!/home/rick/bin/pythonTest
+#!/home/rick/.local/bin/pythonTest
 # -*- coding: utf-8 -*-
 #
 # Mail functions Send
@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/
 #
-# Copyright 2004-2020 Rick Graves
+# Copyright 2004-2023 Rick Graves
 #
 # self test actually tries to send email, so need working internet
 

@@ -1,4 +1,4 @@
-#!/home/rick/bin/pythonTest
+#!/home/rick/.local/bin/pythonTest
 # -*- coding: utf-8 -*-
 #
 # DbApi functions Objects
@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/
 #
-# Copyright 2017-2020 Rick Graves
+# Copyright 2017-2023 Rick Graves
 #
 
 class Schema( object ):

@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/
 #
-# Copyright 2014-2020 Rick Graves
+# Copyright 2014-2023 Rick Graves
 #
 
 '''

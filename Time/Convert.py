@@ -1,4 +1,4 @@
-#!/home/rick/bin/pythonTest
+#!/home/rick/.local/bin/pythonTest
 # -*- coding: utf-8 -*-
 #
 # time functions Convert
@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/
 #
-# Copyright 2004-2021 Rick Graves
+# Copyright 2004-2023 Rick Graves
 #
 
 from datetime   import datetime, timedelta

@@ -1,4 +1,4 @@
-#!/home/rick/bin/pythonTest
+#!/home/rick/.local/bin/pythonTest
 # -*- coding: utf-8 -*-
 #
 # time functions Output
@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/
 #
-# Copyright 2004-2020 Rick Graves
+# Copyright 2004-2023 Rick Graves
 #
 
 from locale import DAY_1, DAY_2, DAY_3, DAY_4, DAY_5, DAY_6, DAY_7, nl_langinfo
