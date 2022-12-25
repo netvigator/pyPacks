@@ -24,7 +24,10 @@
 #
 #
 from itertools              import islice
+from math                   import ceil
+from pprint                 import pprint
 from random                 import random, shuffle
+from string                 import digits
 
 from six                    import print_ as print3
 from six.moves              import reduce as Reduce
@@ -57,6 +60,60 @@ def getMultiplier( iTimes ):
 
 
 
+def _gotRepeats( s, chars = digits, troubleshoot = False ):
+    #
+    '''
+    goal (not super strict): minimal repeating characters in s
+    if chars = digits, iCharsLen = 10
+    if length of s is 10, this is OK: 0012345678
+    if length of s is 20, this is OK: 00112345678901234567
+    if length of s is 30, this is OK: 001122345678901234567890123456    
+    '''
+    #
+    inputLen    = len( s )
+    iCharsLen   = len( chars )
+    #
+    fMultiple   = float( inputLen ) / iCharsLen
+    #
+    iMax        = ceil( fMultiple )
+    #
+    dChars      = dict.fromkeys( tuple( chars ), 0 )
+    #
+    iDictLen    = len( dChars )
+    #
+    bTooManyRepeats = False
+    #
+    for c in s:
+        #
+        dChars[ c ] += 1
+        #
+        if dChars[ c ] > iMax:
+            #
+            bTooManyRepeats = True
+            #
+            break
+            #
+        #
+    #
+    iGotCharsLen = len( tuple( [ c for c in dChars if dChars[ c ] > 0 ] ) )
+    #
+    if iGotCharsLen < inputLen / 2:
+        #
+        bTooManyRepeats = True
+        #
+    #
+    if bTooManyRepeats and troubleshoot:
+        #
+        print( 'inputLen    : %s' % inputLen     )
+        print( 'iCharsLen   : %s' % iCharsLen    )
+        print( 'fMultiple   : %s' % fMultiple    )
+        print( 'iMax        : %s' % iMax         )
+        print( 'iDictLen    : %s' % iDictLen     )
+        print( 'iGotCharsLen: %s' % iGotCharsLen )
+        pprint( dChars )                
+        #
+    #
+    return bTooManyRepeats
 
 
 def getRandomDigits( iHowMany = 10 ):
@@ -70,6 +127,26 @@ def getRandomDigits( iHowMany = 10 ):
         sRandom = str( iRandom )
         #
     return  '%s' % sRandom[ 1 : -2 ]
+
+
+def getRandomDigitsMinRepeats( iHowMany = 10 ):
+    #
+    sRandomDigits = ''
+    #
+    while True:
+        #
+        sRandomDigits = getRandomDigits( iHowMany )
+        #
+        if not _gotRepeats( sRandomDigits ):
+            #
+            break
+            #
+        #
+    #
+    return sRandomDigits
+
+
+
 
 
 def _RandomDigitFeederFactory():
@@ -93,9 +170,9 @@ def _RandomDigitFeederFactory():
         yield lDigits.pop()
 
 
-        
-            
-      
+
+
+
 
 
 def getBooleanIntSlower( u ):
@@ -512,5 +589,43 @@ if __name__ == "__main__":
                       getHowManyDigitsNeeded( 10**i - 1 ),
                       i ) )
             #
+    #
+    s = digits
+    #
+    if _gotRepeats( s, troubleshoot = False ):
+        #
+        lProblems.append(
+            '_gotRepeats( %s ) returns True' % s )
+        #
+    #
+    s = digits + '0'
+    #
+    if _gotRepeats( s ):
+        #
+        _gotRepeats( s, troubleshoot = True )
+        #
+        lProblems.append(
+            '_gotRepeats( %s ) returns True' % s )
+        #
+    #
+    s = digits + '00'
+    #
+    if not _gotRepeats( s ):
+        #
+        _gotRepeats( s, troubleshoot = True )
+        #
+        lProblems.append(
+            '_gotRepeats( %s ) returns False' % s )
+        #
+    #
+    s = '0012'
+    #
+    if not _gotRepeats( s ):
+        #
+        _gotRepeats( s, troubleshoot = True )
+        #
+        lProblems.append(
+            '_gotRepeats( %s ) returns False' % s )
+        #
     #
     sayTestResult( lProblems )
