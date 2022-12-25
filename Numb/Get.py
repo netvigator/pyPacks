@@ -65,9 +65,9 @@ def _gotRepeats( s, chars = digits, troubleshoot = False ):
     '''
     goal (not super strict): minimal repeating characters in s
     if chars = digits, iCharsLen = 10
-    if length of s is 10, this is OK: 0012345678
-    if length of s is 20, this is OK: 00112345678901234567
-    if length of s is 30, this is OK: 001122345678901234567890123456    
+    if length of s is 10, this is not OK: 0012345678
+    if length of s is 20, this is not OK: 00112345678901234567
+    if length of s is 30, this is not OK: 001122345678901234567890123456
     '''
     #
     inputLen    = len( s )
@@ -110,7 +110,7 @@ def _gotRepeats( s, chars = digits, troubleshoot = False ):
         print( 'iMax        : %s' % iMax         )
         print( 'iDictLen    : %s' % iDictLen     )
         print( 'iGotCharsLen: %s' % iGotCharsLen )
-        pprint( dChars )                
+        pprint( dChars )
         #
     #
     return bTooManyRepeats
@@ -626,6 +626,42 @@ if __name__ == "__main__":
         #
         lProblems.append(
             '_gotRepeats( %s ) returns False' % s )
+        #
+    #
+    '''
+    if length of s is 10, this is not OK: 0012345678
+    if length of s is 20, this is not OK: 00112345678901234567
+    if length of s is 30, this is not OK: 001122345678901234567890123456
+    '''
+    #
+    s = '0012345678'
+    #
+    if not _gotRepeats( s ):
+        #
+        _gotRepeats( s, troubleshoot = True )
+        #
+        lProblems.append(
+            '_gotRepeats( %s ) returns True' % s )
+        #
+    #
+    s = '00112345678901234567'
+    #
+    if not _gotRepeats( s ):
+        #
+        _gotRepeats( s, troubleshoot = True )
+        #
+        lProblems.append(
+            '_gotRepeats( %s ) returns True' % s )
+        #
+    #
+    s = '001122345678901234567890123456'
+    #
+    if not _gotRepeats( s ):
+        #
+        _gotRepeats( s, troubleshoot = True )
+        #
+        lProblems.append(
+            '_gotRepeats( %s ) returns True' % s )
         #
     #
     sayTestResult( lProblems )
