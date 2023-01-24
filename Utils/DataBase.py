@@ -20,7 +20,7 @@
 #
 #   http://www.gnu.org/licenses/
 #
-# Copyright 2023 Rick Graves
+# Copyright 2020 - 2023 Rick Graves
 #
 #
 
