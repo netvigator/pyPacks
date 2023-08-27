@@ -138,6 +138,20 @@ def getUnicodeOut( s ):
     return sReturn
 
 
+def wantSpaces( s ):
+    #
+    s = s.replace( '_', ' ' ).strip()
+    #
+    while '  ' in s:
+        #
+        s = s.replace( '  ', ' ' )
+        #
+    #
+    return s
+    
+
+
+
 if __name__ == "__main__":
     #
     from Utils.Result   import sayTestResult
@@ -202,6 +216,17 @@ if __name__ == "__main__":
     #
     bDebutPrint = False
     #
+    #
+    #
+    s       = 'a_b__c_d_ '
+    sWant   = 'a b c d'
+    sResult = wantSpaces( s )
+    #
+    if sWant != sResult:
+        #
+        print3( 'expecting %s, got %s' % ( sWant, sResult ) )
+        lProblems.append( 'want()' )
+        #    
     #
     #
     sayTestResult( lProblems )
