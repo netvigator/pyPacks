@@ -140,7 +140,7 @@ def getUnicodeOut( s ):
 
 def wantSpaces( s ):
     #
-    s = s.replace( '_', ' ' ).strip()
+    s = s.replace( '_', ' ' ).replace( '-', ' ' ).strip()
     #
     while '  ' in s:
         #
